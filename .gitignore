@@ -1,0 +1,8 @@
+/Debug/
+/Generated_Code/
+/Documentation/
+/.settings/
+ProjectInfo.xml
+core
+*.g_c
+*.g_X
