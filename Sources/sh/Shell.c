@@ -63,6 +63,8 @@ static const CLS1_ParseCommandCallback CmdParserTable[] =
   LED1_ParseCommand,
   LED2_ParseCommand,
   RNET1_ParseCommand,
+  Q4CLeft_ParseCommand,
+  Q4CRight_ParseCommand,
   NULL /* Sentinel */
 };
 

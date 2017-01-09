@@ -94,13 +94,21 @@ uint8_t APP_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_Std
 
 void APP_Run(void) {
 	appState = APP_STATE_STARTUP;
+	/*	The following initializations are done by Cpu.c::
+	 * KEY1_Init();
+	 * LED1_Init();
+	 * LED2_Init();
+	 * Q4CLeft_Init();
+	 * Q4CRight_Init();
+	 * TRG1_Init();
+	 * PTA_Init();
+	 * RTT1_Init();
+	 * CLS1_Init();
+	 * */
 	SHELL_Init();
 	BUZ_Init();
 	MOT_Init();
-	KEY1_Init();
 	RNET1_Init();
-	LED1_Off();
-	LED2_Off();
 
 	if (FRTOS1_xTaskCreate(MainTask, "Main", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL) != pdPASS) {
 		for(;;){} /* error */
