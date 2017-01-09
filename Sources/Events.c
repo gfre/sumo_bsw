@@ -28,7 +28,7 @@
 
 #include "Cpu.h"
 #include "Events.h"
-#include "LED2.h"
+//#include "LED1.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -185,7 +185,7 @@ void PTRC1_OnTraceWrap(void)
 */
 void KEY1_OnKeyPressed(uint8_t keys)
 {
-	LED1_Neg();
+	// LED1_Neg();
   /* Write your code here. A bit in 'keys' indicates key pressed ... */
 }
 

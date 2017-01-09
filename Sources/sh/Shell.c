@@ -16,6 +16,8 @@
 #include "LED1.h"
 #include "LED2.h"
 #include "batt.h"
+#include "Q4CLeft.h"
+#include "Q4CRight.h"
 
 
 void SHELL_SendString(unsigned char *msg) {
