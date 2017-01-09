@@ -10,6 +10,9 @@
 #include "Motor.h"
 #include "RNET1.h"
 #include "batt.h"
+#include "Tacho.h"
+#include "Q4CLeft.h"
+#include "Q4CRight.h"
 
 typedef enum AppStateType_s{
 	APP_STATE_STARTUP,
@@ -60,6 +63,7 @@ static void MainTask(void *pvParameters) {
 	FRTOS1_vTaskDelay(100/portTICK_PERIOD_MS); /* provide some time to get hardware (SW1) pull-up effective */
 	for(;;) {
 		KEY1_ScanKeys();
+		TACHO_CalcSpeed();
 		StateMachine(FALSE);
 		FRTOS1_vTaskDelay(10/portTICK_PERIOD_MS);
 	} /* for */
@@ -91,6 +95,26 @@ uint8_t APP_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_Std
 	return res;
 }
 
+static void APP_AdoptToHardware(void) {
+	/*Possibility to swap Pins*/
+	(void)Q4CLeft_SwapPins(TRUE);
+	//(void)Q4CRight_SwapPins(TRUE);
+
+	/* SW1: enable and turn on pull-up resistor for PTA14 (push button) */
+	PORT_PDD_SetPinPullSelect(PORTA_BASE_PTR, 14, PORT_PDD_PULL_UP);
+	PORT_PDD_SetPinPullEnable(PORTA_BASE_PTR, 14, PORT_PDD_PULL_ENABLE);
+
+	/* pull-ups for Quadrature Encoder Pins */
+	PORT_PDD_SetPinPullSelect(PORTC_BASE_PTR, 10, PORT_PDD_PULL_UP);
+	PORT_PDD_SetPinPullEnable(PORTC_BASE_PTR, 10, PORT_PDD_PULL_ENABLE);
+	PORT_PDD_SetPinPullSelect(PORTC_BASE_PTR, 11, PORT_PDD_PULL_UP);
+	PORT_PDD_SetPinPullEnable(PORTC_BASE_PTR, 11, PORT_PDD_PULL_ENABLE);
+	PORT_PDD_SetPinPullSelect(PORTC_BASE_PTR, 16, PORT_PDD_PULL_UP);
+	PORT_PDD_SetPinPullEnable(PORTC_BASE_PTR, 16, PORT_PDD_PULL_ENABLE);
+	PORT_PDD_SetPinPullSelect(PORTC_BASE_PTR, 17, PORT_PDD_PULL_UP);
+	PORT_PDD_SetPinPullEnable(PORTC_BASE_PTR, 17, PORT_PDD_PULL_ENABLE);
+}
+
 void APP_Run(void) {
 	appState = APP_STATE_STARTUP;
 	/*	The following initializations are done by Cpu.c::
@@ -109,7 +133,9 @@ void APP_Run(void) {
 	MOT_Init();
 	RNET1_Init();
 	BATT_Init();	
+	TACHO_Init();
 
+	APP_AdoptToHardware();
 	if (FRTOS1_xTaskCreate(MainTask, "Main", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL) != pdPASS) {
 		for(;;){} /* error */
 	}

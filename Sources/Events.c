@@ -28,7 +28,6 @@
 
 #include "Cpu.h"
 #include "Events.h"
-//#include "LED1.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -37,6 +36,7 @@ extern "C" {
 
 /* User includes (#include below this line is not maintained by Processor Expert) */
 #include "Trigger.h"
+#include "Tacho.h" /* Styger direct interface, not PE! */
 
 /*
 ** ===================================================================
@@ -118,8 +118,9 @@ void FRTOS1_vApplicationTickHook(void)
 {
   /* Called for every RTOS tick. */
   /* Write your code here ... */
+  TACHO_Sample();
 	TRG1_AddTick();
-    TRG_AddTick();
+  TRG_AddTick();
 }
 
 /*
@@ -244,6 +245,8 @@ void KEY1_OnKeyPressedLong(uint8_t keys)
 */
 void QuadInt_OnInterrupt(void)
 {
+  Q4CLeft_Sample();
+  Q4CRight_Sample();
   /* Write your code here ... */
 }
 
