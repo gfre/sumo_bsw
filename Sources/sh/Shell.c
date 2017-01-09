@@ -6,9 +6,6 @@
  * This module implements the front to the console/shell functionality.
  */
 
-
-
-
 #include "Shell.h"
 #include "CLS1.h"
 #include "FRTOS1.h"
@@ -18,6 +15,7 @@
 #include "RNET1.h"
 #include "LED1.h"
 #include "LED2.h"
+#include "batt.h"
 
 
 void SHELL_SendString(unsigned char *msg) {
@@ -65,6 +63,7 @@ static const CLS1_ParseCommandCallback CmdParserTable[] =
   RNET1_ParseCommand,
   Q4CLeft_ParseCommand,
   Q4CRight_ParseCommand,
+  BATT_ParseCommand,
   NULL /* Sentinel */
 };
 

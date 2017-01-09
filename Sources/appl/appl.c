@@ -9,8 +9,7 @@
 #include "KEY1.h"
 #include "Motor.h"
 #include "RNET1.h"
-#include "RF1.h"
-
+#include "batt.h"
 
 typedef enum AppStateType_s{
 	APP_STATE_STARTUP,
@@ -109,6 +108,7 @@ void APP_Run(void) {
 	BUZ_Init();
 	MOT_Init();
 	RNET1_Init();
+	BATT_Init();	
 
 	if (FRTOS1_xTaskCreate(MainTask, "Main", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL) != pdPASS) {
 		for(;;){} /* error */
