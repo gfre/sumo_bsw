@@ -19,6 +19,7 @@
 #include "Q4CLeft.h"
 #include "Q4CRight.h"
 #include "Tacho.h"
+#include "KIN1.h"
 
 void SHELL_SendString(unsigned char *msg) {
   CLS1_SendStr(msg, SHELL_GetStdio()->stdOut);
@@ -67,6 +68,7 @@ static const CLS1_ParseCommandCallback CmdParserTable[] =
   LED2_ParseCommand,
   RNET1_ParseCommand,
   BATT_ParseCommand,
+  KIN1_ParseCommand,
   NULL /* Sentinel */
 };
 
