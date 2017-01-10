@@ -13,6 +13,8 @@
 #include "Tacho.h"
 #include "Q4CLeft.h"
 #include "Q4CRight.h"
+#include "Pid.h"
+#include "Drive.h"
 
 typedef enum AppStateType_s{
 	APP_STATE_STARTUP,
@@ -134,6 +136,8 @@ void APP_Run(void) {
 	RNET1_Init();
 	BATT_Init();	
 	TACHO_Init();
+	PID_Init();
+	DRV_Init();
 
 	APP_AdoptToHardware();
 	if (FRTOS1_xTaskCreate(MainTask, "Main", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL) != pdPASS) {

@@ -19,6 +19,9 @@
 #include "Q4CLeft.h"
 #include "Q4CRight.h"
 #include "Tacho.h"
+#include "KIN1.h"
+#include "Pid.h"
+#include "Drive.h"
 
 void SHELL_SendString(unsigned char *msg) {
   CLS1_SendStr(msg, SHELL_GetStdio()->stdOut);
@@ -59,7 +62,9 @@ static const CLS1_ParseCommandCallback CmdParserTable[] =
   FRTOS1_ParseCommand,
   APP_ParseCommand,
   MOT_ParseCommand,
+	DRV_ParseCommand,
   TACHO_ParseCommand,
+	PID_ParseCommand,
   Q4CLeft_ParseCommand,
   Q4CRight_ParseCommand,
   BUZ_ParseCommand,
@@ -67,7 +72,8 @@ static const CLS1_ParseCommandCallback CmdParserTable[] =
   LED2_ParseCommand,
   RNET1_ParseCommand,
   BATT_ParseCommand,
-  NULL /* Sentinel */
+	KIN1_ParseCommand,
+	NULL /* Sentinel */
 };
 
 typedef struct {
