@@ -22,9 +22,11 @@
 #include "KIN1.h"
 #include "Pid.h"
 #include "Drive.h"
+#include "RTT1.h"
 
 void SHELL_SendString(unsigned char *msg) {
   CLS1_SendStr(msg, SHELL_GetStdio()->stdOut);
+  CLS1_SendStr(msg, RTT1_stdio.stdOut);
 
 }
 
@@ -38,6 +40,7 @@ static uint8_t SHELL_PrintStatus(const CLS1_StdIOType *io) {
   CLS1_SendStatusStr((unsigned char*)"shell", (unsigned char*)"\r\n", io->stdOut);
   CLS1_SendStatusStr((unsigned char*)"  connections", NULL, io->stdOut);
   CLS1_SendStr((unsigned char*)"DEFAULT", io->stdOut);
+  CLS1_SendStr((unsigned char*)"   +RTT", io->stdOut);
   CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
   return ERR_OK;
 }
@@ -90,7 +93,8 @@ typedef struct {
 
 static const SHELL_IODesc ios[] =
 {
-    {CLS1_DefaultShellBuffer, sizeof(CLS1_DefaultShellBuffer), &CLS1_stdio}
+    {CLS1_DefaultShellBuffer, sizeof(CLS1_DefaultShellBuffer), &CLS1_stdio},
+    {RTT1_DefaultShellBuffer, sizeof(RTT1_DefaultShellBuffer), &RTT1_stdio},
 };
 
 

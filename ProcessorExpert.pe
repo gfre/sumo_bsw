@@ -3,7 +3,7 @@
   <Header>
     <Name>sumo_bsw</Name>
     <SavedBy>gefr</SavedBy>
-    <ModificationStamp>43</ModificationStamp>
+    <ModificationStamp>45</ModificationStamp>
     <Date>2017-01-03</Date>
     <IDE>Eclipse IDE</IDE>
     <PEversion>1.12.2.RT7_b1550-0615</PEversion>
@@ -29,7 +29,7 @@
     <UseExistingModules>true</UseExistingModules>
     <RenamePeripheries>false</RenamePeripheries>
     <Autodependency>true</Autodependency>
-    <ProjectCompNumb>281</ProjectCompNumb>
+    <ProjectCompNumb>286</ProjectCompNumb>
     <DelUnusedPreviouslyGenFiles>true</DelUnusedPreviouslyGenFiles>
     <GeneratedCodeFrozen>false</GeneratedCodeFrozen>
     <AssignInitComponentNameToPrph>true</AssignInitComponentNameToPrph>
@@ -10413,7 +10413,7 @@
     </ItemState>
   </Configuration>
   <Bean>
-    <Repository>file://home/hewe/Erich</Repository>
+    <Repository>file:/${home_ProcessorExpert_loc}/MyComponents</Repository>
     <BeanType>Utility</BeanType>
     <Name>UTIL1</Name>
     <CompNumb>10</CompNumb>
@@ -11214,7 +11214,7 @@
     <Events />
   </Bean>
   <Bean>
-    <Repository>file://home/hewe/Erich</Repository>
+    <Repository>file:/${home_ProcessorExpert_loc}/MyComponents</Repository>
     <BeanType>Shell</BeanType>
     <Name>CLS1</Name>
     <CompNumb>13</CompNumb>
@@ -11367,7 +11367,7 @@
         <ItemSymbol>Serial</ItemSymbol>
         <ReadOnly>false</ReadOnly>
         <UserReadOnly>false</UserReadOnly>
-        <Value>RTT1</Value>
+        <Value>USB1</Value>
       </ItemState>
       <ItemState>
         <ItemSymbol>ConsoleSempahore</ItemSymbol>
@@ -11822,7 +11822,7 @@
     </Events>
   </Bean>
   <Bean>
-    <Repository>file://home/hewe/Erich</Repository>
+    <Repository>file:/${home_ProcessorExpert_loc}/MyComponents</Repository>
     <BeanType>Wait</BeanType>
     <Name>WAIT1</Name>
     <CompNumb>14</CompNumb>
@@ -12021,7 +12021,7 @@
     <Events />
   </Bean>
   <Bean>
-    <Repository>file://home/hewe/Erich</Repository>
+    <Repository>file:/${home_ProcessorExpert_loc}/MyComponents</Repository>
     <BeanType>XFormat</BeanType>
     <Name>XF1</Name>
     <CompNumb>15</CompNumb>
@@ -12093,7 +12093,7 @@
     <Events />
   </Bean>
   <Bean>
-    <Repository>file://home/hewe/Erich</Repository>
+    <Repository>file:/${home_ProcessorExpert_loc}/MyComponents</Repository>
     <BeanType>CriticalSection</BeanType>
     <Name>CS1</Name>
     <CompNumb>16</CompNumb>
@@ -12173,7 +12173,7 @@
     <Events />
   </Bean>
   <Bean>
-    <Repository>file://home/hewe/Erich</Repository>
+    <Repository>file:/${home_ProcessorExpert_loc}/MyComponents</Repository>
     <BeanType>SeggerRTT</BeanType>
     <Name>RTT1</Name>
     <CompNumb>20</CompNumb>
@@ -12590,7 +12590,7 @@
     <Events />
   </Bean>
   <Bean>
-    <Repository>file://home/hewe/Erich</Repository>
+    <Repository>file:/${home_ProcessorExpert_loc}/MyComponents</Repository>
     <BeanType>McuLibConfig</BeanType>
     <Name>MCUC1</Name>
     <CompNumb>21</CompNumb>
@@ -18165,7 +18165,7 @@
     </Events>
   </Bean>
   <Bean>
-    <Repository>file://home/hewe/Erich</Repository>
+    <Repository>file:/${home_ProcessorExpert_loc}/MyComponents</Repository>
     <BeanType>QuadCounter</BeanType>
     <Name>Q4CLeft</Name>
     <CompNumb>40</CompNumb>
@@ -19606,7 +19606,7 @@
     </Events>
   </Bean>
   <Bean>
-    <Repository>file://home/hewe/Erich</Repository>
+    <Repository>file:/${home_ProcessorExpert_loc}/MyComponents</Repository>
     <BeanType>QuadCounter</BeanType>
     <Name>Q4CRight</Name>
     <CompNumb>47</CompNumb>
@@ -22902,7 +22902,7 @@
     </Events>
   </Bean>
   <Bean>
-    <Repository>file://home/hewe/Erich</Repository>
+    <Repository>file:/${home_ProcessorExpert_loc}/MyComponents</Repository>
     <BeanType>LED</BeanType>
     <Name>LED1</Name>
     <CompNumb>83</CompNumb>
@@ -23695,7 +23695,7 @@
     <Events />
   </Bean>
   <Bean>
-    <Repository>file://home/hewe/Erich</Repository>
+    <Repository>file:/${home_ProcessorExpert_loc}/MyComponents</Repository>
     <BeanType>LED</BeanType>
     <Name>LED2</Name>
     <CompNumb>86</CompNumb>
@@ -25075,7 +25075,7 @@
     <Events />
   </Bean>
   <Bean>
-    <Repository>file://home/hewe/Erich</Repository>
+    <Repository>file:/${home_ProcessorExpert_loc}/MyComponents</Repository>
     <BeanType>Key</BeanType>
     <Name>KEY1</Name>
     <CompNumb>111</CompNumb>
@@ -25160,9 +25160,9 @@
         <UserReadOnly>false</UserReadOnly>
         <Value>key</Value>
         <RegCompType>key</RegCompType>
-        <RegCompRepository>file://home/hewe/Erich</RegCompRepository>
+        <RegCompRepository>file:/${home_ProcessorExpert_loc}/MyComponents</RegCompRepository>
         <InheritedComponentState>
-          <Repository>file://home/hewe/Erich</Repository>
+          <Repository>file:/${home_ProcessorExpert_loc}/MyComponents</Repository>
           <BeanType>GenericKBI</BeanType>
           <Name>keyPin1</Name>
           <CompNumb>112</CompNumb>
@@ -26623,7 +26623,7 @@
     </Events>
   </Bean>
   <Bean>
-    <Repository>file://home/hewe/Erich</Repository>
+    <Repository>file:/${home_ProcessorExpert_loc}/MyComponents</Repository>
     <BeanType>Trigger</BeanType>
     <Name>TRG1</Name>
     <CompNumb>115</CompNumb>
@@ -33027,7 +33027,7 @@
     <Events />
   </Bean>
   <Bean>
-    <Repository>file://home/hewe/Erich</Repository>
+    <Repository>file:/${home_ProcessorExpert_loc}/MyComponents</Repository>
     <BeanType>FreeRTOS</BeanType>
     <Name>FRTOS1</Name>
     <CompNumb>155</CompNumb>
@@ -38830,7 +38830,7 @@
     </Events>
   </Bean>
   <Bean>
-    <Repository>file://home/hewe/Erich</Repository>
+    <Repository>file:/${home_ProcessorExpert_loc}/MyComponents</Repository>
     <BeanType>nRF24L01</BeanType>
     <Name>RF1</Name>
     <CompNumb>172</CompNumb>
@@ -41109,7 +41109,7 @@
     </Events>
   </Bean>
   <Bean>
-    <Repository>file://home/hewe/Erich</Repository>
+    <Repository>file:/${home_ProcessorExpert_loc}/MyComponents</Repository>
     <BeanType>RNet</BeanType>
     <Name>RNET1</Name>
     <CompNumb>179</CompNumb>
@@ -43010,7 +43010,7 @@
     </Events>
   </Bean>
   <Bean>
-    <Repository>file://home/hewe/Erich</Repository>
+    <Repository>file:/${home_ProcessorExpert_loc}/MyComponents</Repository>
     <BeanType>KinetisTools</BeanType>
     <Name>KIN1</Name>
     <CompNumb>249</CompNumb>
@@ -43171,7 +43171,7 @@
     <Events />
   </Bean>
   <Bean>
-    <Repository>file://home/hewe/Erich</Repository>
+    <Repository>file:/${home_ProcessorExpert_loc}/MyComponents</Repository>
     <BeanType>FSL_USB_Stack</BeanType>
     <Name>USB1</Name>
     <CompNumb>262</CompNumb>
@@ -43222,9 +43222,9 @@
         <UserReadOnly>false</UserReadOnly>
         <Index>0</Index>
         <RegCompType>FSL_USB_CDC_Device</RegCompType>
-        <RegCompRepository>file://home/hewe/Erich</RegCompRepository>
+        <RegCompRepository>file:/${home_ProcessorExpert_loc}/MyComponents</RegCompRepository>
         <InheritedComponentState>
-          <Repository>file://home/hewe/Erich</Repository>
+          <Repository>file:/${home_ProcessorExpert_loc}/MyComponents</Repository>
           <BeanType>FSL_USB_CDC_Device</BeanType>
           <Name>CDC1</Name>
           <CompNumb>264</CompNumb>
@@ -43371,9 +43371,9 @@
               <UserReadOnly>false</UserReadOnly>
               <Index>0</Index>
               <RegCompType>RingBuffer</RegCompType>
-              <RegCompRepository>file://home/hewe/Erich</RegCompRepository>
+              <RegCompRepository>file:/${home_ProcessorExpert_loc}/MyComponents</RegCompRepository>
               <InheritedComponentState>
-                <Repository>file://home/hewe/Erich</Repository>
+                <Repository>file:/${home_ProcessorExpert_loc}/MyComponents</Repository>
                 <BeanType>RingBuffer</BeanType>
                 <Name>Tx1</Name>
                 <CompNumb>265</CompNumb>
@@ -43676,9 +43676,9 @@
               <UserReadOnly>false</UserReadOnly>
               <Index>0</Index>
               <RegCompType>RingBuffer</RegCompType>
-              <RegCompRepository>file://home/hewe/Erich</RegCompRepository>
+              <RegCompRepository>file:/${home_ProcessorExpert_loc}/MyComponents</RegCompRepository>
               <InheritedComponentState>
-                <Repository>file://home/hewe/Erich</Repository>
+                <Repository>file:/${home_ProcessorExpert_loc}/MyComponents</Repository>
                 <BeanType>RingBuffer</BeanType>
                 <Name>Rx1</Name>
                 <CompNumb>266</CompNumb>
@@ -44381,9 +44381,9 @@
         <UserReadOnly>false</UserReadOnly>
         <Index>0</Index>
         <RegCompType>FSL_USB_MSD_Host</RegCompType>
-        <RegCompRepository>file://home/hewe/Erich</RegCompRepository>
+        <RegCompRepository>file:/${home_ProcessorExpert_loc}/MyComponents</RegCompRepository>
         <InheritedComponentState>
-          <Repository>file://home/hewe/Erich</Repository>
+          <Repository>file:/${home_ProcessorExpert_loc}/MyComponents</Repository>
         </InheritedComponentState>
       </ItemState>
       <ItemState>
@@ -46046,7 +46046,7 @@
     </Events>
   </Bean>
   <Bean>
-    <Repository>file://home/hewe/Erich</Repository>
+    <Repository>file:/${home_ProcessorExpert_loc}/MyComponents</Repository>
     <BeanType>Timeout</BeanType>
     <Name>TMOUT1</Name>
     <CompNumb>268</CompNumb>
