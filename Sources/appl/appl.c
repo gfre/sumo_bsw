@@ -15,6 +15,7 @@
 #include "Q4CRight.h"
 #include "Pid.h"
 #include "Drive.h"
+#include "nvm_cfg.h"
 
 typedef enum AppStateType_s{
 	APP_STATE_STARTUP,
@@ -23,6 +24,7 @@ typedef enum AppStateType_s{
 } AppStateType;
 
 static AppStateType appState = APP_STATE_STARTUP;
+const NVMC_RobotData *RoboDataPtr;
 
 void APP_DebugPrint(unsigned char *str) {
 	SHELL_SendString(str);
@@ -31,13 +33,13 @@ void APP_DebugPrint(unsigned char *str) {
 
 static unsigned char *AppStateString(AppStateType state) {
 	switch(state) {
-	case APP_STATE_STARTUP: return (unsigned char*)"STARTUP";
-	case APP_STATE_INIT: return (unsigned char*)"INIT";
-	case APP_STATE_IDLE: return (unsigned char*)"IDLE";
+	case APP_STATE_STARTUP: return (unsigned char*)"STARTUP\r\n";
+	case APP_STATE_INIT: return (unsigned char*)"INIT\r\n";
+	case APP_STATE_IDLE: return (unsigned char*)"IDLE\r\n";
 	default:
 		break;
 	}
-	return (unsigned char*)"unknown?";
+	return (unsigned char*)"unknown?\r\n";
 }
 
 
@@ -79,9 +81,16 @@ static uint8_t APP_PrintHelp(const CLS1_StdIOType *io) {
 }
 
 static uint8_t APP_PrintStatus(const CLS1_StdIOType *io) {
+	RoboDataPtr = NVMC_GetRobotData();
+	uint8_t buf[24];
+
 	CLS1_SendStatusStr((unsigned char*)"app", (unsigned char*)"\r\n", io->stdOut);
 	CLS1_SendStatusStr((unsigned char*)"  App State", AppStateString(appState), io->stdOut);
-	CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
+
+	UTIL1_Num8uToStr(buf, sizeof(buf), RoboDataPtr->version);
+	UTIL1_strcat(buf, sizeof(buf), (unsigned char*)" \r\n");
+	CLS1_SendStatusStr((unsigned char*)"  ROBO NVM", buf, io->stdOut);
+
 	return ERR_OK;
 }
 
@@ -97,10 +106,27 @@ uint8_t APP_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_Std
 	return res;
 }
 
+static void InitNVMCValues(void) {
+	const NVMC_RobotData *ptr;
+	NVMC_RobotData data;
+	uint8_t res;
+#define NVMC_VERSION  0x03
+
+	ptr = NVMC_GetRobotData();
+	if (ptr==NULL || ptr->version != NVMC_VERSION) {
+		data.version = NVMC_VERSION;
+		res = NVMC_SaveRobotData(&data);
+		if (res!=ERR_OK) {
+			for(;;); /* error */
+		}
+	}
+}
+
 static void APP_AdoptToHardware(void) {
-	/*Possibility to swap Pins*/
-	(void)Q4CLeft_SwapPins(TRUE);
-	//(void)Q4CRight_SwapPins(TRUE);
+	/*Motor direction & Quadrature configuration for CAU_ZUMO */
+	(void)Q4CRight_SwapPins(TRUE);
+  MOT_Invert(MOT_GetMotorHandle(MOT_MOTOR_LEFT), TRUE); /* invert left motor */
+  MOT_Invert(MOT_GetMotorHandle(MOT_MOTOR_RIGHT), TRUE); /* invert right motor */
 
 	/* SW1: enable and turn on pull-up resistor for PTA14 (push button) */
 	PORT_PDD_SetPinPullSelect(PORTA_BASE_PTR, 14, PORT_PDD_PULL_UP);
@@ -119,17 +145,6 @@ static void APP_AdoptToHardware(void) {
 
 void APP_Run(void) {
 	appState = APP_STATE_STARTUP;
-	/*	The following initializations are done by Cpu.c::
-	 * KEY1_Init();
-	 * LED1_Init();
-	 * LED2_Init();
-	 * Q4CLeft_Init();
-	 * Q4CRight_Init();
-	 * TRG1_Init();
-	 * PTA_Init();
-	 * RTT1_Init();
-	 * CLS1_Init();
-	 * */
 	SHELL_Init();
 	BUZ_Init();
 	MOT_Init();
@@ -137,9 +152,10 @@ void APP_Run(void) {
 	BATT_Init();	
 	TACHO_Init();
 	PID_Init();
-	DRV_Init();
+	DRV_Init(); /* Comment DRV_Init() to manual MOTOR duty commands possible  */
 
 	APP_AdoptToHardware();
+	InitNVMCValues();
 	if (FRTOS1_xTaskCreate(MainTask, "Main", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL) != pdPASS) {
 		for(;;){} /* error */
 	}

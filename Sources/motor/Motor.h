@@ -12,26 +12,32 @@
 #include "Platform.h"
 
 typedef enum {
-  MOT_DIR_FORWARD,  /*!< Motor forward direction */
-  MOT_DIR_BACKWARD  /*!< Motor backward direction */
+	MOT_DIR_FORWARD,  /*!< Motor forward direction */
+	MOT_DIR_BACKWARD  /*!< Motor backward direction */
 } MOT_Direction;
 
 typedef int8_t MOT_SpeedPercent; /*!< -100%...+100%, where negative is backward */
 
 typedef struct MOT_MotorDevice_ {
-
-  MOT_SpeedPercent currSpeedPercent; /*!< our current speed in %, negative percent means backward */
-  uint16_t currPWMvalue; /*!< current PWM value used */
-  uint8_t (*SetRatio16)(uint16_t); /*!< function to set the ratio */
-  void (*DirPutVal)(bool); /*!< function to set direction bit */
+	bool inverted;
+	MOT_SpeedPercent currSpeedPercent; /*!< our current speed in %, negative percent means backward */
+	uint16_t currPWMvalue; /*!< current PWM value used */
+	uint8_t (*SetRatio16)(uint16_t); /*!< function to set the ratio */
+	void (*DirPutVal)(bool); /*!< function to set direction bit */
 
 } MOT_MotorDevice;
 
 typedef enum {
-  MOT_MOTOR_LEFT, /*!< left motor */
-  MOT_MOTOR_RIGHT /*!< right motor */
+	MOT_MOTOR_LEFT, /*!< left motor */
+	MOT_MOTOR_RIGHT /*!< right motor */
 } MOT_MotorSide;
 
+/*!
+ * \brief Inverts the forward/backward signal for a motor
+ * \param motor Motor handle
+ * \param revert TRUE to invert logic, FALSE otherwise
+ */
+void MOT_Invert(MOT_MotorDevice *motor, bool invert);
 
 /*!
  * \brief Function to get a pointer to a motor (motor handle)

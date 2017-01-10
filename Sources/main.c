@@ -50,6 +50,8 @@
 #include "Rx1.h"
 #include "USB0.h"
 #include "TMOUT1.h"
+#include "IFsh1.h"
+#include "IntFlashLdd1.h"
 #include "MCUC1.h"
 #include "MOTTU.h"
 #include "DIRL.h"

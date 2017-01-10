@@ -56,6 +56,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Sources/buz&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Sources/motor&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Sources/platform&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Sources/nvm&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Sources/sh&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Generated_Code&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Generated_Code/config&quot;"/>

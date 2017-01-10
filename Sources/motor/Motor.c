@@ -6,8 +6,6 @@
  * This module a driver for up to two small DC motors.
  */
 
-
-
 #include "Motor.h"
 #include "DIRR.h"
 #include "DIRL.h"
@@ -65,13 +63,10 @@ void MOT_OnOff(bool on) {
 uint16_t MOT_GetVal(MOT_MotorDevice *motor) {
 	return motor->currPWMvalue;
 }
-//
-//#if MOTOR_HAS_INVERT
-//void MOT_Invert(MOT_MotorDevice *motor, bool inverted) {
-//  motor->inverted = inverted;
-//}
-//#endif
 
+void MOT_Invert(MOT_MotorDevice *motor, bool inverted) {
+	motor->inverted = inverted;
+}
 
 void MOT_SetSpeedPercent(MOT_MotorDevice *motor, MOT_SpeedPercent percent) {
 	uint32_t val;
@@ -115,20 +110,12 @@ void MOT_ChangeSpeedPercent(MOT_MotorDevice *motor, MOT_SpeedPercent relPercent)
 
 void MOT_SetDirection(MOT_MotorDevice *motor, MOT_Direction dir) {
 	if (dir==MOT_DIR_FORWARD ) {
-#if MOTOR_HAS_INVERT
 		motor->DirPutVal(motor->inverted?0:1);
-#else
-		motor->DirPutVal(1);
-#endif
 		if (motor->currSpeedPercent<0) {
 			motor->currSpeedPercent = -motor->currSpeedPercent;
 		}
 	} else if (dir==MOT_DIR_BACKWARD) {
-#if MOTOR_HAS_INVERT
 		motor->DirPutVal(motor->inverted?1:0);
-#else
-		motor->DirPutVal(0);
-#endif
 		if (motor->currSpeedPercent>0) {
 			motor->currSpeedPercent = -motor->currSpeedPercent;
 		}
@@ -157,6 +144,8 @@ static void MOT_PrintStatus(const CLS1_StdIOType *io) {
 
 	CLS1_SendStatusStr((unsigned char*)"Motor", (unsigned char*)"\r\n", io->stdOut);
 
+	CLS1_SendStatusStr((unsigned char*)"  inverted L", MOT_GetMotorHandle(MOT_MOTOR_LEFT)->inverted?(unsigned char*)"yes\r\n":(unsigned char*)"no\r\n", io->stdOut);
+	CLS1_SendStatusStr((unsigned char*)"  inverted R", MOT_GetMotorHandle(MOT_MOTOR_RIGHT)->inverted?(unsigned char*)"yes\r\n":(unsigned char*)"no\r\n", io->stdOut);
 
 	CLS1_SendStatusStr((unsigned char*)"  on/off", isMotorOn?(unsigned char*)"on\r\n":(unsigned char*)"off\r\n", io->stdOut);
 	CLS1_SendStatusStr((unsigned char*)"  motor L", (unsigned char*)"", io->stdOut);
@@ -252,6 +241,8 @@ void MOT_Deinit(void) {
 }
 
 void MOT_Init(void) {
+	motorL.inverted = FALSE;
+	motorR.inverted = FALSE;
 	motorL.DirPutVal = DirLPutVal;
 	motorR.DirPutVal = DirRPutVal;
 	motorL.SetRatio16 = PWMLSetRatio16;
