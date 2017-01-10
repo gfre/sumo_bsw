@@ -46,6 +46,7 @@
 #include "ExtIntLdd3.h"
 #include "RNET1.h"
 #include "AD1.h"
+#include "KIN1.h"
 #include "MCUC1.h"
 #include "MOTTU.h"
 #include "DIRL.h"
