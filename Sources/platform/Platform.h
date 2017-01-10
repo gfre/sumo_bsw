@@ -11,8 +11,8 @@
 #define PLATFORM_H_
 
 #include "Cpu.h" /* for PEcfg_FreeMASTER */
-#include "PE_Types.h"
-#include <stddef.h> /* for size_t */
+#include "CAU_Types.h"
+
 
 
 #endif /* PLATFORM_H_ */

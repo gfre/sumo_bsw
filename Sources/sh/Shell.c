@@ -62,9 +62,9 @@ static const CLS1_ParseCommandCallback CmdParserTable[] =
   FRTOS1_ParseCommand,
   APP_ParseCommand,
   MOT_ParseCommand,
-	DRV_ParseCommand,
+  DRV_ParseCommand,
   TACHO_ParseCommand,
-	PID_ParseCommand,
+  PID_ParseCommand,
   Q4CLeft_ParseCommand,
   Q4CRight_ParseCommand,
   BUZ_ParseCommand,
@@ -72,8 +72,8 @@ static const CLS1_ParseCommandCallback CmdParserTable[] =
   LED2_ParseCommand,
   RNET1_ParseCommand,
   BATT_ParseCommand,
-	KIN1_ParseCommand,
-	NULL /* Sentinel */
+  KIN1_ParseCommand,
+  NULL /* Sentinel */
 };
 
 typedef struct {
