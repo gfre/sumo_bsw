@@ -6,3 +6,4 @@ ProjectInfo.xml
 core
 *.g_c
 *.g_X
+*.sumo_bsw.g_x
