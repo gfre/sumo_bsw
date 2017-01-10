@@ -1,7 +1,7 @@
 /*
  id.c
  *
- *  Created on: 09.01.2016
+ *  Created on: 09.01.2017
  *      Author: gefr
  */
 
@@ -12,41 +12,40 @@
 #include "id.h"
 #include "id_cfg.h"
 
-static ID_Robots currRobot = ID_ROBO_NONE;
+static ID_Sumos currSumo = ID_SUMO_NONE;
 
 
-static ID_Robots IdentifyRobot(void) {
+static ID_Sumos IdentifySumo(void) {
   uint8_t res;
   KIN1_UID id;
-  ID_Robots i, robo;
+  ID_Sumos i, sumo;
 
-  robo = ID_ROBO_UNKNOWN;
+  sumo = ID_SUMO_UNKNOWN;
   res = KIN1_UIDGet(&id);
   if (res==ERR_OK) {
-    for(i=(ID_Robots)0; i<Get_ID_Cfg()->IdNum; i++) {
+    for(i=(ID_Sumos)0; i<Get_ID_Cfg()->IdNum && ID_SUMO_UNKNOWN==sumo; i++) {
       if (KIN1_UIDSame(&id, Get_ID_Cfg()->Ids)) {
-        robo = i; /* found it */
-        break; /* get out of for() loop */
+        sumo = i; /* found it */
       }
     }
   }
-  return robo;
+  return sumo;
 }
 
-ID_Robots ID_WhichRobot(void) {
-  if (currRobot==ID_ROBO_NONE) {
-    /* not checked ID, try to find matching robot */
-    currRobot = IdentifyRobot();
+ID_Sumos ID_WhichSumo(void) {
+  if (currSumo==ID_SUMO_NONE) {
+    /* not checked ID, try to find matching sumo */
+    currSumo = IdentifySumo();
   }
-  return currRobot;
+  return currSumo;
 }
 
 void ID_Deinit(void) {
-  currRobot = ID_ROBO_NONE;
+  currSumo = ID_SUMO_NONE;
 }
 
 void ID_Init(void) {
-  currRobot = ID_ROBO_NONE;
+  currSumo = ID_SUMO_NONE;
 }
 
 #ifdef MASTER_ID_C_

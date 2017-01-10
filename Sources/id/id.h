@@ -1,5 +1,5 @@
 /*
- * identify.h
+ * id.h
  *
  *  Created on: 26.11.2015
  *      Author: tastyger
@@ -17,6 +17,8 @@
 #define EXTERNAL_ extern
 #endif
 
+#define MAX_NUMBER_OF_SUMOS    (25)
+#define MAX_ID_OF_SUMOS        (MAX_NUMBER_OF_SUMOS-(1))
 
 typedef struct ID_Cfg_
 {
@@ -25,11 +27,12 @@ typedef struct ID_Cfg_
 }ID_Cfg_t;
 
 typedef enum { /* do *not* change order of enumeration, they are used internally for a table index */
-  ID_ROBO_UNKNOWN=26, /* unknown robot, unknown ID */
-  ID_ROBO_NONE /* initialization value, used internally */
-} ID_Robots;
+  ID_SUMO_MAX_ID=MAX_ID_OF_SUMOS, 	        /* max custom ID of sumo */
+  ID_SUMO_UNKNOWN,         					/* unknown robot, unknown custom ID */
+  ID_SUMO_NONE             					/* initialization value, used internally */
+} ID_Sumos;
 
-ID_Robots ID_WhichRobot(void);
+ID_Sumos ID_WhichSumo(void);
 
 void ID_Deinit(void);
 
