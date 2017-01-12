@@ -1,16 +1,19 @@
-/**
- * \file
- * \brief Implementation of generic triggers.
- * \author Erich Styger, erich.styger@hslu.ch
+/*******************************************************************************
+ * @brief 	Generic trigger interface.
  *
- * This module implements a trigger module.
- * Triggers are special events which are triggered in a given time in the future
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
+ * @author 	Henning Weisbarth, hewe@tf.uni-kiel.de, CAU Kiel
+ * @date 		09.01.2017
+ *
+ * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ *
+ *
+ * ==============================================================================
  */
-
 
 #include "Trigger.h"
 #include "CS1.h"
-#include <stddef.h> /* for NULL */
+//#include <stddef.h> /* for NULL */
 
 /*! \brief Descriptor for a trigger. */
 typedef struct TRG_TriggerDesc {

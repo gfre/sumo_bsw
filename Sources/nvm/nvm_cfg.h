@@ -1,13 +1,19 @@
-/**
- * \file
- * \brief Interface for the Non-Volatile-Memory
- * \author Erich Styger
+/*******************************************************************************
+ * @brief 	Implementation of Non-Volatile-Memory (NVM) storage.
  *
- * This provides an interface to store and retrieve data from the on-chip memory.
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
+ * @author 	Henning Weisbarth, hewe@tf.uni-kiel.de, CAU Kiel
+ * @date 		10.01.2017
+ *
+ * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ *
+ * This provides an implementation to store and retrieve data from the on-chip memory.
+ *
+ * ==============================================================================
  */
 
-#ifndef CONFIGNVM_H_
-#define CONFIGNVM_H_
+#ifndef NVM_CFG_H_
+#define NVM_CFG_H_
 
 #include "Platform.h"
 
@@ -50,4 +56,4 @@ uint8_t NVMC_SaveRobotData(NVMC_RobotData *data);
 const NVMC_RobotData *NVMC_GetRobotData(void);
 
 
-#endif /* CONFIGNVM_H_ */
+#endif /* NVM_CFG_H_ */

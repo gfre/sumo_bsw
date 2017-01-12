@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * @brief 	Main Application Interface.
+ *
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, CAU Kiel
+ * @author 	Henning Weisbarth, hewe@tf.uni-kiel.de, CAU Kiel
+ * @date		02.01.2017
+ *
+ * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ *
+ * Interface to the main application module. From here the application
+ * runs and performs all tasks.
+ *
+ * ==============================================================================
+ */
+
 #include "Platform.h"
 #include "appl.h"
 #include "FRTOS1.h"

@@ -1,8 +1,14 @@
-/*
- * id.h
+/*******************************************************************************
+ * @brief		Module to handle the unique SUMO IDs.
  *
- *  Created on: 26.11.2015
- *      Author: tastyger
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, CAU Kiel
+ * @date 		11.01.2017
+ *
+ * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ *
+ *
+ * ==============================================================================
  */
 
 #ifndef ID_H
@@ -27,9 +33,9 @@ typedef struct ID_Cfg_
 }ID_Cfg_t;
 
 typedef enum { /* do *not* change order of enumeration, they are used internally for a table index */
-  ID_SUMO_MAX_ID=MAX_ID_OF_SUMOS, 	        /* max custom ID of sumo */
-  ID_SUMO_UNKNOWN,         					/* unknown robot, unknown custom ID */
-  ID_SUMO_NONE             					/* initialization value, used internally */
+	ID_SUMO_MAX_ID=MAX_ID_OF_SUMOS, 	        /* max custom ID of sumo */
+	ID_SUMO_UNKNOWN,         					/* unknown robot, unknown custom ID */
+	ID_SUMO_NONE             					/* initialization value, used internally */
 } ID_Sumos;
 
 ID_Sumos ID_WhichSumo(void);
@@ -44,5 +50,5 @@ void ID_Init(void);
 #undef EXTERNAL_
 #endif
 
-#endif /* !ID_H */
+#endif /* ID_H */
 

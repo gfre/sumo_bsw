@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * @brief 	This provides basic macros for the CAUsumo adaption.
+ *
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, CAU Kiel
+ * @date 		09.01.2017
+ *
+ * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ *
+ *
+ * ==============================================================================
+ */
+
 #ifndef CAU_TYPES_H
 #define CAU_TYPES_H
 #include "PE_Types.h"

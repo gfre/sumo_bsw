@@ -1,7 +1,14 @@
-/**
- * \file
- * \brief This is the implementation of the PID Module
- * \author Erich Styger, erich.styger@hslu.ch
+/*******************************************************************************
+ * @brief 	PID controller implementation.
+ *
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
+ * @author 	Henning Weisbarth, hewe@tf.uni-kiel.de, CAU Kiel
+ * @date 		06.01.2017
+ *
+ * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ *
+ *
+ * ==============================================================================
  */
 
 #include "Platform.h"

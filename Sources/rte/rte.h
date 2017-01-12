@@ -1,8 +1,13 @@
-/*
- * rte.h
+/*******************************************************************************
+ * @brief 	This is the interface entrance layer for students.
  *
- *  Created on: 10.01.2017
- *      Author: gefr
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, CAU Kiel
+ * @date	 	10.01.2017
+ *
+ * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ *
+ *
+ * ==============================================================================
  */
 
 #ifndef RTE_H
@@ -37,10 +42,8 @@ EXTERNAL_ StdRetType RTE_Write_LedLeSt(uint8_t state);
 EXTERNAL_ StdRetType RTE_Read_LedLeSt(uint8_t *state);
 
 
-
-
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
 
-#endif /* !RTE_H */
+#endif /* RTE_H */

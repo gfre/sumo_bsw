@@ -1,13 +1,19 @@
-/**
- * \file
- * \brief Implementation of Non-Volatile-Memory storage
- * \author Erich Styger
+/*******************************************************************************
+ * @brief 	Implementation of Non-Volatile-Memory (NVM) storage.
+ *
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
+ * @author 	Henning Weisbarth, hewe@tf.uni-kiel.de, CAU Kiel
+ * @date 		10.01.2017
+ *
+ * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
  *
  * This provides an implementation to store and retrieve data from the on-chip memory.
+ *
+ * ==============================================================================
  */
 
 #include "Platform.h"
-#include <nvm/nvm_cfg.h>
+#include "nvm_cfg.h"
 #include "IFsh1.h"
 
 static bool isErased(uint8_t *ptr, int nofBytes) {

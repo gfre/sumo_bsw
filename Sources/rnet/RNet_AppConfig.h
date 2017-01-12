@@ -1,14 +1,19 @@
-/**
- * \file
- * \brief This is a configuration file for the RNet stack
- * \author (c) 2014 Erich Styger, http://mcuoneclipse.com/
- * \note MIT License (http://opensource.org/licenses/mit-license.html)
+/*******************************************************************************
+ * @brief 	This is a configuration file for the RNet stack.
  *
- * Here the stack can be configured using macros.
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, CAU Kiel
+ * @author 	Henning Weisbarth, hewe@tf.uni-kiel.de, CAU Kiel
+ * @date 	06.01.2017
+ *
+ * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ *
+ *
+ * ==============================================================================
  */
 
-#ifndef __RNET_APP_CONFIG__
-#define __RNET_APP_CONFIG__
+#ifndef __RNET_APPCONFIG__
+#define __RNET_APPCONFIG__
 
 /*! type ID's for application messages */
 typedef enum {
@@ -16,4 +21,4 @@ typedef enum {
   RAPP_MSG_TYPE_BUTTON = 0x56,
 } RAPP_MSG_Type;
 
-#endif /* __RNET_APP_CONFIG__ */
+#endif /* __RNET_APPCONFIG__ */

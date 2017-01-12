@@ -1,9 +1,16 @@
-/**
- * \file
- * \brief Shell and console interface implementation.
- * \author Erich Styger
+/*******************************************************************************
+ * @brief 	Shell and console interface implementation.
+ *
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, CAU Kiel
+ * @author 	Henning Weisbarth, hewe@tf.uni-kiel.de, CAU Kiel
+ * @date 	02.01.2017
+ *
+ * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
  *
  * This module implements the front to the console/shell functionality.
+ *
+ * ==============================================================================
  */
 
 #include "Shell.h"

@@ -1,10 +1,14 @@
-/**
- * \file
- * \brief Platform Interface.
- * \author Erich Styger, erich.styger@hslu.ch
+/*******************************************************************************
+ * @brief 	This provides basic includes and constants/macros for CAUsumo.
  *
- * This implements the platform interface. 
- * Here the platform gets initialized, and all platform dependent macros get defined.
+ * @author 	Henning Weisbarth, hewe@tf.uni-kiel.de, CAU Kiel
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, CAU Kiel
+ * @date 		03.01.2017
+ *
+ * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ *
+ *
+ * ==============================================================================
  */
 
 #ifndef PLATFORM_H_

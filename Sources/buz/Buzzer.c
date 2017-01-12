@@ -1,9 +1,14 @@
-/**
- * \file
- * \brief Buzzer driver interface.
- * \author Erich Styger, erich.styger@hslu.ch
+/*******************************************************************************
+ * @brief 	Driver for the buzzer.
  *
- * This module implements the driver for the buzzer.
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
+ * @author 	Henning Weisbarth, hewe@tf.uni-kiel.de, CAU Kiel
+ * @date 		09.01.2017
+ *
+ * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ *
+ *
+ * ==============================================================================
  */
 
 #include "Platform.h"

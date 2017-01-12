@@ -1,10 +1,17 @@
-/**
- * \file
- * \brief Module to drive the robot.
- * \author Erich Styger, erich.styger@hslu.ch
+/*******************************************************************************
+ * @brief 	Module to drive the robot.
+ *
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
+ * @author 	Henning Weisbarth, hewe@tf.uni-kiel.de, CAU Kiel
+ * @date 		06.01.2017
+ *
+ * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
  *
  * This module allows to drive the robot and to perform turns.
+ *
+ * ==============================================================================
  */
+
 #include "Platform.h"
 #include "Drive.h"
 #include "FRTOS1.h"

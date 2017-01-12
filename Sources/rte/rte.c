@@ -1,10 +1,14 @@
-/*
- id.c
+/*******************************************************************************
+ * @brief 	This is the interface entrance layer for students.
  *
- *  Created on: 09.01.2017
- *      Author: gefr
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, CAU Kiel
+ * @date	 	10.01.2017
+ *
+ * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ *
+ *
+ * ==============================================================================
  */
-
 
 #define MASTER_ID_C_
 #include "LED1.h"

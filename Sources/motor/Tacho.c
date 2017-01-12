@@ -1,9 +1,15 @@
-/**
- * \file
- * \brief Tachometer Module
- * \author Erich Styger, erich.styger@hslu.ch
+/*******************************************************************************
+ * @brief 	Tachometer implementation.
+ *
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
+ * @author 	Henning Weisbarth, hewe@tf.uni-kiel.de, CAU Kiel
+ * @date 		06.01.2017
+ *
+ * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
  *
  * Module to calculate the speed based on the quadrature counter.
+ *
+ * ==============================================================================
  */
 
 #include "Platform.h" /* interface to the platform */

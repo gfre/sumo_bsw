@@ -1,9 +1,15 @@
-/**
- * \file
- * \brief Interface to drive the robot.
- * \author Erich Styger, erich.styger@hslu.ch
+/*******************************************************************************
+ * @brief 	Module to drive the robot.
+ *
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
+ * @author 	Henning Weisbarth, hewe@tf.uni-kiel.de, CAU Kiel
+ * @date 		06.01.2017
+ *
+ * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
  *
  * This module allows to drive the robot and to perform turns.
+ *
+ * ==============================================================================
  */
 
 #ifndef DRIVE_H_
@@ -13,11 +19,11 @@
 #include "CLS1.h"
 
 /*!
- * \brief Parses a command
- * \param cmd Command string to be parsed
- * \param handled Sets this variable to TRUE if command was handled
- * \param io I/O stream to be used for input/output
- * \return Error code, ERR_OK if everything was fine
+ * @brief Parses a command
+ * @param cmd Command string to be parsed
+ * @param handled Sets this variable to TRUE if command was handled
+ * @param io I/O stream to be used for input/output
+ * @return Error code, ERR_OK if everything was fine
  */
 uint8_t DRV_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
 
@@ -37,19 +43,19 @@ bool DRV_IsStopped(void);
 bool DRV_HasTurned(void);
 
 /*!
- * \brief Stops the engines
- * \param timoutMs timout in milliseconds for operation
- * \return ERR_OK if stopped, ERR_BUSY for timeout condition.
+ * @brief Stops the engines
+ * @param timoutMs timout in milliseconds for operation
+ * @return ERR_OK if stopped, ERR_BUSY for timeout condition.
  */
 uint8_t DRV_Stop(int32_t timeoutMs);
 
 /*!
- * \brief Driver initialization.
+ * @brief Driver initialization.
  */
 void DRV_Init(void);
 
 /*!
- * \brief Driver de-initialization.
+ * @brief Driver de-initialization.
  */
 void DRV_DeInit(void);
 

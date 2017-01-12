@@ -36,7 +36,7 @@ extern "C" {
 
 /* User includes (#include below this line is not maintained by Processor Expert) */
 #include "Trigger.h"
-#include "Tacho.h" /* Styger direct interface, not PE! */
+#include "Tacho.h"
 
 /*
 ** ===================================================================
