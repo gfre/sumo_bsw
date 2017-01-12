@@ -16,27 +16,27 @@
 #include "rte.h"
 
 
-StdRetType RTE_Write_LedRiOn()
+StdRtnType RTE_Write_LedRiOn()
 {
 	LED1_On();
-	return RET_OK;
+	return RTN_OK;
 }
 
-StdRetType RTE_Write_LedRiOff()
+StdRtnType RTE_Write_LedRiOff()
 {
 	LED1_Off();
-	return RET_OK;
+	return RTN_OK;
 }
 
-StdRetType RTE_Write_LedRiNeg()
+StdRtnType RTE_Write_LedRiNeg()
 {
 	LED1_Neg();
-	return RET_OK;
+	return RTN_OK;
 }
 
 
 
-StdRetType RTE_Write_LedRiSt(uint8_t state)
+StdRtnType RTE_Write_LedRiSt(uint8_t state)
 {
 	if(0u==state)
 	{
@@ -46,46 +46,46 @@ StdRetType RTE_Write_LedRiSt(uint8_t state)
 	{
 		LED1_Put(TRUE);
 	}
-	return RET_OK;
+	return RTN_OK;
 }
 
 
-StdRetType RTE_Read_LedRiSt(uint8_t *state)
+StdRtnType RTE_Read_LedRiSt(uint8 *state_)
 {
-	uint8_t retVal = RET_INVALID;
-	if(NULL!=state)
+	uint8 retVal = RTN_INVALID;
+	if(NULL!=state_)
 	{
-		*state = (uint8_t)LED1_Get();
-		retVal = RET_OK;
+		*state_ = (uint8)LED1_Get();
+		retVal = RTN_OK;
 	}
 	return retVal;
 }
 
 
 
-StdRetType RTE_Write_LedLeOn()
+StdRtnType RTE_Write_LedLeOn()
 {
 	LED2_On();
-	return RET_OK;
+	return RTN_OK;
 }
 
-StdRetType RTE_Write_LedLeOff()
+StdRtnType RTE_Write_LedLeOff()
 {
 	LED2_Off();
-	return RET_OK;
+	return RTN_OK;
 }
 
-StdRetType RTE_Write_LedLeNeg()
+StdRtnType RTE_Write_LedLeNeg()
 {
 	LED2_Neg();
-	return RET_OK;
+	return RTN_OK;
 }
 
 
 
-StdRetType RTE_Write_LedLeSt(uint8_t state)
+StdRtnType RTE_Write_LedLeSt(uint8 state_)
 {
-	if(0u==state)
+	if(0u==state_)
 	{
 		LED2_Put(FALSE);
 	}
@@ -93,17 +93,17 @@ StdRetType RTE_Write_LedLeSt(uint8_t state)
 	{
 		LED2_Put(TRUE);
 	}
-	return RET_OK;
+	return RTN_OK;
 }
 
 
-StdRetType RTE_Read_LedLeSt(uint8_t *state)
+StdRtnType RTE_Read_LedLeSt(uint8 *state_)
 {
-	uint8_t retVal = RET_INVALID;
-	if(NULL!=state)
+	uint8 retVal = RTN_INVALID;
+	if(NULL!=state_)
 	{
-		*state = (uint8_t)LED2_Get();
-		retVal = RET_OK;
+		*state_ = (uint8)LED2_Get();
+		retVal = RTN_OK;
 	}
 	return retVal;
 }

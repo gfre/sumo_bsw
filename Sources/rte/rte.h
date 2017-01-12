@@ -21,25 +21,25 @@
 #define EXTERNAL_ extern
 #endif
 
-EXTERNAL_ StdRetType RTE_Write_LedRiOn();
+EXTERNAL_ StdRtnType RTE_Write_LedRiOn();
 
-EXTERNAL_ StdRetType RTE_Write_LedRiOff();
+EXTERNAL_ StdRtnType RTE_Write_LedRiOff();
 
-EXTERNAL_ StdRetType RTE_Write_LedRiNeg();
+EXTERNAL_ StdRtnType RTE_Write_LedRiNeg();
 
-EXTERNAL_ StdRetType RTE_Write_LedRiSt(uint8_t state);
+EXTERNAL_ StdRtnType RTE_Write_LedRiSt(uint8 state_);
 
-EXTERNAL_ StdRetType RTE_Read_LedRiSt(uint8_t *state);
+EXTERNAL_ StdRtnType RTE_Read_LedRiSt(uint8 *state_);
 
-EXTERNAL_ StdRetType RTE_Write_LedLeOn();
+EXTERNAL_ StdRtnType RTE_Write_LedLeOn();
 
-EXTERNAL_ StdRetType RTE_Write_LedLeOff();
+EXTERNAL_ StdRtnType RTE_Write_LedLeOff();
 
-EXTERNAL_ StdRetType RTE_Write_LedLeNeg();
+EXTERNAL_ StdRtnType RTE_Write_LedLeNeg();
 
-EXTERNAL_ StdRetType RTE_Write_LedLeSt(uint8_t state);
+EXTERNAL_ StdRtnType RTE_Write_LedLeSt(uint8 state_);
 
-EXTERNAL_ StdRetType RTE_Read_LedLeSt(uint8_t *state);
+EXTERNAL_ StdRtnType RTE_Read_LedLeSt(uint8 *state_);
 
 
 #ifdef EXTERNAL_
