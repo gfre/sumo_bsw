@@ -13,8 +13,12 @@
  * ==============================================================================
  */
 
+#define MASTER_APPL_C_
+
 #include "Platform.h"
 #include "appl.h"
+#include "appl_Types.h"
+#include "appl_cfg.h"
 #include "FRTOS1.h"
 #include "WAIT1.h"
 #include "Shell.h"
@@ -32,19 +36,21 @@
 #include "Drive.h"
 #include "nvm_cfg.h"
 
+#define NVMC_VERSION  0x03
+
 typedef enum AppStateType_s{
 	APP_STATE_STARTUP,
 	APP_STATE_INIT,
 	APP_STATE_IDLE
 } AppStateType;
 
+static void APPL_taskCreate();
+static uint8_t APPL_PrintHelp(const CLS1_StdIOType *io);
+static uint8_t APPL_PrintStatus(const CLS1_StdIOType *io);
+static unsigned char *AppStateString(AppStateType state);
+
 static AppStateType appState = APP_STATE_STARTUP;
-const NVMC_RobotData *RoboDataPtr;
-
-void APP_DebugPrint(unsigned char *str) {
-	SHELL_SendString(str);
-}
-
+static const NVMC_RobotData *RoboDataPtr;
 
 static unsigned char *AppStateString(AppStateType state) {
 	switch(state) {
@@ -57,50 +63,18 @@ static unsigned char *AppStateString(AppStateType state) {
 	return (unsigned char*)"unknown?\r\n";
 }
 
-
-static void StateMachine(bool buttonPress) {
-	switch (appState) {
-	case APP_STATE_STARTUP:
-		appState = APP_STATE_INIT;
-		break;
-
-	case APP_STATE_INIT:
-		RNET1_PowerUp();
-		appState = APP_STATE_IDLE;
-		break;
-
-	case APP_STATE_IDLE:
-		break;
-
-	}/* switch */
-	return;
-}
-
-
-static void MainTask(void *pvParameters) {
-	(void)pvParameters; /* not used */
-	FRTOS1_vTaskDelay(100/portTICK_PERIOD_MS); /* provide some time to get hardware (SW1) pull-up effective */
-	for(;;) {
-		KEY1_ScanKeys();
-		TACHO_CalcSpeed();
-		StateMachine(FALSE);
-		FRTOS1_vTaskDelay(10/portTICK_PERIOD_MS);
-	} /* for */
-}
-
-
-static uint8_t APP_PrintHelp(const CLS1_StdIOType *io) {
-	CLS1_SendHelpStr((unsigned char*)"app", (unsigned char*)"Group of app commands\r\n", io->stdOut);
-	CLS1_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Shows app help or status\r\n", io->stdOut);
+static uint8_t APPL_PrintHelp(const CLS1_StdIOType *io) {
+	CLS1_SendHelpStr((unsigned char*)"appl", (unsigned char*)"Group of app commands\r\n", io->stdOut);
+	CLS1_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Shows appl help or status\r\n", io->stdOut);
 	return ERR_OK;
 }
 
-static uint8_t APP_PrintStatus(const CLS1_StdIOType *io) {
+static uint8_t APPL_PrintStatus(const CLS1_StdIOType *io) {
 	RoboDataPtr = NVMC_GetRobotData();
 	uint8_t buf[24];
 
-	CLS1_SendStatusStr((unsigned char*)"app", (unsigned char*)"\r\n", io->stdOut);
-	CLS1_SendStatusStr((unsigned char*)"  App State", AppStateString(appState), io->stdOut);
+	CLS1_SendStatusStr((unsigned char*)"appl", (unsigned char*)"\r\n", io->stdOut);
+	CLS1_SendStatusStr((unsigned char*)"  Appl State", AppStateString(appState), io->stdOut);
 
 	UTIL1_Num8uToStr(buf, sizeof(buf), RoboDataPtr->version);
 	UTIL1_strcat(buf, sizeof(buf), (unsigned char*)" \r\n");
@@ -109,23 +83,12 @@ static uint8_t APP_PrintStatus(const CLS1_StdIOType *io) {
 	return ERR_OK;
 }
 
-uint8_t APP_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io) {
-	uint8_t res = ERR_OK;
-	if (UTIL1_strcmp((char*)cmd, (char*)CLS1_CMD_HELP)==0 || UTIL1_strcmp((char*)cmd, (char*)"app help")==0) {
-		*handled = TRUE;
-		return APP_PrintHelp(io);
-	} else if (UTIL1_strcmp((char*)cmd, (char*)CLS1_CMD_STATUS)==0 || UTIL1_strcmp((char*)cmd, (char*)"app status")==0) {
-		*handled = TRUE;
-		return APP_PrintStatus(io);
-	}
-	return res;
-}
 
 static void InitNVMCValues(void) {
 	const NVMC_RobotData *ptr;
 	NVMC_RobotData data;
 	uint8_t res;
-#define NVMC_VERSION  0x03
+
 
 	ptr = NVMC_GetRobotData();
 	if (ptr==NULL || ptr->version != NVMC_VERSION) {
@@ -137,7 +100,7 @@ static void InitNVMCValues(void) {
 	}
 }
 
-static void APP_AdoptToHardware(void) {
+static void APPL_AdoptToHardware(void) {
 	/*Motor direction & Quadrature configuration for CAU_ZUMO */
 	(void)Q4CRight_SwapPins(TRUE);
   MOT_Invert(MOT_GetMotorHandle(MOT_MOTOR_LEFT), TRUE); /* invert left motor */
@@ -158,21 +121,143 @@ static void APP_AdoptToHardware(void) {
 	PORT_PDD_SetPinPullEnable(PORTC_BASE_PTR, 17, PORT_PDD_PULL_ENABLE);
 }
 
-void APP_Run(void) {
-	appState = APP_STATE_STARTUP;
+static void APPL_taskCreate()
+{
+	uint8 i = 0u;
+	const APPL_TaskCfg_t *taskCfg = NULL;
+
+	taskCfg = Get_APPL_TaskCfg();
+	if(NULL != taskCfg)
+	{
+		for(i = 0u; i < taskCfg->numTasks; i++)
+		{
+			if(NULL != taskCfg->tasks)
+			{
+				if(pdPASS != FRTOS1_xTaskCreate(taskCfg->tasks[i].taskFct,
+												taskCfg->tasks[i].taskName,
+												taskCfg->tasks[i].stackDepth,
+												taskCfg->tasks[i].pvParameters,
+												taskCfg->tasks[i].taskPriority,
+												taskCfg->tasks[i].taskHdl))
+				{
+					/* The task could not be created because there was not enough
+					FreeRTOS heap memory available for the task data structures and
+					stack to be allocated. */
+				}
+			}
+		}
+		FRTOS1_vTaskStartScheduler();
+	}
+	else
+	{
+		for(;;){};
+	}
+}
+
+
+static void APPL_Init(void){
+	APPL_taskCreate();
+}
+
+
+void APPL_DebugPrint(unsigned char *str) {
+	SHELL_SendString(str);
+}
+
+uint8_t APPL_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io) {
+	uint8_t res = ERR_OK;
+	if (UTIL1_strcmp((char*)cmd, (char*)CLS1_CMD_HELP)==0 || UTIL1_strcmp((char*)cmd, (char*)"app help")==0) {
+		*handled = TRUE;
+		return APPL_PrintHelp(io);
+	} else if (UTIL1_strcmp((char*)cmd, (char*)CLS1_CMD_STATUS)==0 || UTIL1_strcmp((char*)cmd, (char*)"app status")==0) {
+		*handled = TRUE;
+		return APPL_PrintStatus(io);
+	}
+	return res;
+}
+
+void APPL_Run(void) {
 	SHELL_Init();
 	BUZ_Init();
 	MOT_Init();
 	RNET1_Init();
-	BATT_Init();	
+	BATT_Init();
 	TACHO_Init();
 	PID_Init();
 	DRV_Init(); /* Comment DRV_Init() to manual MOTOR duty commands possible  */
 
-	APP_AdoptToHardware();
+	APPL_AdoptToHardware();
 	InitNVMCValues();
-	if (FRTOS1_xTaskCreate(MainTask, "Main", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL) != pdPASS) {
-		for(;;){} /* error */
-	}
-	FRTOS1_vTaskStartScheduler();
+
+	APPL_Init();
 }
+
+
+/* Define a task that performs an action every x milliseconds. */
+void APPL_cycTaskFct( void * pvParameters_)
+{
+	uint8 i = 0u;
+	APPL_cycTaskFctPar_t *pvPar = NULL;
+	TickType_t LastWakeTime;
+
+	pvPar = (APPL_cycTaskFctPar_t *)pvParameters_;
+
+	/* The xLastWakeTime variable needs to be initialized with the current tick
+	count.  Note that this is the only time the variable is written to explicitly.
+	After this assignment, xLastWakeTime is update d automatically internally within
+	vTaskDelayUntil(). */
+	LastWakeTime = FRTOS1_xTaskGetTickCount();
+	/* Enter the loop that defines the task behavior. */
+	FRTOS1_vTaskDelay( pdMS_TO_TICKS( 100u ));
+	for( ;; )
+	{
+		/* This task should execute every 50 milliseconds.  Time is measured
+		in ticks. The pdMS_TO_TICKS macro is used to convert milliseconds
+		into ticks. xLastWakeTime is automatically updated within vTaskDelayUntil()
+		so is not explicitly updated by the task. */
+		FRTOS1_vTaskDelayUntil( &LastWakeTime, pdMS_TO_TICKS( pvPar->taskPeriod ) );
+
+		/* Perform the periodic actions here. */
+		if(NULL != pvPar->mainFcts)
+		{
+			for(i = 0u; i < pvPar->numMainFcts; i++)
+			{
+				if(NULL != &(pvPar->mainFcts[i]))
+				{
+					pvPar->mainFcts[i]();
+				}
+			}
+		}
+	}
+}
+
+void APPL_nonCycTaskFct(void *pvParameters_)
+{
+	uint8 i = 0u;
+	APPL_nonCycTaskFctPar_t *pvPar = NULL;
+
+	pvPar = (APPL_nonCycTaskFctPar_t *)pvParameters_;
+
+	FRTOS1_vTaskDelay( pdMS_TO_TICKS( 100u ));
+	for(;;) {
+
+		FRTOS1_vTaskDelay( pdMS_TO_TICKS( pvPar->taskDelay) );
+
+		/* Perform the periodic actions here. */
+		if(NULL != pvPar->mainFcts)
+		{
+			for(i = 0u; i < pvPar->numMainFcts; i++)
+			{
+				if(NULL != &(pvPar->mainFcts[i]))
+				{
+					pvPar->mainFcts[i]();
+				}
+			}
+		}
+	}
+}
+
+
+#ifdef MASTER_APPL_C_
+#undef MASTER_APPL_C_
+#endif

@@ -18,11 +18,17 @@
 
 #include "CLS1.h"
 
+#ifdef MASTER_APPL_C_
+#define EXTERNAL_
+#else
+#define EXTERNAL_ extern
+#endif
+
 /*!
  * @brief Debug printing function
  * @param str Debug string to print
  */
-void APP_DebugPrint(unsigned char *str);
+EXTERNAL_ void APPL_DebugPrint(unsigned char *str);
 
 /*!
  * @brief Parses a command
@@ -31,12 +37,16 @@ void APP_DebugPrint(unsigned char *str);
  * @param io I/O stream to be used for input/output
  * @return Error code, ERR_OK if everything was fine
  */
-uint8_t APP_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
+EXTERNAL_ uint8_t APPL_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
 
 
 /*!
  * @brief Run the application
  */
-void APP_Run(void);
+EXTERNAL_ void APPL_Run(void);
+
+#ifdef EXTERNAL_
+#undef EXTERNAL_
+#endif
 
 #endif /* APPLICATION_H_ */
