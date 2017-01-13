@@ -30,6 +30,8 @@
 #include "Pid.h"
 #include "Drive.h"
 #include "RTT1.h"
+#include "id.h"
+
 
 void SHELL_SendString(unsigned char *msg) {
   CLS1_SendStr(msg, SHELL_GetStdio()->stdOut);
@@ -107,6 +109,8 @@ static const SHELL_IODesc ios[] =
 
 static void ShellTask (void *pvParameters) {
   unsigned int i;
+  uint8_t buf[32];
+  uint8_t sumoId;
 
   (void)pvParameters; /* not used */
   /* initialize buffers */
@@ -114,6 +118,17 @@ static void ShellTask (void *pvParameters) {
     ios[i].buf[0] = '\0';
   }
   SHELL_SendString("Shell task started!\r\n");
+
+  /* print ID information about current sumo to the shell welcome dialog*/
+  sumoId = ID_WhichSumo();
+  if (sumoId == ERR_PARAM_ADDRESS){
+  	UTIL1_strcpy(buf, sizeof(buf), "Idiot! Your robot is unknown.");
+  }else{
+  	UTIL1_strcpy(buf, sizeof(buf), "Welcome to Sumo #");
+  	UTIL1_strcatNum8u(buf, sizeof(buf), ID_WhichSumo());
+  	UTIL1_strcat(buf, sizeof(buf), " \r\n");
+  }
+	SHELL_SendString(buf);
 
   for(;;) {
 	/* process all I/Os */

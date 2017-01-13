@@ -55,6 +55,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Sources/rnet&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Sources/batt&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Sources/buz&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Sources/id&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Sources/motor&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Sources/platform&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Sources/nvm&quot;"/>

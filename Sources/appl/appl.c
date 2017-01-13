@@ -35,6 +35,7 @@
 #include "Pid.h"
 #include "Drive.h"
 #include "nvm_cfg.h"
+#include "id.h"
 
 #define NVMC_VERSION  0x03
 
@@ -185,6 +186,8 @@ void APPL_Run(void) {
 	TACHO_Init();
 	PID_Init();
 	DRV_Init(); /* Comment DRV_Init() to manual MOTOR duty commands possible  */
+	ID_Init();
+
 
 	APPL_AdoptToHardware();
 	InitNVMCValues();

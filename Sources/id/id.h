@@ -26,10 +26,10 @@
 #define MAX_NUMBER_OF_SUMOS    (25)
 #define MAX_ID_OF_SUMOS        (MAX_NUMBER_OF_SUMOS-(1))
 
-typedef struct ID_Cfg_
+typedef struct ID_Cfg_s
 {
-	const KIN1_UID *Ids;
-	uint8_t IdNum;
+	const KIN1_UID *ids;
+	uint8_t idNum;
 }ID_Cfg_t;
 
 typedef enum { /* do *not* change order of enumeration, they are used internally for a table index */
@@ -37,6 +37,8 @@ typedef enum { /* do *not* change order of enumeration, they are used internally
 	ID_SUMO_UNKNOWN,         					/* unknown robot, unknown custom ID */
 	ID_SUMO_NONE             					/* initialization value, used internally */
 } ID_Sumos;
+
+
 
 ID_Sumos ID_WhichSumo(void);
 
