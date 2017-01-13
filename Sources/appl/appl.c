@@ -31,6 +31,7 @@
 #include "Pid.h"
 #include "Drive.h"
 #include "nvm_cfg.h"
+#include "id.h"
 
 typedef enum AppStateType_s{
 	APP_STATE_STARTUP,
@@ -168,6 +169,8 @@ void APP_Run(void) {
 	TACHO_Init();
 	PID_Init();
 	DRV_Init(); /* Comment DRV_Init() to manual MOTOR duty commands possible  */
+	ID_Init();
+
 
 	APP_AdoptToHardware();
 	InitNVMCValues();

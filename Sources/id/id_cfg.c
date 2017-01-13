@@ -28,12 +28,12 @@ static const KIN1_UID idTable[] =
 	/* SUMO_08 */
   };
 
-static const ID_Cfg_t ID_Cfg = {
+static const ID_Cfg_t idCfg = {
 		idTable,
 		NUM_OF_IDS,
 };
 
-const ID_Cfg_t *Get_ID_Cfg(void) { return &ID_Cfg; }
+const ID_Cfg_t *Get_ID_Cfg(void) { return &idCfg; }
 
 #ifdef MASTER_ID_CFG_C_
 #undef MASTER_ID_CFG_C_
