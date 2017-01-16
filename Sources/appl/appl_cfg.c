@@ -35,7 +35,7 @@ static void shTaskFct(void *pvParameters_)   {return APPL_nonCycTaskFct(pvParame
 MainFctHl_t mainFctsMainTask[] = {
 		KEY1_ScanKeys,
 		TACHO_CalcSpeed,
-		StateMachine,
+		STATE_mainFct,
 };
 
 MainFctHl_t mainFctsShTask[] = {
@@ -58,8 +58,8 @@ const APPL_nonCycTaskFctPar_t shTaskFctPar = {
 };
 
 const TaskCfg_t taskCfg[]= {
-		{mainTaskFct, "main",  configMINIMAL_STACK_SIZE,    (void *)&mainTaskFctPar, tskIDLE_PRIORITY+1, NULL},
-		{shTaskFct,   "shell", configMINIMAL_STACK_SIZE+50, (void *)&shTaskFctPar,   tskIDLE_PRIORITY+1, NULL},
+		{mainTaskFct, "MAIN",  configMINIMAL_STACK_SIZE,    (void *)&mainTaskFctPar, tskIDLE_PRIORITY+1, NULL},
+		{shTaskFct,   "SGELL", configMINIMAL_STACK_SIZE+50, (void *)&shTaskFctPar,   tskIDLE_PRIORITY+1, NULL},
 };
 
 const APPL_TaskCfg_t APPL_taskCfg = {

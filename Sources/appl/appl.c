@@ -39,44 +39,23 @@
 
 
 
-typedef enum AppStateType_s{
-	APP_STATE_STARTUP,
-	APP_STATE_INIT,
-	APP_STATE_IDLE
-} AppStateType;
-
 static void APPL_taskCreate();
 static uint8_t APPL_PrintHelp(const CLS1_StdIOType *io);
 static uint8_t APPL_PrintStatus(const CLS1_StdIOType *io);
-static unsigned char *AppStateString(AppStateType state);
-
-static AppStateType appState = APP_STATE_STARTUP;
 
 
-static unsigned char *AppStateString(AppStateType state) {
-	switch(state) {
-	case APP_STATE_STARTUP: return (unsigned char*)"STARTUP\r\n";
-	case APP_STATE_INIT: return (unsigned char*)"INIT\r\n";
-	case APP_STATE_IDLE: return (unsigned char*)"IDLE\r\n";
-	default:
-		break;
-	}
-	return (unsigned char*)"unknown?\r\n";
-}
 
 static uint8_t APPL_PrintHelp(const CLS1_StdIOType *io) {
-	CLS1_SendHelpStr((unsigned char*)"appl", (unsigned char*)"Group of app commands\r\n", io->stdOut);
+	CLS1_SendHelpStr((unsigned char*)"appl", (unsigned char*)"Group of appl commands\r\n", io->stdOut);
 	CLS1_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Shows appl help or status\r\n", io->stdOut);
 	return ERR_OK;
 }
 
 static uint8_t APPL_PrintStatus(const CLS1_StdIOType *io) {
 	CLS1_SendStatusStr((unsigned char*)"appl", (unsigned char*)"\r\n", io->stdOut);
-	CLS1_SendStatusStr((unsigned char*)"  Appl State", AppStateString(appState), io->stdOut);
+	CLS1_SendStatusStr((unsigned char*)"  status", "no status information available\r\n", io->stdOut);
 	return ERR_OK;
 }
-
-
 
 
 static void APPL_AdoptToHardware(void) {
