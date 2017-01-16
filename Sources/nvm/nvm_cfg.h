@@ -17,6 +17,12 @@
 
 #include "Platform.h"
 
+#ifdef MASTER_NVM_CFG_C_
+#define EXTERNAL_
+#else
+#define EXTERNAL_ extern
+#endif
+
 #define NVMC_FLASH_START_ADDR    0x10000000 /* DFLASH, NVRM_Config, start address of configuration data in flash */
 #define NVMC_FLASH_BLOCK_SIZE    0x1000  /* IntFlashLdd1_BLOCK0_ERASABLE_UNIT_SIZE */
 #define NVMC_FLASH_ERASED_UINT8  0xFF
@@ -44,16 +50,20 @@ typedef struct {
 #define NVMC_ROBOT_END_ADDR                (NVMC_ROBOT_DATA_START_ADDR+NVMC_ROBOT_DATA_SIZE)
 
 /* Access macros */
-uint8_t NVMC_SaveDeviceAddress16(void *data, size_t dataSize);
+EXTERNAL_ uint8_t NVMC_SaveDeviceAddress16(void *data, size_t dataSize);
 #define NVMC_GetDeviceAddr16Addr()        ((uint16_t*)(NVMC_DEVICE_ADDR16_START_ADDR))
 
 
-uint8_t NVMC_SaveReflectanceData(void *data, uint16_t dataSize);
-void *NVMC_GetReflectanceData(void);
+EXTERNAL_ uint8_t NVMC_SaveReflectanceData(void *data, uint16_t dataSize);
+EXTERNAL_ void *NVMC_GetReflectanceData(void);
 
 
-uint8_t NVMC_SaveRobotData(NVMC_RobotData *data);
-const NVMC_RobotData *NVMC_GetRobotData(void);
+EXTERNAL_ uint8_t NVMC_SaveRobotData(NVMC_RobotData *data);
+EXTERNAL_ const NVMC_RobotData *NVMC_GetRobotData(void);
 
 
-#endif /* NVM_CFG_H_ */
+#ifdef EXTERNAL_
+#undef EXTERNAL_
+#endif
+
+#endif /* !NVM_CFG_H_ */

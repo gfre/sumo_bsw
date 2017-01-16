@@ -31,6 +31,7 @@
 #include "Drive.h"
 #include "RTT1.h"
 #include "id.h"
+#include "nvm.h"
 
 
 void SHELL_SendString(unsigned char *msg) {
@@ -73,6 +74,7 @@ static const CLS1_ParseCommandCallback CmdParserTable[] =
   SHELL_ParseCommand,
   FRTOS1_ParseCommand,
   APPL_ParseCommand,
+  NVM_ParseCommand,
   MOT_ParseCommand,
   DRV_ParseCommand,
   TACHO_ParseCommand,

@@ -34,10 +34,10 @@
 #include "Q4CRight.h"
 #include "Pid.h"
 #include "Drive.h"
-#include "nvm_cfg.h"
+#include "nvm.h"
 #include "id.h"
 
-#define NVMC_VERSION  0x03
+
 
 typedef enum AppStateType_s{
 	APP_STATE_STARTUP,
@@ -51,7 +51,7 @@ static uint8_t APPL_PrintStatus(const CLS1_StdIOType *io);
 static unsigned char *AppStateString(AppStateType state);
 
 static AppStateType appState = APP_STATE_STARTUP;
-static const NVMC_RobotData *RoboDataPtr;
+
 
 static unsigned char *AppStateString(AppStateType state) {
 	switch(state) {
@@ -71,35 +71,13 @@ static uint8_t APPL_PrintHelp(const CLS1_StdIOType *io) {
 }
 
 static uint8_t APPL_PrintStatus(const CLS1_StdIOType *io) {
-	RoboDataPtr = NVMC_GetRobotData();
-	uint8_t buf[24];
-
 	CLS1_SendStatusStr((unsigned char*)"appl", (unsigned char*)"\r\n", io->stdOut);
 	CLS1_SendStatusStr((unsigned char*)"  Appl State", AppStateString(appState), io->stdOut);
-
-	UTIL1_Num8uToStr(buf, sizeof(buf), RoboDataPtr->version);
-	UTIL1_strcat(buf, sizeof(buf), (unsigned char*)" \r\n");
-	CLS1_SendStatusStr((unsigned char*)"  ROBO NVM", buf, io->stdOut);
-
 	return ERR_OK;
 }
 
 
-static void InitNVMCValues(void) {
-	const NVMC_RobotData *ptr;
-	NVMC_RobotData data;
-	uint8_t res;
 
-
-	ptr = NVMC_GetRobotData();
-	if (ptr==NULL || ptr->version != NVMC_VERSION) {
-		data.version = NVMC_VERSION;
-		res = NVMC_SaveRobotData(&data);
-		if (res!=ERR_OK) {
-			for(;;); /* error */
-		}
-	}
-}
 
 static void APPL_AdoptToHardware(void) {
 	/*Motor direction & Quadrature configuration for CAU_ZUMO */
@@ -187,10 +165,9 @@ void APPL_Run(void) {
 	PID_Init();
 	DRV_Init(); /* Comment DRV_Init() to manual MOTOR duty commands possible  */
 	ID_Init();
-
+	NVM_Init();
 
 	APPL_AdoptToHardware();
-	InitNVMCValues();
 
 	APPL_Init();
 }
