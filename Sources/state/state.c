@@ -1,9 +1,24 @@
+/*******************************************************************************
+ * @brief 	Main state machine of application software layer.
+ *
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, CAU Kiel
+ * @date 	13.01.2017
+ *
+ * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ *
+ * This module implements an (extended) state machine for the Sumo robot. It
+ * handles the main states of the application software layer.
+ *
+ * ==============================================================================
+ */
+
 #define MASTER_STATE_C_
 
 #include "Platform.h"
 #include "CLS1.h"
 #include "RNET1.h"
 #include "state.h"
+#include "stud.h"
 
 
 
@@ -24,6 +39,7 @@ static void STATE_RunStateMachine(void) {
 		break;
 
 	case MAIN_STATE_INIT:
+		STUD_Init();
 		RNET1_PowerUp();
 		mainState = MAIN_STATE_IDLE;
 		break;
@@ -33,6 +49,7 @@ static void STATE_RunStateMachine(void) {
 		break;
 
 	case MAIN_STATE_NORMAL:
+		STUD_Main();
 		break;
 
 	default:

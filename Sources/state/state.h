@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * @brief 	Main state machine of application software layer.
+ *
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, CAU Kiel
+ * @date 	13.01.2017
+ *
+ * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ *
+ * This module implements an (extended) state machine for the Sumo robot. It
+ * handles the main states of the application software layer.
+ *
+ * ==============================================================================
+ */
+
 #ifndef STATE_H_
 #define STATE_H_
 
@@ -10,11 +24,11 @@
 #endif
 
 typedef enum mainState_e{
-	 MAIN_STATE_STARTUP
-	,MAIN_STATE_INIT
-	,MAIN_STATE_IDLE
-	,MAIN_STATE_NORMAL
-	,MAIN_STATE_ERROR
+	 MAIN_STATE_STARTUP     /**< State during start up */
+	,MAIN_STATE_INIT        /**< State during initialization */
+	,MAIN_STATE_IDLE        /**< State for idle mode */
+	,MAIN_STATE_NORMAL		/**< State for normal mode */
+	,MAIN_STATE_ERROR       /**< State for error mode */
 } mainState_t;
 
 /*!
