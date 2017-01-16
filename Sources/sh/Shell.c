@@ -32,7 +32,7 @@
 #include "RTT1.h"
 #include "id.h"
 #include "nvm.h"
-#include "state.h
+#include "state.h"
 
 
 void SHELL_SendString(unsigned char *msg) {
