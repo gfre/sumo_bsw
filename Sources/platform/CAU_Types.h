@@ -12,8 +12,7 @@
 
 #ifndef CAU_TYPES_H
 #define CAU_TYPES_H
-#include "PE_Types.h"
-#include <stddef.h> /* for size_t */
+
 
 /**
 * Type Definition for Standard Return Type

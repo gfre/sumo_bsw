@@ -14,6 +14,7 @@
 #define RTE_H
 
 #include "Platform.h"
+#include "CAU_Types.h"
 #include "Buzzer.h"
 
 #ifdef MASTER_RTE_C_
