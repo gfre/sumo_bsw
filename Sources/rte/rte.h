@@ -21,6 +21,8 @@
 #define EXTERNAL_ extern
 #endif
 
+typedef void EvntCbFct_t(uint8 );
+
 /**
  * @brief RTE interface to turn the right LED ON
  * @return Error code, RET_OK if everything was fine,
@@ -91,10 +93,82 @@ EXTERNAL_ StdRtnType RTE_Write_LedLeSt(uint8 state_);
 /**
  * @brief RTE interface to read the state of the right LED
  * @param *state_ pointer to the LED state (call by reference)
- * @return Error code, RET_OK if everything was fine, RET_INVALID otherwise
+ * @return Error code, RET_OK if everything was fine,
+ *                     RET_INVALID otherwise
  */
 EXTERNAL_ StdRtnType RTE_Read_LedLeSt(uint8 *state_);
 
+/**
+ * @brief RTE interface to read the state of the switch
+ * @param *state_ pointer to the switch state (call by reference)
+ * @return Error code, RET_OK if everything was fine,
+ *                     RET_INVALID otherwise
+ */
+EXTERNAL_ StdRtnType RTE_Read_SwtSt(uint8 *state_);
+
+/**
+ * @brief RTE interface to set the pointer to a callback function
+ * which is called when the switch is pressed shortly
+ * @param *state_ pointer to the callback function
+ * @return Error code, RET_OK if everything was fine,
+ *                     RET_INVALID otherwise
+ */
+EXTERNAL_ StdRtnType RTE_Write_SwtOnPrsdCbFct(const EvntCbFct_t *cbFct_);
+
+/**
+ * @brief RTE interface to set the pointer to a callback function
+ * which is called when the switch is pressed for a longer time
+ * @param *state_ pointer to the callback function
+ * @return Error code, RET_OK if everything was fine,
+ *                     RET_INVALID otherwise
+ */
+EXTERNAL_ StdRtnType RTE_Write_SwtOnLngPrsdCbFct(const EvntCbFct_t *cbFct_);
+
+/**
+ * @brief RTE interface to set the pointer to a callback function
+ * which is called when the switch is released after a short press
+ * @param *state_ pointer to the callback function
+ * @return Error code, RET_OK if everything was fine,
+ *                     RET_INVALID otherwise
+ */
+EXTERNAL_ StdRtnType RTE_Write_SwtOnRlsdCbFct(const EvntCbFct_t *cbFct_);
+
+/**
+ * @brief RTE interface to set the pointer to a callback function
+ * which is called when the switch is released after a long press
+ * @param *state_ pointer to the callback function
+ * @return Error code, RET_OK if everything was fine,
+ *                     RET_INVALID otherwise
+ */
+EXTERNAL_ StdRtnType RTE_Write_SwtOnLngRlsdCbFct(const EvntCbFct_t *cbFct_);
+
+/**
+ * @brief RTE interface to get the pointer to a callback function
+ * which is called when the switch is pressed shortly
+ * @return pointer to the callback function
+ */
+EXTERNAL_ EvntCbFct_t *RTE_Get_SwtOnPrsdCbFct(void);
+
+/**
+ * @brief RTE interface to get the pointer to a callback function
+ * which is called when the switch is pressed for a longer time
+ * @return pointer to the callback function
+ */
+EXTERNAL_ EvntCbFct_t *RTE_Get_SwtOnLngPrsdCbFct(void);
+
+/**
+ * @brief RTE interface to get the pointer to a callback function
+ * which is called when the switch is released after a short press
+ * @return pointer to the callback function
+ */
+EXTERNAL_ EvntCbFct_t *RTE_Get_SwtOnRlsdCbFct(void);
+
+/**
+ * @brief RTE interface to get the pointer to a callback function
+ * which is called when the switch is released after a long press
+ * @return pointer to the callback function
+ */
+EXTERNAL_ EvntCbFct_t *RTE_Get_SwtOnLngRlsdCbFct(void);
 
 #ifdef EXTERNAL_
 #undef EXTERNAL_
