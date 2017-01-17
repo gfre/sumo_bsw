@@ -33,7 +33,6 @@ static void mainTaskFct(void *pvParameters_) {return APPL_cycTaskFct(pvParameter
 static void shTaskFct(void *pvParameters_)   {return APPL_nonCycTaskFct(pvParameters_);}
 
 MainFctHl_t mainFctsMainTask[] = {
-		KEY1_ScanKeys,
 		TACHO_CalcSpeed,
 		STATE_mainFct,
 };
