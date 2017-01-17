@@ -153,7 +153,7 @@ void APPL_Run(void) {
 
 
 /* Define a task that performs an action every x milliseconds. */
-void APPL_cycTaskFct( void * pvParameters_)
+void APPL_cycTaskFct(void * pvParameters_)
 {
 	uint8 i = 0u;
 	APPL_cycTaskFctPar_t *pvPar = NULL;

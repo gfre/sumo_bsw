@@ -58,7 +58,7 @@ const APPL_nonCycTaskFctPar_t shTaskFctPar = {
 
 const TaskCfg_t taskCfg[]= {
 		{mainTaskFct, "MAIN",  configMINIMAL_STACK_SIZE,    (void *)&mainTaskFctPar, tskIDLE_PRIORITY+1, NULL},
-		{shTaskFct,   "SGELL", configMINIMAL_STACK_SIZE+50, (void *)&shTaskFctPar,   tskIDLE_PRIORITY+1, NULL},
+		{shTaskFct,   "SHELL", configMINIMAL_STACK_SIZE+50, (void *)&shTaskFctPar,   tskIDLE_PRIORITY+1, NULL},
 };
 
 const APPL_TaskCfg_t APPL_taskCfg = {
