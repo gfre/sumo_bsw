@@ -14,6 +14,7 @@
 #include "LED1.h"
 #include "LED2.h"
 #include "KEY1.h"
+#include "Buzzer.h"
 #include "rte.h"
 
 #define USER_SWITCH_MASK (0x01u)
@@ -200,11 +201,21 @@ EvntCbFct_t *RTE_Get_SwtOnLngRlsdCbFct(void)
 {
 	return cbFctTab.cbFctOnLngRlsd;
 }
-
-
 /*========================================================*/
 
+/**
+ * Interface implementation for the buzzer
+ */
+StdRtnType RTE_Play_BuzTune(BUZ_Tunes tune_)
+{
+	return (StdRtnType)BUZ_PlayTune(tune_);
+}
 
+
+StdRtnType RTE_Play_BuzBeep(uint16 freqHz_, uint16 durMs_)
+{
+	return (StdRtnType)BUZ_Beep(freqHz_, durMs_);
+}
 
 #ifdef MASTER_RTE_C_
 #undef MASTER_RTE_C_

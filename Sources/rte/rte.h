@@ -14,6 +14,7 @@
 #define RTE_H
 
 #include "Platform.h"
+#include "Buzzer.h"
 
 #ifdef MASTER_RTE_C_
 #define EXTERNAL_
@@ -109,7 +110,7 @@ EXTERNAL_ StdRtnType RTE_Read_SwtSt(uint8 *state_);
 /**
  * @brief RTE interface to set the pointer to a callback function
  * which is called when the switch is pressed shortly
- * @param *state_ pointer to the callback function
+ * @param *cbFct_ pointer to the callback function
  * @return Error code, RET_OK if everything was fine,
  *                     RET_INVALID otherwise
  */
@@ -118,7 +119,7 @@ EXTERNAL_ StdRtnType RTE_Write_SwtOnPrsdCbFct(const EvntCbFct_t *cbFct_);
 /**
  * @brief RTE interface to set the pointer to a callback function
  * which is called when the switch is pressed for a longer time
- * @param *state_ pointer to the callback function
+ * @param *cbFct_ pointer to the callback function
  * @return Error code, RET_OK if everything was fine,
  *                     RET_INVALID otherwise
  */
@@ -127,7 +128,7 @@ EXTERNAL_ StdRtnType RTE_Write_SwtOnLngPrsdCbFct(const EvntCbFct_t *cbFct_);
 /**
  * @brief RTE interface to set the pointer to a callback function
  * which is called when the switch is released after a short press
- * @param *state_ pointer to the callback function
+ * @param *cbFct_ pointer to the callback function
  * @return Error code, RET_OK if everything was fine,
  *                     RET_INVALID otherwise
  */
@@ -136,7 +137,7 @@ EXTERNAL_ StdRtnType RTE_Write_SwtOnRlsdCbFct(const EvntCbFct_t *cbFct_);
 /**
  * @brief RTE interface to set the pointer to a callback function
  * which is called when the switch is released after a long press
- * @param *state_ pointer to the callback function
+ * @param *cbFct_ pointer to the callback function
  * @return Error code, RET_OK if everything was fine,
  *                     RET_INVALID otherwise
  */
@@ -169,6 +170,23 @@ EXTERNAL_ EvntCbFct_t *RTE_Get_SwtOnRlsdCbFct(void);
  * @return pointer to the callback function
  */
 EXTERNAL_ EvntCbFct_t *RTE_Get_SwtOnLngRlsdCbFct(void);
+
+/**
+ * @brief RTE interface to play a buzzer tune
+ * @param  tune_ enumeration to select a tune
+ * @return Error code, RET_OK if everything was fine,
+ *                     RET_INVALID otherwise
+ */
+EXTERNAL_ StdRtnType RTE_Play_BuzTune(BUZ_Tunes tune_);
+
+/**
+ * @brief RTE interface to play a buzzer beep
+ * @param  freqHz_ Frequncy of the Beep in Hertz
+ *         durMs_  Duratoin of the Beep in milli seconds
+ * @return Error code, RET_OK if everything was fine,
+ *                     RET_INVALID otherwise
+ */
+EXTERNAL_ StdRtnType RTE_Play_BuzBeep(uint16 freqHz_, uint16 durMs_);
 
 #ifdef EXTERNAL_
 #undef EXTERNAL_
