@@ -37,7 +37,7 @@ extern "C" {
 /* User includes (#include below this line is not maintained by Processor Expert) */
 #include "Trigger.h"
 #include "Tacho.h"
-
+#include "rte.h"
 /*
 ** ===================================================================
 **     Event       :  Cpu_OnNMIINT (module Events)
@@ -119,7 +119,7 @@ void FRTOS1_vApplicationTickHook(void)
   /* Called for every RTOS tick. */
   /* Write your code here ... */
   TACHO_Sample();
-	TRG1_AddTick();
+  TRG1_AddTick();
   TRG_AddTick();
 }
 
@@ -186,8 +186,12 @@ void PTRC1_OnTraceWrap(void)
 */
 void KEY1_OnKeyPressed(uint8_t keys)
 {
-	// LED1_Neg();
-  /* Write your code here. A bit in 'keys' indicates key pressed ... */
+	/* Write your code here. A bit in 'keys' indicates key pressed ... */
+	EvntCbFct_t *cbFct = RTE_Get_SwtOnPrsdCbFct();
+	if(NULL != cbFct)
+	{
+		cbFct(keys);
+	}
 }
 
 /*
@@ -207,6 +211,11 @@ void KEY1_OnKeyPressed(uint8_t keys)
 void KEY1_OnKeyReleased(uint8_t keys)
 {
   /* Write your code here. A bit in 'keys' indicates key released ... */
+	EvntCbFct_t *cbFct = RTE_Get_SwtOnRlsdCbFct();
+	if(NULL != cbFct)
+	{
+		cbFct(keys);
+	}
 }
 
 /*
@@ -227,6 +236,11 @@ void KEY1_OnKeyReleased(uint8_t keys)
 void KEY1_OnKeyPressedLong(uint8_t keys)
 {
   /* Write your code here ... */
+	EvntCbFct_t *cbFct = RTE_Get_SwtOnLngPrsdCbFct();
+	if(NULL != cbFct)
+	{
+		cbFct(keys);
+	}
 }
 
 /*
@@ -248,6 +262,31 @@ void QuadInt_OnInterrupt(void)
   Q4CLeft_Sample();
   Q4CRight_Sample();
   /* Write your code here ... */
+}
+
+/*
+** ===================================================================
+**     Event       :  KEY1_OnKeyReleasedLong (module Events)
+**
+**     Component   :  KEY1 [Key]
+**     Description :
+**         Event generated after a key has been released (long key
+**         press).
+**     Parameters  :
+**         NAME            - DESCRIPTION
+**         keys            - the key(s) pressed, as bitset (e.g. 1 is
+**                           key 1, 2 is key 2, 4 is key 3, ....)
+**     Returns     : Nothing
+** ===================================================================
+*/
+void KEY1_OnKeyReleasedLong(uint8_t keys)
+{
+  /* Write your code here. A bit in 'keys' indicates key released after a long time ... */
+	EvntCbFct_t *cbFct = RTE_Get_SwtOnLngRlsdCbFct();
+	if(NULL != cbFct)
+	{
+		cbFct(keys);
+	}
 }
 
 /* END Events */
