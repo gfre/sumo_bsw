@@ -13,7 +13,7 @@
  * ==============================================================================
  */
 
-#include "shell.h"
+#include "sh.h"
 #include "CLS1.h"
 #include "FRTOS1.h"
 #include "appl.h"
@@ -35,19 +35,19 @@
 #include "state.h"
 
 
-void SHELL_SendString(unsigned char *msg) {
-  CLS1_SendStr(msg, SHELL_GetStdio()->stdOut);
+void SH_SendString(unsigned char *msg) {
+  CLS1_SendStr(msg, SH_GetStdio()->stdOut);
   CLS1_SendStr(msg, RTT1_stdio.stdOut);
 
 }
 
-static uint8_t SHELL_PrintHelp(const CLS1_StdIOType *io) {
+static uint8_t SH_PrintHelp(const CLS1_StdIOType *io) {
   CLS1_SendHelpStr((unsigned char*)"shell", (unsigned char*)"Group of shell commands\r\n", io->stdOut);
   CLS1_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Shows shell help or status\r\n", io->stdOut);
   return ERR_OK;
 }
 
-static uint8_t SHELL_PrintStatus(const CLS1_StdIOType *io) {
+static uint8_t SH_PrintStatus(const CLS1_StdIOType *io) {
   CLS1_SendStatusStr((unsigned char*)"shell", (unsigned char*)"\r\n", io->stdOut);
   CLS1_SendStatusStr((unsigned char*)"  connections", NULL, io->stdOut);
   CLS1_SendStr((unsigned char*)"DEFAULT", io->stdOut);
@@ -56,15 +56,15 @@ static uint8_t SHELL_PrintStatus(const CLS1_StdIOType *io) {
   return ERR_OK;
 }
 
-static uint8_t SHELL_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io) {
+static uint8_t SH_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io) {
   uint8_t res = ERR_OK;
 
   if (UTIL1_strcmp((char*)cmd, (char*)CLS1_CMD_HELP)==0 || UTIL1_strcmp((char*)cmd, (char*)"shell help")==0) {
     *handled = TRUE;
-    return SHELL_PrintHelp(io);
+    return SH_PrintHelp(io);
   } else if (UTIL1_strcmp((char*)cmd, (char*)CLS1_CMD_STATUS)==0 || UTIL1_strcmp((char*)cmd, (char*)"shell status")==0) {
     *handled = TRUE;
-    return SHELL_PrintStatus(io);
+    return SH_PrintStatus(io);
   }
   return res;
 }
@@ -72,7 +72,7 @@ static uint8_t SHELL_ParseCommand(const unsigned char *cmd, bool *handled, const
 static const CLS1_ParseCommandCallback CmdParserTable[] =
 {
   CLS1_ParseCommand,
-  SHELL_ParseCommand,
+  SH_ParseCommand,
   FRTOS1_ParseCommand,
   APPL_ParseCommand,
   STATE_ParseCommand,
@@ -92,26 +92,26 @@ static const CLS1_ParseCommandCallback CmdParserTable[] =
   NULL /* Sentinel */
 };
 
-typedef struct SHELL_IODesc_s{
+typedef struct SH_IODesc_s{
   unsigned char *buf;
   size_t bufSize;
   CLS1_ConstStdIOType *stdio;
-} SHELL_IODesc;
+} SH_IODesc;
 
 
-  CLS1_ConstStdIOType *SHELL_GetStdio(void) {
+  CLS1_ConstStdIOType *SH_GetStdio(void) {
     return CLS1_GetStdio();
   }
 
 
-static const SHELL_IODesc ios[] =
+static const SH_IODesc ios[] =
 {
     {CLS1_DefaultShellBuffer, sizeof(CLS1_DefaultShellBuffer), &CLS1_stdio},
     {RTT1_DefaultShellBuffer, sizeof(RTT1_DefaultShellBuffer), &RTT1_stdio},
 };
 
 
-void SHELL_MainFct(void)
+void SH_MainFct(void)
 {
 	uint8 i = 0u;
 	/* process all I/Os */
@@ -122,7 +122,7 @@ void SHELL_MainFct(void)
 }
 
 
-void SHELL_Init(void)
+void SH_Init(void)
 {
      uint8 i = 0u;
 	 uint8 buf[32];
@@ -133,7 +133,7 @@ void SHELL_Init(void)
 		ios[i].buf[0] = '\0';
 	}
 
-	SHELL_SendString("Shell task started!\r\n");
+	SH_SendString("Shell task started!\r\n");
 
 	/* print ID information about current sumo to the shell welcome dialog*/
 	sumoId = ID_WhichSumo();
@@ -147,15 +147,15 @@ void SHELL_Init(void)
 	  	UTIL1_strcatNum8u(buf, sizeof(buf), ID_WhichSumo());
 	  	UTIL1_strcat(buf, sizeof(buf), " \r\n");
 	}
-	SHELL_SendString(buf);
+	SH_SendString(buf);
 
 }
 
-void SHELL_ParseCmd(unsigned char *cmd) {
-  (void)CLS1_ParseWithCommandTable(cmd, SHELL_GetStdio(), CmdParserTable);
+void SH_ParseCmd(unsigned char *cmd) {
+  (void)CLS1_ParseWithCommandTable(cmd, SH_GetStdio(), CmdParserTable);
 }
 
-void SHELL_Deinit(void) {
+void SH_Deinit(void) {
   /* nothing to do */
   CLS1_Deinit();
 }

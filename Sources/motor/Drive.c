@@ -16,13 +16,13 @@
 #include "Drive.h"
 #include "FRTOS1.h"
 #include "UTIL1.h"
+#include "sh.h"
 #include "Tacho.h"
 #include "Pid.h"
 #include "Motor.h"
 #include "CLS1.h"
 #include "Q4CLeft.h"
 #include "Q4CRight.h"
-#include "shell.h"
 #include "WAIT1.h"
 
 #define PRINT_DRIVE_INFO  0 /* if we print debug info */

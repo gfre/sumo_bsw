@@ -21,7 +21,7 @@
 #include "appl_cfg.h"
 #include "FRTOS1.h"
 #include "WAIT1.h"
-#include "shell.h"
+#include "sh.h"
 #include "LED1.h"
 #include "LED2.h"
 #include "Buzzer.h"
@@ -36,8 +36,9 @@
 #include "Drive.h"
 #include "nvm.h"
 #include "id.h"
+#include "rte.h"
 
-
+static bool shEnable = FALSE; /* DEFAULT: Shell is off */
 
 static void APPL_TaskCreate();
 static uint8_t APPL_PrintHelp(const CLS1_StdIOType *io);
@@ -117,8 +118,8 @@ static void APPL_PrintCalledMainFcts(const CLS1_StdIOType *io_)
 static void APPL_AdoptToHardware(void) {
 	/*Motor direction & Quadrature configuration for CAU_ZUMO */
 	(void)Q4CRight_SwapPins(TRUE);
-  MOT_Invert(MOT_GetMotorHandle(MOT_MOTOR_LEFT), TRUE); /* invert left motor */
-  MOT_Invert(MOT_GetMotorHandle(MOT_MOTOR_RIGHT), TRUE); /* invert right motor */
+	MOT_Invert(MOT_GetMotorHandle(MOT_MOTOR_LEFT), TRUE); /* invert left motor */
+	MOT_Invert(MOT_GetMotorHandle(MOT_MOTOR_RIGHT), TRUE); /* invert right motor */
 
 	/* SW1: enable and turn on pull-up resistor for PTA14 (push button) */
 	PORT_PDD_SetPinPullSelect(PORTA_BASE_PTR, 14, PORT_PDD_PULL_UP);
@@ -147,16 +148,19 @@ static void APPL_TaskCreate()
 		{
 			if(NULL != taskCfg->tasks)
 			{
-				if(pdPASS != FRTOS1_xTaskCreate(taskCfg->tasks[i].taskFct,
-												taskCfg->tasks[i].taskName,
-												taskCfg->tasks[i].stackDepth,
-												taskCfg->tasks[i].pvParameters,
-												taskCfg->tasks[i].taskPriority,
-											    &(taskCfg->tasks[i].taskHdl)))
+				if((shEnable == FALSE) && UTIL1_strcmp(taskCfg->tasks[i].taskName, "SHELL")==0){
+					/* Do nothing, because the shell task should not be started */
+				}
+				else if(pdPASS != FRTOS1_xTaskCreate(taskCfg->tasks[i].taskFct,
+						taskCfg->tasks[i].taskName,
+						taskCfg->tasks[i].stackDepth,
+						taskCfg->tasks[i].pvParameters,
+						taskCfg->tasks[i].taskPriority,
+						taskCfg->tasks[i].taskHdl))
 				{
 					/* The task could not be created because there was not enough
-					FreeRTOS heap memory available for the task data structures and
-					stack to be allocated. */
+								FreeRTOS heap memory available for the task data structures and
+								stack to be allocated. */
 				}
 			}
 		}
@@ -175,7 +179,7 @@ static void APPL_Init(void){
 
 
 void APPL_DebugPrint(unsigned char *str) {
-	SHELL_SendString(str);
+	SH_SendString(str);
 }
 
 uint8_t APPL_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io) {
@@ -191,7 +195,10 @@ uint8_t APPL_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_St
 }
 
 void APPL_Run(void) {
-	SHELL_Init();
+
+	RTE_Read_SwtSt(&shEnable);
+
+
 	BUZ_Init();
 	MOT_Init();
 	RNET1_Init();
@@ -201,6 +208,8 @@ void APPL_Run(void) {
 	DRV_Init(); /* Comment DRV_Init() to manual MOTOR duty commands possible  */
 	ID_Init();
 	NVM_Init();
+	if (shEnable==TRUE)
+		SH_Init();
 
 	APPL_AdoptToHardware();
 

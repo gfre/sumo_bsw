@@ -41,7 +41,7 @@ static ID_Sumos IdentifySumo(void) {
 ID_Sumos ID_WhichSumo(void) {
 	if (currSumo == ID_SUMO_NONE)
 		currSumo = IdentifySumo();
-	if (currSumo <= ID_SUMO_UNKNOWN)
+	if (currSumo < ID_SUMO_UNKNOWN)
 		return currSumo;
 	else
 		return ERR_PARAM_ADDRESS;
