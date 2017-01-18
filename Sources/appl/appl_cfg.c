@@ -19,6 +19,7 @@
 #include "KEY1.h"
 #include "Tacho.h"
 #include "state.h"
+#include "shell.h"
 
 
 /* Macros */
@@ -38,6 +39,7 @@ const APPL_MainFctCfg_t mainTaskMainFctCfg[] = {
 };
 
 const APPL_MainFctCfg_t shTaskMainFctCfg[] = {
+		{SHELL_MainFct, "shell"},
 
 };
 

@@ -22,7 +22,7 @@
 #include "CLS1.h"
 #include "Q4CLeft.h"
 #include "Q4CRight.h"
-#include "Shell.h"
+#include "shell.h"
 #include "WAIT1.h"
 
 #define PRINT_DRIVE_INFO  0 /* if we print debug info */

@@ -13,7 +13,7 @@
  * ==============================================================================
  */
 
-#include "Shell.h"
+#include "shell.h"
 #include "CLS1.h"
 #include "FRTOS1.h"
 #include "appl.h"
@@ -92,7 +92,7 @@ static const CLS1_ParseCommandCallback CmdParserTable[] =
   NULL /* Sentinel */
 };
 
-typedef struct {
+typedef struct SHELL_IODesc_s{
   unsigned char *buf;
   size_t bufSize;
   CLS1_ConstStdIOType *stdio;
@@ -111,45 +111,43 @@ static const SHELL_IODesc ios[] =
 };
 
 
-static void ShellTask (void *pvParameters) {
-  unsigned int i;
-  uint8_t buf[32];
-  uint8_t sumoId;
-
-  (void)pvParameters; /* not used */
-  /* initialize buffers */
-  for(i=0;i<sizeof(ios)/sizeof(ios[0]);i++) {
-    ios[i].buf[0] = '\0';
-  }
-  SHELL_SendString("Shell task started!\r\n");
-
-  /* print ID information about current sumo to the shell welcome dialog*/
-  sumoId = ID_WhichSumo();
-  if (sumoId == ERR_PARAM_ADDRESS){
-  	UTIL1_strcpy(buf, sizeof(buf), "Idiot! Your robot is unknown.");
-  }else{
-  	UTIL1_strcpy(buf, sizeof(buf), "Welcome to Sumo #");
-  	UTIL1_strcatNum8u(buf, sizeof(buf), ID_WhichSumo());
-  	UTIL1_strcat(buf, sizeof(buf), " \r\n");
-  }
-	SHELL_SendString(buf);
-
-  for(;;) {
+void SHELL_MainFct(void)
+{
+	uint8 i = 0u;
 	/* process all I/Os */
-    for(i=0;i<sizeof(ios)/sizeof(ios[0]);i++) {
+    for(i=0;i<sizeof(ios)/sizeof(ios[0]);i++)
+    {
       (void)CLS1_ReadAndParseWithCommandTable(ios[i].buf, ios[i].bufSize, ios[i].stdio, CmdParserTable);
     }
-
-    FRTOS1_vTaskDelay(10/portTICK_PERIOD_MS);
-  } /* for */
 }
 
 
-void SHELL_Init(void) {
+void SHELL_Init(void)
+{
+     uint8 i = 0u;
+	 uint8 buf[32];
+	 uint8 sumoId;
 
-  if (FRTOS1_xTaskCreate(ShellTask, "Shell", configMINIMAL_STACK_SIZE+50, NULL, tskIDLE_PRIORITY+1, NULL) != pdPASS) {
-    for(;;){} /* error */
-  }
+	/* initialize buffers */
+	for(i=0;i<sizeof(ios)/sizeof(ios[0]);i++) {
+		ios[i].buf[0] = '\0';
+	}
+
+	SHELL_SendString("Shell task started!\r\n");
+
+	/* print ID information about current sumo to the shell welcome dialog*/
+	sumoId = ID_WhichSumo();
+	if (sumoId == ERR_PARAM_ADDRESS)
+	{
+		UTIL1_strcpy(buf, sizeof(buf), "Idiot! Your sumo is unknown.");
+    }
+	else
+	{
+		UTIL1_strcpy(buf, sizeof(buf), "Welcome to Sumo #");
+	  	UTIL1_strcatNum8u(buf, sizeof(buf), ID_WhichSumo());
+	  	UTIL1_strcat(buf, sizeof(buf), " \r\n");
+	}
+	SHELL_SendString(buf);
 
 }
 

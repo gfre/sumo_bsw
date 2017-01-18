@@ -43,8 +43,11 @@ void SHELL_Parse(void);
 
 CLS1_ConstStdIOType *SHELL_GetStdio(void);
 
-/*! @brief Serial driver initialization */
+/*! @brief Shell initialization */
 void SHELL_Init(void);
+
+/*! @brief Shell main function */
+void SHELL_MainFct(void);
 
 /*! @brief Serial driver de-initialization */
 void SHELL_Deinit(void);

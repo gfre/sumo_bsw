@@ -21,7 +21,7 @@
 #include "appl_cfg.h"
 #include "FRTOS1.h"
 #include "WAIT1.h"
-#include "Shell.h"
+#include "shell.h"
 #include "LED1.h"
 #include "LED2.h"
 #include "Buzzer.h"
