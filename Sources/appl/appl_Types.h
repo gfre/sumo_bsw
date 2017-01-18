@@ -3,6 +3,7 @@
 
 #include "FRTOS1.h"
 
+
 #ifdef MASTER_APPL_C_
 #define EXTERNAL_
 #else
@@ -10,42 +11,48 @@
 #endif
 
 
-typedef struct TaskCfg_s
+typedef struct APPL_TaskCfgItm_s
 {
 	TaskFunction_t taskFct;
 	const char_t * const taskName;
 	const uint16 stackDepth;
 	void * const pvParameters;
 	uint32 taskPriority;
-	TaskHandle_t * const taskHdl;
-}TaskCfg_t;
+	TaskHandle_t taskHdl;
+}APPL_TaskCfgItm_t;
 
 typedef struct APPL_TaskCfg_s
 {
-	const TaskCfg_t *tasks;
-	uint8 numTasks;
+	APPL_TaskCfgItm_t *tasks;
+	const uint8 numTasks;
 }APPL_TaskCfg_t;
 
-typedef void (*MainFctHl_t)(void);
+typedef void (APPL_MainFct_t)(void);
 
-typedef struct APPL_cycTaskFctPar_s
+typedef struct APPL_MainFctCfg_s
 {
-	uint8 taskPeriod;
-	MainFctHl_t *mainFcts;
-	uint8 numMainFcts;
+	APPL_MainFct_t * const mainFct;
+	const char_t * const mainFctName;
+}APPL_MainFctCfg_t;
 
-}APPL_cycTaskFctPar_t;
-
-typedef struct APPL_nonCycTaskFctPar_s
+typedef struct APPL_CycTaskFctPar_s
 {
-	uint8 taskDelay;
-	MainFctHl_t *mainFcts;
-	uint8 numMainFcts;
+	const uint8 taskPeriod;
+	const APPL_MainFctCfg_t *mainFctCfg;
+	const uint8 numMainFcts;
 
-}APPL_nonCycTaskFctPar_t;
+}APPL_CycTaskFctPar_t;
 
-EXTERNAL_ void APPL_cycTaskFct(void *pvParameters);
-EXTERNAL_ void APPL_nonCycTaskFct(void *pvParameters);
+typedef struct APPL_NonCycTaskFctPar_s
+{
+	const uint8 taskDelay;
+	const APPL_MainFctCfg_t *mainFctCfg;
+	const uint8 numMainFcts;
+
+}APPL_NonCycTaskFctPar_t;
+
+EXTERNAL_ void APPL_CycTaskFct(void *pvParameters);
+EXTERNAL_ void APPL_NonCycTaskFct(void *pvParameters);
 
 
 #ifdef EXTERNAL_

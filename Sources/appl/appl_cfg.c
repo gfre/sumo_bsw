@@ -27,36 +27,36 @@
 #define TASK_DELAY_10MS           (10u)
 
 /* Task functions for cyclic tasks */
-static void mainTaskFct(void *pvParameters_) {return APPL_cycTaskFct(pvParameters_);}
+static void mainTaskFct(void *pvParameters_) {return APPL_CycTaskFct(pvParameters_);}
 
 /* Task functions for non-cyclic tasks */
-static void shTaskFct(void *pvParameters_)   {return APPL_nonCycTaskFct(pvParameters_);}
+static void shTaskFct(void *pvParameters_)   {return APPL_NonCycTaskFct(pvParameters_);}
 
-MainFctHl_t mainFctsMainTask[] = {
-		TACHO_CalcSpeed,
-		STATE_mainFct,
+const APPL_MainFctCfg_t mainTaskMainFctCfg[] = {
+		{TACHO_CalcSpeed, "tacho"},
+		{STATE_mainFct, "state"}
 };
 
-MainFctHl_t mainFctsShTask[] = {
+const APPL_MainFctCfg_t shTaskMainFctCfg[] = {
 
 };
 
 
-const APPL_cycTaskFctPar_t mainTaskFctPar = {
+const APPL_CycTaskFctPar_t mainTaskFctPar = {
 		TASK_CYCLE_PERIOD_10MS,
-		mainFctsMainTask,
-		sizeof(mainFctsMainTask)/sizeof(mainFctsMainTask[0])
+		mainTaskMainFctCfg,
+		sizeof(mainTaskMainFctCfg)/sizeof(mainTaskMainFctCfg[0])
 };
 
 
 
-const APPL_nonCycTaskFctPar_t shTaskFctPar = {
+const APPL_NonCycTaskFctPar_t shTaskFctPar = {
 		TASK_DELAY_10MS,
-		mainFctsShTask,
-		sizeof(mainFctsShTask)/sizeof(mainFctsShTask[0])
+		shTaskMainFctCfg,
+		sizeof(shTaskMainFctCfg)/sizeof(shTaskMainFctCfg[0])
 };
 
-const TaskCfg_t taskCfg[]= {
+APPL_TaskCfgItm_t taskCfg[]= {
 		{mainTaskFct, "MAIN",  configMINIMAL_STACK_SIZE,    (void *)&mainTaskFctPar, tskIDLE_PRIORITY+1, NULL},
 		{shTaskFct,   "SHELL", configMINIMAL_STACK_SIZE+50, (void *)&shTaskFctPar,   tskIDLE_PRIORITY+1, NULL},
 };

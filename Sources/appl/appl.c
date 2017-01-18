@@ -39,10 +39,10 @@
 
 
 
-static void APPL_taskCreate();
+static void APPL_TaskCreate();
 static uint8_t APPL_PrintHelp(const CLS1_StdIOType *io);
 static uint8_t APPL_PrintStatus(const CLS1_StdIOType *io);
-
+static void APPL_PrintCalledMainFcts(const CLS1_StdIOType *io_);
 
 
 static uint8_t APPL_PrintHelp(const CLS1_StdIOType *io) {
@@ -53,10 +53,66 @@ static uint8_t APPL_PrintHelp(const CLS1_StdIOType *io) {
 
 static uint8_t APPL_PrintStatus(const CLS1_StdIOType *io) {
 	CLS1_SendStatusStr((unsigned char*)"appl", (unsigned char*)"\r\n", io->stdOut);
-	CLS1_SendStatusStr((unsigned char*)"  status", "no status information available\r\n", io->stdOut);
+	APPL_PrintCalledMainFcts(io);
 	return ERR_OK;
 }
 
+static void APPL_PrintCalledMainFcts(const CLS1_StdIOType *io_)
+{
+	uint8 i = 0u;
+	uint8 j = 0u;
+	uint8 buf[128] = {""};
+	const APPL_TaskCfg_t *taskCfg = NULL;
+	const APPL_CycTaskFctPar_t *taskFctPar = NULL;
+	const char_t *mainFctName = NULL;
+	uint8 taskName[12] = {""};
+
+	taskCfg = Get_APPL_TaskCfg();
+
+	if(NULL != taskCfg)
+	{
+		for(i = 0u; i < taskCfg->numTasks; i++)
+		{
+			if(NULL != taskCfg->tasks)
+			{
+				taskFctPar = (const APPL_CycTaskFctPar_t*)taskCfg->tasks[i].pvParameters;
+				UTIL1_strcat(taskName, sizeof(taskName), "  ");
+				if(NULL != (taskCfg->tasks[i].taskHdl))
+				{
+					UTIL1_strcat(taskName, sizeof(taskName), FRTOS1_pcTaskGetTaskName((taskCfg->tasks[i].taskHdl)));
+					CLS1_SendStatusStr(taskName, (unsigned char*)"task created\r\n", io_->stdOut);
+				}
+				else
+				{
+					UTIL1_strcat(taskName, sizeof(taskName), "NULL");
+					CLS1_SendStatusStr(taskName, (unsigned char*)">> ERROR unknown task <<\r\n", io_->stdOut);
+				}
+				UTIL1_strcpy(taskName, sizeof(taskName), "");
+
+				taskFctPar = (const APPL_CycTaskFctPar_t*)taskCfg->tasks[i].pvParameters;
+				if(NULL != taskFctPar)
+				{
+					UTIL1_strcat(buf, sizeof(buf), ">> " );
+					for(j = 0u; j < taskFctPar->numMainFcts; j++)
+					{
+						if(NULL != taskFctPar->mainFctCfg)
+						{
+							UTIL1_strcat(buf, sizeof(buf), taskFctPar->mainFctCfg[j].mainFctName);
+							if(j < taskFctPar->numMainFcts-1u)
+							{
+								UTIL1_strcat(buf, sizeof(buf), ", ");
+							}
+						}
+
+					}
+					UTIL1_strcat(buf, sizeof(buf), "\r\n");
+					CLS1_SendStatusStr((unsigned char*)"   sw comps", (unsigned char*)buf, io_->stdOut);
+					UTIL1_strcpy(buf, sizeof(buf), "");
+				}
+			}
+		}
+	}
+}
 
 static void APPL_AdoptToHardware(void) {
 	/*Motor direction & Quadrature configuration for CAU_ZUMO */
@@ -79,12 +135,12 @@ static void APPL_AdoptToHardware(void) {
 	PORT_PDD_SetPinPullEnable(PORTC_BASE_PTR, 17, PORT_PDD_PULL_ENABLE);
 }
 
-static void APPL_taskCreate()
+static void APPL_TaskCreate()
 {
 	uint8 i = 0u;
 	const APPL_TaskCfg_t *taskCfg = NULL;
-
 	taskCfg = Get_APPL_TaskCfg();
+
 	if(NULL != taskCfg)
 	{
 		for(i = 0u; i < taskCfg->numTasks; i++)
@@ -96,7 +152,7 @@ static void APPL_taskCreate()
 												taskCfg->tasks[i].stackDepth,
 												taskCfg->tasks[i].pvParameters,
 												taskCfg->tasks[i].taskPriority,
-												taskCfg->tasks[i].taskHdl))
+											    &(taskCfg->tasks[i].taskHdl)))
 				{
 					/* The task could not be created because there was not enough
 					FreeRTOS heap memory available for the task data structures and
@@ -114,7 +170,7 @@ static void APPL_taskCreate()
 
 
 static void APPL_Init(void){
-	APPL_taskCreate();
+	APPL_TaskCreate();
 }
 
 
@@ -124,10 +180,10 @@ void APPL_DebugPrint(unsigned char *str) {
 
 uint8_t APPL_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io) {
 	uint8_t res = ERR_OK;
-	if (UTIL1_strcmp((char*)cmd, (char*)CLS1_CMD_HELP)==0 || UTIL1_strcmp((char*)cmd, (char*)"app help")==0) {
+	if (UTIL1_strcmp((char*)cmd, (char*)CLS1_CMD_HELP)==0 || UTIL1_strcmp((char*)cmd, (char*)"appl help")==0) {
 		*handled = TRUE;
 		return APPL_PrintHelp(io);
-	} else if (UTIL1_strcmp((char*)cmd, (char*)CLS1_CMD_STATUS)==0 || UTIL1_strcmp((char*)cmd, (char*)"app status")==0) {
+	} else if (UTIL1_strcmp((char*)cmd, (char*)CLS1_CMD_STATUS)==0 || UTIL1_strcmp((char*)cmd, (char*)"appl status")==0) {
 		*handled = TRUE;
 		return APPL_PrintStatus(io);
 	}
@@ -153,13 +209,13 @@ void APPL_Run(void) {
 
 
 /* Define a task that performs an action every x milliseconds. */
-void APPL_cycTaskFct(void * pvParameters_)
+void APPL_CycTaskFct(void * pvParameters_)
 {
 	uint8 i = 0u;
-	APPL_cycTaskFctPar_t *pvPar = NULL;
+	const APPL_CycTaskFctPar_t *pvPar = NULL;
 	TickType_t LastWakeTime;
 
-	pvPar = (APPL_cycTaskFctPar_t *)pvParameters_;
+	pvPar = (const APPL_CycTaskFctPar_t *)pvParameters_;
 
 	/* The xLastWakeTime variable needs to be initialized with the current tick
 	count.  Note that this is the only time the variable is written to explicitly.
@@ -177,25 +233,25 @@ void APPL_cycTaskFct(void * pvParameters_)
 		FRTOS1_vTaskDelayUntil( &LastWakeTime, pdMS_TO_TICKS( pvPar->taskPeriod ) );
 
 		/* Perform the periodic actions here. */
-		if(NULL != pvPar->mainFcts)
+		if(NULL != pvPar->mainFctCfg)
 		{
 			for(i = 0u; i < pvPar->numMainFcts; i++)
 			{
-				if(NULL != &(pvPar->mainFcts[i]))
+				if(NULL != pvPar->mainFctCfg[i].mainFct)
 				{
-					pvPar->mainFcts[i]();
+					pvPar->mainFctCfg[i].mainFct();
 				}
 			}
 		}
 	}
 }
 
-void APPL_nonCycTaskFct(void *pvParameters_)
+void APPL_NonCycTaskFct(void *pvParameters_)
 {
 	uint8 i = 0u;
-	APPL_nonCycTaskFctPar_t *pvPar = NULL;
+	const APPL_NonCycTaskFctPar_t *pvPar = NULL;
 
-	pvPar = (APPL_nonCycTaskFctPar_t *)pvParameters_;
+	pvPar = (const APPL_NonCycTaskFctPar_t *)pvParameters_;
 
 	FRTOS1_vTaskDelay( pdMS_TO_TICKS( 100u ));
 	for(;;) {
@@ -203,13 +259,13 @@ void APPL_nonCycTaskFct(void *pvParameters_)
 		FRTOS1_vTaskDelay( pdMS_TO_TICKS( pvPar->taskDelay) );
 
 		/* Perform the periodic actions here. */
-		if(NULL != pvPar->mainFcts)
+		if(NULL != pvPar->mainFctCfg)
 		{
 			for(i = 0u; i < pvPar->numMainFcts; i++)
 			{
-				if(NULL != &(pvPar->mainFcts[i]))
+				if(NULL != pvPar->mainFctCfg[i].mainFct)
 				{
-					pvPar->mainFcts[i]();
+					pvPar->mainFctCfg[i].mainFct();
 				}
 			}
 		}
