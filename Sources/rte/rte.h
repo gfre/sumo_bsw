@@ -23,6 +23,14 @@
 #define EXTERNAL_ extern
 #endif
 
+typedef enum RTE_DrvMode_e {
+  RTE_DRV_MODE_NONE = 0,
+  RTE_DRV_MODE_STOP,
+  RTE_DRV_MODE_SPEED,
+  RTE_DRV_MODE_POS,
+  RTE_DRV_MODE_INVALID,
+} RTE_DrvMode_t;
+
 typedef void EvntCbFct_t(uint8 );
 
 /**
@@ -191,7 +199,7 @@ EXTERNAL_ StdRtnType RTE_Play_BuzBeep(uint16 freqHz_, uint16 durMs_);
 
 /**
  * @brief RTE interface to read the velocity of the left wheels
- * @param  *vel_ pointer to the current velocity (call by reference)
+ * @param  *vel_ pointer to the current velocity in steps/sec (call by reference)
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
@@ -200,11 +208,75 @@ EXTERNAL_ StdRtnType RTE_Read_SpdoVelLe(uint16 *vel_);
 
 /**
  * @brief RTE interface to read the velocity of the right wheels
- * @param  *vel_ pointer to the current velocity (call by reference)
+ * @param  *vel_ pointer to the current velocity in steps/sec (call by reference)
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
 EXTERNAL_ StdRtnType RTE_Read_SpdoVelRi(uint16 *vel_);
+
+/**
+ * @brief RTE interface to write the desired velocity in speed mode
+ * @param  velLe_ desired velocity of left wheels in steps/sec
+ * @param  velRi_ desired velocity of right wheels in steps/sec
+ * @return Error code, RTN_OK if everything was fine,
+ *                     RTN_INVALID otherwise
+ */
+EXTERNAL_ StdRtnType RTE_Write_DrvVel(int32 velLe_, int32 velRi_);
+
+/**
+ * @brief RTE interface to write the target postion in position mode
+ * @param  posLe_ desired position of left wheels in steps/sec
+ * @param  posRi_ desired position of right wheels in steps/sec
+ * @return Error code, RTN_OK if everything was fine,
+ *                     RTN_INVALID otherwise
+ */
+EXTERNAL_ StdRtnType RTE_Write_DrvPos(int32 posLe_, int32 posRi_);
+
+/**
+ * @brief RTE interface to command the desired driving control mode
+ * @param  mode_ desired driving control mode (RTE_DrvMode_t)
+ * @return Error code, RTN_OK if everything was fine,
+ *                     RTN_INVALID otherwise
+ */
+EXTERNAL_ StdRtnType RTE_Write_DrvMode(RTE_DrvMode_t mode_);
+
+/**
+ * @brief RTE interface to read the current driving control mode
+ * @param  *mode_ pointer to the current driving control mode (RTE_DrvMode_t)
+ * @return Error code, RTN_OK if everything was fine,
+ *                     RTN_INVALID otherwise
+ */
+EXTERNAL_ StdRtnType RTE_Read_DrvMode(RTE_DrvMode_t *mode_);
+
+/**
+ * @brief RTE interface to read if the sumo is driving backwards
+ * @param  *isDrvgBkwd_ pointer to a flag
+ *                        TRUE  - driving backward,
+ *                        FALSE - driving forward
+ * @return Error code, RTN_OK if everything was fine,
+ *                     RTN_INVALID otherwise
+ */
+EXTERNAL_ StdRtnType RTE_Read_DrvIsDrvgBkwd(uint8 *isDrvgBkwd_);
+
+/**
+ * @brief RTE interface to read if the sumo has stopped
+ * @param  *hasStopped_ pointer to a flag
+ *                        TRUE  - has stopped,
+ *                        FALSE - still driving
+ * @return Error code, RTN_OK if everything was fine,
+ *                     RTN_INVALID otherwise
+ */
+EXTERNAL_ StdRtnType RTE_Read_DrvHasStpd(uint8 *hasStpd_);
+
+/**
+ * @brief RTE interface to read if the sumo has just reversed
+ * @param  *hasStopped_ pointer to a flag
+ *                        TRUE  - has just reversed,
+ *                        FALSE - has not just reversed
+ * @return Error code, RTN_OK if everything was fine,
+ *                     RTN_INVALID otherwise
+ */
+EXTERNAL_ StdRtnType RTE_Read_DrvHasRvsd(uint8 *hasRvsd_);
 
 #ifdef EXTERNAL_
 #undef EXTERNAL_

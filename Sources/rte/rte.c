@@ -17,6 +17,7 @@
 #include "Buzzer.h"
 #include "rte.h"
 #include "tacho.h"
+#include "drive.h"
 
 #define USER_SWITCH_MASK (0x01u)
 
@@ -249,6 +250,103 @@ StdRtnType RTE_Read_SpdoVelRi(uint16 *vel_)
 }
 /*========================================================*/
 
+/**
+ * Interface implementation for the drive component
+ */
+static DRV_Mode Trsnlte_ModeRTE2DRV(RTE_DrvMode_t mode_);
+static RTE_DrvMode_t Trsnlte_ModeDRV2RTE(DRV_Mode mode_);
+
+static DRV_Mode Trsnlte_ModeRTE2DRV(RTE_DrvMode_t mode_)
+{
+	switch(mode_)
+	{
+		default:
+		case RTE_DRV_MODE_NONE:  return DRV_MODE_NONE;
+		case RTE_DRV_MODE_STOP:  return DRV_MODE_STOP;
+		case RTE_DRV_MODE_SPEED: return DRV_MODE_SPEED;
+		case RTE_DRV_MODE_POS:   return DRV_MODE_POS;
+	}
+	return DRV_MODE_NONE;
+}
+
+static RTE_DrvMode_t Trsnlte_ModeDRV2RTE(DRV_Mode mode_)
+{
+	switch(mode_)
+	{
+		case DRV_MODE_NONE:  return RTE_DRV_MODE_NONE;
+		case DRV_MODE_STOP:  return RTE_DRV_MODE_STOP;
+		case DRV_MODE_SPEED: return RTE_DRV_MODE_SPEED;
+		case DRV_MODE_POS:   return RTE_DRV_MODE_POS;
+		default:             return RTE_DRV_MODE_INVALID;
+	}
+	return RTE_DRV_MODE_INVALID;
+
+}
+
+StdRtnType RTE_Write_DrvVel(int32 velLe_, int32 velRi_)
+{
+	return DRV_SetSpeed(velLe_, velRi_);
+}
+
+StdRtnType RTE_Write_DrvPos(int32 posLe_, int32 posRi_)
+{
+	return DRV_SetSpeed(posLe_, posRi_);
+}
+
+StdRtnType RTE_Write_DrvMode(RTE_DrvMode_t mode_)
+{
+	StdRtnType retVal = RTN_INVALID;
+	if((RTE_DRV_MODE_INVALID > mode_) && (RTE_DRV_MODE_NONE <= mode_))
+	{
+		DRV_SetMode(Trsnlte_ModeRTE2DRV(mode_));
+		retVal = RTN_OK;
+	}
+	return retVal;
+}
+
+StdRtnType RTE_Read_DrvMode(RTE_DrvMode_t *mode_)
+{
+	StdRtnType retVal = RTN_INVALID;
+	if(NULL != mode_)
+	{
+		*mode_ = Trsnlte_ModeDRV2RTE(DRV_GetMode());
+		retVal = RTN_OK;
+	}
+	return retVal;
+}
+
+StdRtnType RTE_Read_DrvIsDrvgBkwd(uint8 *isDrvgBkwd_)
+{
+	StdRtnType retVal = RTN_INVALID;
+	if(NULL != isDrvgBkwd_)
+	{
+		*isDrvgBkwd_ = DRV_IsDrivingBackward();
+		retVal = RTN_OK;
+	}
+	return retVal;
+}
+
+StdRtnType RTE_Read_DrvHasStpd(uint8 *hasStpd_)
+{
+	StdRtnType retVal = RTN_INVALID;
+	if(NULL != hasStpd_)
+	{
+		*hasStpd_ =  DRV_IsStopped();
+		retVal = RTN_OK;
+	}
+	return retVal;
+}
+
+StdRtnType RTE_Read_DrvHasRvsd(uint8 *hasRvsd_)
+{
+	StdRtnType retVal = RTN_INVALID;
+	if(NULL != hasRvsd_)
+	{
+		*hasRvsd_ =  DRV_HasTurned();
+		retVal = RTN_OK;
+	}
+	return retVal;
+}
 /*========================================================*/
 
 #ifdef MASTER_RTE_C_
