@@ -35,7 +35,6 @@ extern "C" {
 
 
 /* User includes (#include below this line is not maintained by Processor Expert) */
-#include "Trigger.h"
 #include "Tacho.h"
 #include "rte.h"
 /*
@@ -120,7 +119,6 @@ void FRTOS1_vApplicationTickHook(void)
   /* Write your code here ... */
   TACHO_Sample();
   TRG1_AddTick();
-  TRG_AddTick();
 }
 
 /*

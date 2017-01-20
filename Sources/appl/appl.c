@@ -150,6 +150,7 @@ static void APPL_TaskCreate()
 			{
 				if((shEnable == FALSE) && UTIL1_strcmp(taskCfg->tasks[i].taskName, "SHELL")==0){
 					/* Do nothing, because the shell task should not be started */
+					BUZ_PlayTune(BUZ_TUNE_WELCOME);
 				}
 				else if(pdPASS != FRTOS1_xTaskCreate(taskCfg->tasks[i].taskFct,
 						taskCfg->tasks[i].taskName,

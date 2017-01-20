@@ -14,9 +14,11 @@
 #include "Platform.h"
 #include "Buzzer.h"
 #include "BUZ1.h"
-#include "Trigger.h"
+#include "TRG1.h"
 #include "UTIL1.h"
 #include "CLS1.h"
+
+#define TRG_TICKS_MS  1
 
 typedef struct {
 	uint16_t buzPeriodTicks; /*!< number of trigger ticks for a PWM period */
@@ -74,15 +76,17 @@ static MelodyDesc BUZ_Melodies[] = {
 		{0, sizeof(MelodyButtonLong)/sizeof(MelodyButtonLong[0]),   {0, 0}, MelodyButtonLong}, /* BUZ_TUNE_BUTTON_LONG */
 };
 
-static void BUZ_Toggle(void *dataPtr) {
-	BUZ_TrgInfo *trgInfo = (BUZ_TrgInfo *)dataPtr;
 
-	if (trgInfo->buzIterationCntr==0) {
+static BUZ_Tunes tune;
+static MelodyDesc *melody = NULL;
+
+static void BUZ_Toggle() {
+	if (trgInfo.buzIterationCntr==0) {
 		BUZ1_ClrVal(); /* turn buzzer off */
 	} else {
-		trgInfo->buzIterationCntr--;
+		trgInfo.buzIterationCntr--;
 		BUZ1_NegVal();
-		(void)TRG_SetTrigger(TRG_BUZ_BEEP, trgInfo->buzPeriodTicks, BUZ_Toggle, trgInfo);
+		(void)TRG1_AddTrigger(TRG1_BUZ_BEEP, trgInfo.buzPeriodTicks, BUZ_Toggle);
 	}
 }
 
@@ -91,28 +95,32 @@ uint8_t BUZ_Beep(uint16_t freq, uint16_t durationMs) {
 		BUZ1_SetVal(); /* turn buzzer on */
 		trgInfo.buzPeriodTicks = (1000*TRG_TICKS_MS)/freq;
 		trgInfo.buzIterationCntr = durationMs/TRG_TICKS_MS/trgInfo.buzPeriodTicks;
-		return TRG_SetTrigger(TRG_BUZ_BEEP, trgInfo.buzPeriodTicks, BUZ_Toggle, (void*)&trgInfo);
+		TRG1_AddTrigger(TRG1_BUZ_BEEP, trgInfo.buzPeriodTicks, BUZ_Toggle);
+		return ERR_OK;
 	} else {
 		return ERR_BUSY;
 	}
 }
 
-static void BUZ_Play(void *dataPtr) {
-	MelodyDesc *melody = (MelodyDesc*)dataPtr;
+static void BUZ_Play() {
+	// if (melody == NULL)
+		melody = &BUZ_Melodies[tune];
 
 	BUZ_Beep(melody->melody[melody->idx].freq, melody->melody[melody->idx].ms);
 	melody->idx++;
 	if (melody->idx<melody->maxIdx) {
-		TRG_SetTrigger(TRG_BUZ_TUNE, melody->melody[melody->idx-1].ms/TRG_TICKS_MS, BUZ_Play, (void*)melody);
+		TRG1_AddTrigger(TRG1_BUZ_TUNE, melody->melody[melody->idx-1].ms/TRG_TICKS_MS, BUZ_Play);
 	}
 }
 
-uint8_t BUZ_PlayTune(BUZ_Tunes tune) {
-	if (tune>=BUZ_TUNE_NOF_TUNES) {
+uint8_t BUZ_PlayTune(BUZ_Tunes tune_) {
+	if (tune_>=BUZ_TUNE_NOF_TUNES) {
 		return ERR_OVERFLOW;
 	}
+	tune = tune_;
 	BUZ_Melodies[tune].idx = 0; /* reset index */
-	return TRG_SetTrigger(TRG_BUZ_TUNE, 0, BUZ_Play, (void*)&BUZ_Melodies[tune]);
+	TRG1_AddTrigger(TRG1_BUZ_TUNE, 0, BUZ_Play);
+	return ERR_OK;
 }
 
 
