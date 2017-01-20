@@ -16,6 +16,7 @@
 #include "KEY1.h"
 #include "Buzzer.h"
 #include "rte.h"
+#include "tacho.h"
 
 #define USER_SWITCH_MASK (0x01u)
 
@@ -216,6 +217,39 @@ StdRtnType RTE_Play_BuzBeep(uint16 freqHz_, uint16 durMs_)
 {
 	return (StdRtnType)BUZ_Beep(freqHz_, durMs_);
 }
+/*========================================================*/
+
+/**
+ * Interface implementation for the speedometer
+ */
+#define LEFT   (TRUE)
+#define RIGHT  (FALSE)
+
+StdRtnType RTE_Read_SpdoVelLe(uint16 *vel_)
+{
+	StdRtnType retVal = RTN_IVALID;
+	if(NULL != vel_)
+	{
+		*vel_ = TACHO_GetSpeed(TRUE);
+		retVal = RTN_IVALID;
+	}
+	return retVal;
+}
+
+
+StdRtnType RTE_Read_SpdoVelRi(uint16 *vel_)
+{
+	StdRtnType retVal = RTN_IVALID;
+	if(NULL != vel_)
+	{
+		*vel_ = TACHO_GetSpeed(FALSE);
+		retVal = RTN_IVALID;
+	}
+	return retVal;
+}
+/*========================================================*/
+
+/*========================================================*/
 
 #ifdef MASTER_RTE_C_
 #undef MASTER_RTE_C_
