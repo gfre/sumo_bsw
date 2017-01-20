@@ -3,7 +3,7 @@
   <Header>
     <Name>sumo_bsw</Name>
     <SavedBy>gefr</SavedBy>
-    <ModificationStamp>52</ModificationStamp>
+    <ModificationStamp>56</ModificationStamp>
     <Date>2017-01-03</Date>
     <IDE>Eclipse IDE</IDE>
     <PEversion>1.12.2.RT7_b1550-0615</PEversion>
@@ -29,7 +29,7 @@
     <UseExistingModules>true</UseExistingModules>
     <RenamePeripheries>false</RenamePeripheries>
     <Autodependency>true</Autodependency>
-    <ProjectCompNumb>321</ProjectCompNumb>
+    <ProjectCompNumb>326</ProjectCompNumb>
     <DelUnusedPreviouslyGenFiles>true</DelUnusedPreviouslyGenFiles>
     <GeneratedCodeFrozen>false</GeneratedCodeFrozen>
     <AssignInitComponentNameToPrph>true</AssignInitComponentNameToPrph>
@@ -26659,9 +26659,11 @@
         <ReadOnly>false</ReadOnly>
         <UserReadOnly>false</UserReadOnly>
         <Value>(string list)</Value>
-        <StrgList lines_count="2">
+        <StrgList lines_count="4">
           <Line>KEY1_PRESS /* key pressed, used by the KEY bean. Format is '&lt;triggerName&gt;_&lt;keyName&gt;_PRESS' */</Line>
-          <Line>EXAMPLE  /* example trigger */</Line>
+          <Line>BUZ_BEEP /* Buzzer beep */</Line>
+          <Line>KEYPRESS /* key debounce */</Line>
+          <Line>BUZ_TUNE</Line>
         </StrgList>
       </ItemState>
       <ItemState>
