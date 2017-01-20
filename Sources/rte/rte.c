@@ -208,9 +208,30 @@ EvntCbFct_t *RTE_Get_SwtOnLngRlsdCbFct(void)
 /**
  * Interface implementation for the buzzer
  */
-StdRtnType RTE_Play_BuzTune(BUZ_Tunes tune_)
+static BUZ_Tunes Trsnlte_TuneRTE2BUZ(RTE_BuzTune_t tune_);
+
+
+static BUZ_Tunes Trsnlte_TuneRTE2BUZ(RTE_BuzTune_t mode_)
 {
-	return (StdRtnType)BUZ_PlayTune(tune_);
+	switch(mode_)
+	{
+		case RTE_BUZ_TUNE_WELCOME:     return BUZ_TUNE_WELCOME;
+		case RTE_BUZ_TUNE_BUTTON:      return BUZ_TUNE_BUTTON;
+		case RTE_BUZ_TUNE_BUTTON_LONG: return BUZ_TUNE_BUTTON_LONG;
+		default:
+		case RTE_BUZ_TUNE_NOF_TUNES:   return BUZ_TUNE_NOF_TUNES;
+	}
+	return BUZ_TUNE_NOF_TUNES;
+}
+
+StdRtnType RTE_Write_BuzPlayTune(RTE_BuzTune_t tune_)
+{
+	StdRtnType retVal = RTN_INVALID;
+	if(BUZ_TUNE_NOF_TUNES > tune_)
+	{
+		retVal &= (StdRtnType)BUZ_PlayTune(Trsnlte_TuneRTE2BUZ(tune_));
+	}
+	return retVal;
 }
 
 
@@ -280,17 +301,16 @@ static RTE_DrvMode_t Trsnlte_ModeDRV2RTE(DRV_Mode mode_)
 		default:             return RTE_DRV_MODE_INVALID;
 	}
 	return RTE_DRV_MODE_INVALID;
-
 }
 
 StdRtnType RTE_Write_DrvVel(int32 velLe_, int32 velRi_)
 {
-	return DRV_SetSpeed(velLe_, velRi_);
+	return (StdRtnType)DRV_SetSpeed(velLe_, velRi_);
 }
 
 StdRtnType RTE_Write_DrvPos(int32 posLe_, int32 posRi_)
 {
-	return DRV_SetSpeed(posLe_, posRi_);
+	return (StdRtnType)DRV_SetSpeed(posLe_, posRi_);
 }
 
 StdRtnType RTE_Write_DrvMode(RTE_DrvMode_t mode_)
@@ -298,8 +318,7 @@ StdRtnType RTE_Write_DrvMode(RTE_DrvMode_t mode_)
 	StdRtnType retVal = RTN_INVALID;
 	if((RTE_DRV_MODE_INVALID > mode_) && (RTE_DRV_MODE_NONE <= mode_))
 	{
-		DRV_SetMode(Trsnlte_ModeRTE2DRV(mode_));
-		retVal = RTN_OK;
+		retVal &= (StdRtnType)DRV_SetMode(Trsnlte_ModeRTE2DRV(mode_));
 	}
 	return retVal;
 }

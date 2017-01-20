@@ -15,13 +15,19 @@
 
 #include "Platform.h"
 #include "CAU_Types.h"
-#include "Buzzer.h"
 
 #ifdef MASTER_RTE_C_
 #define EXTERNAL_
 #else
 #define EXTERNAL_ extern
 #endif
+
+typedef enum RTE_BuzTune_e {
+	RTE_BUZ_TUNE_WELCOME = 0,
+	RTE_BUZ_TUNE_BUTTON,
+	RTE_BUZ_TUNE_BUTTON_LONG,
+	RTE_BUZ_TUNE_NOF_TUNES
+}RTE_BuzTune_t;
 
 typedef enum RTE_DrvMode_e {
   RTE_DRV_MODE_NONE = 0,
@@ -186,7 +192,7 @@ EXTERNAL_ EvntCbFct_t *RTE_Get_SwtOnLngRlsdCbFct(void);
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
-EXTERNAL_ StdRtnType RTE_Play_BuzTune(BUZ_Tunes tune_);
+EXTERNAL_ StdRtnType RTE_Write_BuzPlayTune(RTE_BuzTune_t tune_);
 
 /**
  * @brief RTE interface to play a buzzer beep
@@ -195,7 +201,7 @@ EXTERNAL_ StdRtnType RTE_Play_BuzTune(BUZ_Tunes tune_);
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
-EXTERNAL_ StdRtnType RTE_Play_BuzBeep(uint16 freqHz_, uint16 durMs_);
+EXTERNAL_ StdRtnType RTE_Write_BuzBeep(uint16 freqHz_, uint16 durMs_);
 
 /**
  * @brief RTE interface to read the velocity of the left wheels
