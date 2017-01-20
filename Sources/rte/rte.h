@@ -195,7 +195,7 @@ EXTERNAL_ StdRtnType RTE_Play_BuzBeep(uint16 freqHz_, uint16 durMs_);
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
-EXTERNAL_ StdRtnType RTE_Read_SpdoVelRi(uint16 *vel_);
+EXTERNAL_ StdRtnType RTE_Read_SpdoVelLe(uint16 *vel_);
 
 
 /**

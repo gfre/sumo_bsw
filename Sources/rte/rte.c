@@ -227,11 +227,11 @@ StdRtnType RTE_Play_BuzBeep(uint16 freqHz_, uint16 durMs_)
 
 StdRtnType RTE_Read_SpdoVelLe(uint16 *vel_)
 {
-	StdRtnType retVal = RTN_IVALID;
+	StdRtnType retVal = RTN_INVALID;
 	if(NULL != vel_)
 	{
 		*vel_ = TACHO_GetSpeed(TRUE);
-		retVal = RTN_IVALID;
+		retVal = RTN_INVALID;
 	}
 	return retVal;
 }
@@ -239,11 +239,11 @@ StdRtnType RTE_Read_SpdoVelLe(uint16 *vel_)
 
 StdRtnType RTE_Read_SpdoVelRi(uint16 *vel_)
 {
-	StdRtnType retVal = RTN_IVALID;
+	StdRtnType retVal = RTN_INVALID;
 	if(NULL != vel_)
 	{
 		*vel_ = TACHO_GetSpeed(FALSE);
-		retVal = RTN_IVALID;
+		retVal = RTN_INVALID;
 	}
 	return retVal;
 }
