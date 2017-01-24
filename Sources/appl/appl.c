@@ -157,7 +157,7 @@ static void APPL_TaskCreate()
 						taskCfg->tasks[i].stackDepth,
 						taskCfg->tasks[i].pvParameters,
 						taskCfg->tasks[i].taskPriority,
-						taskCfg->tasks[i].taskHdl))
+						&taskCfg->tasks[i].taskHdl))
 				{
 					/* The task could not be created because there was not enough
 								FreeRTOS heap memory available for the task data structures and
@@ -214,7 +214,7 @@ void APPL_Run(void) {
 
 	APPL_AdoptToHardware();
 
-	APPL_Init();
+    APPL_Init();
 }
 
 

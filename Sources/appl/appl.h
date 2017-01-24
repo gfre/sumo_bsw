@@ -49,4 +49,4 @@ EXTERNAL_ void APPL_Run(void);
 #undef EXTERNAL_
 #endif
 
-#endif /* APPLICATION_H_ */
+#endif /* APPL_H_ */
