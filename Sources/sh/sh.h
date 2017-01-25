@@ -18,38 +18,48 @@
 
 #include "CLS1.h"
 
+#ifdef MASTER_SH_C_
+#define EXTERNAL_
+#else
+#define EXTERNAL_ extern
+#endif
+
 /*!
  * @brief Sends a string to the shell/console stdout
  * @param msg Zero terminated string to write
  */
-void SH_SendString(unsigned char *msg);
+EXTERNAL_ void SH_SendString(unsigned char *msg);
 
 /*!
  * @brief Puts a command received from the Radio channel into a buffer.
  * @param str Zero terminated string
  */
-void SH_RadioRxString(unsigned char *str);
+EXTERNAL_ void SH_RadioRxString(unsigned char *str);
 
 /*!
  * @brief Parse a command string
  * @param cmd Zero terminated command to be parsed
  */
-void SH_ParseCmd(unsigned char *cmd);
+EXTERNAL_ void SH_ParseCmd(unsigned char *cmd);
 
 /*!
  * @brief Checks if there is input from the console and parses it.
  */
-void SH_Parse(void);
+EXTERNAL_ void SH_Parse(void);
 
-CLS1_ConstStdIOType *SH_GetStdio(void);
+EXTERNAL_ CLS1_ConstStdIOType *SH_GetStdio(void);
 
 /*! @brief Shell initialization */
-void SH_Init(void);
+EXTERNAL_ void SH_Init(void);
 
 /*! @brief Shell main function */
-void SH_MainFct(void);
+EXTERNAL_ void SH_MainFct(void);
 
 /*! @brief Serial driver de-initialization */
-void SH_Deinit(void);
+EXTERNAL_ void SH_Deinit(void);
 
-#endif /* SH_H_ */
+#ifdef EXTERNAL_
+#undef EXTERNAL_
+#endif
+
+#endif /* !SH_H_ */

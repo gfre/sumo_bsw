@@ -13,6 +13,8 @@
  * ==============================================================================
  */
 
+#define MASTER_SH_C_
+
 #include "sh.h"
 #include "CLS1.h"
 #include "FRTOS1.h"
@@ -33,7 +35,7 @@
 #include "id.h"
 #include "nvm.h"
 #include "state.h"
-
+#include "rnet.h"
 
 void SH_SendString(unsigned char *msg) {
   CLS1_SendStr(msg, SH_GetStdio()->stdOut);
@@ -89,6 +91,7 @@ static const CLS1_ParseCommandCallback CmdParserTable[] =
   RNET1_ParseCommand,
   BATT_ParseCommand,
   KIN1_ParseCommand,
+  RNET_ParseCommand,
   NULL /* Sentinel */
 };
 
@@ -159,4 +162,8 @@ void SH_Deinit(void) {
   /* nothing to do */
   CLS1_Deinit();
 }
+
+#ifdef MASTER_SH_C_
+#undef MASTER_SH_C_
+#endif
 
