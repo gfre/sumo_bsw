@@ -40,7 +40,6 @@ static void STATE_RunStateMachine(void) {
 
 	case MAIN_STATE_INIT:
 		STUD_Init();
-		RNET1_PowerUp();
 		mainState = MAIN_STATE_IDLE;
 		break;
 

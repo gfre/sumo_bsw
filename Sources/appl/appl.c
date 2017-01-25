@@ -37,6 +37,7 @@
 #include "nvm.h"
 #include "id.h"
 #include "rte.h"
+#include "rnet.h"
 
 static bool shEnable = FALSE; /* DEFAULT: Shell is off */
 
@@ -214,6 +215,7 @@ void APPL_Run(void) {
 
 	APPL_AdoptToHardware();
 
+	RNET_Init();
     APPL_Init();
 }
 
