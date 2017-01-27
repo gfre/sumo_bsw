@@ -18,7 +18,7 @@
 #include "FRTOS1.h"
 #include "sh.h"
 #include "appl.h"
-
+#include "rte.h"
 
 static RNWK_ShortAddrType dstAddr = RNWK_ADDR_BROADCAST; /* destination node address */
 
@@ -28,8 +28,8 @@ typedef enum RNET_State_s{
   RNET_TX_RX,
 } RNET_State_t;
 
-
-static uint8_t RNET_HandleDataRxMessage(RAPP_MSG_Type type, uint8_t size, uint8_t *data, RNWK_ShortAddrType srcAddr, bool *handled, RPHY_PacketDesc *packet);
+static uint8_t RNET_HdlRTERxMsgCbFct(RAPP_MSG_Type type_, uint8_t size_, uint8_t *data_, RAPP_ShortAddrType srcAddr_, bool *handled_, RPHY_PacketDesc *pkt_);
+static uint8_t RNET_HandleDataRxMessage(RAPP_MSG_Type type, uint8_t size, uint8_t *data, RAPP_ShortAddrType srcAddr, bool *handled, RPHY_PacketDesc *packet);
 static void RNET_RadioPowerUp(void);
 static uint8_t RNET_PrintStatus(const CLS1_StdIOType *io);
 static void RNET_PrintHelp(const CLS1_StdIOType *io);
@@ -39,12 +39,29 @@ static RNET_State_t rnetState = RNET_NONE;
 static const RAPP_MsgHandler handlerTable[] =
 {
   RNET_HandleDataRxMessage,
+  RNET_HdlRTERxMsgCbFct,
   NULL /* sentinel */
 };
 
+static uint8_t RNET_HdlRTERxMsgCbFct(RAPP_MSG_Type type_, uint8_t size_, uint8_t *data_, RAPP_ShortAddrType srcAddr_, bool *handled_, RPHY_PacketDesc *pktDes_)
+{
+	StdRtn_t retVal= ERR_PARAM_ADDRESS;
+	RTE_RFRxMsgCbFct_t *rxMsgCbFct = NULL;
+	RTE_RFPktDes_t pktDes = {0u};
+	rxMsgCbFct =RTE_Get_RFRxMsgCbFct();
+	if((NULL != rxMsgCbFct) && (NULL != data_) && (NULL != pktDes_))
+	{
+		pktDes.flags = (uint8)pktDes_->flags;
+		pktDes.size  = (uint8)pktDes_->phySize;
+		pktDes.data  = (uint8 *)pktDes_->phyData;
+		pktDes.rxtx  = (uint8 *)pktDes_->rxtx;
+		rxMsgCbFct((RTE_RFMsgType_t)type_, (uint8)size_, (const uint8 *)data_, (uint8)srcAddr_, (uint8 *)handled_, &pktDes);
+		retVal = ERR_OK;
+	}
+	return retVal;
 
-
-static uint8_t RNET_HandleDataRxMessage(RAPP_MSG_Type type, uint8_t size, uint8_t *data, RNWK_ShortAddrType srcAddr, bool *handled, RPHY_PacketDesc *packet) {
+}
+static uint8_t RNET_HandleDataRxMessage(RAPP_MSG_Type type, uint8_t size, uint8_t *data, RAPP_ShortAddrType srcAddr, bool *handled, RPHY_PacketDesc *packet) {
   uint8_t buf[32];
   CLS1_ConstStdIOTypePtr io = SH_GetStdio();
   uint8_t val;
@@ -52,7 +69,7 @@ static uint8_t RNET_HandleDataRxMessage(RAPP_MSG_Type type, uint8_t size, uint8_
   (void)size;
   (void)packet;
   switch(type) {
-    case RAPP_MSG_TYPE_DATA: /* generic data message */
+    case MSG_TYPE_TESTDATA: /* generic data message */
       *handled = TRUE;
       val = *data; /* get data value */
       CLS1_SendStr((unsigned char*)"Data: ", io->stdOut);
@@ -173,7 +190,7 @@ uint8_t RNET_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_St
     p = cmd + sizeof("rapp send val")-1;
     *handled = TRUE;
     if (UTIL1_ScanDecimal8uNumber(&p, &val8)==ERR_OK) {
-      (void)RAPP_SendPayloadDataBlock(&val8, sizeof(val8), (uint8_t)RAPP_MSG_TYPE_DATA, dstAddr, RPHY_PACKET_FLAGS_NONE); /* only send low byte */
+      (void)RAPP_SendPayloadDataBlock(&val8, sizeof(val8), (uint8_t)MSG_TYPE_TESTDATA, dstAddr, RPHY_PACKET_FLAGS_NONE); /* only send low byte */
     } else {
       CLS1_SendStr((unsigned char*)"ERR: wrong number format\r\n", io->stdErr);
       return ERR_FAILED;
@@ -191,8 +208,14 @@ uint8_t RNET_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_St
   return res;
 }
 
-RNWK_ShortAddrType RNET_GetDestAddr(void) {
+RAPP_ShortAddrType RNET_GtDestAddr(void) {
   return dstAddr;
+}
+
+void RNET_SetDstAddr(RAPP_ShortAddrType addr_)
+{
+  dstAddr=addr_;
+  return;
 }
 
 #ifdef MASTER_RNET_APPL_C_

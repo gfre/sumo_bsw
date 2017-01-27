@@ -23,16 +23,23 @@
 EXTERNAL_ uint8_t RNET_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
 
 
-/*!
- * \brief Return the current remote node address.
- * \return Remote node address
+/**
+ * @brief Return the current network address of the RF-node.
+ * @return network address
  */
-EXTERNAL_ RNWK_ShortAddrType RNET_GetDestAddr(void);
+EXTERNAL_ RAPP_ShortAddrType RNET_GetDstAddr(void);
 
-/*! \brief Driver de-initialization */
+/**
+ * @brief Set the network address of the RF-node.
+ * @param addr_ network address
+ * @return void
+ */
+EXTERNAL_ void RNET_SetDstAddr(RAPP_ShortAddrType addr_);
+
+/** @brief Driver de-initialization */
 EXTERNAL_ void RNET_Deinit(void);
 
-/*! \brief Driver initialization */
+/** @brief Driver initialization */
 EXTERNAL_ void RNET_Init(void);
 
 

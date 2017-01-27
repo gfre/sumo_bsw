@@ -18,6 +18,8 @@
 #include "rte.h"
 #include "tacho.h"
 #include "drive.h"
+#include "RApp.h"
+#include "rnet.h"
 
 #define USER_SWITCH_MASK (0x01u)
 
@@ -68,7 +70,6 @@ StdRtnType RTE_Read_LedRiSt(uint8 *state_)
 /*========================================================*/
 
 
-
 /**
  * Interface implementation for the right LED
  */
@@ -116,7 +117,6 @@ StdRtnType RTE_Read_LedLeSt(uint8 *state_)
 /*========================================================*/
 
 
-
 /**
  * Interface implementation for the user switch
  */
@@ -127,7 +127,7 @@ typedef struct CbFctTab_s{
 	EvntCbFct_t *cbFctOnLngRlsd;
 }CbFctTab_t;
 
-static CbFctTab_t cbFctTab={NULL,NULL,NULL,NULL};
+static CbFctTab_t cbFctTab={NULL};
 
 StdRtnType RTE_Read_SwtSt(uint8 *state_)
 {
@@ -205,13 +205,14 @@ EvntCbFct_t *RTE_Get_SwtOnLngRlsdCbFct(void)
 }
 /*========================================================*/
 
+
 /**
  * Interface implementation for the buzzer
  */
-static BUZ_Tunes Trsnlte_TuneRTE2BUZ(RTE_BuzTune_t tune_);
+static inline BUZ_Tunes Trsnlte_TuneRTE2BUZ(RTE_BuzTune_t tune_);
 
 
-static BUZ_Tunes Trsnlte_TuneRTE2BUZ(RTE_BuzTune_t mode_)
+static inline BUZ_Tunes Trsnlte_TuneRTE2BUZ(RTE_BuzTune_t mode_)
 {
 	switch(mode_)
 	{
@@ -240,6 +241,7 @@ StdRtnType RTE_Play_BuzBeep(uint16 freqHz_, uint16 durMs_)
 	return (StdRtnType)BUZ_Beep(freqHz_, durMs_);
 }
 /*========================================================*/
+
 
 /**
  * Interface implementation for the speedometer
@@ -271,13 +273,14 @@ StdRtnType RTE_Read_SpdoVelRi(uint16 *vel_)
 }
 /*========================================================*/
 
+
 /**
  * Interface implementation for the drive component
  */
-static DRV_Mode Trsnlte_ModeRTE2DRV(RTE_DrvMode_t mode_);
-static RTE_DrvMode_t Trsnlte_ModeDRV2RTE(DRV_Mode mode_);
+static inline DRV_Mode Trsnlte_ModeRTE2DRV(RTE_DrvMode_t mode_);
+static inline RTE_DrvMode_t Trsnlte_ModeDRV2RTE(DRV_Mode mode_);
 
-static DRV_Mode Trsnlte_ModeRTE2DRV(RTE_DrvMode_t mode_)
+static inline DRV_Mode Trsnlte_ModeRTE2DRV(RTE_DrvMode_t mode_)
 {
 	switch(mode_)
 	{
@@ -290,7 +293,7 @@ static DRV_Mode Trsnlte_ModeRTE2DRV(RTE_DrvMode_t mode_)
 	return DRV_MODE_NONE;
 }
 
-static RTE_DrvMode_t Trsnlte_ModeDRV2RTE(DRV_Mode mode_)
+static inline RTE_DrvMode_t Trsnlte_ModeDRV2RTE(DRV_Mode mode_)
 {
 	switch(mode_)
 	{
@@ -367,6 +370,88 @@ StdRtnType RTE_Read_DrvHasRvsd(uint8 *hasRvsd_)
 	return retVal;
 }
 /*========================================================*/
+
+
+/**
+ * Interface implementation for the radio application layer
+ */
+static const RTE_RFRxMsgCbFct_t *RFRxMsgCbFct = NULL;
+
+StdRtn_t RTE_Write_RFSendDataBlk(const uint8 *payload_, uint8 payloadSize_, RTE_RFMsgType_t msgType_,  uint8 dstAddr_, uint8 flags_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if(NULL != payload_)
+	{
+		retVal = (StdRtn_t)RAPP_SendPayloadDataBlock((uint8_t *)payload_, (uint8_t)payloadSize_, (uint8_t)msgType_,  (RAPP_ShortAddrType)dstAddr_,  (RAPP_FlagsType)flags_);
+	}
+	return retVal;
+}
+
+StdRtn_t RTE_Write_RFRxMsgCbFctTbl(const RTE_RFRxMsgCbFct_t *cbFct_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if(NULL != cbFct_)
+	{
+		RFRxMsgCbFct = cbFct_;
+	}
+	return retVal;
+}
+
+const RTE_RFRxMsgCbFct_t *RTE_Get_RFRxMsgCbFct(void)
+{
+	return RFRxMsgCbFct;
+}
+
+StdRtn_t RTE_Read_RFSniffPkt(RTE_RFPktDes_t *pkt_, uint8 isTx_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	RAPP_PacketDesc pkt={0u};
+	if((NULL != pkt_) && (NULL != pkt_->data))
+	{
+		isTx_ &= TRUE;
+		pkt.flags  = (RPHY_FlagsType)pkt_->flags;
+		pkt.phySize = (uint8_t)pkt_->size;
+		pkt.phyData = (uint8_t *)pkt_->data;
+		pkt.rxtx    = (uint8_t *)pkt_->rxtx;
+		RAPP_SniffPacket(&pkt, (bool)isTx_);
+		retVal = ERR_OK;
+	}
+	return retVal;
+}
+
+StdRtn_t RTE_Read_RFSrcAddr(uint8 *addr_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if(NULL != addr_)
+	{
+		*addr_ = (uint8)RAPP_GetThisNodeAddr();
+		retVal = ERR_OK;
+	}
+	return retVal;
+}
+
+StdRtn_t RTE_Write_RFSrcAddr(uint8 addr_)
+{
+	return (StdRtn_t)RAPP_SetThisNodeAddr((RAPP_ShortAddrType)addr_);
+}
+
+StdRtn_t RTE_Read_RFDstAddr(uint8 *addr_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if(NULL != addr_)
+	{
+		*addr_ = (uint8)RNET_GetDstAddr();
+		retVal = ERR_OK;
+	}
+	return retVal;
+}
+
+StdRtn_t RTE_Write_RFDstAddr(uint8 addr_)
+{
+	RNET_SetDstAddr((RAPP_ShortAddrType)addr_);
+	return ERR_OK;
+}
+/*================================================================================================*/
 
 #ifdef MASTER_RTE_C_
 #undef MASTER_RTE_C_

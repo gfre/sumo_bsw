@@ -37,7 +37,26 @@ typedef enum RTE_DrvMode_e {
   RTE_DRV_MODE_INVALID,
 } RTE_DrvMode_t;
 
-typedef void EvntCbFct_t(uint8 );
+/*! type ID's for application messages */
+typedef enum {
+  MSG_TYPE_TESTDATA = 0xFE,
+  MSG_TYPE_INVALID = 0xFF,
+} RTE_RFMsgType_t;
+
+typedef struct {
+  uint8 flags;
+  uint8 size;
+  uint8 *data;
+  uint8 *rxtx;
+} RTE_RFPktDes_t;
+
+typedef void EvntCbFct_t(uint8);
+
+typedef StdRtn_t RTE_RFRxMsgCbFct_t(RTE_RFMsgType_t type_, uint8 size_, const uint8 *data_, uint8 srcAddr_, bool *handled_, const RTE_RFPktDes_t *pkt_);
+
+
+/*================================================================================================*/
+
 
 /**
  * @brief RTE interface to turn the right LED ON
@@ -114,6 +133,10 @@ EXTERNAL_ StdRtnType RTE_Write_LedLeSt(uint8 state_);
  */
 EXTERNAL_ StdRtnType RTE_Read_LedLeSt(uint8 *state_);
 
+
+/*================================================================================================*/
+
+
 /**
  * @brief RTE interface to read the state of the switch
  * @param *state_ pointer to the switch state (call by reference)
@@ -186,6 +209,10 @@ EXTERNAL_ EvntCbFct_t *RTE_Get_SwtOnRlsdCbFct(void);
  */
 EXTERNAL_ EvntCbFct_t *RTE_Get_SwtOnLngRlsdCbFct(void);
 
+
+/*================================================================================================*/
+
+
 /**
  * @brief RTE interface to play a buzzer tune
  * @param  tune_ enumeration to select a tune
@@ -203,6 +230,10 @@ EXTERNAL_ StdRtnType RTE_Write_BuzPlayTune(RTE_BuzTune_t tune_);
  */
 EXTERNAL_ StdRtnType RTE_Write_BuzBeep(uint16 freqHz_, uint16 durMs_);
 
+
+/*================================================================================================*/
+
+
 /**
  * @brief RTE interface to read the velocity of the left wheels
  * @param  *vel_ pointer to the current velocity in steps/sec (call by reference)
@@ -219,6 +250,10 @@ EXTERNAL_ StdRtnType RTE_Read_SpdoVelLe(uint16 *vel_);
  *                     RTN_INVALID otherwise
  */
 EXTERNAL_ StdRtnType RTE_Read_SpdoVelRi(uint16 *vel_);
+
+
+/*================================================================================================*/
+
 
 /**
  * @brief RTE interface to write the desired velocity in speed mode
@@ -282,7 +317,83 @@ EXTERNAL_ StdRtnType RTE_Read_DrvHasStpd(uint8 *hasStpd_);
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
-EXTERNAL_ StdRtnType RTE_Read_DrvHasRvsd(uint8 *hasRvsd_);
+EXTERNAL_ StdRtn_t RTE_Read_DrvHasRvsd(uint8 *hasRvsd_);
+
+
+/*================================================================================================*/
+
+
+/**
+ * @brief RTE interface to send a data block via RF
+ * @param *payLoad_ pointer to the array where the payload is stored
+ * @param payLoadSize_ size in number of bytes of the payload
+ * @param msgType_ message type of packet
+ * @param dstAddr_ destination address
+ * @param flags_ configuration flags for the RF stack
+ *                     0x00 no flag
+ *                     0x01 ACK received
+ *                     0x02 ACK requested
+ *                     0x04 POWER_DOWN
+ * @return Error code, ERR_OK if everything was fine,
+ *                     ERR_PARAM_ADDRESS otherwise
+ */
+EXTERNAL_ StdRtn_t RTE_Write_RFSendDataBlk(const uint8 *payLoad_, uint8 payLoadSize_, RTE_RFMsgType_t msgType_,  uint8 dstAddr_, uint8 flags_);
+
+/**
+ * @brief RTE interface to set the pointer to the function which is called when a RF message is received
+ * @param *cbFct_ pointer to the callback function of type RTE_RFRxMsgCbFct_t
+ * @return Error code, ERR_OK if everything was fine,
+ *                     ERR_PARAM_ADDRESS otherwise
+ */
+EXTERNAL_ StdRtn_t RTE_Write_RFRxMsgCbFct(const RTE_RFRxMsgCbFct_t *cbFct_);
+
+/**
+ * @brief RTE interface to get the pointer to the function which is called when a RF message is received
+ * @return pointer to the callback function of type RTE_RFRxMsgCbFct_t
+ */
+EXTERNAL_ const RTE_RFRxMsgCbFct_t *RTE_Get_RFRxMsgCbFct(void);
+
+/**
+ * @brief RTE interface to sniff the transmitted or received RF-packets
+ * @param *pkt_ pointer to RF-packet descriptor
+ * @param isTx_ flag if packet is transmitted or received
+ * @return Error code, ERR_OK if everything was fine,
+ *                     ERR_PARAM_ADDRESS otherwise
+ */
+EXTERNAL_ StdRtn_t RTE_Read_RFSniffPkt(RTE_RFPktDes_t *pkt_, uint8 isTx_);
+
+/**
+ * @brief RTE interface to read the current network address of the source RF-node
+ * @param *addr_ pointer to the 1-byte network address
+ * @return Error code, ERR_OK if everything was fine,
+ *                     ERR_PARAM_ADDRESS otherwise
+ */
+EXTERNAL_ StdRtn_t RTE_Read_RFSrcAddr(uint8 *addr_);
+
+/**
+ * @brief RTE interface to write the network address of the source RF-node
+ * @param addr_ the 1-byte network address
+ * @return Error code, ERR_OK if everything was fine,
+ */
+EXTERNAL_ StdRtn_t RTE_Write_RFSrcAddr(uint8 addr_);
+
+/**
+ * @brief RTE interface to read the current network address of the destination RF-node where the message should be sent
+ * @param *addr_ pointer to the 1-byte network address
+ * @return Error code, ERR_OK if everything was fine,
+ *                     ERR_PARAM_ADDRESS otherwise
+ */
+EXTERNAL_ StdRtn_t RTE_Read_RFDstAddr(uint8 *addr_);
+
+/**
+ * @brief RTE interface to write the network address of the destination RF-node where the message should be sent
+ * @param addr_ the 1-byte network address
+ * @return Error code, ERR_OK
+ */
+EXTERNAL_ StdRtn_t RTE_Write_RFDstAddr(const uint8 addr_);
+
+
+/*================================================================================================*/
 
 #ifdef EXTERNAL_
 #undef EXTERNAL_

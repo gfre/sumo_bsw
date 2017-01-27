@@ -20,6 +20,11 @@
 typedef uint8 StdRtnType;
 
 /**
+* Type Definition for Standard Return Type
+*/
+typedef uint8 StdRtn_t;
+
+/**
     Standard macro for pressed buttons
 */
 #define BTN_PRESSED (1u)

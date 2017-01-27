@@ -15,19 +15,10 @@
 #ifndef __RNET_APPCONFIG__
 #define __RNET_APPCONFIG__
 
+#include "rte.h"
 
-/*! type ID's for application messages */
-typedef enum {
-  RAPP_MSG_TYPE_DATA = 0x04,                    /* generic data message */
-  RAPP_MSG_TYPE_PING = 0x55,
-  RAPP_MSG_TYPE_BUTTON = 0x56,
-} RAPP_MSG_Type;
+typedef RTE_RFMsgType_t RAPP_MSG_Type;
 
 #endif /* __RNET_APPCONFIG__ */
 
 
-#define RNET_CONFIG_TRANSCEIVER_PAYLOAD_SIZE  32
-  /*!< Size of the physical transceiver payload (bytes), max 32 bytes for nRF24L01+, max 128 bytes for MC1320x */
-
-#define RNET_CONFIG_SHORT_ADDR_SIZE   1
-  /*!< size of short address type. Either 1 or 2 */
