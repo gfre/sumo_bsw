@@ -17,11 +17,6 @@
 /**
 * Type Definition for Standard Return Type
 */
-typedef uint8 StdRtnType;
-
-/**
-* Type Definition for Standard Return Type
-*/
 typedef uint8 StdRtn_t;
 
 /**

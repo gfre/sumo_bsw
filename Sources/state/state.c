@@ -23,7 +23,7 @@
 
 
 static uint8_t STATE_PrintHelp(const CLS1_StdIOType *io_);
-static StdRtnType STATE_PrintStatus(const CLS1_StdIOType *io_);
+static StdRtn_t STATE_PrintStatus(const CLS1_StdIOType *io_);
 static const uint8 * STATE_ReadStateString(mainState_t state_);
 static void STATE_RunStateMachine(void);
 
@@ -66,7 +66,7 @@ static uint8_t STATE_PrintHelp(const CLS1_StdIOType *io_) {
 	return ERR_OK;
 }
 
-static StdRtnType STATE_PrintStatus(const CLS1_StdIOType *io_) {
+static StdRtn_t STATE_PrintStatus(const CLS1_StdIOType *io_) {
 	uint8 retVal = RTN_OK;
 	CLS1_SendStatusStr((unsigned char*)"state", (unsigned char*)"\r\n", io_->stdOut);
 	CLS1_SendStatusStr((unsigned char*)"  current", STATE_ReadStateString(mainState) , io_->stdOut);

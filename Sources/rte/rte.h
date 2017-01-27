@@ -63,21 +63,21 @@ typedef StdRtn_t RTE_RFRxMsgCbFct_t(RTE_RFMsgType_t type_, uint8 size_, const ui
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
-EXTERNAL_ StdRtnType RTE_Write_LedRiOn();
+EXTERNAL_ StdRtn_t RTE_Write_LedRiOn();
 
 /**
  * @brief RTE interface to turn the right LED OFF
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
-EXTERNAL_ StdRtnType RTE_Write_LedRiOff();
+EXTERNAL_ StdRtn_t RTE_Write_LedRiOff();
 
 /**
  * @brief RTE interface to toggle the state the right LED
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
-EXTERNAL_ StdRtnType RTE_Write_LedRiNeg();
+EXTERNAL_ StdRtn_t RTE_Write_LedRiNeg();
 
 /**
  * @brief RTE interface to write the state of the right LED
@@ -85,7 +85,7 @@ EXTERNAL_ StdRtnType RTE_Write_LedRiNeg();
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
-EXTERNAL_ StdRtnType RTE_Write_LedRiSt(uint8 state_);
+EXTERNAL_ StdRtn_t RTE_Write_LedRiSt(uint8 state_);
 
 /**
  * @brief RTE interface to read the state of the right LED
@@ -93,7 +93,7 @@ EXTERNAL_ StdRtnType RTE_Write_LedRiSt(uint8 state_);
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
-EXTERNAL_ StdRtnType RTE_Read_LedRiSt(uint8 *state_);
+EXTERNAL_ StdRtn_t RTE_Read_LedRiSt(uint8 *state_);
 
 /**
  * @brief RTE interface to turn the left LED ON
@@ -101,21 +101,21 @@ EXTERNAL_ StdRtnType RTE_Read_LedRiSt(uint8 *state_);
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
-EXTERNAL_ StdRtnType RTE_Write_LedLeOn();
+EXTERNAL_ StdRtn_t RTE_Write_LedLeOn();
 
 /**
  * @brief RTE interface to turn the left LED OFF
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
-EXTERNAL_ StdRtnType RTE_Write_LedLeOff();
+EXTERNAL_ StdRtn_t RTE_Write_LedLeOff();
 
 /**
  * @brief RTE interface to toggle the state the left LED
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
-EXTERNAL_ StdRtnType RTE_Write_LedLeNeg();
+EXTERNAL_ StdRtn_t RTE_Write_LedLeNeg();
 
 /**
  * @brief RTE interface to write the state of the left LED
@@ -123,7 +123,7 @@ EXTERNAL_ StdRtnType RTE_Write_LedLeNeg();
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
-EXTERNAL_ StdRtnType RTE_Write_LedLeSt(uint8 state_);
+EXTERNAL_ StdRtn_t RTE_Write_LedLeSt(uint8 state_);
 
 /**
  * @brief RTE interface to read the state of the right LED
@@ -131,7 +131,7 @@ EXTERNAL_ StdRtnType RTE_Write_LedLeSt(uint8 state_);
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
-EXTERNAL_ StdRtnType RTE_Read_LedLeSt(uint8 *state_);
+EXTERNAL_ StdRtn_t RTE_Read_LedLeSt(uint8 *state_);
 
 
 /*================================================================================================*/
@@ -143,7 +143,7 @@ EXTERNAL_ StdRtnType RTE_Read_LedLeSt(uint8 *state_);
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
-EXTERNAL_ StdRtnType RTE_Read_SwtSt(uint8 *state_);
+EXTERNAL_ StdRtn_t RTE_Read_SwtSt(uint8 *state_);
 
 /**
  * @brief RTE interface to set the pointer to a callback function
@@ -152,7 +152,7 @@ EXTERNAL_ StdRtnType RTE_Read_SwtSt(uint8 *state_);
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
-EXTERNAL_ StdRtnType RTE_Write_SwtOnPrsdCbFct(const EvntCbFct_t *cbFct_);
+EXTERNAL_ StdRtn_t RTE_Write_SwtOnPrsdCbFct(const EvntCbFct_t *cbFct_);
 
 /**
  * @brief RTE interface to set the pointer to a callback function
@@ -161,7 +161,7 @@ EXTERNAL_ StdRtnType RTE_Write_SwtOnPrsdCbFct(const EvntCbFct_t *cbFct_);
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
-EXTERNAL_ StdRtnType RTE_Write_SwtOnLngPrsdCbFct(const EvntCbFct_t *cbFct_);
+EXTERNAL_ StdRtn_t RTE_Write_SwtOnLngPrsdCbFct(const EvntCbFct_t *cbFct_);
 
 /**
  * @brief RTE interface to set the pointer to a callback function
@@ -170,7 +170,7 @@ EXTERNAL_ StdRtnType RTE_Write_SwtOnLngPrsdCbFct(const EvntCbFct_t *cbFct_);
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
-EXTERNAL_ StdRtnType RTE_Write_SwtOnRlsdCbFct(const EvntCbFct_t *cbFct_);
+EXTERNAL_ StdRtn_t RTE_Write_SwtOnRlsdCbFct(const EvntCbFct_t *cbFct_);
 
 /**
  * @brief RTE interface to set the pointer to a callback function
@@ -179,7 +179,7 @@ EXTERNAL_ StdRtnType RTE_Write_SwtOnRlsdCbFct(const EvntCbFct_t *cbFct_);
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
-EXTERNAL_ StdRtnType RTE_Write_SwtOnLngRlsdCbFct(const EvntCbFct_t *cbFct_);
+EXTERNAL_ StdRtn_t RTE_Write_SwtOnLngRlsdCbFct(const EvntCbFct_t *cbFct_);
 
 /**
  * @brief RTE interface to get the pointer to a callback function
@@ -219,7 +219,7 @@ EXTERNAL_ EvntCbFct_t *RTE_Get_SwtOnLngRlsdCbFct(void);
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
-EXTERNAL_ StdRtnType RTE_Write_BuzPlayTune(RTE_BuzTune_t tune_);
+EXTERNAL_ StdRtn_t RTE_Write_BuzPlayTune(RTE_BuzTune_t tune_);
 
 /**
  * @brief RTE interface to play a buzzer beep
@@ -228,7 +228,7 @@ EXTERNAL_ StdRtnType RTE_Write_BuzPlayTune(RTE_BuzTune_t tune_);
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
-EXTERNAL_ StdRtnType RTE_Write_BuzBeep(uint16 freqHz_, uint16 durMs_);
+EXTERNAL_ StdRtn_t RTE_Write_BuzBeep(uint16 freqHz_, uint16 durMs_);
 
 
 /*================================================================================================*/
@@ -240,7 +240,7 @@ EXTERNAL_ StdRtnType RTE_Write_BuzBeep(uint16 freqHz_, uint16 durMs_);
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
-EXTERNAL_ StdRtnType RTE_Read_SpdoVelLe(uint16 *vel_);
+EXTERNAL_ StdRtn_t RTE_Read_SpdoVelLe(uint16 *vel_);
 
 
 /**
@@ -249,7 +249,7 @@ EXTERNAL_ StdRtnType RTE_Read_SpdoVelLe(uint16 *vel_);
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
-EXTERNAL_ StdRtnType RTE_Read_SpdoVelRi(uint16 *vel_);
+EXTERNAL_ StdRtn_t RTE_Read_SpdoVelRi(uint16 *vel_);
 
 
 /*================================================================================================*/
@@ -262,7 +262,7 @@ EXTERNAL_ StdRtnType RTE_Read_SpdoVelRi(uint16 *vel_);
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
-EXTERNAL_ StdRtnType RTE_Write_DrvVel(int32 velLe_, int32 velRi_);
+EXTERNAL_ StdRtn_t RTE_Write_DrvVel(int32 velLe_, int32 velRi_);
 
 /**
  * @brief RTE interface to write the target postion in position mode
@@ -271,7 +271,7 @@ EXTERNAL_ StdRtnType RTE_Write_DrvVel(int32 velLe_, int32 velRi_);
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
-EXTERNAL_ StdRtnType RTE_Write_DrvPos(int32 posLe_, int32 posRi_);
+EXTERNAL_ StdRtn_t RTE_Write_DrvPos(int32 posLe_, int32 posRi_);
 
 /**
  * @brief RTE interface to command the desired driving control mode
@@ -279,7 +279,7 @@ EXTERNAL_ StdRtnType RTE_Write_DrvPos(int32 posLe_, int32 posRi_);
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
-EXTERNAL_ StdRtnType RTE_Write_DrvMode(RTE_DrvMode_t mode_);
+EXTERNAL_ StdRtn_t RTE_Write_DrvMode(RTE_DrvMode_t mode_);
 
 /**
  * @brief RTE interface to read the current driving control mode
@@ -287,7 +287,7 @@ EXTERNAL_ StdRtnType RTE_Write_DrvMode(RTE_DrvMode_t mode_);
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
-EXTERNAL_ StdRtnType RTE_Read_DrvMode(RTE_DrvMode_t *mode_);
+EXTERNAL_ StdRtn_t RTE_Read_DrvMode(RTE_DrvMode_t *mode_);
 
 /**
  * @brief RTE interface to read if the sumo is driving backwards
@@ -297,7 +297,7 @@ EXTERNAL_ StdRtnType RTE_Read_DrvMode(RTE_DrvMode_t *mode_);
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
-EXTERNAL_ StdRtnType RTE_Read_DrvIsDrvgBkwd(uint8 *isDrvgBkwd_);
+EXTERNAL_ StdRtn_t RTE_Read_DrvIsDrvgBkwd(uint8 *isDrvgBkwd_);
 
 /**
  * @brief RTE interface to read if the sumo has stopped
@@ -307,7 +307,7 @@ EXTERNAL_ StdRtnType RTE_Read_DrvIsDrvgBkwd(uint8 *isDrvgBkwd_);
  * @return Error code, RTN_OK if everything was fine,
  *                     RTN_INVALID otherwise
  */
-EXTERNAL_ StdRtnType RTE_Read_DrvHasStpd(uint8 *hasStpd_);
+EXTERNAL_ StdRtn_t RTE_Read_DrvHasStpd(uint8 *hasStpd_);
 
 /**
  * @brief RTE interface to read if the sumo has just reversed

@@ -26,25 +26,25 @@
 /**
  * Interface implementation for the right LED
  */
-StdRtnType RTE_Write_LedRiOn()
+StdRtn_t RTE_Write_LedRiOn()
 {
 	LED1_On();
 	return RTN_OK;
 }
 
-StdRtnType RTE_Write_LedRiOff()
+StdRtn_t RTE_Write_LedRiOff()
 {
 	LED1_Off();
 	return RTN_OK;
 }
 
-StdRtnType RTE_Write_LedRiNeg()
+StdRtn_t RTE_Write_LedRiNeg()
 {
 	LED1_Neg();
 	return RTN_OK;
 }
 
-StdRtnType RTE_Write_LedRiSt(uint8_t state)
+StdRtn_t RTE_Write_LedRiSt(uint8_t state)
 {
 	if(0u==state)
 	{
@@ -57,9 +57,9 @@ StdRtnType RTE_Write_LedRiSt(uint8_t state)
 	return RTN_OK;
 }
 
-StdRtnType RTE_Read_LedRiSt(uint8 *state_)
+StdRtn_t RTE_Read_LedRiSt(uint8 *state_)
 {
-	StdRtnType retVal = RTN_INVALID;
+	StdRtn_t retVal = RTN_INVALID;
 	if(NULL!=state_)
 	{
 		*state_ = (uint8)LED1_Get();
@@ -73,25 +73,25 @@ StdRtnType RTE_Read_LedRiSt(uint8 *state_)
 /**
  * Interface implementation for the right LED
  */
-StdRtnType RTE_Write_LedLeOn()
+StdRtn_t RTE_Write_LedLeOn()
 {
 	LED2_On();
 	return RTN_OK;
 }
 
-StdRtnType RTE_Write_LedLeOff()
+StdRtn_t RTE_Write_LedLeOff()
 {
 	LED2_Off();
 	return RTN_OK;
 }
 
-StdRtnType RTE_Write_LedLeNeg()
+StdRtn_t RTE_Write_LedLeNeg()
 {
 	LED2_Neg();
 	return RTN_OK;
 }
 
-StdRtnType RTE_Write_LedLeSt(uint8 state_)
+StdRtn_t RTE_Write_LedLeSt(uint8 state_)
 {
 	if(0u==state_)
 	{
@@ -104,9 +104,9 @@ StdRtnType RTE_Write_LedLeSt(uint8 state_)
 	return RTN_OK;
 }
 
-StdRtnType RTE_Read_LedLeSt(uint8 *state_)
+StdRtn_t RTE_Read_LedLeSt(uint8 *state_)
 {
-	StdRtnType retVal = RTN_INVALID;
+	StdRtn_t retVal = RTN_INVALID;
 	if(NULL!=state_)
 	{
 		*state_ = (uint8)LED2_Get();
@@ -129,9 +129,9 @@ typedef struct CbFctTab_s{
 
 static CbFctTab_t cbFctTab={NULL};
 
-StdRtnType RTE_Read_SwtSt(uint8 *state_)
+StdRtn_t RTE_Read_SwtSt(uint8 *state_)
 {
-	StdRtnType retVal = RTN_INVALID;
+	StdRtn_t retVal = RTN_INVALID;
 	if(NULL!=state_)
 	{
 		*state_ = (uint8)KEY1_GetKeys() & USER_SWITCH_MASK;
@@ -140,9 +140,9 @@ StdRtnType RTE_Read_SwtSt(uint8 *state_)
 	return retVal;
 }
 
-StdRtnType RTE_Write_SwtOnPrsdCbFct(const EvntCbFct_t *cbFct_)
+StdRtn_t RTE_Write_SwtOnPrsdCbFct(const EvntCbFct_t *cbFct_)
 {
-	StdRtnType retVal = RTN_INVALID;
+	StdRtn_t retVal = RTN_INVALID;
 	if(NULL != cbFct_)
 	{
 		cbFctTab.cbFctOnPrsd = cbFct_;
@@ -151,9 +151,9 @@ StdRtnType RTE_Write_SwtOnPrsdCbFct(const EvntCbFct_t *cbFct_)
 	return retVal;
 }
 
-StdRtnType RTE_Write_SwtOnLngPrsdCbFct(const EvntCbFct_t *cbFct_)
+StdRtn_t RTE_Write_SwtOnLngPrsdCbFct(const EvntCbFct_t *cbFct_)
 {
-	StdRtnType retVal = RTN_INVALID;
+	StdRtn_t retVal = RTN_INVALID;
 	if(NULL != cbFct_)
 	{
 		cbFctTab.cbFctOnLngPrsd = cbFct_;
@@ -162,9 +162,9 @@ StdRtnType RTE_Write_SwtOnLngPrsdCbFct(const EvntCbFct_t *cbFct_)
 	return retVal;
 }
 
-StdRtnType RTE_Write_SwtOnRlsdCbFct(const EvntCbFct_t *cbFct_)
+StdRtn_t RTE_Write_SwtOnRlsdCbFct(const EvntCbFct_t *cbFct_)
 {
-	StdRtnType retVal = RTN_INVALID;
+	StdRtn_t retVal = RTN_INVALID;
 	if(NULL != cbFct_)
 	{
 		cbFctTab.cbFctOnRlsd = cbFct_;
@@ -173,9 +173,9 @@ StdRtnType RTE_Write_SwtOnRlsdCbFct(const EvntCbFct_t *cbFct_)
 	return retVal;
 }
 
-StdRtnType RTE_Write_SwtOnLngRlsdCbFct(const EvntCbFct_t *cbFct_)
+StdRtn_t RTE_Write_SwtOnLngRlsdCbFct(const EvntCbFct_t *cbFct_)
 {
-	StdRtnType retVal = RTN_INVALID;
+	StdRtn_t retVal = RTN_INVALID;
 	if(NULL != cbFct_)
 	{
 		cbFctTab.cbFctOnLngRlsd = cbFct_;
@@ -225,20 +225,20 @@ static inline BUZ_Tunes Trsnlte_TuneRTE2BUZ(RTE_BuzTune_t mode_)
 	return BUZ_TUNE_NOF_TUNES;
 }
 
-StdRtnType RTE_Write_BuzPlayTune(RTE_BuzTune_t tune_)
+StdRtn_t RTE_Write_BuzPlayTune(RTE_BuzTune_t tune_)
 {
-	StdRtnType retVal = RTN_INVALID;
+	StdRtn_t retVal = RTN_INVALID;
 	if(BUZ_TUNE_NOF_TUNES > tune_)
 	{
-		retVal &= (StdRtnType)BUZ_PlayTune(Trsnlte_TuneRTE2BUZ(tune_));
+		retVal &= (StdRtn_t)BUZ_PlayTune(Trsnlte_TuneRTE2BUZ(tune_));
 	}
 	return retVal;
 }
 
 
-StdRtnType RTE_Play_BuzBeep(uint16 freqHz_, uint16 durMs_)
+StdRtn_t RTE_Play_BuzBeep(uint16 freqHz_, uint16 durMs_)
 {
-	return (StdRtnType)BUZ_Beep(freqHz_, durMs_);
+	return (StdRtn_t)BUZ_Beep(freqHz_, durMs_);
 }
 /*========================================================*/
 
@@ -249,9 +249,9 @@ StdRtnType RTE_Play_BuzBeep(uint16 freqHz_, uint16 durMs_)
 #define LEFT   (TRUE)
 #define RIGHT  (FALSE)
 
-StdRtnType RTE_Read_SpdoVelLe(uint16 *vel_)
+StdRtn_t RTE_Read_SpdoVelLe(uint16 *vel_)
 {
-	StdRtnType retVal = RTN_INVALID;
+	StdRtn_t retVal = RTN_INVALID;
 	if(NULL != vel_)
 	{
 		*vel_ = TACHO_GetSpeed(TRUE);
@@ -261,9 +261,9 @@ StdRtnType RTE_Read_SpdoVelLe(uint16 *vel_)
 }
 
 
-StdRtnType RTE_Read_SpdoVelRi(uint16 *vel_)
+StdRtn_t RTE_Read_SpdoVelRi(uint16 *vel_)
 {
-	StdRtnType retVal = RTN_INVALID;
+	StdRtn_t retVal = RTN_INVALID;
 	if(NULL != vel_)
 	{
 		*vel_ = TACHO_GetSpeed(FALSE);
@@ -306,29 +306,29 @@ static inline RTE_DrvMode_t Trsnlte_ModeDRV2RTE(DRV_Mode mode_)
 	return RTE_DRV_MODE_INVALID;
 }
 
-StdRtnType RTE_Write_DrvVel(int32 velLe_, int32 velRi_)
+StdRtn_t RTE_Write_DrvVel(int32 velLe_, int32 velRi_)
 {
-	return (StdRtnType)DRV_SetSpeed(velLe_, velRi_);
+	return (StdRtn_t)DRV_SetSpeed(velLe_, velRi_);
 }
 
-StdRtnType RTE_Write_DrvPos(int32 posLe_, int32 posRi_)
+StdRtn_t RTE_Write_DrvPos(int32 posLe_, int32 posRi_)
 {
-	return (StdRtnType)DRV_SetSpeed(posLe_, posRi_);
+	return (StdRtn_t)DRV_SetSpeed(posLe_, posRi_);
 }
 
-StdRtnType RTE_Write_DrvMode(RTE_DrvMode_t mode_)
+StdRtn_t RTE_Write_DrvMode(RTE_DrvMode_t mode_)
 {
-	StdRtnType retVal = RTN_INVALID;
+	StdRtn_t retVal = RTN_INVALID;
 	if((RTE_DRV_MODE_INVALID > mode_) && (RTE_DRV_MODE_NONE <= mode_))
 	{
-		retVal &= (StdRtnType)DRV_SetMode(Trsnlte_ModeRTE2DRV(mode_));
+		retVal &= (StdRtn_t)DRV_SetMode(Trsnlte_ModeRTE2DRV(mode_));
 	}
 	return retVal;
 }
 
-StdRtnType RTE_Read_DrvMode(RTE_DrvMode_t *mode_)
+StdRtn_t RTE_Read_DrvMode(RTE_DrvMode_t *mode_)
 {
-	StdRtnType retVal = RTN_INVALID;
+	StdRtn_t retVal = RTN_INVALID;
 	if(NULL != mode_)
 	{
 		*mode_ = Trsnlte_ModeDRV2RTE(DRV_GetMode());
@@ -337,9 +337,9 @@ StdRtnType RTE_Read_DrvMode(RTE_DrvMode_t *mode_)
 	return retVal;
 }
 
-StdRtnType RTE_Read_DrvIsDrvgBkwd(uint8 *isDrvgBkwd_)
+StdRtn_t RTE_Read_DrvIsDrvgBkwd(uint8 *isDrvgBkwd_)
 {
-	StdRtnType retVal = RTN_INVALID;
+	StdRtn_t retVal = RTN_INVALID;
 	if(NULL != isDrvgBkwd_)
 	{
 		*isDrvgBkwd_ = DRV_IsDrivingBackward();
@@ -348,9 +348,9 @@ StdRtnType RTE_Read_DrvIsDrvgBkwd(uint8 *isDrvgBkwd_)
 	return retVal;
 }
 
-StdRtnType RTE_Read_DrvHasStpd(uint8 *hasStpd_)
+StdRtn_t RTE_Read_DrvHasStpd(uint8 *hasStpd_)
 {
-	StdRtnType retVal = RTN_INVALID;
+	StdRtn_t retVal = RTN_INVALID;
 	if(NULL != hasStpd_)
 	{
 		*hasStpd_ =  DRV_IsStopped();
@@ -359,9 +359,9 @@ StdRtnType RTE_Read_DrvHasStpd(uint8 *hasStpd_)
 	return retVal;
 }
 
-StdRtnType RTE_Read_DrvHasRvsd(uint8 *hasRvsd_)
+StdRtn_t RTE_Read_DrvHasRvsd(uint8 *hasRvsd_)
 {
-	StdRtnType retVal = RTN_INVALID;
+	StdRtn_t retVal = RTN_INVALID;
 	if(NULL != hasRvsd_)
 	{
 		*hasRvsd_ =  DRV_HasTurned();
