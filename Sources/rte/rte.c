@@ -24,29 +24,29 @@
 #define USER_SWITCH_MASK (0x01u)
 
 /**
- * Interface implementation for the right LED
+ * Interface implementation for the left LED
  */
-StdRtn_t RTE_Write_LedRiOn()
+StdRtn_t RTE_Write_LedLeOn()
 {
 	LED1_On();
-	return RTN_OK;
+	return ERR_OK;
 }
 
-StdRtn_t RTE_Write_LedRiOff()
+StdRtn_t RTE_Write_LedLeOff()
 {
 	LED1_Off();
-	return RTN_OK;
+	return ERR_OK;
 }
 
-StdRtn_t RTE_Write_LedRiNeg()
+StdRtn_t RTE_Write_LedLeNeg()
 {
 	LED1_Neg();
-	return RTN_OK;
+	return ERR_OK;
 }
 
-StdRtn_t RTE_Write_LedRiSt(uint8_t state)
+StdRtn_t RTE_Write_LedLeSt(uint8 state)
 {
-	if(0u==state)
+	if(FALSE==state)
 	{
 		LED1_Put(FALSE);
 	}
@@ -54,16 +54,16 @@ StdRtn_t RTE_Write_LedRiSt(uint8_t state)
 	{
 		LED1_Put(TRUE);
 	}
-	return RTN_OK;
+	return ERR_OK;
 }
 
-StdRtn_t RTE_Read_LedRiSt(uint8 *state_)
+StdRtn_t RTE_Read_LedLeSt(uint8 *state_)
 {
-	StdRtn_t retVal = RTN_INVALID;
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL!=state_)
 	{
 		*state_ = (uint8)LED1_Get();
-		retVal = RTN_OK;
+		retVal = ERR_OK;
 	}
 	return retVal;
 }
@@ -73,27 +73,27 @@ StdRtn_t RTE_Read_LedRiSt(uint8 *state_)
 /**
  * Interface implementation for the right LED
  */
-StdRtn_t RTE_Write_LedLeOn()
+StdRtn_t RTE_Write_LedRiOn()
 {
 	LED2_On();
-	return RTN_OK;
+	return ERR_OK;
 }
 
-StdRtn_t RTE_Write_LedLeOff()
+StdRtn_t RTE_Write_LedRiOff()
 {
 	LED2_Off();
-	return RTN_OK;
+	return ERR_OK;
 }
 
-StdRtn_t RTE_Write_LedLeNeg()
+StdRtn_t RTE_Write_LedRiNeg()
 {
 	LED2_Neg();
-	return RTN_OK;
+	return ERR_OK;
 }
 
-StdRtn_t RTE_Write_LedLeSt(uint8 state_)
+StdRtn_t RTE_Write_LedRiSt(uint8 state_)
 {
-	if(0u==state_)
+	if(FALSE==state_)
 	{
 		LED2_Put(FALSE);
 	}
@@ -101,16 +101,16 @@ StdRtn_t RTE_Write_LedLeSt(uint8 state_)
 	{
 		LED2_Put(TRUE);
 	}
-	return RTN_OK;
+	return ERR_OK;
 }
 
-StdRtn_t RTE_Read_LedLeSt(uint8 *state_)
+StdRtn_t RTE_Read_LedRiSt(uint8 *state_)
 {
-	StdRtn_t retVal = RTN_INVALID;
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL!=state_)
 	{
 		*state_ = (uint8)LED2_Get();
-		retVal = RTN_OK;
+		retVal = ERR_OK;
 	}
 	return retVal;
 }

@@ -59,43 +59,6 @@ typedef StdRtn_t RTE_RFRxMsgCbFct_t(RTE_RFMsgType_t type_, uint8 size_, const ui
 
 
 /**
- * @brief RTE interface to turn the right LED ON
- * @return Error code, RTN_OK if everything was fine,
- *                     RTN_INVALID otherwise
- */
-EXTERNAL_ StdRtn_t RTE_Write_LedRiOn();
-
-/**
- * @brief RTE interface to turn the right LED OFF
- * @return Error code, RTN_OK if everything was fine,
- *                     RTN_INVALID otherwise
- */
-EXTERNAL_ StdRtn_t RTE_Write_LedRiOff();
-
-/**
- * @brief RTE interface to toggle the state the right LED
- * @return Error code, RTN_OK if everything was fine,
- *                     RTN_INVALID otherwise
- */
-EXTERNAL_ StdRtn_t RTE_Write_LedRiNeg();
-
-/**
- * @brief RTE interface to write the state of the right LED
- * @param state_ desired state of the LED
- * @return Error code, RTN_OK if everything was fine,
- *                     RTN_INVALID otherwise
- */
-EXTERNAL_ StdRtn_t RTE_Write_LedRiSt(uint8 state_);
-
-/**
- * @brief RTE interface to read the state of the right LED
- * @param *state_ output: pointer to the LED state
- * @return Error code, RTN_OK if everything was fine,
- *                     RTN_INVALID otherwise
- */
-EXTERNAL_ StdRtn_t RTE_Read_LedRiSt(uint8 *state_);
-
-/**
  * @brief RTE interface to turn the left LED ON
  * @param *state_ pointer to the LED state (call by reference)
  * @return Error code, RTN_OK if everything was fine,
@@ -132,6 +95,43 @@ EXTERNAL_ StdRtn_t RTE_Write_LedLeSt(uint8 state_);
  *                     RTN_INVALID otherwise
  */
 EXTERNAL_ StdRtn_t RTE_Read_LedLeSt(uint8 *state_);
+
+/**
+ * @brief RTE interface to turn the right LED ON
+ * @return Error code, RTN_OK if everything was fine,
+ *                     RTN_INVALID otherwise
+ */
+EXTERNAL_ StdRtn_t RTE_Write_LedRiOn();
+
+/**
+ * @brief RTE interface to turn the right LED OFF
+ * @return Error code, RTN_OK if everything was fine,
+ *                     RTN_INVALID otherwise
+ */
+EXTERNAL_ StdRtn_t RTE_Write_LedRiOff();
+
+/**
+ * @brief RTE interface to toggle the state the right LED
+ * @return Error code, RTN_OK if everything was fine,
+ *                     RTN_INVALID otherwise
+ */
+EXTERNAL_ StdRtn_t RTE_Write_LedRiNeg();
+
+/**
+ * @brief RTE interface to write the state of the right LED
+ * @param state_ desired state of the LED
+ * @return Error code, RTN_OK if everything was fine,
+ *                     RTN_INVALID otherwise
+ */
+EXTERNAL_ StdRtn_t RTE_Write_LedRiSt(uint8 state_);
+
+/**
+ * @brief RTE interface to read the state of the right LED
+ * @param *state_ output: pointer to the LED state
+ * @return Error code, RTN_OK if everything was fine,
+ *                     RTN_INVALID otherwise
+ */
+EXTERNAL_ StdRtn_t RTE_Read_LedRiSt(uint8 *state_);
 
 
 /*================================================================================================*/
