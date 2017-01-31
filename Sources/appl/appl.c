@@ -65,7 +65,7 @@ static void APPL_PrintCalledMainFcts(const CLS1_StdIOType *io_)
 	uint8 j = 0u;
 	uint8 buf[128] = {""};
 	const APPL_TaskCfg_t *taskCfg = NULL;
-	const APPL_CycTaskFctPar_t *taskFctPar = NULL;
+	const APPL_PerdTaskFctPar_t *taskFctPar = NULL;
 	const char_t *mainFctName = NULL;
 	uint8 taskName[12] = {""};
 
@@ -77,7 +77,7 @@ static void APPL_PrintCalledMainFcts(const CLS1_StdIOType *io_)
 		{
 			if(NULL != taskCfg->tasks)
 			{
-				taskFctPar = (const APPL_CycTaskFctPar_t*)taskCfg->tasks[i].pvParameters;
+				taskFctPar = (const APPL_PerdTaskFctPar_t*)taskCfg->tasks[i].pvParameters;
 				UTIL1_strcat(taskName, sizeof(taskName), "  ");
 				if(NULL != (taskCfg->tasks[i].taskHdl))
 				{
@@ -91,7 +91,7 @@ static void APPL_PrintCalledMainFcts(const CLS1_StdIOType *io_)
 				}
 				UTIL1_strcpy(taskName, sizeof(taskName), "");
 
-				taskFctPar = (const APPL_CycTaskFctPar_t*)taskCfg->tasks[i].pvParameters;
+				taskFctPar = (const APPL_PerdTaskFctPar_t*)taskCfg->tasks[i].pvParameters;
 				if(NULL != taskFctPar)
 				{
 					UTIL1_strcat(buf, sizeof(buf), ">> " );
@@ -221,13 +221,13 @@ void APPL_Run(void) {
 
 
 /* Define a task that performs an action every x milliseconds. */
-void APPL_CycTaskFct(void * pvParameters_)
+void APPL_PerdTaskFct(void * pvParameters_)
 {
 	uint8 i = 0u;
-	const APPL_CycTaskFctPar_t *pvPar = NULL;
+	const APPL_PerdTaskFctPar_t *pvPar = NULL;
 	TickType_t LastWakeTime;
 
-	pvPar = (const APPL_CycTaskFctPar_t *)pvParameters_;
+	pvPar = (const APPL_PerdTaskFctPar_t *)pvParameters_;
 
 	/* The xLastWakeTime variable needs to be initialized with the current tick
 	count.  Note that this is the only time the variable is written to explicitly.
@@ -258,12 +258,12 @@ void APPL_CycTaskFct(void * pvParameters_)
 	}
 }
 
-void APPL_NonCycTaskFct(void *pvParameters_)
+void APPL_NonPerdTaskFct(void *pvParameters_)
 {
 	uint8 i = 0u;
-	const APPL_NonCycTaskFctPar_t *pvPar = NULL;
+	const APPL_NonPerdTaskFctPar_t *pvPar = NULL;
 
-	pvPar = (const APPL_NonCycTaskFctPar_t *)pvParameters_;
+	pvPar = (const APPL_NonPerdTaskFctPar_t *)pvParameters_;
 
 	FRTOS1_vTaskDelay( pdMS_TO_TICKS( 100u ));
 	for(;;) {

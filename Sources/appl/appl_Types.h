@@ -35,24 +35,24 @@ typedef struct APPL_MainFctCfg_s
 	const char_t * const mainFctName;
 }APPL_MainFctCfg_t;
 
-typedef struct APPL_CycTaskFctPar_s
+typedef struct APPL_PerdTaskFctPar_s
 {
 	const uint8 taskPeriod;
 	const APPL_MainFctCfg_t *mainFctCfg;
 	const uint8 numMainFcts;
 
-}APPL_CycTaskFctPar_t;
+}APPL_PerdTaskFctPar_t;
 
-typedef struct APPL_NonCycTaskFctPar_s
+typedef struct APPL_NonPerdTaskFctPar_s
 {
 	const uint8 taskDelay;
 	const APPL_MainFctCfg_t *mainFctCfg;
 	const uint8 numMainFcts;
 
-}APPL_NonCycTaskFctPar_t;
+}APPL_NonPerdTaskFctPar_t;
 
-EXTERNAL_ void APPL_CycTaskFct(void *pvParameters);
-EXTERNAL_ void APPL_NonCycTaskFct(void *pvParameters);
+EXTERNAL_ void APPL_PerdTaskFct(void *pvParameters);
+EXTERNAL_ void APPL_NonPerdTaskFct(void *pvParameters);
 
 
 #ifdef EXTERNAL_

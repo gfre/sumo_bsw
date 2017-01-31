@@ -25,16 +25,16 @@
 
 /* Macros */
 #define NUM_OF_TASKS              (sizeof(taskCfg)/sizeof(taskCfg[0]))
-#define TASK_CYCLE_PERIOD_5MS     (5u)
-#define TASK_CYCLE_PERIOD_10MS    (10u)
-#define TASK_CYCLE_DELAY_10MS     (10u)
+#define TASK_PERIOD_5MS     (5u)
+#define TASK_PERIOD_10MS    (10u)
+#define TASK_DELAY_10MS     (10u)
 
-/* Task functions for cyclic tasks */
-static void mainTaskFct(void *pvParameters_) {return APPL_CycTaskFct(pvParameters_);}
-static void rnetTaskFct(void *pvParameters_) {return APPL_NonCycTaskFct(pvParameters_);}
+/* Task functions for periodic tasks */
+static void mainTaskFct(void *pvParameters_) {return APPL_PerdTaskFct(pvParameters_);}
+static void rnetTaskFct(void *pvParameters_) {return APPL_NonPerdTaskFct(pvParameters_);}
 
-/* Task functions for non-cyclic tasks */
-static void shTaskFct(void *pvParameters_)   {return APPL_NonCycTaskFct(pvParameters_);}
+/* Task functions for non-periodic tasks */
+static void shTaskFct(void *pvParameters_)   {return APPL_NonPerdTaskFct(pvParameters_);}
 
 
 const APPL_MainFctCfg_t mainTaskMainFctCfg[] = {
@@ -54,21 +54,21 @@ const APPL_MainFctCfg_t rnetTaskMainFctCfg[] = {
 
 
 
-const APPL_CycTaskFctPar_t mainTaskFctPar = {
-		TASK_CYCLE_PERIOD_10MS,
+const APPL_PerdTaskFctPar_t mainTaskFctPar = {
+		TASK_PERIOD_10MS,
 		mainTaskMainFctCfg,
 		sizeof(mainTaskMainFctCfg)/sizeof(mainTaskMainFctCfg[0])
 };
 
-const APPL_CycTaskFctPar_t rnetTaskFctPar = {
-		TASK_CYCLE_PERIOD_5MS,
+const APPL_PerdTaskFctPar_t rnetTaskFctPar = {
+		TASK_PERIOD_5MS,
 		rnetTaskMainFctCfg,
 		sizeof(rnetTaskMainFctCfg)/sizeof(rnetTaskMainFctCfg[0])
 };
 
 
-const APPL_NonCycTaskFctPar_t shTaskFctPar = {
-		TASK_CYCLE_DELAY_10MS,
+const APPL_NonPerdTaskFctPar_t shTaskFctPar = {
+		TASK_DELAY_10MS,
 		shTaskMainFctCfg,
 		sizeof(shTaskMainFctCfg)/sizeof(shTaskMainFctCfg[0])
 };
@@ -76,7 +76,7 @@ const APPL_NonCycTaskFctPar_t shTaskFctPar = {
 APPL_TaskCfgItm_t taskCfg[]= {
 		{mainTaskFct, "MAIN",  configMINIMAL_STACK_SIZE,    (void *)&mainTaskFctPar, tskIDLE_PRIORITY+1, (xTaskHandle*)NULL},
 		{shTaskFct,   "SHELL", configMINIMAL_STACK_SIZE+50, (void *)&shTaskFctPar,   tskIDLE_PRIORITY+1, (xTaskHandle*)NULL},
-		{rnetTaskFct, "RNET",  configMINIMAL_STACK_SIZE+100,(void*)&rnetTaskFctPar, tskIDLE_PRIORITY+3, (xTaskHandle*)NULL},
+		{rnetTaskFct, "RNET",  configMINIMAL_STACK_SIZE+100,(void*)&rnetTaskFctPar,  tskIDLE_PRIORITY+3, (xTaskHandle*)NULL},
 };
 
 const APPL_TaskCfg_t APPL_taskCfg = {
