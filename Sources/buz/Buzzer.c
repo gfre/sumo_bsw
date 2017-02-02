@@ -52,6 +52,18 @@ static const BUZ_Tune MelodyButton[] =
 		{600,100},
 };
 
+static const BUZ_Tune MelodyAccept[] =
+{ /* freq, ms */
+		{400,100},
+		{900,100},
+};
+
+static const BUZ_Tune MelodyDecline[] =
+{ /* freq, ms */
+		{400,100},
+		{200,100},
+};
+
 static const BUZ_Tune MelodyButtonLong[] =
 { /* freq, ms */
 		{500,50},
@@ -73,6 +85,8 @@ typedef struct {
 static MelodyDesc BUZ_Melodies[] = {
 		{0, sizeof(MelodyWelcome)/sizeof(MelodyWelcome[0]),         {0, 0}, MelodyWelcome}, /* BUZ_TUNE_WELCOME */
 		{0, sizeof(MelodyButton)/sizeof(MelodyButton[0]),           {0, 0}, MelodyButton}, /* BUZ_TUNE_BUTTON */
+		{0, sizeof(MelodyAccept)/sizeof(MelodyAccept[0]),           {0, 0}, MelodyAccept}, /* BUZ_TUNE_ACCEPT */
+		{0, sizeof(MelodyDecline)/sizeof(MelodyDecline[0]),         {0, 0}, MelodyDecline}, /* BUZ_TUNE_DECLINE */
 		{0, sizeof(MelodyButtonLong)/sizeof(MelodyButtonLong[0]),   {0, 0}, MelodyButtonLong}, /* BUZ_TUNE_BUTTON_LONG */
 };
 

@@ -36,10 +36,12 @@ uint8_t BUZ_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_Std
 uint8_t BUZ_Beep(uint16_t freqHz, uint16_t durationMs);
 
 typedef enum {
-	BUZ_TUNE_WELCOME,
-	BUZ_TUNE_BUTTON,
-	BUZ_TUNE_BUTTON_LONG,
-	BUZ_TUNE_NOF_TUNES
+	 BUZ_TUNE_WELCOME
+	,BUZ_TUNE_BUTTON
+	,BUZ_TUNE_ACCEPT
+	,BUZ_TUNE_DECLINE
+	,BUZ_TUNE_BUTTON_LONG
+	,BUZ_TUNE_NOF_TUNES
 } BUZ_Tunes;
 
 /*!
