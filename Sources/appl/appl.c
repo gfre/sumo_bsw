@@ -33,7 +33,7 @@
 #include "Q4CLeft.h"
 #include "Q4CRight.h"
 #include "Pid.h"
-#include "Drive.h"
+#include "drv.h"
 #include "nvm.h"
 #include "id.h"
 #include "rte.h"
@@ -208,7 +208,7 @@ void APPL_Run(void) {
 	BATT_Init();
 	TACHO_Init();
 	PID_Init();
-	DRV_Init(); /* Comment DRV_Init() to manual MOTOR duty commands possible  */
+	DRV_Init();
 	ID_Init();
 	NVM_Init();
 

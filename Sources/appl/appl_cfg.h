@@ -22,8 +22,10 @@
 #define EXTERNAL_ extern
 #endif
 
-
-#define SH_TASK_STRING "SHELL"
+#define MAIN_TASK_STRING  ("MAIN")
+#define RNET_TASK_STRING  ("RNET")
+#define SH_TASK_STRING    ("SHELL")
+#define DRV_TASK_STRING   ("DRIVE")
 
 /**
   @brief interface function
@@ -35,6 +37,7 @@
 EXTERNAL_ const APPL_TaskCfg_t *Get_APPL_TaskCfg(void);
 
 EXTERNAL_ const APPL_TaskCfgItm_t *Get_APPL_MainTaskCfg(void);
+
 EXTERNAL_ const APPL_TaskCfgItm_t *Get_APPL_ShTaskCfg(void);
 
 #ifdef EXTERNAL_

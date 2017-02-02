@@ -20,6 +20,7 @@
 #include "state.h"
 #include "sh.h"
 #include "rnet.h"
+#include "drv.h"
 
 
 /*======================================== >> MACROS << ==========================================*/
@@ -31,7 +32,8 @@
 /*==================================== >> MODUL FUNCTUIONS << ====================================*/
 /* Task functions for periodic tasks */
 static void mainTaskFct(void *pvParameters_) {return APPL_PerdTaskFct(pvParameters_);}
-static void rnetTaskFct(void *pvParameters_) {return APPL_NonPerdTaskFct(pvParameters_);}
+static void rnetTaskFct(void *pvParameters_) {return APPL_PerdTaskFct(pvParameters_);}
+static void drvTaskFct(void *pvParameters_)  {return APPL_PerdTaskFct(pvParameters_);}
 
 /* Task functions for non-periodic tasks */
 static void shTaskFct(void *pvParameters_)   {return APPL_NonPerdTaskFct(pvParameters_);}
@@ -42,8 +44,7 @@ static void shTaskFct(void *pvParameters_)   {return APPL_NonPerdTaskFct(pvParam
  * Main function(s) for MAIN task
  */
 const APPL_MainFctCfg_t mainTaskMainFctCfg[] = {
-		{TACHO_SWC_STRING, TACHO_CalcSpeed},
-		{STATE_SWC_STRING, STATE_mainFct}
+		{STATE_SWC_STRING, STATE_mainFct},
 };
 
 /*
@@ -59,6 +60,14 @@ const APPL_MainFctCfg_t rnetTaskMainFctCfg[] = {
  */
 const APPL_MainFctCfg_t shTaskMainFctCfg[] = {
 		{SH_SWC_STRING, SH_MainFct},
+};
+
+/*
+ * Main function(s) for SHELL task
+ */
+const APPL_MainFctCfg_t drvTaskMainFctCfg[] = {
+		{DRV_SWC_STRING, DRV_MainFct},
+		{TACHO_SWC_STRING, TACHO_CalcSpeed},
 };
 
 
@@ -90,6 +99,14 @@ const APPL_NonPerdTaskFctPar_t shTaskFctPar = {
 		sizeof(shTaskMainFctCfg)/sizeof(shTaskMainFctCfg[0])
 };
 
+/*
+ * DRIVE task parameters
+ */
+const APPL_PerdTaskFctPar_t drvTaskFctPar = {
+		TASK_PERIOD_5MS,
+		drvTaskMainFctCfg,
+		sizeof(drvTaskMainFctCfg)/sizeof(drvTaskMainFctCfg[0])
+};
 
 
 /*============================ >> TASK CONFIGURATION << ===================================*/
@@ -97,9 +114,10 @@ const APPL_NonPerdTaskFctPar_t shTaskFctPar = {
  * Configuration of each task in an array
  */
 APPL_TaskCfgItm_t taskCfg[]= {
-		{mainTaskFct, "MAIN",  configMINIMAL_STACK_SIZE,    (void *)&mainTaskFctPar, tskIDLE_PRIORITY+1, (xTaskHandle*)NULL, APPL_SUSP_NEVER},
-		{shTaskFct,   SH_TASK_STRING, configMINIMAL_STACK_SIZE+50, (void *)&shTaskFctPar,   tskIDLE_PRIORITY+1, (xTaskHandle*)NULL, APPL_SUSP_DEFAULT},
-		{rnetTaskFct, "RNET",  configMINIMAL_STACK_SIZE+100,(void *)&rnetTaskFctPar, tskIDLE_PRIORITY+3, (xTaskHandle*)NULL, APPL_SUSP_NEVER},
+		{mainTaskFct, MAIN_TASK_STRING, configMINIMAL_STACK_SIZE,     (void *)&mainTaskFctPar, tskIDLE_PRIORITY+1, (xTaskHandle*)NULL, APPL_SUSP_NEVER},
+		{shTaskFct,   SH_TASK_STRING,   configMINIMAL_STACK_SIZE+50,  (void *)&shTaskFctPar,   tskIDLE_PRIORITY+1, (xTaskHandle*)NULL, APPL_SUSP_DEFAULT},
+		{rnetTaskFct, RNET_TASK_STRING, configMINIMAL_STACK_SIZE+100, (void *)&rnetTaskFctPar, tskIDLE_PRIORITY+3, (xTaskHandle*)NULL, APPL_SUSP_NEVER},
+		{drvTaskFct,  DRV_TASK_STRING,  configMINIMAL_STACK_SIZE,     (void *)&drvTaskFctPar,  tskIDLE_PRIORITY+3, (xTaskHandle*)NULL, APPL_SUSP_NEVER,}
 };
 
 /*
@@ -116,7 +134,7 @@ const APPL_TaskCfg_t APPL_taskCfg = {
 const APPL_TaskCfg_t *Get_APPL_TaskCfg(void) { return &APPL_taskCfg;}
 
 const APPL_TaskCfgItm_t *Get_APPL_MainTaskCfg(void) { return &(APPL_taskCfg.tasks[0]);}
-const APPL_TaskCfgItm_t *Get_APPL_ShTaskCfg(void) { return &(APPL_taskCfg.tasks[1]);}
+const APPL_TaskCfgItm_t *Get_APPL_ShTaskCfg(void)   { return &(APPL_taskCfg.tasks[1]);}
 
 #ifdef MASTER_APPL_CFG_C_
 #undef MASTER_APPL_CFG_C_
