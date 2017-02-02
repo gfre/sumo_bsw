@@ -23,6 +23,8 @@
 #endif
 
 
+#define SH_TASK_STRING "SHELL"
+
 /**
   @brief interface function
 
@@ -32,6 +34,8 @@
 */
 EXTERNAL_ const APPL_TaskCfg_t *Get_APPL_TaskCfg(void);
 
+EXTERNAL_ const APPL_TaskCfgItm_t *Get_APPL_MainTaskCfg(void);
+EXTERNAL_ const APPL_TaskCfgItm_t *Get_APPL_ShTaskCfg(void);
 
 #ifdef EXTERNAL_
 #undef EXTERNAL_

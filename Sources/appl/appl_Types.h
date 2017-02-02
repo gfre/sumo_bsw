@@ -10,6 +10,11 @@
 #define EXTERNAL_ extern
 #endif
 
+typedef enum APPL_SuspType_e
+{
+	 APPL_SUSP_NEVER = 0x00
+	,APPL_SUSP_DEFAULT
+}APPL_SuspType_t;
 
 typedef struct APPL_TaskCfgItm_s
 {
@@ -19,6 +24,7 @@ typedef struct APPL_TaskCfgItm_s
 	void * const pvParameters;
 	uint32 taskPriority;
 	TaskHandle_t taskHdl;
+	APPL_SuspType_t suspTask;
 }APPL_TaskCfgItm_t;
 
 typedef struct APPL_TaskCfg_s
@@ -31,9 +37,11 @@ typedef void (APPL_MainFct_t)(void);
 
 typedef struct APPL_MainFctCfg_s
 {
+	const char_t * const swcName;
 	APPL_MainFct_t * const mainFct;
-	const char_t * const mainFctName;
 }APPL_MainFctCfg_t;
+
+
 
 typedef struct APPL_PerdTaskFctPar_s
 {
@@ -48,7 +56,6 @@ typedef struct APPL_NonPerdTaskFctPar_s
 	const uint8 taskDelay;
 	const APPL_MainFctCfg_t *mainFctCfg;
 	const uint8 numMainFcts;
-
 }APPL_NonPerdTaskFctPar_t;
 
 EXTERNAL_ void APPL_PerdTaskFct(void *pvParameters);

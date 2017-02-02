@@ -19,4 +19,8 @@
 #include <stddef.h> /* for size_t */
 
 
+#define KEY_PRESSED_NOTIFICATION_VALUE      (0x01u)
+#define KEY_PRESSED_LONG_NOTIFICATION_VALUE (0x02u)
+
+
 #endif /* PLATFORM_H_ */

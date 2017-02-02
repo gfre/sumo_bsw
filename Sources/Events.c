@@ -37,6 +37,11 @@ extern "C" {
 /* User includes (#include below this line is not maintained by Processor Expert) */
 #include "Tacho.h"
 #include "rte.h"
+#include "appl_cfg.h"
+#include "portmacro.h"
+
+
+
 /*
 ** ===================================================================
 **     Event       :  Cpu_OnNMIINT (module Events)
@@ -182,13 +187,27 @@ void PTRC1_OnTraceWrap(void)
 **     Returns     : Nothing
 ** ===================================================================
 */
-void KEY1_OnKeyPressed(uint8_t keys)
+void KEY1_OnKeyPressed( uint8_t keys )
 {
 	/* Write your code here. A bit in 'keys' indicates key pressed ... */
-	EvntCbFct_t *cbFct = RTE_Get_SwtOnPrsdCbFct();
-	if(NULL != cbFct)
+	const EvntCbFct_t *cbFct = NULL;
+	const APPL_TaskCfgItm_t *mainTaskCfg = NULL;
+	BaseType_t higherPriorityTaskWoken = pdFALSE;
+
+	cbFct = RTE_Get_SwtOnPrsdCbFct();
+	if( NULL != cbFct )
 	{
-		cbFct(keys);
+		cbFct( keys );
+	}
+
+	mainTaskCfg = Get_APPL_MainTaskCfg();
+	if( (NULL != mainTaskCfg ) && ( mainTaskCfg->taskHdl ) )
+	{
+		FRTOS1_xTaskNotifyFromISR( mainTaskCfg->taskHdl,
+				                   KEY_PRESSED_NOTIFICATION_VALUE,
+								   eSetBits,
+				                   &higherPriorityTaskWoken );
+		portYIELD_FROM_ISR( higherPriorityTaskWoken );
 	}
 }
 
@@ -209,7 +228,9 @@ void KEY1_OnKeyPressed(uint8_t keys)
 void KEY1_OnKeyReleased(uint8_t keys)
 {
   /* Write your code here. A bit in 'keys' indicates key released ... */
-	EvntCbFct_t *cbFct = RTE_Get_SwtOnRlsdCbFct();
+	const EvntCbFct_t *cbFct = NULL;
+
+	cbFct = RTE_Get_SwtOnRlsdCbFct();
 	if(NULL != cbFct)
 	{
 		cbFct(keys);
@@ -234,10 +255,24 @@ void KEY1_OnKeyReleased(uint8_t keys)
 void KEY1_OnKeyPressedLong(uint8_t keys)
 {
   /* Write your code here ... */
-	EvntCbFct_t *cbFct = RTE_Get_SwtOnLngPrsdCbFct();
+   	const EvntCbFct_t *cbFct = NULL;
+	const APPL_TaskCfgItm_t *mainTaskCfg = NULL;
+	BaseType_t higherPriorityTaskWoken = pdFALSE;
+
+	cbFct = RTE_Get_SwtOnLngPrsdCbFct();
 	if(NULL != cbFct)
 	{
 		cbFct(keys);
+	}
+
+	mainTaskCfg = Get_APPL_MainTaskCfg();
+	if ((NULL != mainTaskCfg) && (mainTaskCfg->taskHdl))
+	{
+		FRTOS1_xTaskNotifyFromISR( mainTaskCfg->taskHdl,
+				                   KEY_PRESSED_LONG_NOTIFICATION_VALUE,
+								   eSetBits,
+				                   &higherPriorityTaskWoken );
+		portYIELD_FROM_ISR( higherPriorityTaskWoken );
 	}
 }
 
@@ -280,7 +315,9 @@ void QuadInt_OnInterrupt(void)
 void KEY1_OnKeyReleasedLong(uint8_t keys)
 {
   /* Write your code here. A bit in 'keys' indicates key released after a long time ... */
-	EvntCbFct_t *cbFct = RTE_Get_SwtOnLngRlsdCbFct();
+	const EvntCbFct_t *cbFct = NULL;
+
+	cbFct = RTE_Get_SwtOnLngRlsdCbFct();
 	if(NULL != cbFct)
 	{
 		cbFct(keys);

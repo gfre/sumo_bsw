@@ -19,45 +19,180 @@
 #include "RNET1.h"
 #include "state.h"
 #include "stud.h"
-
+#include "appl_cfg.h"
+#include "buzzer.h"
+#include "LED1.h"
 
 
 static uint8_t STATE_PrintHelp(const CLS1_StdIOType *io_);
 static StdRtn_t STATE_PrintStatus(const CLS1_StdIOType *io_);
 static const uint8 * STATE_ReadStateString(mainState_t state_);
 static void STATE_RunStateMachine(void);
+static StdRtn_t STATE_msSTARTUP(void);
+static StdRtn_t STATE_msINIT(void);
+static StdRtn_t STATE_msIDLE(void);
+static StdRtn_t STATE_msNORMAL(void);
+static StdRtn_t STATE_msDEBUG(void);
+static void STATE_msERROR(void);
 
 static mainState_t mainState = MAIN_STATE_STARTUP;
 
+const APPL_TaskCfgItm_t *shTaskCfg = NULL;
 
 
+static StdRtn_t STATE_SyncStateMachineWithISR()
+{
+	BaseType_t notfRes = pdFAIL;
+	uint32 notfVal = 0u;
+
+	notfRes = FRTOS1_xTaskNotifyWait( pdFALSE,
+			                          UINT32_MAX,
+						              (uint32_t *)&notfVal,
+						              pdMS_TO_TICKS( 0u ) );
+	if(( pdPASS == notfRes ) && ( MAIN_STATE_ERROR != mainState ))
+	{
+		if( (notfVal & KEY_PRESSED_NOTIFICATION_VALUE) != FALSE)
+		{
+			if( MAIN_STATE_IDLE == mainState )
+			{
+				mainState = MAIN_STATE_NORMAL;
+				BUZ_PlayTune(BUZ_TUNE_BUTTON);
+			}
+		}
+
+		if( (notfVal & KEY_PRESSED_LONG_NOTIFICATION_VALUE) != FALSE)
+		{
+			if( MAIN_STATE_NORMAL == mainState )
+			{
+				mainState = MAIN_STATE_DEBUG;
+				FRTOS1_vTaskResume(shTaskCfg->taskHdl);
+				BUZ_PlayTune(BUZ_TUNE_ACCEPT);
+			}
+			else if( MAIN_STATE_DEBUG == mainState )
+			{
+				mainState = MAIN_STATE_NORMAL;
+				FRTOS1_vTaskSuspend(shTaskCfg->taskHdl);
+				BUZ_PlayTune(BUZ_TUNE_DECLINE);
+			}
+			else
+			{
+				/* nothing to do */
+			}
+		}
+	}
+}
 
 static void STATE_RunStateMachine(void) {
-	switch (mainState) {
-	case MAIN_STATE_STARTUP:
-		mainState = MAIN_STATE_INIT;
-		break;
-
-	case MAIN_STATE_INIT:
-		STUD_Init();
-		mainState = MAIN_STATE_IDLE;
-		break;
-
-	case MAIN_STATE_IDLE:
-		mainState = MAIN_STATE_NORMAL;
-		break;
-
-	case MAIN_STATE_NORMAL:
-		STUD_Main();
-		break;
-
-	default:
-	case MAIN_STATE_ERROR:
+	static StdRtn_t retVal = ERR_OK;
+	switch (mainState)
+	{
+		case MAIN_STATE_STARTUP:
+		{
+			retVal = STATE_msSTARTUP();
+			if(ERR_OK == retVal)
+			{
+				mainState = MAIN_STATE_INIT;
+			}
+			else
+			{
+				mainState = MAIN_STATE_ERROR;
+			}
 			break;
-
+		}
+		case MAIN_STATE_INIT:
+		{
+			retVal = STATE_msINIT();
+			if(ERR_OK == retVal)
+			{
+				mainState = MAIN_STATE_IDLE;
+			}
+			else
+			{
+				mainState = MAIN_STATE_ERROR;
+			}
+			break;
+		}
+		case MAIN_STATE_IDLE:
+		{
+			retVal = STATE_msIDLE();
+			if(ERR_OK != retVal)
+			{
+				mainState = MAIN_STATE_ERROR;
+			}
+			break;
+		}
+		case MAIN_STATE_NORMAL:
+		{
+			retVal = STATE_msNORMAL();
+			if(ERR_OK != retVal)
+			{
+				mainState = MAIN_STATE_ERROR;
+			}
+			break;
+		}
+		case MAIN_STATE_DEBUG:
+		{
+			retVal = STATE_msDEBUG();
+			if(ERR_OK != retVal)
+			{
+				mainState = MAIN_STATE_ERROR;
+			}
+			break;
+		}
+		default:
+		case MAIN_STATE_ERROR:
+		{
+			STATE_msERROR();
+				break;
+		}
 	}/* switch */
+
+	STATE_SyncStateMachineWithISR();
+
 	return;
 }
+
+static StdRtn_t STATE_msSTARTUP(void)
+{
+	return ERR_OK;
+}
+
+static StdRtn_t STATE_msINIT(void)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+
+	STUD_Init();
+
+	shTaskCfg = Get_APPL_ShTaskCfg();
+	if(NULL != shTaskCfg)
+	{
+		retVal = ERR_OK;
+	}
+	return retVal;
+}
+
+static StdRtn_t STATE_msIDLE(void)
+{
+	LED1_On();
+	return ERR_OK;
+}
+
+static StdRtn_t STATE_msNORMAL(void)
+{
+	STUD_Main();
+	LED1_Off();
+	return ERR_OK;
+}
+
+static StdRtn_t STATE_msDEBUG(void)
+{
+	return ERR_OK;
+}
+static void STATE_msERROR(void)
+{
+	return;
+}
+
 
 
 static uint8_t STATE_PrintHelp(const CLS1_StdIOType *io_) {
@@ -79,6 +214,7 @@ static const uint8 * STATE_ReadStateString(mainState_t state_){
 		case MAIN_STATE_INIT:    return "INIT\r\n";
 		case MAIN_STATE_IDLE:    return "IDLE\r\n";
 		case MAIN_STATE_NORMAL:  return "NORMAL\r\n";
+		case MAIN_STATE_DEBUG:  return "DEBUG\r\n";
 		case MAIN_STATE_ERROR:   return "ERROR\r\n";
 		default: return ">> fatal error - unknown or undefined main state <<\r\n";
 	}

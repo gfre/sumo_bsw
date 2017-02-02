@@ -16,19 +16,19 @@
 #define MASTER_APPL_CFG_C_
 
 #include "appl_cfg.h"
-#include "KEY1.h"
 #include "Tacho.h"
 #include "state.h"
 #include "sh.h"
 #include "rnet.h"
 
 
-/* Macros */
+/*======================================== >> MACROS << ==========================================*/
 #define NUM_OF_TASKS              (sizeof(taskCfg)/sizeof(taskCfg[0]))
 #define TASK_PERIOD_5MS     (5u)
 #define TASK_PERIOD_10MS    (10u)
 #define TASK_DELAY_10MS     (10u)
 
+/*==================================== >> MODUL FUNCTUIONS << ====================================*/
 /* Task functions for periodic tasks */
 static void mainTaskFct(void *pvParameters_) {return APPL_PerdTaskFct(pvParameters_);}
 static void rnetTaskFct(void *pvParameters_) {return APPL_NonPerdTaskFct(pvParameters_);}
@@ -37,56 +37,86 @@ static void rnetTaskFct(void *pvParameters_) {return APPL_NonPerdTaskFct(pvParam
 static void shTaskFct(void *pvParameters_)   {return APPL_NonPerdTaskFct(pvParameters_);}
 
 
+/*=============================== >> MAIN FUNCTIONS CONFIGURATION << =============================*/
+/*
+ * Main function(s) for MAIN task
+ */
 const APPL_MainFctCfg_t mainTaskMainFctCfg[] = {
-		{TACHO_CalcSpeed, "tacho"},
-		{STATE_mainFct, "state"}
+		{TACHO_SWC_STRING, TACHO_CalcSpeed},
+		{STATE_SWC_STRING, STATE_mainFct}
 };
 
-const APPL_MainFctCfg_t shTaskMainFctCfg[] = {
-		{SH_MainFct, "shell"},
-
-};
-
+/*
+ * Main function(s) for RNET task
+ */
 const APPL_MainFctCfg_t rnetTaskMainFctCfg[] = {
-		{RNET_MainFct, RNET_SWC_STRING},
+		{RNET_SWC_STRING, RNET_MainFct},
 
 };
 
+/*
+ * Main function(s) for SHELL task
+ */
+const APPL_MainFctCfg_t shTaskMainFctCfg[] = {
+		{SH_SWC_STRING, SH_MainFct},
+};
 
 
+/*================================== >> TASK FUNCTIONS PARAMETERS << =============================*/
+/*
+ * MAIN task parameters
+ */
 const APPL_PerdTaskFctPar_t mainTaskFctPar = {
 		TASK_PERIOD_10MS,
 		mainTaskMainFctCfg,
 		sizeof(mainTaskMainFctCfg)/sizeof(mainTaskMainFctCfg[0])
 };
 
+/*
+ * RNET task parameters
+ */
 const APPL_PerdTaskFctPar_t rnetTaskFctPar = {
 		TASK_PERIOD_5MS,
 		rnetTaskMainFctCfg,
 		sizeof(rnetTaskMainFctCfg)/sizeof(rnetTaskMainFctCfg[0])
 };
 
-
+/*
+ * SHELL task parameters
+ */
 const APPL_NonPerdTaskFctPar_t shTaskFctPar = {
 		TASK_DELAY_10MS,
 		shTaskMainFctCfg,
 		sizeof(shTaskMainFctCfg)/sizeof(shTaskMainFctCfg[0])
 };
 
+
+
+/*============================ >> TASK CONFIGURATION << ===================================*/
+/*
+ * Configuration of each task in an array
+ */
 APPL_TaskCfgItm_t taskCfg[]= {
-		{mainTaskFct, "MAIN",  configMINIMAL_STACK_SIZE,    (void *)&mainTaskFctPar, tskIDLE_PRIORITY+1, (xTaskHandle*)NULL},
-		{shTaskFct,   "SHELL", configMINIMAL_STACK_SIZE+50, (void *)&shTaskFctPar,   tskIDLE_PRIORITY+1, (xTaskHandle*)NULL},
-		{rnetTaskFct, "RNET",  configMINIMAL_STACK_SIZE+100,(void*)&rnetTaskFctPar,  tskIDLE_PRIORITY+3, (xTaskHandle*)NULL},
+		{mainTaskFct, "MAIN",  configMINIMAL_STACK_SIZE,    (void *)&mainTaskFctPar, tskIDLE_PRIORITY+1, (xTaskHandle*)NULL, APPL_SUSP_NEVER},
+		{shTaskFct,   SH_TASK_STRING, configMINIMAL_STACK_SIZE+50, (void *)&shTaskFctPar,   tskIDLE_PRIORITY+1, (xTaskHandle*)NULL, APPL_SUSP_DEFAULT},
+		{rnetTaskFct, "RNET",  configMINIMAL_STACK_SIZE+100,(void *)&rnetTaskFctPar, tskIDLE_PRIORITY+3, (xTaskHandle*)NULL, APPL_SUSP_NEVER},
 };
 
+/*
+ * Configuration summeray of all tasks
+ */
 const APPL_TaskCfg_t APPL_taskCfg = {
 		taskCfg,
 		NUM_OF_TASKS,
 };
 
+
+/*=============================== >> TASK CONFIGURATION INTERFACE << =============================*/
+
 const APPL_TaskCfg_t *Get_APPL_TaskCfg(void) { return &APPL_taskCfg;}
 
-
+const APPL_TaskCfgItm_t *Get_APPL_MainTaskCfg(void) { return &(APPL_taskCfg.tasks[0]);}
+const APPL_TaskCfgItm_t *Get_APPL_ShTaskCfg(void) { return &(APPL_taskCfg.tasks[1]);}
 
 #ifdef MASTER_APPL_CFG_C_
 #undef MASTER_APPL_CFG_C_

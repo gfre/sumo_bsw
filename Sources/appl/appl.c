@@ -82,12 +82,12 @@ static void APPL_PrintCalledMainFcts(const CLS1_StdIOType *io_)
 				if(NULL != (taskCfg->tasks[i].taskHdl))
 				{
 					UTIL1_strcat(taskName, sizeof(taskName), FRTOS1_pcTaskGetTaskName((taskCfg->tasks[i].taskHdl)));
-					CLS1_SendStatusStr(taskName, (unsigned char*)"task created\r\n", io_->stdOut);
+					CLS1_SendStatusStr(taskName, (unsigned char*)"task handle successfully created\r\n", io_->stdOut);
 				}
 				else
 				{
 					UTIL1_strcat(taskName, sizeof(taskName), "NULL");
-					CLS1_SendStatusStr(taskName, (unsigned char*)">> ERROR unknown task <<\r\n", io_->stdOut);
+					CLS1_SendStatusStr(taskName, (unsigned char*)">> ERROR task handle not created <<\r\n", io_->stdOut);
 				}
 				UTIL1_strcpy(taskName, sizeof(taskName), "");
 
@@ -99,7 +99,7 @@ static void APPL_PrintCalledMainFcts(const CLS1_StdIOType *io_)
 					{
 						if(NULL != taskFctPar->mainFctCfg)
 						{
-							UTIL1_strcat(buf, sizeof(buf), taskFctPar->mainFctCfg[j].mainFctName);
+							UTIL1_strcat(buf, sizeof(buf), taskFctPar->mainFctCfg[j].swcName);
 							if(j < taskFctPar->numMainFcts-1u)
 							{
 								UTIL1_strcat(buf, sizeof(buf), ", ");
@@ -149,20 +149,24 @@ static void APPL_TaskCreate()
 		{
 			if(NULL != taskCfg->tasks)
 			{
-				if((shEnable == FALSE) && UTIL1_strcmp(taskCfg->tasks[i].taskName, "SHELL")==0){
-					/* Do nothing, because the shell task should not be started */
-					BUZ_PlayTune(BUZ_TUNE_WELCOME);
-				}
-				else if(pdPASS != FRTOS1_xTaskCreate(taskCfg->tasks[i].taskFct,
+				if(pdPASS != FRTOS1_xTaskCreate(taskCfg->tasks[i].taskFct,
 						taskCfg->tasks[i].taskName,
 						taskCfg->tasks[i].stackDepth,
 						taskCfg->tasks[i].pvParameters,
 						taskCfg->tasks[i].taskPriority,
-						&taskCfg->tasks[i].taskHdl))
+					   &taskCfg->tasks[i].taskHdl))
 				{
 					/* The task could not be created because there was not enough
 								FreeRTOS heap memory available for the task data structures and
 								stack to be allocated. */
+				}
+				else
+				{
+					/* The task was created successfully */
+					if(APPL_SUSP_DEFAULT == taskCfg->tasks[i].suspTask)
+					{
+						FRTOS1_vTaskSuspend(taskCfg->tasks[i].taskHdl);
+					}
 				}
 			}
 		}
@@ -198,9 +202,6 @@ uint8_t APPL_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_St
 
 void APPL_Run(void) {
 
-	RTE_Read_SwtSt(&shEnable);
-
-
 	BUZ_Init();
 	MOT_Init();
 	RNET1_Init();
@@ -210,8 +211,6 @@ void APPL_Run(void) {
 	DRV_Init(); /* Comment DRV_Init() to manual MOTOR duty commands possible  */
 	ID_Init();
 	NVM_Init();
-	if (shEnable==TRUE)
-		SH_Init();
 
 	APPL_AdoptToHardware();
 
@@ -268,8 +267,6 @@ void APPL_NonPerdTaskFct(void *pvParameters_)
 	FRTOS1_vTaskDelay( pdMS_TO_TICKS( 100u ));
 	for(;;) {
 
-		FRTOS1_vTaskDelay( pdMS_TO_TICKS( pvPar->taskDelay) );
-
 		/* Perform the periodic actions here. */
 		if(NULL != pvPar->mainFctCfg)
 		{
@@ -281,6 +278,7 @@ void APPL_NonPerdTaskFct(void *pvParameters_)
 				}
 			}
 		}
+		FRTOS1_vTaskDelay( pdMS_TO_TICKS( pvPar->taskDelay) );
 	}
 }
 
