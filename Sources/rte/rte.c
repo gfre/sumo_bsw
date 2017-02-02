@@ -184,24 +184,24 @@ StdRtn_t RTE_Write_SwtOnLngRlsdCbFct(const EvntCbFct_t *cbFct_)
 	return retVal;
 }
 
-EvntCbFct_t *RTE_Get_SwtOnPrsdCbFct(void)
+const EvntCbFct_t *RTE_Get_SwtOnPrsdCbFct(void)
 {
-	return cbFctTab.cbFctOnPrsd;
+	return (const EvntCbFct_t *)cbFctTab.cbFctOnPrsd;
 }
 
-EvntCbFct_t *RTE_Get_SwtOnLngPrsdCbFct(void)
+const EvntCbFct_t *RTE_Get_SwtOnLngPrsdCbFct(void)
 {
-	return cbFctTab.cbFctOnLngPrsd;
+	return (const EvntCbFct_t *)cbFctTab.cbFctOnLngPrsd;
 }
 
-EvntCbFct_t *RTE_Get_SwtOnRlsdCbFct(void)
+const EvntCbFct_t *RTE_Get_SwtOnRlsdCbFct(void)
 {
-	return cbFctTab.cbFctOnRlsd;
+	return (const EvntCbFct_t *)cbFctTab.cbFctOnRlsd;
 }
 
-EvntCbFct_t *RTE_Get_SwtOnLngRlsdCbFct(void)
+const EvntCbFct_t *RTE_Get_SwtOnLngRlsdCbFct(void)
 {
-	return cbFctTab.cbFctOnLngRlsd;
+	return (const EvntCbFct_t *)cbFctTab.cbFctOnLngRlsd;
 }
 /*========================================================*/
 
