@@ -142,7 +142,7 @@ void SH_Init(void)
 	sumoId = ID_WhichSumo();
 	if (sumoId == ERR_PARAM_ADDRESS)
 	{
-		UTIL1_strcpy(buf, sizeof(buf), "Idiot! Your sumo is unknown.");
+		UTIL1_strcpy(buf, sizeof(buf), "Sorry! Your sumo is unknown.");
     }
 	else
 	{

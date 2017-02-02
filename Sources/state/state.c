@@ -22,6 +22,7 @@
 #include "appl_cfg.h"
 #include "buzzer.h"
 #include "LED1.h"
+#include "sh.h"
 
 
 static uint8_t STATE_PrintHelp(const CLS1_StdIOType *io_);
@@ -65,6 +66,7 @@ static StdRtn_t STATE_SyncStateMachineWithISR()
 			if( MAIN_STATE_NORMAL == mainState )
 			{
 				mainState = MAIN_STATE_DEBUG;
+				SH_Init();
 				FRTOS1_vTaskResume(shTaskCfg->taskHdl);
 				BUZ_PlayTune(BUZ_TUNE_ACCEPT);
 			}
