@@ -17,6 +17,9 @@
 
 #include "Platform.h"
 
+
+#define TACHO_SWC_STRING ("tacho")
+
 /*!
  * @brief Returns the previously calculated speed of the motor.
  * @param isLeft TRUE for left speed, FALSE for right speed.

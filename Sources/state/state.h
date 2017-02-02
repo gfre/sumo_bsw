@@ -23,11 +23,15 @@
 #define EXTERNAL_ extern
 #endif
 
+#define STATE_SWC_STRING ("state")
+
+
 typedef enum mainState_e{
 	 MAIN_STATE_STARTUP     /**< State during start up */
 	,MAIN_STATE_INIT        /**< State during initialization */
 	,MAIN_STATE_IDLE        /**< State for idle mode */
 	,MAIN_STATE_NORMAL		/**< State for normal mode */
+	,MAIN_STATE_DEBUG		/**< State for debug mode */
 	,MAIN_STATE_ERROR       /**< State for error mode */
 } mainState_t;
 

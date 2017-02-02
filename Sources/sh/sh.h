@@ -24,6 +24,8 @@
 #define EXTERNAL_ extern
 #endif
 
+#define SH_SWC_STRING ("shell")
+
 /*!
  * @brief Sends a string to the shell/console stdout
  * @param msg Zero terminated string to write
