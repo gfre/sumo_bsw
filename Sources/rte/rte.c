@@ -131,55 +131,55 @@ static CbFctTab_t cbFctTab={NULL};
 
 StdRtn_t RTE_Read_SwtSt(uint8 *state_)
 {
-	StdRtn_t retVal = RTN_INVALID;
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL!=state_)
 	{
 		*state_ = (uint8)KEY1_GetKeys() & USER_SWITCH_MASK;
-		retVal = RTN_OK;
+		retVal = ERR_OK;
 	}
 	return retVal;
 }
 
 StdRtn_t RTE_Write_SwtOnPrsdCbFct(const EvntCbFct_t *cbFct_)
 {
-	StdRtn_t retVal = RTN_INVALID;
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != cbFct_)
 	{
 		cbFctTab.cbFctOnPrsd = cbFct_;
-		retVal = RTN_OK;
+		retVal = ERR_OK;
 	}
 	return retVal;
 }
 
 StdRtn_t RTE_Write_SwtOnLngPrsdCbFct(const EvntCbFct_t *cbFct_)
 {
-	StdRtn_t retVal = RTN_INVALID;
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != cbFct_)
 	{
 		cbFctTab.cbFctOnLngPrsd = cbFct_;
-		retVal = RTN_OK;
+		retVal = ERR_OK;
 	}
 	return retVal;
 }
 
 StdRtn_t RTE_Write_SwtOnRlsdCbFct(const EvntCbFct_t *cbFct_)
 {
-	StdRtn_t retVal = RTN_INVALID;
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != cbFct_)
 	{
 		cbFctTab.cbFctOnRlsd = cbFct_;
-		retVal = RTN_OK;
+		retVal = ERR_OK;
 	}
 	return retVal;
 }
 
 StdRtn_t RTE_Write_SwtOnLngRlsdCbFct(const EvntCbFct_t *cbFct_)
 {
-	StdRtn_t retVal = RTN_INVALID;
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != cbFct_)
 	{
 		cbFctTab.cbFctOnLngRlsd = cbFct_;
-		retVal = RTN_OK;
+		retVal = ERR_OK;
 	}
 	return retVal;
 }
@@ -227,10 +227,10 @@ static inline BUZ_Tunes Trsnlte_TuneRTE2BUZ(RTE_BuzTune_t mode_)
 
 StdRtn_t RTE_Write_BuzPlayTune(RTE_BuzTune_t tune_)
 {
-	StdRtn_t retVal = RTN_INVALID;
+	StdRtn_t retVal = ERR_PARAM_VALUE;
 	if(BUZ_TUNE_NOF_TUNES > tune_)
 	{
-		retVal &= (StdRtn_t)BUZ_PlayTune(Trsnlte_TuneRTE2BUZ(tune_));
+		retVal = (StdRtn_t)BUZ_PlayTune(Trsnlte_TuneRTE2BUZ(tune_));
 	}
 	return retVal;
 }
@@ -251,11 +251,11 @@ StdRtn_t RTE_Play_BuzBeep(uint16 freqHz_, uint16 durMs_)
 
 StdRtn_t RTE_Read_SpdoVelLe(uint16 *vel_)
 {
-	StdRtn_t retVal = RTN_INVALID;
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != vel_)
 	{
 		*vel_ = TACHO_GetSpeed(TRUE);
-		retVal = RTN_INVALID;
+		retVal = ERR_OK;
 	}
 	return retVal;
 }
@@ -263,11 +263,11 @@ StdRtn_t RTE_Read_SpdoVelLe(uint16 *vel_)
 
 StdRtn_t RTE_Read_SpdoVelRi(uint16 *vel_)
 {
-	StdRtn_t retVal = RTN_INVALID;
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != vel_)
 	{
 		*vel_ = TACHO_GetSpeed(FALSE);
-		retVal = RTN_INVALID;
+		retVal = ERR_OK;
 	}
 	return retVal;
 }
@@ -318,54 +318,54 @@ StdRtn_t RTE_Write_DrvPos(int32 posLe_, int32 posRi_)
 
 StdRtn_t RTE_Write_DrvMode(RTE_DrvMode_t mode_)
 {
-	StdRtn_t retVal = RTN_INVALID;
+	StdRtn_t retVal = ERR_PARAM_VALUE;
 	if((RTE_DRV_MODE_INVALID > mode_) && (RTE_DRV_MODE_NONE <= mode_))
 	{
-		retVal &= (StdRtn_t)DRV_SetMode(Trsnlte_ModeRTE2DRV(mode_));
+		retVal = (StdRtn_t)DRV_SetMode(Trsnlte_ModeRTE2DRV(mode_));
 	}
 	return retVal;
 }
 
 StdRtn_t RTE_Read_DrvMode(RTE_DrvMode_t *mode_)
 {
-	StdRtn_t retVal = RTN_INVALID;
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != mode_)
 	{
 		*mode_ = Trsnlte_ModeDRV2RTE(DRV_GetMode());
-		retVal = RTN_OK;
+		retVal = ERR_OK;
 	}
 	return retVal;
 }
 
 StdRtn_t RTE_Read_DrvIsDrvgBkwd(uint8 *isDrvgBkwd_)
 {
-	StdRtn_t retVal = RTN_INVALID;
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != isDrvgBkwd_)
 	{
 		*isDrvgBkwd_ = DRV_IsDrivingBackward();
-		retVal = RTN_OK;
+		retVal = ERR_OK;
 	}
 	return retVal;
 }
 
 StdRtn_t RTE_Read_DrvHasStpd(uint8 *hasStpd_)
 {
-	StdRtn_t retVal = RTN_INVALID;
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != hasStpd_)
 	{
 		*hasStpd_ =  DRV_IsStopped();
-		retVal = RTN_OK;
+		retVal = ERR_OK;
 	}
 	return retVal;
 }
 
 StdRtn_t RTE_Read_DrvHasRvsd(uint8 *hasRvsd_)
 {
-	StdRtn_t retVal = RTN_INVALID;
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != hasRvsd_)
 	{
 		*hasRvsd_ =  DRV_HasTurned();
-		retVal = RTN_OK;
+		retVal = ERR_OK;
 	}
 	return retVal;
 }
