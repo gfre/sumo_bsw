@@ -190,7 +190,7 @@ void PTRC1_OnTraceWrap(void)
 void KEY1_OnKeyPressed( uint8_t keys )
 {
 	/* Write your code here. A bit in 'keys' indicates key pressed ... */
-	const EvntCbFct_t *cbFct = NULL;
+	EvntCbFct_t *cbFct = NULL;
 	const APPL_TaskCfgItm_t *mainTaskCfg = NULL;
 	BaseType_t higherPriorityTaskWoken = pdFALSE;
 
@@ -228,7 +228,7 @@ void KEY1_OnKeyPressed( uint8_t keys )
 void KEY1_OnKeyReleased(uint8_t keys)
 {
   /* Write your code here. A bit in 'keys' indicates key released ... */
-	const EvntCbFct_t *cbFct = NULL;
+	EvntCbFct_t *cbFct = NULL;
 
 	cbFct = RTE_Get_SwtOnRlsdCbFct();
 	if(NULL != cbFct)
@@ -255,7 +255,7 @@ void KEY1_OnKeyReleased(uint8_t keys)
 void KEY1_OnKeyPressedLong(uint8_t keys)
 {
   /* Write your code here ... */
-   	const EvntCbFct_t *cbFct = NULL;
+   	EvntCbFct_t *cbFct = NULL;
 	const APPL_TaskCfgItm_t *mainTaskCfg = NULL;
 	BaseType_t higherPriorityTaskWoken = pdFALSE;
 
@@ -315,13 +315,13 @@ void QuadInt_OnInterrupt(void)
 void KEY1_OnKeyReleasedLong(uint8_t keys)
 {
   /* Write your code here. A bit in 'keys' indicates key released after a long time ... */
-	const EvntCbFct_t *cbFct = NULL;
+  EvntCbFct_t *cbFct = NULL;
 
-	cbFct = RTE_Get_SwtOnLngRlsdCbFct();
-	if(NULL != cbFct)
-	{
-		cbFct(keys);
-	}
+  cbFct = RTE_Get_SwtOnLngRlsdCbFct();
+  if(NULL != cbFct)
+  {
+      cbFct(keys);
+  }
 }
 
 /*
