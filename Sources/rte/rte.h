@@ -178,28 +178,28 @@ EXTERNAL_ StdRtn_t RTE_Write_SwtOnLngRlsdCbFct(const EvntCbFct_t *cbFct_);
  * which is called when the switch is pressed shortly
  * @return pointer to the callback function
  */
-EXTERNAL_ const EvntCbFct_t *RTE_Get_SwtOnPrsdCbFct(void);
+EXTERNAL_ EvntCbFct_t *RTE_Get_SwtOnPrsdCbFct(void);
 
 /**
  * @brief RTE interface to get the pointer to a callback function
  * which is called when the switch is pressed for a longer time
  * @return pointer to the callback function
  */
-EXTERNAL_ const EvntCbFct_t *RTE_Get_SwtOnLngPrsdCbFct(void);
+EXTERNAL_ EvntCbFct_t *RTE_Get_SwtOnLngPrsdCbFct(void);
 
 /**
  * @brief RTE interface to get the pointer to a callback function
  * which is called when the switch is released after a short press
  * @return pointer to the callback function
  */
-EXTERNAL_ const EvntCbFct_t *RTE_Get_SwtOnRlsdCbFct(void);
+EXTERNAL_ EvntCbFct_t *RTE_Get_SwtOnRlsdCbFct(void);
 
 /**
  * @brief RTE interface to get the pointer to a callback function
  * which is called when the switch is released after a long press
  * @return pointer to the callback function
  */
-EXTERNAL_ const EvntCbFct_t *RTE_Get_SwtOnLngRlsdCbFct(void);
+EXTERNAL_ EvntCbFct_t *RTE_Get_SwtOnLngRlsdCbFct(void);
 
 
 /*================================================================================================*/

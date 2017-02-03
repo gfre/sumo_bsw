@@ -175,14 +175,12 @@ static StdRtn_t STATE_msINIT(void)
 
 static StdRtn_t STATE_msIDLE(void)
 {
-	LED1_On();
 	return ERR_OK;
 }
 
 static StdRtn_t STATE_msNORMAL(void)
 {
 	STUD_Main();
-	LED1_Off();
 	return ERR_OK;
 }
 
