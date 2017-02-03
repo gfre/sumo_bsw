@@ -38,6 +38,7 @@
 #include "state.h"
 #include "rnet.h"
 
+<<<<<<< Updated upstream
 /*======================================= >> #DEFINES << =========================================*/
 #define SH_DASH_LINE         (CLS1_DASH_LINE)
 #define SH_STAR_LINE         ("\r\n**************************************************************\r\n")
@@ -45,6 +46,26 @@
 #define SH_WELCOME           (    "           >> Welcome to the ACon Sumo Project <<             \r\n")
 #define SH_SUMO_INTRO        (    "  This is Sumo robot with ID #%d.\r\n  \
 				  Type \"-help\" for usage documentation\r\n")
+=======
+<<<<<<< Updated upstream
+void SH_SendString(unsigned char *msg) {
+  CLS1_SendStr(msg, SH_GetStdio()->stdOut);
+  CLS1_SendStr(msg, RTT1_stdio.stdOut);
+=======
+/*======================================= >> #DEFINES << =========================================*/
+#define SH_DASH_LINE         (CLS1_DASH_LINE)
+#define SH_STAR_LINE         ("\r\n**************************************************************\r\n")
+#define SH_DOUBLE_DASH_LINE  (    "==============================================================\r\n")
+#define SH_WELCOME_LINE1     (    "        >> Welcome to the ACon SUMO Robots Project <<         \r\n")
+#define SH_WELCOME_LINE2     (    "         -------------------------------------------          \r\n")
+#define SH_SUMO_INTRO_LINE1  ("\r\n  Hello, my name is SULLEN SUMO and my ID is #%2d. I am highly\r\n")
+#define SH_SUMO_INTRO_LINE2  (    "  trained with basic software version %c.\r\n")
+#define SH_SHELL_INTRO_LINE1 ("\r\n  This is a command line shell for debugging the SUMO basic \r\n")
+#define SH_SHELL_INTRO_LINE2 (    "  software and firmware. Type \"help\" for usage documentation.\r\n")
+#define SH_COPYRIGHT_LINE1   ("\r\n  (c)2017 Gerhard Freudenthaler, gefr@tf.uni-kiel.de, CAU Kiel\r\n")
+#define SH_COPYRIGHT_LINE2   (    "          Erich Styger, erich.styger@hslu.ch, HSLU Luzern\r\n")
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 typedef struct SH_IODesc_s{
@@ -122,6 +143,7 @@ static uint8_t SH_ParseCommand(const unsigned char *cmd, bool *handled, const CL
   return res;
 }
 
+<<<<<<< Updated upstream
 static void SH_PrintWelcomeMsg(const CLS1_StdIOType *io_)
 {
   CLS1_SendStr((unsigned char*)SH_STAR_LINE, io_->stdOut);
@@ -129,12 +151,34 @@ static void SH_PrintWelcomeMsg(const CLS1_StdIOType *io_)
   CLS1_SendStr((unsigned char*)SH_DASH_LINE, io_->stdOut);
   CLS1_SendStr((unsigned char*)"\r\n", io_->stdOut);
   CLS1_SendStr((unsigned char*)SH_SUMO_INTRO, io_->stdOut);
+=======
+<<<<<<< Updated upstream
+=======
+static void SH_PrintWelcomeMsg(const CLS1_StdIOType *io_)
+{
+  uint8 sumoId;
+
+  sumoId = ID_WhichSumo();
+  CLS1_SendStr((unsigned char*)SH_STAR_LINE, io_->stdOut);
+  CLS1_SendStr((unsigned char*)SH_WELCOME_LINE1, io_->stdOut);
+  CLS1_SendStr((unsigned char*)SH_WELCOME_LINE2, io_->stdOut);
+  CLS1_printfIO(io_, (unsigned char*)SH_SUMO_INTRO_LINE1, (int8)sumoId);
+  CLS1_printfIO(io_, (unsigned char*)SH_SUMO_INTRO_LINE2, SW_VERSION_STRING);
+  CLS1_SendStr((unsigned char*)SH_SHELL_INTRO_LINE1, io_->stdOut);
+  CLS1_SendStr((unsigned char*)SH_SHELL_INTRO_LINE2, io_->stdOut);
+  CLS1_SendStr((unsigned char*)SH_COPYRIGHT_LINE1, io_->stdOut);
+  CLS1_SendStr((unsigned char*)SH_COPYRIGHT_LINE2, io_->stdOut);
+>>>>>>> Stashed changes
   CLS1_SendStr((unsigned char*)SH_DOUBLE_DASH_LINE, io_->stdOut);
   CLS1_SendStr((unsigned char*)"\r\n", io_->stdOut);
   CLS1_PrintPrompt(io_);
 
   return;
 }
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 CLS1_ConstStdIOType *SH_GetStdio(void)
@@ -158,10 +202,41 @@ void SH_SendErrStr(unsigned char *msg_)
 
 void SH_Init(void)
 {
+<<<<<<< Updated upstream
   uint8 i = 0u;
   uint8 buf[32];
   uint8 sumoId;
 
+=======
+<<<<<<< Updated upstream
+     uint8 i = 0u;
+	 uint8 buf[32];
+	 uint8 sumoId;
+
+	/* initialize buffers */
+	for(i=0;i<sizeof(ios)/sizeof(ios[0]);i++) {
+		ios[i].buf[0] = '\0';
+	}
+
+	SH_SendString("Shell task started!\r\n");
+
+	/* print ID information about current sumo to the shell welcome dialog*/
+	sumoId = ID_WhichSumo();
+	if (sumoId == ERR_PARAM_ADDRESS)
+	{
+		UTIL1_strcpy(buf, sizeof(buf), "Sorry! Your sumo is unknown.");
+    }
+	else
+	{
+		UTIL1_strcpy(buf, sizeof(buf), "Welcome to Sumo #");
+	  	UTIL1_strcatNum8u(buf, sizeof(buf), ID_WhichSumo());
+	  	UTIL1_strcat(buf, sizeof(buf), " \r\n");
+	}
+	SH_SendString(buf);
+=======
+  uint8 i = 0u;
+  uint8 buf[32];
+>>>>>>> Stashed changes
   /* initialize buffers */
 
   for(i=0;i<sizeof(ios)/sizeof(ios[0]);i++)
@@ -171,7 +246,11 @@ void SH_Init(void)
       ios[i].buf[0] = '\0';
       SH_PrintWelcomeMsg(ios[i].stdio);
   }
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 
 
   /* print ID information about current sumo to the shell welcome dialog*/
