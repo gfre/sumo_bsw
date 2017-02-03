@@ -28,21 +28,21 @@
 
 /*!
  * @brief Sends a string to the shell/console stdout
- * @param msg Zero terminated string to write
+ * @param msg_ Zero terminated string to write
  */
-EXTERNAL_ void SH_SendString(unsigned char *msg);
+EXTERNAL_ void SH_SendStr(unsigned char *msg_);
+
+/*!
+ * @brief Sends a error string to the shell/console stdout
+ * @param msg_ Zero terminated string to write
+ */
+EXTERNAL_ void SH_SendErrStr(unsigned char *msg_);
 
 /*!
  * @brief Puts a command received from the Radio channel into a buffer.
  * @param str Zero terminated string
  */
 EXTERNAL_ void SH_RadioRxString(unsigned char *str);
-
-/*!
- * @brief Parse a command string
- * @param cmd Zero terminated command to be parsed
- */
-EXTERNAL_ void SH_ParseCmd(unsigned char *cmd);
 
 /*!
  * @brief Checks if there is input from the console and parses it.

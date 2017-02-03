@@ -185,7 +185,7 @@ static void APPL_Init(void){
 
 
 void APPL_DebugPrint(unsigned char *str) {
-	SH_SendString(str);
+	SH_SendStr(str);
 }
 
 uint8_t APPL_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io) {
