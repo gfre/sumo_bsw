@@ -189,27 +189,16 @@ void PTRC1_OnTraceWrap(void)
 */
 void KEY1_OnKeyPressed( uint8_t keys )
 {
-	/* Write your code here. A bit in 'keys' indicates key pressed ... */
-	EvntCbFct_t *cbFct = NULL;
-	const APPL_TaskCfgItm_t *mainTaskCfg = NULL;
-	BaseType_t higherPriorityTaskWoken = pdFALSE;
+  /* Write your code here. A bit in 'keys' indicates key pressed ... */
+  EvntCbFct_t *cbFct = NULL;
 
-	cbFct = RTE_Get_SwtOnPrsdCbFct();
-	if( NULL != cbFct )
-	{
-		cbFct( keys );
-	}
-
-	mainTaskCfg = Get_APPL_MainTaskCfg();
-	if( (NULL != mainTaskCfg ) && ( mainTaskCfg->taskHdl ) )
-	{
-		FRTOS1_xTaskNotifyFromISR( mainTaskCfg->taskHdl,
-				                   KEY_PRESSED_NOTIFICATION_VALUE,
-								   eSetBits,
-				                   &higherPriorityTaskWoken );
-		portYIELD_FROM_ISR( higherPriorityTaskWoken );
-	}
+  cbFct = RTE_Get_SwtOnPrsdCbFct();
+  if( NULL != cbFct )
+  {
+      cbFct( keys );
+  }
 }
+
 
 /*
 ** ===================================================================
@@ -228,13 +217,24 @@ void KEY1_OnKeyPressed( uint8_t keys )
 void KEY1_OnKeyReleased(uint8_t keys)
 {
   /* Write your code here. A bit in 'keys' indicates key released ... */
-	EvntCbFct_t *cbFct = NULL;
+  EvntCbFct_t *cbFct = NULL;
+  const APPL_TaskCfgItm_t *mainTaskCfg = NULL;
+  BaseType_t higherPriorityTaskWoken = pdFALSE;
 
-	cbFct = RTE_Get_SwtOnRlsdCbFct();
-	if(NULL != cbFct)
-	{
-		cbFct(keys);
-	}
+  cbFct = RTE_Get_SwtOnRlsdCbFct();
+  if(NULL != cbFct)
+  {
+      cbFct(keys);
+  }
+  mainTaskCfg = Get_APPL_MainTaskCfg();
+  if( (NULL != mainTaskCfg ) && ( mainTaskCfg->taskHdl ) )
+  {
+      FRTOS1_xTaskNotifyFromISR( mainTaskCfg->taskHdl,
+				 KEY_RELEASED_NOTIFICATION_VALUE,
+				 eSetBits,
+				 &higherPriorityTaskWoken );
+      portYIELD_FROM_ISR( higherPriorityTaskWoken );
+  }
 }
 
 /*
@@ -255,25 +255,25 @@ void KEY1_OnKeyReleased(uint8_t keys)
 void KEY1_OnKeyPressedLong(uint8_t keys)
 {
   /* Write your code here ... */
-   	EvntCbFct_t *cbFct = NULL;
-	const APPL_TaskCfgItm_t *mainTaskCfg = NULL;
-	BaseType_t higherPriorityTaskWoken = pdFALSE;
+  EvntCbFct_t *cbFct = NULL;
+  const APPL_TaskCfgItm_t *mainTaskCfg = NULL;
+  BaseType_t higherPriorityTaskWoken = pdFALSE;
 
-	cbFct = RTE_Get_SwtOnLngPrsdCbFct();
-	if(NULL != cbFct)
-	{
-		cbFct(keys);
-	}
+  cbFct = RTE_Get_SwtOnLngPrsdCbFct();
+  if(NULL != cbFct)
+  {
+      cbFct(keys);
+  }
 
-	mainTaskCfg = Get_APPL_MainTaskCfg();
-	if ((NULL != mainTaskCfg) && (mainTaskCfg->taskHdl))
-	{
-		FRTOS1_xTaskNotifyFromISR( mainTaskCfg->taskHdl,
-				                   KEY_PRESSED_LONG_NOTIFICATION_VALUE,
-								   eSetBits,
-				                   &higherPriorityTaskWoken );
-		portYIELD_FROM_ISR( higherPriorityTaskWoken );
-	}
+  mainTaskCfg = Get_APPL_MainTaskCfg();
+  if ((NULL != mainTaskCfg) && (mainTaskCfg->taskHdl))
+  {
+      FRTOS1_xTaskNotifyFromISR( mainTaskCfg->taskHdl,
+				 KEY_PRESSED_LONG_NOTIFICATION_VALUE,
+				 eSetBits,
+				 &higherPriorityTaskWoken );
+      portYIELD_FROM_ISR( higherPriorityTaskWoken );
+  }
 }
 
 /*

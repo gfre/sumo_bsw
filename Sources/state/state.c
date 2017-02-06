@@ -43,46 +43,48 @@ const APPL_TaskCfgItm_t *shTaskCfg = NULL;
 
 static StdRtn_t STATE_SyncStateMachineWithISR()
 {
-	BaseType_t notfRes = pdFAIL;
-	uint32 notfVal = 0u;
+  BaseType_t notfRes = pdFAIL;
+  uint32 notfVal = 0u;
 
-	notfRes = FRTOS1_xTaskNotifyWait( pdFALSE,
-			                          UINT32_MAX,
-						              (uint32_t *)&notfVal,
-						              pdMS_TO_TICKS( 0u ) );
-	if(( pdPASS == notfRes ) && ( MAIN_STATE_ERROR != mainState ))
-	{
-		if( (notfVal & KEY_PRESSED_NOTIFICATION_VALUE) != FALSE)
-		{
-			if( MAIN_STATE_IDLE == mainState )
-			{
-				mainState = MAIN_STATE_NORMAL;
-				BUZ_PlayTune(BUZ_TUNE_BUTTON);
-			}
-		}
+  notfRes = FRTOS1_xTaskNotifyWait( pdFALSE,
+				    UINT32_MAX,
+				    (uint32_t *)&notfVal,
+				    pdMS_TO_TICKS( 0u ) );
 
-		if( (notfVal & KEY_PRESSED_LONG_NOTIFICATION_VALUE) != FALSE)
-		{
-			if( MAIN_STATE_NORMAL == mainState )
-			{
-				mainState = MAIN_STATE_DEBUG;
-				SH_Init();
-				FRTOS1_vTaskResume(shTaskCfg->taskHdl);
-				BUZ_PlayTune(BUZ_TUNE_ACCEPT);
-			}
-			else if( MAIN_STATE_DEBUG == mainState )
-			{
-				mainState = MAIN_STATE_NORMAL;
-				FRTOS1_vTaskSuspend(shTaskCfg->taskHdl);
-				BUZ_PlayTune(BUZ_TUNE_DECLINE);
-				SH_Deinit();
-			}
-			else
-			{
-				/* nothing to do */
-			}
-		}
-	}
+  /* Transitions from IDLE state */
+  if( ( pdPASS == notfRes ) && ( MAIN_STATE_IDLE == mainState ) )
+  {
+      /* Handle transition from IDLE --> NORMAL */
+      if( (notfVal & KEY_RELEASED_NOTIFICATION_VALUE) != FALSE)
+      {
+	  mainState = MAIN_STATE_NORMAL;
+	  BUZ_PlayTune(BUZ_TUNE_BUTTON);
+      }
+      /* Handle transition from IDLE --> DEBUG */
+      if( (notfVal & KEY_PRESSED_LONG_NOTIFICATION_VALUE) != FALSE)
+      {
+	  mainState = MAIN_STATE_DEBUG;
+	  SH_Init();
+	  FRTOS1_vTaskResume(shTaskCfg->taskHdl);
+	  BUZ_PlayTune(BUZ_TUNE_ACCEPT);
+      }
+  }
+  /* Transitions from DEBUG state */
+  else if( ( pdPASS == notfRes ) && ( MAIN_STATE_DEBUG == mainState ) )
+  {
+      /* Handle transition from DEBUG --> IDLE */
+      if( (notfVal & KEY_PRESSED_LONG_NOTIFICATION_VALUE) != FALSE)
+      {
+	  mainState = MAIN_STATE_IDLE;
+	  SH_Deinit();
+	  FRTOS1_vTaskSuspend(shTaskCfg->taskHdl);
+	  BUZ_PlayTune(BUZ_TUNE_DECLINE);
+      }
+  }
+  else
+  {
+
+  }
 }
 
 static void STATE_RunStateMachine(void) {
