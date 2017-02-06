@@ -25,31 +25,29 @@
 #endif
 
 #define SH_SWC_STRING ("shell")
+#define SH_CMD_EXIT   ("exit")
+
 
 /*!
  * @brief Sends a string to the shell/console stdout
- * @param msg Zero terminated string to write
+ * @param msg_ Zero terminated string to write
  */
-EXTERNAL_ void SH_SendString(unsigned char *msg);
+EXTERNAL_ void SH_SendStr(unsigned char *msg_);
 
 /*!
- * @brief Puts a command received from the Radio channel into a buffer.
- * @param str Zero terminated string
+ * @brief Sends a error string to the shell/console stdout
+ * @param msg_ Zero terminated string to write
  */
-EXTERNAL_ void SH_RadioRxString(unsigned char *str);
+EXTERNAL_ void SH_SendErrStr(unsigned char *msg_);
 
 /*!
- * @brief Parse a command string
- * @param cmd Zero terminated command to be parsed
+ * @brief Sends a error string to the shell/console stdout
+ * @param *cmd_ pointer to command
+ * @param *handeld_ pointer to flag which returns TRUE if cmd was handeld, otherwise FALSE (CBR).
+ * @param *io_ pointer to command line shell standard IO type
+ * @return always ERR_OK
  */
-EXTERNAL_ void SH_ParseCmd(unsigned char *cmd);
-
-/*!
- * @brief Checks if there is input from the console and parses it.
- */
-EXTERNAL_ void SH_Parse(void);
-
-EXTERNAL_ CLS1_ConstStdIOType *SH_GetStdio(void);
+EXTERNAL_ uint8_t SH_ParseCommand(const unsigned char *cmd_, bool *handled_, const CLS1_StdIOType *io_);
 
 /*! @brief Shell initialization */
 EXTERNAL_ void SH_Init(void);

@@ -184,10 +184,6 @@ static void APPL_Init(void){
 }
 
 
-void APPL_DebugPrint(unsigned char *str) {
-	SH_SendString(str);
-}
-
 uint8_t APPL_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io) {
 	uint8_t res = ERR_OK;
 	if (UTIL1_strcmp((char*)cmd, (char*)CLS1_CMD_HELP)==0 || UTIL1_strcmp((char*)cmd, (char*)"appl help")==0) {

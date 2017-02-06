@@ -75,6 +75,7 @@ static StdRtn_t STATE_SyncStateMachineWithISR()
 				mainState = MAIN_STATE_NORMAL;
 				FRTOS1_vTaskSuspend(shTaskCfg->taskHdl);
 				BUZ_PlayTune(BUZ_TUNE_DECLINE);
+				SH_Deinit();
 			}
 			else
 			{

@@ -25,12 +25,6 @@
 #endif
 
 /*!
- * @brief Debug printing function
- * @param str Debug string to print
- */
-EXTERNAL_ void APPL_DebugPrint(unsigned char *str);
-
-/*!
  * @brief Parses a command
  * @param cmd Command string to be parsed
  * @param handled Sets this variable to TRUE if command was handled
