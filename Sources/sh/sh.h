@@ -40,8 +40,14 @@ EXTERNAL_ void SH_SendStr(unsigned char *msg_);
  */
 EXTERNAL_ void SH_SendErrStr(unsigned char *msg_);
 
-
-EXTERNAL_ uint8_t SH_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
+/*!
+ * @brief Sends a error string to the shell/console stdout
+ * @param *cmd_ pointer to command
+ * @param *handeld_ pointer to flag which returns TRUE if cmd was handeld, otherwise FALSE (CBR).
+ * @param *io_ pointer to command line shell standard IO type
+ * @return always ERR_OK
+ */
+EXTERNAL_ uint8_t SH_ParseCommand(const unsigned char *cmd_, bool *handled_, const CLS1_StdIOType *io_);
 
 /*! @brief Shell initialization */
 EXTERNAL_ void SH_Init(void);

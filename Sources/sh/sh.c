@@ -156,19 +156,20 @@ void SH_SendErrStr(unsigned char *msg_)
   CLS1_SendStr(msg_, RTT1_GetStdio()->stdErr);
 }
 
-uint8_t SH_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io)
+uint8_t SH_ParseCommand(const unsigned char *cmd_, bool *handled_, const CLS1_StdIOType *io_)
 {
   uint8_t res = ERR_OK;
 
-  if (UTIL1_strcmp((char*)cmd, (char*)CLS1_CMD_HELP)==0 || UTIL1_strcmp((char*)cmd, (char*)"shell help")==0) {
-      *handled = TRUE;
-      return SH_PrintHelp(io);
-  } else if (UTIL1_strcmp((char*)cmd, (char*)CLS1_CMD_STATUS)==0 || UTIL1_strcmp((char*)cmd, (char*)"shell status")==0) {
-      *handled = TRUE;
-      return SH_PrintStatus(io);
-  } else if (ERR_OK == UTIL1_strcmp((char*)cmd, (char*)SH_CMD_EXIT)) {
+  *handled_ = FALSE;
+  if (UTIL1_strcmp((char*)cmd_, (char*)CLS1_CMD_HELP)==ERR_OK || UTIL1_strcmp((char*)cmd_, (char*)"shell help")==ERR_OK) {
+      *handled_ = TRUE;
+      return SH_PrintHelp(io_);
+  } else if (UTIL1_strcmp((char*)cmd_, (char*)CLS1_CMD_STATUS)==ERR_OK || UTIL1_strcmp((char*)cmd_, (char*)"shell status")==ERR_OK) {
+      *handled_ = TRUE;
+      return SH_PrintStatus(io_);
+  } else if (ERR_OK == UTIL1_strcmp((char*)cmd_, (char*)SH_CMD_EXIT)) {
       SH_ExitShTask();
-      *handled = TRUE;
+      *handled_ = TRUE;
   }
   return res;
 }
