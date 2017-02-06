@@ -15,10 +15,8 @@
 #include "Radio.h"
 #include "RStack.h"
 #include "RApp.h"
-#include "FRTOS1.h"
+#include "CLS1.h"
 #include "sh.h"
-#include "appl.h"
-#include "rte.h"
 
 static RNWK_ShortAddrType dstAddr = RNWK_ADDR_BROADCAST; /* destination node address */
 
@@ -63,7 +61,6 @@ static uint8_t RNET_HdlRTERxMsgCbFct(RAPP_MSG_Type type_, uint8_t size_, uint8_t
 }
 static uint8_t RNET_HandleDataRxMessage(RAPP_MSG_Type type, uint8_t size, uint8_t *data, RAPP_ShortAddrType srcAddr, bool *handled, RPHY_PacketDesc *packet) {
   uint8_t buf[32];
-  CLS1_ConstStdIOTypePtr io = SH_GetStdio();
   uint8_t val;
   
   (void)size;
@@ -72,9 +69,11 @@ static uint8_t RNET_HandleDataRxMessage(RAPP_MSG_Type type, uint8_t size, uint8_
     case MSG_TYPE_TESTDATA: /* generic data message */
       *handled = TRUE;
       val = *data; /* get data value */
-      CLS1_SendStr((unsigned char*)"Data: ", io->stdOut);
-      CLS1_SendNum8u(val, io->stdOut);
-      CLS1_SendStr((unsigned char*)" from addr 0x", io->stdOut);
+      SH_SendStr((unsigned char*)"Data: ");
+      buf[0] = '\0';
+      UTIL1_Num8uToStr(buf, sizeof(buf), val);
+      SH_SendStr(buf);
+      SH_SendStr((unsigned char*)" from addr 0x");
       buf[0] = '\0';
 #if RNWK_SHORT_ADDR_SIZE==1
       UTIL1_strcatNum8Hex(buf, sizeof(buf), srcAddr);
@@ -82,7 +81,7 @@ static uint8_t RNET_HandleDataRxMessage(RAPP_MSG_Type type, uint8_t size, uint8_
       UTIL1_strcatNum16Hex(buf, sizeof(buf), srcAddr);
 #endif
       UTIL1_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
-      CLS1_SendStr(buf, io->stdOut);
+      SH_SendStr(buf);
       return ERR_OK;
     default:
       break;
@@ -133,10 +132,10 @@ static void RNET_PrintHelp(const CLS1_StdIOType *io) {
 void RNET_Init(void) {
   RNET1_Init(); /* initialize stack */
   if (RAPP_SetMessageHandlerTable(handlerTable)!=ERR_OK) { /* assign application message handler */
-    APPL_DebugPrint((unsigned char*)"ERR: failed setting message handler!\r\n");
+    SH_SendErrStr((unsigned char*)"ERR: failed setting message handler!\r\n");
   }
   if (RAPP_SetThisNodeAddr(RNWK_ADDR_BROADCAST)!=ERR_OK) { /* set a default address */
-     APPL_DebugPrint((unsigned char*)"ERR: Failed setting node address\r\n");
+     SH_SendErrStr((unsigned char*)"ERR: Failed setting node address\r\n");
   }
   rnetState = RNET_NONE;
 }

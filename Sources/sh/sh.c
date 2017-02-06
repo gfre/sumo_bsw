@@ -16,34 +16,21 @@
 #define MASTER_SH_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
+#include "Platform.h"
 #include "sh.h"
+#include "sh_cfg.h"
+#include "appl_cfg.h"
 #include "CLS1.h"
-#include "FRTOS1.h"
-#include "appl.h"
-#include "Buzzer.h"
-#include "Motor.h"
-#include "RNET1.h"
-#include "LED1.h"
-#include "LED2.h"
-#include "batt.h"
-#include "Q4CLeft.h"
-#include "Q4CRight.h"
-#include "Tacho.h"
-#include "KIN1.h"
-#include "Pid.h"
-#include "drv.h"
 #include "RTT1.h"
 #include "id.h"
-#include "nvm.h"
-#include "state.h"
-#include "rnet.h"
+
 
 
 /*======================================= >> #DEFINES << =========================================*/
 #define SH_DASH_LINE         (CLS1_DASH_LINE)
 #define SH_STAR_LINE         ("\r\n**************************************************************\r\n")
 #define SH_DOUBLE_DASH_LINE  (    "==============================================================\r\n")
-#define SH_WELCOME_LINE1     (    "        >> Welcome to the ACon SUMO Robots Project <<         \r\n")
+#define SH_WELCOME_LINE1     (    "        >> Welcome to the ACon Sumo Robots Project <<         \r\n")
 #define SH_WELCOME_LINE2     (    "         -------------------------------------------          \r\n")
 #define SH_SUMO_INTRO_LINE1  ("\r\n  Hello, my name is SULLEN SUMO and my ID is #%d. I am highly\r\n")
 #define SH_SUMO_INTRO_LINE2  (    "  trained with basic software version %s%s.\r\n")
@@ -51,8 +38,9 @@
 #define SH_SHELL_INTRO_LINE2 (    "  software and firmware. Type \"help\" for usage documentation.\r\n")
 #define SH_COPYRIGHT_LINE1   ("\r\n  (c)2017 Gerhard Freudenthaler, gefr@tf.uni-kiel.de, CAU Kiel\r\n")
 #define SH_COPYRIGHT_LINE2   (    "          Erich Styger, erich.styger@hslu.ch, HSLU Luzern\r\n")
-#define SH_GOODBYE_LINE1     (    "             ***  Good Bye from SUMO #%d  ***               \r\n")
-#define SH_THANKS_LINE1      ("\r\n  Special thanks go to Prof. Erich Styger from the HSLU Luzern. \r\n")
+#define SH_GOODBYE_LINE1     (    "           ***  Good Bye from SULLEN SUMO #%d ***              \r\n")
+#define SH_GOODBYE_LINE2     ("\r\n    Thank you for debugging the ACon Sumo Robots Project!      \r\n")
+#define SH_THANKS_LINE1      ("\r\n  Special thanks go to Prof. Erich Styger from the HSLU Luzern.\r\n")
 #define SH_THANKS_LINE2      (    "  >> Visit him on www.MCUonEclipse.com! \r\n")
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
@@ -66,34 +54,10 @@ typedef struct SH_IODesc_s{
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 static uint8_t SH_PrintHelp(const CLS1_StdIOType *io);
 static uint8_t SH_PrintStatus(const CLS1_StdIOType *io);
-static uint8_t SH_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
 static void SH_PrintWelcomeMsg(const CLS1_StdIOType *io_);
+static void SH_ExitShTask(void);
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-static const CLS1_ParseCommandCallback CmdParserTable[] =
-{
-  CLS1_ParseCommand,
-  SH_ParseCommand,
-  FRTOS1_ParseCommand,
-  APPL_ParseCommand,
-  STATE_ParseCommand,
-  NVM_ParseCommand,
-  MOT_ParseCommand,
-  DRV_ParseCommand,
-  TACHO_ParseCommand,
-  PID_ParseCommand,
-  Q4CLeft_ParseCommand,
-  Q4CRight_ParseCommand,
-  BUZ_ParseCommand,
-  LED1_ParseCommand,
-  LED2_ParseCommand,
-  RNET1_ParseCommand,
-  BATT_ParseCommand,
-  KIN1_ParseCommand,
-  RNET_ParseCommand,
-  NULL /* Sentinel */
-};
-
 static const SH_IODesc ios[] =
 {
     {CLS1_DefaultShellBuffer, sizeof(CLS1_DefaultShellBuffer), &CLS1_stdio},
@@ -117,22 +81,9 @@ static uint8_t SH_PrintStatus(const CLS1_StdIOType *io) {
   return ERR_OK;
 }
 
-static uint8_t SH_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io)
-{
-  uint8_t res = ERR_OK;
-
-  if (UTIL1_strcmp((char*)cmd, (char*)CLS1_CMD_HELP)==0 || UTIL1_strcmp((char*)cmd, (char*)"shell help")==0) {
-      *handled = TRUE;
-      return SH_PrintHelp(io);
-  } else if (UTIL1_strcmp((char*)cmd, (char*)CLS1_CMD_STATUS)==0 || UTIL1_strcmp((char*)cmd, (char*)"shell status")==0) {
-      *handled = TRUE;
-      return SH_PrintStatus(io);
-  }
-  return res;
-}
 
 void SH_SendString(unsigned char *msg) {
-  CLS1_SendStr(msg, SH_GetStdio()->stdOut);
+  CLS1_SendStr(msg, CLS1_GetStdio()->stdOut);
   CLS1_SendStr(msg, RTT1_stdio.stdOut);
 }
 
@@ -168,6 +119,7 @@ static void SH_PrintGoodByeMsg(const CLS1_StdIOType *io_)
   CLS1_SendStr((const uint8 *)SH_DASH_LINE, io_->stdOut);
   CLS1_SendStr((const uint8 *)"\r\n\r\n", io_->stdOut);
   CLS1_printfIO(io_, (const char_t *)SH_GOODBYE_LINE1, (int8)sumoId);
+  CLS1_SendStr((const char_t *)SH_GOODBYE_LINE2, io_->stdOut);
   CLS1_SendStr((const uint8 *)SH_THANKS_LINE1, io_->stdOut);
   CLS1_SendStr((const uint8 *)SH_THANKS_LINE2, io_->stdOut);
   CLS1_SendStr((const uint8 *)SH_DASH_LINE, io_->stdOut);
@@ -175,13 +127,23 @@ static void SH_PrintGoodByeMsg(const CLS1_StdIOType *io_)
   return;
 }
 
-/*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-CLS1_ConstStdIOType *SH_GetStdio(void)
+static void SH_ExitShTask(void)
 {
-  return CLS1_GetStdio();
+  const APPL_TaskCfgItm_t *mainTaskCfg = NULL;
+  BaseType_t higherPriorityTaskWoken = pdFALSE;
+
+  mainTaskCfg = Get_APPL_MainTaskCfg();
+  if ((NULL != mainTaskCfg) && (mainTaskCfg->taskHdl))
+  {
+      FRTOS1_xTaskNotifyFromISR( mainTaskCfg->taskHdl,
+				 KEY_PRESSED_LONG_NOTIFICATION_VALUE,
+				 eSetBits,
+				 &higherPriorityTaskWoken );
+      portYIELD_FROM_ISR( higherPriorityTaskWoken );
+  }
 }
 
-
+/*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 void SH_SendStr(unsigned char *msg_)
 {
   CLS1_SendStr(msg_, CLS1_GetStdio()->stdOut);
@@ -192,6 +154,23 @@ void SH_SendErrStr(unsigned char *msg_)
 {
   CLS1_SendStr(msg_, CLS1_GetStdio()->stdErr);
   CLS1_SendStr(msg_, RTT1_GetStdio()->stdErr);
+}
+
+uint8_t SH_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io)
+{
+  uint8_t res = ERR_OK;
+
+  if (UTIL1_strcmp((char*)cmd, (char*)CLS1_CMD_HELP)==0 || UTIL1_strcmp((char*)cmd, (char*)"shell help")==0) {
+      *handled = TRUE;
+      return SH_PrintHelp(io);
+  } else if (UTIL1_strcmp((char*)cmd, (char*)CLS1_CMD_STATUS)==0 || UTIL1_strcmp((char*)cmd, (char*)"shell status")==0) {
+      *handled = TRUE;
+      return SH_PrintStatus(io);
+  } else if (ERR_OK == UTIL1_strcmp((char*)cmd, (char*)SH_CMD_EXIT)) {
+      SH_ExitShTask();
+      *handled = TRUE;
+  }
+  return res;
 }
 
 
@@ -208,7 +187,6 @@ void SH_Init(void)
       while(TRUE == CLS1_ReadLine(ios[i].buf, ios[i].buf, ios[i].bufSize, ios[i].stdio));
       ios[i].buf[0] = '\0';
       SH_PrintWelcomeMsg(ios[i].stdio);
-      SH_PrintGoodByeMsg(ios[i].stdio);
   }
 
 }
@@ -216,7 +194,17 @@ void SH_Init(void)
 
 void SH_Deinit(void)
 {
+  uint8 i = 0u;
+
   CLS1_Deinit();
+  for(i=0;i<sizeof(ios)/sizeof(ios[0]);i++)
+  {
+      /* Eat previous lines */
+      while(TRUE == CLS1_ReadLine(ios[i].buf, ios[i].buf, ios[i].bufSize, ios[i].stdio));
+      ios[i].buf[0] = '\0';
+      SH_PrintGoodByeMsg(ios[i].stdio);
+  }
+
 }
 
 void SH_MainFct(void)
@@ -225,7 +213,7 @@ void SH_MainFct(void)
   /* process all I/Os */
   for(i=0;i<sizeof(ios)/sizeof(ios[0]);i++)
   {
-      (void)CLS1_ReadAndParseWithCommandTable(ios[i].buf, ios[i].bufSize, ios[i].stdio, CmdParserTable);
+      (void)CLS1_ReadAndParseWithCommandTable(ios[i].buf, ios[i].bufSize, ios[i].stdio, Get_CmdParserTbl());
   }
 }
 

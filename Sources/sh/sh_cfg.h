@@ -16,7 +16,7 @@
 #define SH_CFG_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
-
+#include "CLS1.h"
 
 
 #ifdef MASTER_sh_cfg_C_
@@ -36,7 +36,7 @@
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-
+const CLS1_ParseCommandCallback *Get_CmdParserTbl();
 
 
 #ifdef EXTERNAL_

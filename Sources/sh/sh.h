@@ -25,6 +25,8 @@
 #endif
 
 #define SH_SWC_STRING ("shell")
+#define SH_CMD_EXIT   ("exit")
+
 
 /*!
  * @brief Sends a string to the shell/console stdout
@@ -38,18 +40,8 @@ EXTERNAL_ void SH_SendStr(unsigned char *msg_);
  */
 EXTERNAL_ void SH_SendErrStr(unsigned char *msg_);
 
-/*!
- * @brief Puts a command received from the Radio channel into a buffer.
- * @param str Zero terminated string
- */
-EXTERNAL_ void SH_RadioRxString(unsigned char *str);
 
-/*!
- * @brief Checks if there is input from the console and parses it.
- */
-EXTERNAL_ void SH_Parse(void);
-
-EXTERNAL_ CLS1_ConstStdIOType *SH_GetStdio(void);
+EXTERNAL_ uint8_t SH_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
 
 /*! @brief Shell initialization */
 EXTERNAL_ void SH_Init(void);
