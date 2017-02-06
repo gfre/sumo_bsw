@@ -14,7 +14,7 @@
 #include "LED1.h"
 #include "LED2.h"
 #include "KEY1.h"
-#include "Buzzer.h"
+#include "buz.h"
 #include "rte.h"
 #include "tacho.h"
 #include "drv.h"
@@ -209,28 +209,12 @@ EvntCbFct_t *RTE_Get_SwtOnLngRlsdCbFct(void)
 /**
  * Interface implementation for the buzzer
  */
-static inline BUZ_Tunes Trsnlte_TuneRTE2BUZ(RTE_BuzTune_t tune_);
-
-
-static inline BUZ_Tunes Trsnlte_TuneRTE2BUZ(RTE_BuzTune_t mode_)
-{
-	switch(mode_)
-	{
-		case RTE_BUZ_TUNE_WELCOME:     return BUZ_TUNE_WELCOME;
-		case RTE_BUZ_TUNE_BUTTON:      return BUZ_TUNE_BUTTON;
-		case RTE_BUZ_TUNE_BUTTON_LONG: return BUZ_TUNE_BUTTON_LONG;
-		default:
-		case RTE_BUZ_TUNE_NOF_TUNES:   return BUZ_TUNE_NOF_TUNES;
-	}
-	return BUZ_TUNE_NOF_TUNES;
-}
-
-StdRtn_t RTE_Write_BuzPlayTune(RTE_BuzTune_t tune_)
+StdRtn_t RTE_Write_BuzPlayTune(BUZ_Tunes_t tune_)
 {
 	StdRtn_t retVal = ERR_PARAM_VALUE;
 	if(BUZ_TUNE_NOF_TUNES > tune_)
 	{
-		retVal = (StdRtn_t)BUZ_PlayTune(Trsnlte_TuneRTE2BUZ(tune_));
+		retVal = (StdRtn_t)BUZ_PlayTune(tune_);
 	}
 	return retVal;
 }

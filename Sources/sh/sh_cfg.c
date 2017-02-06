@@ -15,7 +15,7 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "appl.h"
-#include "Buzzer.h"
+#include "buz.h"
 #include "Motor.h"
 #include "RNET1.h"
 #include "LED1.h"

@@ -24,7 +24,7 @@
 #include "sh.h"
 #include "LED1.h"
 #include "LED2.h"
-#include "Buzzer.h"
+#include "buz.h"
 #include "KEY1.h"
 #include "Motor.h"
 #include "RNET1.h"
