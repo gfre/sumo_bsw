@@ -129,7 +129,7 @@ typedef struct CbFctTab_s{
 
 static CbFctTab_t cbFctTab={NULL};
 
-StdRtn_t RTE_Read_SwtSt(uint8 *state_)
+StdRtn_t RTE_Read_BtnSt(uint8 *state_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL!=state_)
@@ -140,7 +140,7 @@ StdRtn_t RTE_Read_SwtSt(uint8 *state_)
 	return retVal;
 }
 
-StdRtn_t RTE_Write_SwtOnPrsdCbFct(const EvntCbFct_t *cbFct_)
+StdRtn_t RTE_Write_BtnOnPrsdCbFct(const EvntCbFct_t *cbFct_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != cbFct_)
@@ -151,7 +151,7 @@ StdRtn_t RTE_Write_SwtOnPrsdCbFct(const EvntCbFct_t *cbFct_)
 	return retVal;
 }
 
-StdRtn_t RTE_Write_SwtOnLngPrsdCbFct(const EvntCbFct_t *cbFct_)
+StdRtn_t RTE_Write_BtnOnLngPrsdCbFct(const EvntCbFct_t *cbFct_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != cbFct_)
@@ -162,7 +162,7 @@ StdRtn_t RTE_Write_SwtOnLngPrsdCbFct(const EvntCbFct_t *cbFct_)
 	return retVal;
 }
 
-StdRtn_t RTE_Write_SwtOnRlsdCbFct(const EvntCbFct_t *cbFct_)
+StdRtn_t RTE_Write_BtnOnRlsdCbFct(const EvntCbFct_t *cbFct_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != cbFct_)
@@ -173,7 +173,7 @@ StdRtn_t RTE_Write_SwtOnRlsdCbFct(const EvntCbFct_t *cbFct_)
 	return retVal;
 }
 
-StdRtn_t RTE_Write_SwtOnLngRlsdCbFct(const EvntCbFct_t *cbFct_)
+StdRtn_t RTE_Write_BtnOnLngRlsdCbFct(const EvntCbFct_t *cbFct_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != cbFct_)
@@ -184,22 +184,22 @@ StdRtn_t RTE_Write_SwtOnLngRlsdCbFct(const EvntCbFct_t *cbFct_)
 	return retVal;
 }
 
-EvntCbFct_t *RTE_Get_SwtOnPrsdCbFct(void)
+EvntCbFct_t *RTE_Get_BtnOnPrsdCbFct(void)
 {
 	return cbFctTab.cbFctOnPrsd;
 }
 
-EvntCbFct_t *RTE_Get_SwtOnLngPrsdCbFct(void)
+EvntCbFct_t *RTE_Get_BtnOnLngPrsdCbFct(void)
 {
 	return cbFctTab.cbFctOnLngPrsd;
 }
 
-EvntCbFct_t *RTE_Get_SwtOnRlsdCbFct(void)
+EvntCbFct_t *RTE_Get_BtnOnRlsdCbFct(void)
 {
 	return cbFctTab.cbFctOnRlsd;
 }
 
-EvntCbFct_t *RTE_Get_SwtOnLngRlsdCbFct(void)
+EvntCbFct_t *RTE_Get_BtnOnLngRlsdCbFct(void)
 {
 	return cbFctTab.cbFctOnLngRlsd;
 }

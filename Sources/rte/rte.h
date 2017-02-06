@@ -125,76 +125,76 @@ EXTERNAL_ StdRtn_t RTE_Read_LedRiSt(uint8 *state_);
 
 
 /**
- * @brief RTE interface to read the state of the switch
- * @param *state_ pointer to the switch state (call by reference)
+ * @brief RTE interface to read the state of the button
+ * @param *state_ pointer to the button state (call by reference)
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-EXTERNAL_ StdRtn_t RTE_Read_SwtSt(uint8 *state_);
+EXTERNAL_ StdRtn_t RTE_Read_BtnSt(uint8 *state_);
 
 /**
  * @brief RTE interface to set the pointer to a callback function
- * which is called when the switch is pressed shortly
+ * which is called when the button is pressed shortly
  * @param *cbFct_ pointer to the callback function
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-EXTERNAL_ StdRtn_t RTE_Write_SwtOnPrsdCbFct(const EvntCbFct_t *cbFct_);
+EXTERNAL_ StdRtn_t RTE_Write_BtnOnPrsdCbFct(const EvntCbFct_t *cbFct_);
 
 /**
  * @brief RTE interface to set the pointer to a callback function
- * which is called when the switch is pressed for a longer time
+ * which is called when the button is pressed for a longer time
  * @param *cbFct_ pointer to the callback function
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-EXTERNAL_ StdRtn_t RTE_Write_SwtOnLngPrsdCbFct(const EvntCbFct_t *cbFct_);
+EXTERNAL_ StdRtn_t RTE_Write_BtnOnLngPrsdCbFct(const EvntCbFct_t *cbFct_);
 
 /**
  * @brief RTE interface to set the pointer to a callback function
- * which is called when the switch is released after a short press
+ * which is called when the button is released after a short press
  * @param *cbFct_ pointer to the callback function
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-EXTERNAL_ StdRtn_t RTE_Write_SwtOnRlsdCbFct(const EvntCbFct_t *cbFct_);
+EXTERNAL_ StdRtn_t RTE_Write_BtnOnRlsdCbFct(const EvntCbFct_t *cbFct_);
 
 /**
  * @brief RTE interface to set the pointer to a callback function
- * which is called when the switch is released after a long press
+ * which is called when the button is released after a long press
  * @param *cbFct_ pointer to the callback function
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-EXTERNAL_ StdRtn_t RTE_Write_SwtOnLngRlsdCbFct(const EvntCbFct_t *cbFct_);
+EXTERNAL_ StdRtn_t RTE_Write_BtnOnLngRlsdCbFct(const EvntCbFct_t *cbFct_);
 
 /**
  * @brief RTE interface to get the pointer to a callback function
- * which is called when the switch is pressed shortly
+ * which is called when the button is pressed shortly
  * @return pointer to the callback function
  */
-EXTERNAL_ EvntCbFct_t *RTE_Get_SwtOnPrsdCbFct(void);
+EXTERNAL_ EvntCbFct_t *RTE_Get_BtnOnPrsdCbFct(void);
 
 /**
  * @brief RTE interface to get the pointer to a callback function
- * which is called when the switch is pressed for a longer time
+ * which is called when the button is pressed for a longer time
  * @return pointer to the callback function
  */
-EXTERNAL_ EvntCbFct_t *RTE_Get_SwtOnLngPrsdCbFct(void);
+EXTERNAL_ EvntCbFct_t *RTE_Get_BtnOnLngPrsdCbFct(void);
 
 /**
  * @brief RTE interface to get the pointer to a callback function
- * which is called when the switch is released after a short press
+ * which is called when the button is released after a short press
  * @return pointer to the callback function
  */
-EXTERNAL_ EvntCbFct_t *RTE_Get_SwtOnRlsdCbFct(void);
+EXTERNAL_ EvntCbFct_t *RTE_Get_BtnOnRlsdCbFct(void);
 
 /**
  * @brief RTE interface to get the pointer to a callback function
- * which is called when the switch is released after a long press
+ * which is called when the button is released after a long press
  * @return pointer to the callback function
  */
-EXTERNAL_ EvntCbFct_t *RTE_Get_SwtOnLngRlsdCbFct(void);
+EXTERNAL_ EvntCbFct_t *RTE_Get_BtnOnLngRlsdCbFct(void);
 
 
 /*================================================================================================*/
