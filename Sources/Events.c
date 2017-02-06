@@ -192,7 +192,7 @@ void KEY1_OnKeyPressed( uint8_t keys )
   /* Write your code here. A bit in 'keys' indicates key pressed ... */
   EvntCbFct_t *cbFct = NULL;
 
-  cbFct = RTE_Get_SwtOnPrsdCbFct();
+  cbFct = RTE_Get_BtnOnPrsdCbFct();
   if( NULL != cbFct )
   {
       cbFct( keys );
@@ -221,7 +221,7 @@ void KEY1_OnKeyReleased(uint8_t keys)
   const APPL_TaskCfgItm_t *mainTaskCfg = NULL;
   BaseType_t higherPriorityTaskWoken = pdFALSE;
 
-  cbFct = RTE_Get_SwtOnRlsdCbFct();
+  cbFct = RTE_Get_BtnOnRlsdCbFct();
   if(NULL != cbFct)
   {
       cbFct(keys);
@@ -259,7 +259,7 @@ void KEY1_OnKeyPressedLong(uint8_t keys)
   const APPL_TaskCfgItm_t *mainTaskCfg = NULL;
   BaseType_t higherPriorityTaskWoken = pdFALSE;
 
-  cbFct = RTE_Get_SwtOnLngPrsdCbFct();
+  cbFct = RTE_Get_BtnOnLngPrsdCbFct();
   if(NULL != cbFct)
   {
       cbFct(keys);
@@ -317,7 +317,7 @@ void KEY1_OnKeyReleasedLong(uint8_t keys)
   /* Write your code here. A bit in 'keys' indicates key released after a long time ... */
   EvntCbFct_t *cbFct = NULL;
 
-  cbFct = RTE_Get_SwtOnLngRlsdCbFct();
+  cbFct = RTE_Get_BtnOnLngRlsdCbFct();
   if(NULL != cbFct)
   {
       cbFct(keys);
