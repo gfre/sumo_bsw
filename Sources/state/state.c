@@ -205,7 +205,7 @@ static uint8_t STATE_PrintHelp(const CLS1_StdIOType *io_) {
 }
 
 static StdRtn_t STATE_PrintStatus(const CLS1_StdIOType *io_) {
-  uint8 retVal = RTN_OK;
+  uint8 retVal = ERR_OK;
   CLS1_SendStatusStr((unsigned char*)"state", (unsigned char*)"\r\n", io_->stdOut);
   CLS1_SendStatusStr((unsigned char*)"  current", STATE_ReadStateString(mainState) , io_->stdOut);
   return retVal;

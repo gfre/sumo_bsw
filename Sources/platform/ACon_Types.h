@@ -1,17 +1,17 @@
-/*******************************************************************************
- * @brief 	This provides basic macros for the CAUsumo adaption.
+/***************************************************************************************************
+ * @brief 	This provides basic macros and typedef for the ACon Sumo Project
  *
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, CAU Kiel
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, University Kiel
  * @date 	09.01.2017
  *
  * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
  *
  *
- * ==============================================================================
+ * ====================================================================================================
  */
 
-#ifndef CAU_TYPES_H
-#define CAU_TYPES_H
+#ifndef ACON_TYPES_H
+#define ACON_TYPES_H
 
 
 /**
@@ -29,20 +29,10 @@ typedef uint8 StdRtn_t;
 */
 #define BTN_NPRESSED (0u)
 
-/**
-    Standard macro for positive return code
-*/
-#define RTN_OK (0u)
-
-/**
-    Standard macro for negative return code
-*/
-#define RTN_INVALID (1u)
-
 
 typedef enum SigStatus_tag_
 {
-	SIG_OK=0           /**< Signal status is ok. */
+    SIG_OK=0           /**< Signal status is ok. */
    ,SIG_INVALID=1      /**< Signal status is invalid. */
    ,SIG_ERROR=2        /**< Signal value shows error. */
    ,SIG_NA=3           /**< Signal value shows not available. */
