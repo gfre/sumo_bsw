@@ -15,6 +15,8 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "task_clshdlr.h"
+#include "appl_clshdlr.h"
+
 #include "buz.h"
 #include "Motor.h"
 #include "RNET1.h"
@@ -29,7 +31,6 @@
 #include "drv.h"
 #include "id.h"
 #include "nvm.h"
-#include "appl_clshdlr.h"
 #include "rnet.h"
 #include "FRTOS1.h"
 #include "sh.h"

@@ -29,9 +29,7 @@
 
 
 
-
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-
 
 
 
@@ -40,7 +38,7 @@
  * @brief Interface function which return the command parser table
  * @return pointer to the command parser table.
  */
-const CLS1_ParseCommandCallback *Get_CmdParserTbl();
+EXTERNAL_ const CLS1_ParseCommandCallback *Get_CmdParserTbl();
 
 
 #ifdef EXTERNAL_
