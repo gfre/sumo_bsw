@@ -41,7 +41,7 @@ static void RnetTaskFct(void *pvParameters_) {return TASK_PerdTaskFct(pvParamete
 static void DrvTaskFct(void *pvParameters_)  {return TASK_PerdTaskFct(pvParameters_);}
 
 /* Task functions for non-periodic tasks */
-static void ShTaskFct(void *pvParameters_)   {return TASK_NonPerdTaskFct(pvParameters_);}
+static void DbgTaskFct(void *pvParameters_)   {return TASK_NonPerdTaskFct(pvParameters_);}
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
@@ -61,9 +61,9 @@ const TASK_MainFctCfg_t rnetTaskMainFctCfg[] = {
 };
 
 /*
- * Main function(s) for SHELL task
+ * Main function(s) for DEBUG task
  */
-const TASK_MainFctCfg_t shTaskMainFctCfg[] = {
+const TASK_MainFctCfg_t dbgTaskMainFctCfg[] = {
 		{SH_SWC_STRING, SH_MainFct},
 };
 
@@ -96,12 +96,12 @@ const TASK_PerdTaskFctPar_t rnetTaskFctPar = {
 };
 
 /*
- * SHELL task parameters
+ * DEBUG task parameters
  */
-const TASK_NonPerdTaskFctPar_t shTaskFctPar = {
+const TASK_NonPerdTaskFctPar_t dbgTaskFctPar = {
 		TASK_DELAY_10MS,
-		shTaskMainFctCfg,
-		sizeof(shTaskMainFctCfg)/sizeof(shTaskMainFctCfg[0])
+		dbgTaskMainFctCfg,
+		sizeof(dbgTaskMainFctCfg)/sizeof(dbgTaskMainFctCfg[0])
 };
 
 /*
@@ -120,7 +120,7 @@ const TASK_PerdTaskFctPar_t drvTaskFctPar = {
  */
 TASK_CfgItm_t taskCfgItems[]= {
 		{ApplTaskFct, APPL_TASK_STRING, configMINIMAL_STACK_SIZE,     (void *)&applTaskFctPar, tskIDLE_PRIORITY+1, (xTaskHandle*)NULL, TASK_SUSP_NEVER},
-		{ShTaskFct,   SH_TASK_STRING,   configMINIMAL_STACK_SIZE+50,  (void *)&shTaskFctPar,   tskIDLE_PRIORITY+1, (xTaskHandle*)NULL, TASK_SUSP_DEFAULT},
+		{DbgTaskFct,  DBG_TASK_STRING,  configMINIMAL_STACK_SIZE+50,  (void *)&dbgTaskFctPar,  tskIDLE_PRIORITY+1, (xTaskHandle*)NULL, TASK_SUSP_DEFAULT},
 		{RnetTaskFct, COMM_TASK_STRING, configMINIMAL_STACK_SIZE+100, (void *)&rnetTaskFctPar, tskIDLE_PRIORITY+3, (xTaskHandle*)NULL, TASK_SUSP_NEVER},
 		{DrvTaskFct,  DRV_TASK_STRING,  configMINIMAL_STACK_SIZE,     (void *)&drvTaskFctPar,  tskIDLE_PRIORITY+3, (xTaskHandle*)NULL, TASK_SUSP_NEVER},
 };
@@ -143,7 +143,7 @@ const TASK_Cfg_t taskCfg = {
 const TASK_Cfg_t *TASK_Get_TasksCfg(void) { return &taskCfg;}
 
 const TASK_CfgItm_t *TASK_Get_ApplTaskCfg(void) { return &(taskCfg.tasks[0]);}
-const TASK_CfgItm_t *TASK_Get_ShTaskCfg(void)    { return &(taskCfg.tasks[1]);}
+const TASK_CfgItm_t *TASK_Get_DbgTaskCfg(void)  { return &(taskCfg.tasks[1]);}
 
 
 

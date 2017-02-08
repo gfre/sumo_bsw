@@ -29,7 +29,7 @@
 /*======================================= >> #DEFINES << =========================================*/
 #define APPL_TASK_STRING  ("APPL")
 #define COMM_TASK_STRING  ("COMM")
-#define SH_TASK_STRING    ("SHELL")
+#define DBG_TASK_STRING   ("DEBUG")
 #define DRV_TASK_STRING   ("DRIVE")
 
 
@@ -48,10 +48,10 @@ EXTERNAL_ const TASK_Cfg_t *TASK_Get_TasksCfg(void);
 EXTERNAL_ const TASK_CfgItm_t *TASK_Get_ApplTaskCfg(void);
 
 /*!
- * @brief Function returns the configuration of the shell task
- * @return pointer to the configuration of the shell task
+ * @brief Function returns the configuration of the debug task
+ * @return pointer to the configuration of the debug task
  */
-EXTERNAL_ const TASK_CfgItm_t *TASK_Get_ShTaskCfg(void);
+EXTERNAL_ const TASK_CfgItm_t *TASK_Get_DbgTaskCfg(void);
 
 
 

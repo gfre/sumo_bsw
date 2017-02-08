@@ -44,7 +44,7 @@ static inline StdRtn_t Set_State(const APPL_State_t state_);
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 APPL_State_t applState = APPL_STATE_NONE;
-const TASK_CfgItm_t *shTaskCfg = NULL;
+const TASK_CfgItm_t *dbgTaskCfg = NULL;
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 static inline StdRtn_t Set_State(const APPL_State_t state_)
@@ -82,7 +82,7 @@ static StdRtn_t APPL_SyncStateMachineWithISR()
       {
     	  Set_State(APPL_STATE_DEBUG);
     	  SH_Init();
-    	  FRTOS1_vTaskResume(shTaskCfg->taskHdl);
+    	  FRTOS1_vTaskResume(dbgTaskCfg->taskHdl);
     	  RTE_Write_BuzPlayTune(BUZ_TUNE_ACCEPT);
       }
   }
@@ -94,7 +94,7 @@ static StdRtn_t APPL_SyncStateMachineWithISR()
       {
     	  Set_State(APPL_STATE_IDLE);
 		  SH_Deinit();
-		  FRTOS1_vTaskSuspend(shTaskCfg->taskHdl);
+		  FRTOS1_vTaskSuspend(dbgTaskCfg->taskHdl);
 		  RTE_Write_BuzPlayTune(BUZ_TUNE_DECLINE);
       }
   }
@@ -185,8 +185,8 @@ static StdRtn_t APPL_msINIT(void)
 
   STUD_Init();
 
-  shTaskCfg = TASK_Get_ShTaskCfg();
-  if(NULL != shTaskCfg)
+  dbgTaskCfg = TASK_Get_DbgTaskCfg();
+  if(NULL != dbgTaskCfg)
   {
 	  retVal = ERR_OK;
   }
