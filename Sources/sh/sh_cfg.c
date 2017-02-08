@@ -29,7 +29,7 @@
 #include "drv.h"
 #include "id.h"
 #include "nvm.h"
-#include "state.h"
+#include "appl_clshdlr.h"
 #include "rnet.h"
 #include "FRTOS1.h"
 #include "sh.h"

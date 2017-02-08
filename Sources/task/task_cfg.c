@@ -16,11 +16,10 @@
 /*======================================= >> #INCLUDES << ========================================*/
 #include "task_cfg.h"
 #include "Tacho.h"
-#include "state.h"
+#include "appl.h"
 #include "sh.h"
 #include "rnet.h"
 #include "drv.h"
-
 
 
 /*======================================= >> #DEFINES << =========================================*/
@@ -50,7 +49,7 @@ static void ShTaskFct(void *pvParameters_)   {return TASK_NonPerdTaskFct(pvParam
  * Main function(s) for APPLICATION task
  */
 const TASK_MainFctCfg_t applTaskMainFctCfg[] = {
-		{STATE_SWC_STRING, STATE_mainFct},
+		{APPL_SWC_STRING, APPL_MainFct},
 };
 
 /*
@@ -138,7 +137,6 @@ const TASK_Cfg_t taskCfg = {
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/

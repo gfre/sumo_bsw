@@ -29,7 +29,7 @@
 #include "nvm.h"
 #include "id.h"
 #include "rnet.h"
-
+#include "appl.h"
 
 /*======================================= >> #DEFINES << =========================================*/
 
@@ -124,7 +124,7 @@ void TASK_Run(void) {
 	NVM_Init();
 
 	TASK_AdoptToHardware();
-
+	APPL_Init();
 	RNET_Init();
 	TASK_CreateTasks();
 }
