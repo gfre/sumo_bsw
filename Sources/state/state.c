@@ -19,7 +19,7 @@
 #include "RNET1.h"
 #include "state.h"
 #include "stud.h"
-#include "appl_cfg.h"
+#include "task_cfg.h"
 #include "rte.h"
 #include "LED1.h"
 #include "sh.h"
@@ -38,7 +38,7 @@ static void STATE_msERROR(void);
 
 static mainState_t mainState = MAIN_STATE_STARTUP;
 
-const APPL_TaskCfgItm_t *shTaskCfg = NULL;
+const TASK_CfgItm_t *shTaskCfg = NULL;
 
 
 static StdRtn_t STATE_SyncStateMachineWithISR()
@@ -168,7 +168,7 @@ static StdRtn_t STATE_msINIT(void)
 
   STUD_Init();
 
-  shTaskCfg = Get_APPL_ShTaskCfg();
+  shTaskCfg = Get_TASK_ShTaskCfg();
   if(NULL != shTaskCfg)
   {
 	  retVal = ERR_OK;

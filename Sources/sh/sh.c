@@ -19,7 +19,7 @@
 #include "Platform.h"
 #include "sh.h"
 #include "sh_cfg.h"
-#include "appl_cfg.h"
+#include "task_cfg.h"
 #include "CLS1.h"
 #include "RTT1.h"
 #include "id.h"
@@ -129,10 +129,10 @@ static void SH_PrintGoodByeMsg(const CLS1_StdIOType *io_)
 
 static void SH_ExitShTask(void)
 {
-  const APPL_TaskCfgItm_t *mainTaskCfg = NULL;
+  const TASK_CfgItm_t *mainTaskCfg = NULL;
   BaseType_t higherPriorityTaskWoken = pdFALSE;
 
-  mainTaskCfg = Get_APPL_MainTaskCfg();
+  mainTaskCfg = Get_TASK_MainTaskCfg();
   if ((NULL != mainTaskCfg) && (mainTaskCfg->taskHdl))
   {
       FRTOS1_xTaskNotifyFromISR( mainTaskCfg->taskHdl,

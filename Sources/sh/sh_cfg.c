@@ -14,7 +14,7 @@
 #define MASTER_sh_cfg_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "appl.h"
+#include "task_clshdlr.h"
 #include "buz.h"
 #include "Motor.h"
 #include "RNET1.h"
@@ -49,7 +49,7 @@ static const CLS1_ParseCommandCallback CmdParserTable[] =
   CLS1_ParseCommand,
   SH_ParseCommand,
   FRTOS1_ParseCommand,
-  APPL_ParseCommand,
+  TASK_ParseCommand,
   STATE_ParseCommand,
   NVM_ParseCommand,
   MOT_ParseCommand,
