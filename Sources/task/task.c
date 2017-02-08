@@ -14,18 +14,10 @@
 #define MASTER_task_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "Platform.h"
 #include "task.h"
 #include "task_cfg.h"
 #include "task_Types.h"
-
-//#include "FRTOS1.h"
-//#include "WAIT1.h"
-#include "sh.h"
-#include "LED1.h"
-#include "LED2.h"
 #include "buz.h"
-#include "KEY1.h"
 #include "Motor.h"
 #include "RNET1.h"
 #include "batt.h"
@@ -36,18 +28,13 @@
 #include "drv.h"
 #include "nvm.h"
 #include "id.h"
-#include "rte.h"
 #include "rnet.h"
 
 
 /*======================================= >> #DEFINES << =========================================*/
-/* #define TMPL_MACRO (0x01u) */
-
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-/* typedef unit8 TmplType_t;
-
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
@@ -56,9 +43,9 @@ static void TASK_AdoptToHardware(void);
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 
-
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-static void TASK_AdoptToHardware(void) {
+static void TASK_AdoptToHardware(void)
+{
 	/*Motor direction & Quadrature configuration for CAU_ZUMO */
 	(void)Q4CRight_SwapPins(TRUE);
 	MOT_Invert(MOT_GetMotorHandle(MOT_MOTOR_LEFT), TRUE); /* invert left motor */
@@ -79,6 +66,7 @@ static void TASK_AdoptToHardware(void) {
 	PORT_PDD_SetPinPullEnable(PORTC_BASE_PTR, 17, PORT_PDD_PULL_ENABLE);
 }
 
+
 static void TASK_CreateTasks()
 {
 	uint8 i = 0u;
@@ -89,9 +77,9 @@ static void TASK_CreateTasks()
 	{
 		for(i = 0u; i < taskCfg->numTasks; i++)
 		{
-			if(NULL != taskCfg->tasks)
+			if(NULL != &(taskCfg->tasks[i]))
 			{
-				if(pdPASS != FRTOS1_xTaskCreate(taskCfg->tasks[i].taskFct,
+				if(pdPASS != FRTOS1_xTaskCreate(taskCfg->tasks[i].taskFctHdl,
 						taskCfg->tasks[i].taskName,
 					    taskCfg->tasks[i].stackDepth,
 					    taskCfg->tasks[i].pvParameters,
@@ -102,7 +90,7 @@ static void TASK_CreateTasks()
 					 * FreeRTOS heap memory available for the task data structures and
 					 * stack to be allocated.
 					 */
-				} /* pdPASS */
+				} /* !pdPASS */
 				else
 				{
 					/* The task was created successfully */
@@ -110,7 +98,7 @@ static void TASK_CreateTasks()
 					{
 						FRTOS1_vTaskSuspend(taskCfg->tasks[i].taskHdl);
 					}
-				} /* !pdPASS */
+				} /* pdPASS */
 			}
 		}
 		FRTOS1_vTaskStartScheduler();

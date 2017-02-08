@@ -16,8 +16,8 @@
 #define TASK_TYPES_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "FRTOS1.h"
-
+#include "projdefs.h"
+#include "Platform.h"
 
 #ifdef MASTER_task_Types_C_
 #define EXTERNAL_
@@ -29,7 +29,8 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-typedef void (TaskFct)( void *);
+typedef TaskFunction_t TaskFctHdl_t;
+typedef void * TaskHdl_t;
 
 typedef enum TASK_SuspType_e
 {
@@ -39,12 +40,12 @@ typedef enum TASK_SuspType_e
 
 typedef struct TASK_CfgItm_s
 {
-	TaskFunction_t taskFct;
+	TaskFctHdl_t taskFctHdl;
 	const char_t * const taskName;
 	const uint16 stackDepth;
 	void * const pvParameters;
 	uint32 taskPriority;
-	TaskHandle_t taskHdl;
+	TaskHdl_t taskHdl;
 	TASK_SuspType_t suspTask;
 }TASK_CfgItm_t;
 
@@ -81,7 +82,9 @@ typedef struct TASK_NonPerdTaskFctPar_s
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
+
 EXTERNAL_ void TASK_PerdTaskFct(void *pvParameters);
+
 EXTERNAL_ void TASK_NonPerdTaskFct(void *pvParameters);
 
 
