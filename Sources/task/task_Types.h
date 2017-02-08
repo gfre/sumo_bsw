@@ -1,7 +1,7 @@
 /***************************************************************************************************
- * @brief 	>>TODO This is a brief description.
+ * @brief 	This header file provides data types and an interface to the task component
  *
- * @author 	>>TODO, gefr@tf.uni-kiel.de, University Kiel 
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, University Kiel
  * @date 	08.02.2017
  *  
  * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
@@ -19,7 +19,7 @@
 #include "projdefs.h"
 #include "Platform.h"
 
-#ifdef MASTER_task_Types_C_
+#ifdef MASTER_task_C_
 #define EXTERNAL_
 #else
 #define EXTERNAL_ extern
@@ -34,10 +34,11 @@ typedef void * TaskHdl_t;
 
 typedef enum TASK_SuspType_e
 {
-	 TASK_SUSP_NEVER = 0x00
-	,TASK_SUSP_DEFAULT
+	 TASK_SUSP_NEVER = 0x00		  	/**< task will be never suspended */
+	,TASK_SUSP_DEFAULT				/**< task is suspended at default */
 }TASK_SuspType_t;
 
+/* TODO member documentation */
 typedef struct TASK_CfgItm_s
 {
 	TaskFctHdl_t taskFctHdl;
@@ -62,8 +63,6 @@ typedef struct TASK_MainFctCfg_s
 	const char_t * const swcName;
 	TASK_MainFct_t * const mainFct;
 }TASK_MainFctCfg_t;
-
-
 
 typedef struct TASK_PerdTaskFctPar_s
 {

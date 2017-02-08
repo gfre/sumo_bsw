@@ -1,7 +1,7 @@
 /***************************************************************************************************
- * @brief 	>>TODO This is a brief description.
+ * @brief 	This module handles the connection to the shell software component
  *
- * @author 	>>TODO, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	08.02.2017
  *  
  * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
@@ -15,7 +15,7 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "task_clshdlr.h"
-#include "task_cfg.h"
+#include "task_Types.h"
 
 
 /*======================================= >> #DEFINES << =========================================*/

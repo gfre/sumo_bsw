@@ -1,7 +1,7 @@
 /***************************************************************************************************
- * @brief 	>>TODO This is a brief description.
+ * @brief 	This module configures all tasks
  *
- * @author 	>>TODO, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	08.02.2017
  *  
  * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
@@ -30,7 +30,9 @@
 #define TASK_DELAY_10MS     (10u)
 
 
+
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
+
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/

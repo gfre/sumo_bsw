@@ -1,5 +1,5 @@
 /***************************************************************************************************
- * @brief 	>>TODO This is a brief description.
+* @brief 	This module handles the connection to the shell software component
  *
  * @author 	>>TODO, gefr@tf.uni-kiel.de, University Kiel 
  * @date 	08.02.2017
@@ -26,12 +26,10 @@
 #endif
 
 /*======================================= >> #DEFINES << =========================================*/
-/* #define TMPL_MACRO (0xFFu) */
 
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-/* typedef unit8 TmplType_t; */
 
 
 

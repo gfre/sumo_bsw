@@ -1,7 +1,7 @@
 /***************************************************************************************************
- * @brief 	>>TODO This is a brief description.
+ * @brief 	This module creates and runs all tasks
  *
- * @author 	>>TODO, gefr@tf.uni-kiel.de, University Kiel 
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, University Kiel
  * @date 	08.02.2017
  *  
  * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
@@ -18,6 +18,7 @@
 /*======================================= >> #INCLUDES << ========================================*/
 
 
+
 #ifdef MASTER_task_C_
 #define EXTERNAL_
 #else
@@ -31,9 +32,10 @@
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 
 
+
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 /*!
- * @brief Run the application
+ * @brief Run the software
  */
 EXTERNAL_ void TASK_Run(void);
 

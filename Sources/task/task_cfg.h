@@ -1,7 +1,7 @@
 /***************************************************************************************************
- * @brief 	>>TODO This is a brief description.
+ * @brief 	This module configures all tasks
  *
- * @author 	>>TODO, gefr@tf.uni-kiel.de, University Kiel 
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, University Kiel
  * @date 	08.02.2017
  *  
  * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
@@ -19,6 +19,7 @@
 #include "task_Types.h"
 
 
+
 #ifdef MASTER_task_cfg_C_
 #define EXTERNAL_
 #else
@@ -34,23 +35,28 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-/**
-  @brief interface function
-
-  Here is a brief description of the interface function.
-  @param *output_ this is an ouput parameter
-  @param *input_  this is an input parameter
-*/
+/*!
+ * @brief Function returns the entire configuration of all tasks
+ * @return pointer to the entire task configuration
+ */
 EXTERNAL_ const TASK_Cfg_t *TASK_Get_TasksCfg(void);
 
+/*!
+ * @brief Function returns the configuration of the application task
+ * @return pointer to the configuration of the application task
+ */
 EXTERNAL_ const TASK_CfgItm_t *TASK_Get_ApplTaskCfg(void);
 
+/*!
+ * @brief Function returns the configuration of the shell task
+ * @return pointer to the configuration of the shell task
+ */
 EXTERNAL_ const TASK_CfgItm_t *TASK_Get_ShTaskCfg(void);
 
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-/* EXTERNAL_ StdRtn_t TMPL_CustomFct(const TmplType_t *input_, TmplType_t *output_); */
+
 
 
 #ifdef EXTERNAL_
