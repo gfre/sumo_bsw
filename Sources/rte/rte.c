@@ -20,6 +20,7 @@
 #include "drv.h"
 #include "RApp.h"
 #include "rnet.h"
+#include "sh.h"
 
 #define USER_SWITCH_MASK (0x01u)
 
@@ -353,7 +354,7 @@ StdRtn_t RTE_Read_DrvHasRvsd(uint8 *hasRvsd_)
 	}
 	return retVal;
 }
-/*========================================================*/
+/*================================================================================================*/
 
 
 /**
@@ -434,6 +435,30 @@ StdRtn_t RTE_Write_RFDstAddr(uint8 addr_)
 {
 	RNET_SetDstAddr((RAPP_ShortAddrType)addr_);
 	return ERR_OK;
+}
+/*================================================================================================*/
+
+
+StdRtn_t RTE_Write_DbgMsg(const uint8 *msg_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if( NULL != msg_)
+	{
+		SH_SendStr(msg_);
+		retVal = ERR_OK;
+	}
+	return retVal;
+}
+
+StdRtn_t RTE_Write_DbgErrMsg(const uint8 *errMsg_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if( NULL != errMsg_)
+	{
+		SH_SendErrStr(errMsg_);
+		retVal = ERR_OK;
+	}
+	return retVal;
 }
 /*================================================================================================*/
 
