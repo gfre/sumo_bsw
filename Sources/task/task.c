@@ -71,7 +71,7 @@ static void TASK_CreateTasks()
 {
 	uint8 i = 0u;
 	const TASK_Cfg_t *taskCfg = NULL;
-	taskCfg = Get_TASK_Cfg();
+	taskCfg = TASK_Get_TasksCfg();
 
 	if(NULL != taskCfg)
 	{

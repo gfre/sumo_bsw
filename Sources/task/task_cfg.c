@@ -35,24 +35,24 @@
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 /* Task functions for periodic tasks */
-static void mainTaskFct(void *pvParameters_) {return TASK_PerdTaskFct(pvParameters_);}
-static void rnetTaskFct(void *pvParameters_) {return TASK_PerdTaskFct(pvParameters_);}
-static void drvTaskFct(void *pvParameters_)  {return TASK_PerdTaskFct(pvParameters_);}
+static void ApplTaskFct(void *pvParameters_) {return TASK_PerdTaskFct(pvParameters_);}
+static void RnetTaskFct(void *pvParameters_) {return TASK_PerdTaskFct(pvParameters_);}
+static void DrvTaskFct(void *pvParameters_)  {return TASK_PerdTaskFct(pvParameters_);}
 
 /* Task functions for non-periodic tasks */
-static void shTaskFct(void *pvParameters_)   {return TASK_NonPerdTaskFct(pvParameters_);}
+static void ShTaskFct(void *pvParameters_)   {return TASK_NonPerdTaskFct(pvParameters_);}
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 /*
- * Main function(s) for MAIN task
+ * Main function(s) for APPLICATION task
  */
-const TASK_MainFctCfg_t mainTaskMainFctCfg[] = {
+const TASK_MainFctCfg_t applTaskMainFctCfg[] = {
 		{STATE_SWC_STRING, STATE_mainFct},
 };
 
 /*
- * Main function(s) for RNET task
+ * Main function(s) for COMMUNICATION task
  */
 const TASK_MainFctCfg_t rnetTaskMainFctCfg[] = {
 		{RNET_SWC_STRING, RNET_MainFct},
@@ -67,7 +67,7 @@ const TASK_MainFctCfg_t shTaskMainFctCfg[] = {
 };
 
 /*
- * Main function(s) for SHELL task
+ * Main function(s) for DRIVE task
  */
 const TASK_MainFctCfg_t drvTaskMainFctCfg[] = {
 		{DRV_SWC_STRING, DRV_MainFct},
@@ -77,16 +77,16 @@ const TASK_MainFctCfg_t drvTaskMainFctCfg[] = {
 
 
 /*
- * MAIN task parameters
+ * APPLICATION task parameters
  */
-const TASK_PerdTaskFctPar_t mainTaskFctPar = {
+const TASK_PerdTaskFctPar_t applTaskFctPar = {
 		TASK_PERIOD_10MS,
-		mainTaskMainFctCfg,
-		sizeof(mainTaskMainFctCfg)/sizeof(mainTaskMainFctCfg[0])
+		applTaskMainFctCfg,
+		sizeof(applTaskMainFctCfg)/sizeof(applTaskMainFctCfg[0])
 };
 
 /*
- * RNET task parameters
+ * COMMUNICATION task parameters
  */
 const TASK_PerdTaskFctPar_t rnetTaskFctPar = {
 		TASK_PERIOD_5MS,
@@ -118,10 +118,10 @@ const TASK_PerdTaskFctPar_t drvTaskFctPar = {
  * Configuration of each task in an array
  */
 TASK_CfgItm_t taskCfgItems[]= {
-		{mainTaskFct, MAIN_TASK_STRING, configMINIMAL_STACK_SIZE,     (void *)&mainTaskFctPar, tskIDLE_PRIORITY+1, (xTaskHandle*)NULL, TASK_SUSP_NEVER},
-		{shTaskFct,   SH_TASK_STRING,   configMINIMAL_STACK_SIZE+50,  (void *)&shTaskFctPar,   tskIDLE_PRIORITY+1, (xTaskHandle*)NULL, TASK_SUSP_DEFAULT},
-		{rnetTaskFct, RNET_TASK_STRING, configMINIMAL_STACK_SIZE+100, (void *)&rnetTaskFctPar, tskIDLE_PRIORITY+3, (xTaskHandle*)NULL, TASK_SUSP_NEVER},
-		{drvTaskFct,  DRV_TASK_STRING,  configMINIMAL_STACK_SIZE,     (void *)&drvTaskFctPar,  tskIDLE_PRIORITY+3, (xTaskHandle*)NULL, TASK_SUSP_NEVER},
+		{ApplTaskFct, APPL_TASK_STRING, configMINIMAL_STACK_SIZE,     (void *)&applTaskFctPar, tskIDLE_PRIORITY+1, (xTaskHandle*)NULL, TASK_SUSP_NEVER},
+		{ShTaskFct,   SH_TASK_STRING,   configMINIMAL_STACK_SIZE+50,  (void *)&shTaskFctPar,   tskIDLE_PRIORITY+1, (xTaskHandle*)NULL, TASK_SUSP_DEFAULT},
+		{RnetTaskFct, COMM_TASK_STRING, configMINIMAL_STACK_SIZE+100, (void *)&rnetTaskFctPar, tskIDLE_PRIORITY+3, (xTaskHandle*)NULL, TASK_SUSP_NEVER},
+		{DrvTaskFct,  DRV_TASK_STRING,  configMINIMAL_STACK_SIZE,     (void *)&drvTaskFctPar,  tskIDLE_PRIORITY+3, (xTaskHandle*)NULL, TASK_SUSP_NEVER},
 };
 /*------------------------------------------------------------------------------------------------*/
 
@@ -140,10 +140,10 @@ const TASK_Cfg_t taskCfg = {
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-const TASK_Cfg_t *Get_TASK_Cfg(void) { return &taskCfg;}
+const TASK_Cfg_t *TASK_Get_TasksCfg(void) { return &taskCfg;}
 
-const TASK_CfgItm_t *Get_TASK_MainTaskCfg(void) { return &(taskCfg.tasks[0]);}
-const TASK_CfgItm_t *Get_TASK_ShTaskCfg(void)   { return &(taskCfg.tasks[1]);}
+const TASK_CfgItm_t *TASK_Get_ApplTaskCfg(void) { return &(taskCfg.tasks[0]);}
+const TASK_CfgItm_t *TASK_Get_ShTaskCfg(void)    { return &(taskCfg.tasks[1]);}
 
 
 

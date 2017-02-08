@@ -61,7 +61,7 @@ static void TASK_PrintCalledMainFcts(const CLS1_StdIOType *io_)
 	const char_t *mainFctName = NULL;
 	uint8 taskName[12] = {""};
 
-	taskCfg = Get_TASK_Cfg();
+	taskCfg = TASK_Get_TasksCfg();
 
 	if(NULL != taskCfg)
 	{

@@ -129,13 +129,13 @@ static void SH_PrintGoodByeMsg(const CLS1_StdIOType *io_)
 
 static void SH_ExitShTask(void)
 {
-  const TASK_CfgItm_t *mainTaskCfg = NULL;
+  const TASK_CfgItm_t *applTaskCfg = NULL;
   BaseType_t higherPriorityTaskWoken = pdFALSE;
 
-  mainTaskCfg = Get_TASK_MainTaskCfg();
-  if ((NULL != mainTaskCfg) && (mainTaskCfg->taskHdl))
+  applTaskCfg = TASK_Get_ApplTaskCfg();
+  if ((NULL != applTaskCfg) && (applTaskCfg->taskHdl))
   {
-      FRTOS1_xTaskNotifyFromISR( mainTaskCfg->taskHdl,
+      FRTOS1_xTaskNotifyFromISR( applTaskCfg->taskHdl,
 				 KEY_PRESSED_LONG_NOTIFICATION_VALUE,
 				 eSetBits,
 				 &higherPriorityTaskWoken );

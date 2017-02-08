@@ -216,25 +216,25 @@ void KEY1_OnKeyPressed( uint8_t keys )
 */
 void KEY1_OnKeyReleased(uint8_t keys)
 {
-  /* Write your code here. A bit in 'keys' indicates key released ... */
-  EvntCbFct_t *cbFct = NULL;
-  const TASK_CfgItm_t *mainTaskCfg = NULL;
-  BaseType_t higherPriorityTaskWoken = pdFALSE;
+	/* Write your code here. A bit in 'keys' indicates key released ... */
+	EvntCbFct_t *cbFct = NULL;
+	const TASK_CfgItm_t *applTaskCfg = NULL;
+	BaseType_t higherPriorityTaskWoken = pdFALSE;
 
-  cbFct = RTE_Get_BtnOnRlsdCbFct();
-  if(NULL != cbFct)
-  {
-      cbFct(keys);
-  }
-  mainTaskCfg = Get_TASK_MainTaskCfg();
-  if( (NULL != mainTaskCfg ) && ( mainTaskCfg->taskHdl ) )
-  {
-      FRTOS1_xTaskNotifyFromISR( mainTaskCfg->taskHdl,
-				 KEY_RELEASED_NOTIFICATION_VALUE,
-				 eSetBits,
-				 &higherPriorityTaskWoken );
-      portYIELD_FROM_ISR( higherPriorityTaskWoken );
-  }
+	cbFct = RTE_Get_BtnOnRlsdCbFct();
+	if(NULL != cbFct)
+	{
+		cbFct(keys);
+	}
+	applTaskCfg = TASK_Get_ApplTaskCfg();
+	if( (NULL != applTaskCfg ) && ( applTaskCfg->taskHdl ) )
+	{
+		FRTOS1_xTaskNotifyFromISR( applTaskCfg->taskHdl,
+				KEY_RELEASED_NOTIFICATION_VALUE,
+				eSetBits,
+				&higherPriorityTaskWoken );
+		portYIELD_FROM_ISR( higherPriorityTaskWoken );
+	}
 }
 
 /*
@@ -254,26 +254,26 @@ void KEY1_OnKeyReleased(uint8_t keys)
 */
 void KEY1_OnKeyPressedLong(uint8_t keys)
 {
-  /* Write your code here ... */
-  EvntCbFct_t *cbFct = NULL;
-  const TASK_CfgItm_t *mainTaskCfg = NULL;
-  BaseType_t higherPriorityTaskWoken = pdFALSE;
+	/* Write your code here ... */
+	EvntCbFct_t *cbFct = NULL;
+	const TASK_CfgItm_t *applTaskCfg = NULL;
+	BaseType_t higherPriorityTaskWoken = pdFALSE;
 
-  cbFct = RTE_Get_BtnOnLngPrsdCbFct();
-  if(NULL != cbFct)
-  {
-      cbFct(keys);
-  }
+	cbFct = RTE_Get_BtnOnLngPrsdCbFct();
+	if(NULL != cbFct)
+	{
+		cbFct(keys);
+	}
 
-  mainTaskCfg = Get_TASK_MainTaskCfg();
-  if ((NULL != mainTaskCfg) && (mainTaskCfg->taskHdl))
-  {
-      FRTOS1_xTaskNotifyFromISR( mainTaskCfg->taskHdl,
-				 KEY_PRESSED_LONG_NOTIFICATION_VALUE,
-				 eSetBits,
-				 &higherPriorityTaskWoken );
-      portYIELD_FROM_ISR( higherPriorityTaskWoken );
-  }
+	applTaskCfg = TASK_Get_ApplTaskCfg();
+	if ((NULL != applTaskCfg) && (applTaskCfg->taskHdl))
+	{
+		FRTOS1_xTaskNotifyFromISR( applTaskCfg->taskHdl,
+				KEY_PRESSED_LONG_NOTIFICATION_VALUE,
+				eSetBits,
+				&higherPriorityTaskWoken );
+		portYIELD_FROM_ISR( higherPriorityTaskWoken );
+	}
 }
 
 /*

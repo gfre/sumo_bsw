@@ -26,8 +26,8 @@
 #endif
 
 /*======================================= >> #DEFINES << =========================================*/
-#define MAIN_TASK_STRING  ("MAIN")
-#define RNET_TASK_STRING  ("RNET")
+#define APPL_TASK_STRING  ("APPL")
+#define COMM_TASK_STRING  ("COMM")
 #define SH_TASK_STRING    ("SHELL")
 #define DRV_TASK_STRING   ("DRIVE")
 
@@ -41,11 +41,11 @@
   @param *output_ this is an ouput parameter
   @param *input_  this is an input parameter
 */
-EXTERNAL_ const TASK_Cfg_t *Get_TASK_Cfg(void);
+EXTERNAL_ const TASK_Cfg_t *TASK_Get_TasksCfg(void);
 
-EXTERNAL_ const TASK_CfgItm_t *Get_TASK_MainTaskCfg(void);
+EXTERNAL_ const TASK_CfgItm_t *TASK_Get_ApplTaskCfg(void);
 
-EXTERNAL_ const TASK_CfgItm_t *Get_TASK_ShTaskCfg(void);
+EXTERNAL_ const TASK_CfgItm_t *TASK_Get_ShTaskCfg(void);
 
 
 

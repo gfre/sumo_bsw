@@ -168,7 +168,7 @@ static StdRtn_t STATE_msINIT(void)
 
   STUD_Init();
 
-  shTaskCfg = Get_TASK_ShTaskCfg();
+  shTaskCfg = TASK_Get_ShTaskCfg();
   if(NULL != shTaskCfg)
   {
 	  retVal = ERR_OK;
