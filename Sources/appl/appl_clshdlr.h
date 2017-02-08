@@ -35,13 +35,13 @@
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 /*!
- * @brief Parses a command of the software component 'state'
+ * @brief Parses a command of the software component 'application'
  * @param cmd Command string to be parsed
  * @param handled Sets this variable to TRUE if command was handled
  * @param io I/O stream to be used for input/output
  * @return Error code, ERR_OK if everything was fine
  */
-EXTERNAL_ uint8 STATE_ParseCommand(const unsigned char *cmd_, bool *handled, const CLS1_StdIOType *io_);
+EXTERNAL_ uint8 APPL_ParseCommand(const unsigned char *cmd_, bool *handled, const CLS1_StdIOType *io_);
 
 
 #ifdef EXTERNAL_

@@ -30,14 +30,14 @@
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 typedef enum APPL_State_e
 {
-	 APPL_STATE_NONE = 0x00 /**< No or invalid state */
-	,APPL_STATE_STARTUP		/**< State during start up */
-	,APPL_STATE_INIT		/**< State during initialization */
-	,APPL_STATE_IDLE		/**< State for idle mode */
-	,APPL_STATE_NORMAL		/**< State for normal mode */
-	,APPL_STATE_DEBUG		/**< State for debug mode */
-	,APPL_STATE_ERROR		/**< State for error mode */
-	,APPL_STATE_NUM         /**< Number of vaild states/modes */
+	 APPL_STATE_NONE = 0x00 	/**< No or invalid state */
+	,APPL_STATE_STARTUP			/**< State during start up */
+	,APPL_STATE_INIT			/**< State during initialization */
+	,APPL_STATE_IDLE			/**< State for idle mode */
+	,APPL_STATE_NORMAL			/**< State for normal mode */
+	,APPL_STATE_DEBUG			/**< State for debug mode */
+	,APPL_STATE_ERROR			/**< State for error mode */
+	,APPL_STATE_NUM         	/**< Number of vaild states/modes */
 } APPL_State_t;
 
 

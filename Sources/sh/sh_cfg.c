@@ -50,7 +50,7 @@ static const CLS1_ParseCommandCallback CmdParserTable[] =
   SH_ParseCommand,
   FRTOS1_ParseCommand,
   TASK_ParseCommand,
-  STATE_ParseCommand,
+  APPL_ParseCommand,
   NVM_ParseCommand,
   MOT_ParseCommand,
   DRV_ParseCommand,

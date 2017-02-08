@@ -34,17 +34,15 @@ static const uint8 * ReadStateString(APPL_State_t state_);
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 static uint8 PrintHelp(const CLS1_StdIOType *io_) {
-  CLS1_SendHelpStr((unsigned char*)"state", (unsigned char*)"Group of state commands\r\n", io_->stdOut);
-  CLS1_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Shows state help or status\r\n", io_->stdOut);
+  CLS1_SendHelpStr((unsigned char*)"appl", (unsigned char*)"Group of application commands\r\n", io_->stdOut);
+  CLS1_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Shows application help or status\r\n", io_->stdOut);
   return ERR_OK;
 }
 
 static uint8 PrintStatus(const CLS1_StdIOType *io_)
 {
-	/*FIXME*/
-	APPL_State_t mainState = {0};
-	CLS1_SendStatusStr((unsigned char*)"state", (unsigned char*)"\r\n", io_->stdOut);
-	CLS1_SendStatusStr((unsigned char*)"  current", ReadStateString(mainState) , io_->stdOut);
+	CLS1_SendStatusStr((unsigned char*)"appl", (unsigned char*)"\r\n", io_->stdOut);
+	CLS1_SendStatusStr((unsigned char*)"  curr. state", ReadStateString(APPL_Get_State()) , io_->stdOut);
 	return ERR_OK;
 }
 
@@ -56,18 +54,18 @@ static const uint8 * ReadStateString(APPL_State_t state_){
     case APPL_STATE_NORMAL:  return "NORMAL\r\n";
     case APPL_STATE_DEBUG:  return "DEBUG\r\n";
     case APPL_STATE_ERROR:   return "ERROR\r\n";
-    default: return ">> fatal error - unknown or undefined main state <<\r\n";
+    default: return ">> fatal error - invalid application state <<\r\n";
   }
 }
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-uint8 STATE_ParseCommand(const unsigned char *cmd_, bool *handled, const CLS1_StdIOType *io_) {
+uint8 APPL_ParseCommand(const unsigned char *cmd_, bool *handled, const CLS1_StdIOType *io_) {
   uint8 res = ERR_OK;
-  if (UTIL1_strcmp((char*)cmd_, (char*)CLS1_CMD_HELP)==0 || UTIL1_strcmp((char*)cmd_, (char*)"state help")==0) {
+  if (UTIL1_strcmp((char*)cmd_, (char*)CLS1_CMD_HELP)==0 || UTIL1_strcmp((char*)cmd_, (char*)"appl help")==0) {
     *handled = TRUE;
     return PrintHelp(io_);
-  } else if (UTIL1_strcmp((char*)cmd_, (char*)CLS1_CMD_STATUS)==0 || UTIL1_strcmp((char*)cmd_, (char*)"state status")==0) {
+  } else if (UTIL1_strcmp((char*)cmd_, (char*)CLS1_CMD_STATUS)==0 || UTIL1_strcmp((char*)cmd_, (char*)"appl status")==0) {
     *handled = TRUE;
     return PrintStatus(io_);
   }
