@@ -18,7 +18,7 @@
 /*======================================= >> #INCLUDES << ========================================*/
 
 
-#ifdef MASTER_appl_Types_C_
+#ifdef MASTER_appl_C_
 #define EXTERNAL_
 #else
 #define EXTERNAL_ extern
