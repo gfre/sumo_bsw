@@ -20,6 +20,7 @@
 #include "task_cfg.h"
 
 
+
 /*======================================= >> #DEFINES << =========================================*/
 #define SH_CMD_EXIT   ("exit")
 
@@ -32,7 +33,8 @@
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 static StdRtn_t PrintHelp(const CLS1_StdIOType *io_);
 static StdRtn_t PrintStatus(const CLS1_StdIOType *io_);
-static void SH_ExitShTask(void);
+static void ExitDbgTask(void);
+
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
@@ -67,7 +69,7 @@ static StdRtn_t PrintStatus(const CLS1_StdIOType *io_)
   return retVal;
 }
 
-static void SH_ExitShTask(void)
+static void ExitDbgTask(void)
 {
   const TASK_CfgItm_t *applTaskCfg = NULL;
   BaseType_t higherPriorityTaskWoken = pdFALSE;
@@ -105,7 +107,7 @@ uint8_t SH_ParseCommand(const unsigned char *cmd_, bool *handled_, const CLS1_St
 		}
 		else if (ERR_OK == UTIL1_strcmp((char*)cmd_, (char*)SH_CMD_EXIT))
 		{
-			SH_ExitShTask();
+			ExitDbgTask();
 			*handled_ = TRUE;
 		}
 	}
@@ -115,7 +117,6 @@ uint8_t SH_ParseCommand(const unsigned char *cmd_, bool *handled_, const CLS1_St
 	}
 	return retVal;
 }
-
 
 
 
