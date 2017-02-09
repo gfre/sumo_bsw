@@ -19,7 +19,6 @@
 #include "Platform.h"
 #include "sh.h"
 #include "sh_cfg.h"
-#include "task_cfg.h"
 #include "CLS1.h"
 #include "RTT1.h"
 #include "id.h"
@@ -51,11 +50,11 @@ typedef struct SH_IODesc_s{
 } SH_IODesc;
 
 
+
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-static uint8_t SH_PrintHelp(const CLS1_StdIOType *io);
-static uint8_t SH_PrintStatus(const CLS1_StdIOType *io);
 static void SH_PrintWelcomeMsg(const CLS1_StdIOType *io_);
-static void SH_ExitShTask(void);
+static void SH_PrintGoodByeMsg(const CLS1_StdIOType *io_);
+
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 static const SH_IODesc ios[] =
@@ -65,23 +64,8 @@ static const SH_IODesc ios[] =
 };
 
 
+
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-static uint8_t SH_PrintHelp(const CLS1_StdIOType *io) {
-  CLS1_SendHelpStr((unsigned char*)"shell", (unsigned char*)"Group of shell commands\r\n", io->stdOut);
-  CLS1_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Shows shell help or status\r\n", io->stdOut);
-  return ERR_OK;
-}
-
-static uint8_t SH_PrintStatus(const CLS1_StdIOType *io) {
-  CLS1_SendStatusStr((unsigned char*)"shell", (unsigned char*)"\r\n", io->stdOut);
-  CLS1_SendStatusStr((unsigned char*)"  connections", NULL, io->stdOut);
-  CLS1_SendStr((unsigned char*)"DEFAULT", io->stdOut);
-  CLS1_SendStr((unsigned char*)"   +RTT", io->stdOut);
-  CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
-  return ERR_OK;
-}
-
-
 void SH_SendString(unsigned char *msg) {
   CLS1_SendStr(msg, CLS1_GetStdio()->stdOut);
   CLS1_SendStr(msg, RTT1_stdio.stdOut);
@@ -127,21 +111,7 @@ static void SH_PrintGoodByeMsg(const CLS1_StdIOType *io_)
   return;
 }
 
-static void SH_ExitShTask(void)
-{
-  const TASK_CfgItm_t *applTaskCfg = NULL;
-  BaseType_t higherPriorityTaskWoken = pdFALSE;
 
-  applTaskCfg = TASK_Get_ApplTaskCfg();
-  if ((NULL != applTaskCfg) && (applTaskCfg->taskHdl))
-  {
-      FRTOS1_xTaskNotifyFromISR( applTaskCfg->taskHdl,
-				 KEY_PRESSED_LONG_NOTIFICATION_VALUE,
-				 eSetBits,
-				 &higherPriorityTaskWoken );
-      portYIELD_FROM_ISR( higherPriorityTaskWoken );
-  }
-}
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 void SH_SendStr(unsigned char *msg_)
@@ -154,24 +124,6 @@ void SH_SendErrStr(unsigned char *msg_)
 {
   CLS1_SendStr(msg_, CLS1_GetStdio()->stdErr);
   CLS1_SendStr(msg_, RTT1_GetStdio()->stdErr);
-}
-
-uint8_t SH_ParseCommand(const unsigned char *cmd_, bool *handled_, const CLS1_StdIOType *io_)
-{
-  uint8_t res = ERR_OK;
-
-  *handled_ = FALSE;
-  if (UTIL1_strcmp((char*)cmd_, (char*)CLS1_CMD_HELP)==ERR_OK || UTIL1_strcmp((char*)cmd_, (char*)"shell help")==ERR_OK) {
-      *handled_ = TRUE;
-      return SH_PrintHelp(io_);
-  } else if (UTIL1_strcmp((char*)cmd_, (char*)CLS1_CMD_STATUS)==ERR_OK || UTIL1_strcmp((char*)cmd_, (char*)"shell status")==ERR_OK) {
-      *handled_ = TRUE;
-      return SH_PrintStatus(io_);
-  } else if (ERR_OK == UTIL1_strcmp((char*)cmd_, (char*)SH_CMD_EXIT)) {
-      SH_ExitShTask();
-      *handled_ = TRUE;
-  }
-  return res;
 }
 
 

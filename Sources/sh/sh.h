@@ -16,7 +16,6 @@
 #ifndef SH_H_
 #define SH_H_
 
-#include "CLS1.h"
 
 #ifdef MASTER_SH_C_
 #define EXTERNAL_
@@ -25,7 +24,7 @@
 #endif
 
 #define SH_SWC_STRING ("shell")
-#define SH_CMD_EXIT   ("exit")
+
 
 
 /*!
@@ -39,15 +38,6 @@ EXTERNAL_ void SH_SendStr(unsigned char *msg_);
  * @param msg_ Zero terminated string to write
  */
 EXTERNAL_ void SH_SendErrStr(unsigned char *msg_);
-
-/*!
- * @brief Sends a error string to the shell/console stdout
- * @param *cmd_ pointer to command
- * @param *handeld_ pointer to flag which returns TRUE if cmd was handeld, otherwise FALSE (CBR).
- * @param *io_ pointer to command line shell standard IO type
- * @return always ERR_OK
- */
-EXTERNAL_ uint8_t SH_ParseCommand(const unsigned char *cmd_, bool *handled_, const CLS1_StdIOType *io_);
 
 /*! @brief Shell initialization */
 EXTERNAL_ void SH_Init(void);
