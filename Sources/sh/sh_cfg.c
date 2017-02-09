@@ -18,6 +18,9 @@
 #include "appl_clshdlr.h"
 #include "sh_clshdlr.h"
 
+#include "sh_cfg.h"
+#include "RTT1.h"
+
 #include "buz.h"
 #include "Motor.h"
 #include "RNET1.h"
@@ -36,10 +39,12 @@
 #include "FRTOS1.h"
 
 
-/*======================================= >> #DEFINES << =========================================*/
 
+/*======================================= >> #DEFINES << =========================================*/
+#define NUM_OF_IOS 	(sizeof(ios)/sizeof(ios[0]))
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
+
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
@@ -70,10 +75,22 @@ static const CLS1_ParseCommandCallback CmdParserTable[] =
   NULL /* Sentinel */
 };
 
+static const SH_IODesc_t ios[] =
+{
+    {CLS1_DefaultShellBuffer, sizeof(CLS1_DefaultShellBuffer), &CLS1_stdio},
+    {RTT1_DefaultShellBuffer, sizeof(RTT1_DefaultShellBuffer), &RTT1_stdio},
+};
+
+static const SH_IOCfg_t ioCfg =
+{
+		ios,
+		NUM_OF_IOS,
+};
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 const CLS1_ParseCommandCallback *Get_CmdParserTbl() { return CmdParserTable; }
 
+const SH_IOCfg_t *Get_ShIOCfg() { return &ioCfg; }
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 

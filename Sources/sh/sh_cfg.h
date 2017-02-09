@@ -30,8 +30,17 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
+typedef struct SH_IODesc_s{
+  unsigned char *buf;
+  const uint8 bufSize;
+  CLS1_ConstStdIOType *stdio;
+} SH_IODesc_t;
 
-
+typedef struct SH_IOCfg_s
+{
+	const SH_IODesc_t *ios;
+	uint8 ioSize;
+} SH_IOCfg_t;
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 /*!
@@ -40,6 +49,7 @@
  */
 EXTERNAL_ const CLS1_ParseCommandCallback *Get_CmdParserTbl();
 
+EXTERNAL_ const SH_IOCfg_t *Get_ShIOCfg();
 
 #ifdef EXTERNAL_
 #undef EXTERNAL_

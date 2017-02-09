@@ -19,10 +19,8 @@
 #include "Platform.h"
 #include "sh.h"
 #include "sh_cfg.h"
-#include "CLS1.h"
-#include "RTT1.h"
 #include "id.h"
-
+#include "RTT1.h"
 
 
 /*======================================= >> #DEFINES << =========================================*/
@@ -43,11 +41,6 @@
 #define SH_THANKS_LINE2      (    "  >> Visit him on www.MCUonEclipse.com! \r\n")
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-typedef struct SH_IODesc_s{
-  unsigned char *buf;
-  size_t bufSize;
-  CLS1_ConstStdIOType *stdio;
-} SH_IODesc;
 
 
 
@@ -57,13 +50,8 @@ static void SH_PrintGoodByeMsg(const CLS1_StdIOType *io_);
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-static const SH_IODesc ios[] =
-{
-    {CLS1_DefaultShellBuffer, sizeof(CLS1_DefaultShellBuffer), &CLS1_stdio},
-    {RTT1_DefaultShellBuffer, sizeof(RTT1_DefaultShellBuffer), &RTT1_stdio},
-};
-
-
+const SH_IOCfg_t *ioCfg = NULL;
+const SH_IODesc_t *ios = NULL;
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 void SH_SendString(unsigned char *msg) {
@@ -129,19 +117,35 @@ void SH_SendErrStr(unsigned char *msg_)
 
 void SH_Init(void)
 {
-  uint8 i = 0u;
+	uint8 i = 0u;
 
-  CLS1_Init();
+	CLS1_Init();
+	ioCfg = Get_ShIOCfg();
+	ios = ioCfg->ios;
 
-  /* initialize buffers */
-  for(i=0;i<sizeof(ios)/sizeof(ios[0]);i++)
-  {
-      /* Eat previous lines */
-      while(TRUE == CLS1_ReadLine(ios[i].buf, ios[i].buf, ios[i].bufSize, ios[i].stdio));
-      ios[i].buf[0] = '\0';
-      SH_PrintWelcomeMsg(ios[i].stdio);
-  }
-
+	if( NULL != ios )
+	{
+		/* initialize buffers */
+		for( i = 0; i < ioCfg->ioSize; i++)
+		{
+			if( ( NULL != ios[i].buf ) && ( NULL != ios[i].stdio ) )
+			{
+				/* Eat previous lines */
+				while(TRUE == CLS1_ReadLine(ios[i].buf, ios[i].buf, ios[i].bufSize, ios[i].stdio));
+				ios[i].buf[0] = '\0';
+				SH_PrintWelcomeMsg(ios[i].stdio);
+			}
+			else
+			{
+				/*TODO print error msg */
+				SH_SendErrStr("Error 2\r\n");
+			}
+		}
+	}
+	else
+	{
+		SH_SendErrStr("Error 1\r\n");
+	}
 }
 
 
@@ -150,13 +154,14 @@ void SH_Deinit(void)
   uint8 i = 0u;
 
   CLS1_Deinit();
-  for(i=0;i<sizeof(ios)/sizeof(ios[0]);i++)
+  for( i = 0; i < ioCfg->ioSize; i++)
   {
       /* Eat previous lines */
       while(TRUE == CLS1_ReadLine(ios[i].buf, ios[i].buf, ios[i].bufSize, ios[i].stdio));
       ios[i].buf[0] = '\0';
       SH_PrintGoodByeMsg(ios[i].stdio);
   }
+  ioCfg = NULL;
 
 }
 
@@ -164,7 +169,7 @@ void SH_MainFct(void)
 {
   uint8 i = 0u;
   /* process all I/Os */
-  for(i=0;i<sizeof(ios)/sizeof(ios[0]);i++)
+  for( i = 0; i < ioCfg->ioSize; i++)
   {
       (void)CLS1_ReadAndParseWithCommandTable(ios[i].buf, ios[i].bufSize, ios[i].stdio, Get_CmdParserTbl());
   }
