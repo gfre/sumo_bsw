@@ -19,6 +19,7 @@
 #include "Platform.h"
 #include "sh.h"
 #include "sh_cfg.h"
+#include "sh_Types.h"
 #include "id.h"
 #include "RTT1.h"
 
@@ -54,14 +55,7 @@ const SH_IOCfg_t *ioCfg = NULL;
 const SH_IODesc_t *ios = NULL;
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-void SH_SendString(unsigned char *msg) {
-  CLS1_SendStr(msg, CLS1_GetStdio()->stdOut);
-  CLS1_SendStr(msg, RTT1_stdio.stdOut);
-}
-
-
-
-static void SH_PrintWelcomeMsg(const CLS1_StdIOType *io_)
+static void PrintWelcomeMsg(const CLS1_StdIOType *io_)
 {
   uint8 sumoId;
   const char_t verStr[] = {SW_VERSION_CHAR_ARRAY};
@@ -83,7 +77,7 @@ static void SH_PrintWelcomeMsg(const CLS1_StdIOType *io_)
 }
 
 
-static void SH_PrintGoodByeMsg(const CLS1_StdIOType *io_)
+static void PrintGoodByeMsg(const CLS1_StdIOType *io_)
 {
   uint8 sumoId;
   sumoId = ID_WhichSumo();
@@ -123,7 +117,7 @@ void SH_Init(void)
 	ioCfg = Get_ShIOCfg();
 	ios = ioCfg->ios;
 
-	if( NULL != ios )
+	if(( NULL != ioCfg ) && ( NULL != ios ) )
 	{
 		/* initialize buffers */
 		for( i = 0; i < ioCfg->ioSize; i++)
@@ -133,7 +127,7 @@ void SH_Init(void)
 				/* Eat previous lines */
 				while(TRUE == CLS1_ReadLine(ios[i].buf, ios[i].buf, ios[i].bufSize, ios[i].stdio));
 				ios[i].buf[0] = '\0';
-				SH_PrintWelcomeMsg(ios[i].stdio);
+				PrintWelcomeMsg(ios[i].stdio);
 			}
 			else
 			{
@@ -159,9 +153,10 @@ void SH_Deinit(void)
       /* Eat previous lines */
       while(TRUE == CLS1_ReadLine(ios[i].buf, ios[i].buf, ios[i].bufSize, ios[i].stdio));
       ios[i].buf[0] = '\0';
-      SH_PrintGoodByeMsg(ios[i].stdio);
+      PrintGoodByeMsg(ios[i].stdio);
   }
   ioCfg = NULL;
+  ios = NULL;
 
 }
 

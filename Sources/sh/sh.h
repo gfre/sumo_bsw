@@ -27,18 +27,6 @@
 
 
 
-/*!
- * @brief Sends a string to the shell/console stdout
- * @param msg_ Zero terminated string to write
- */
-EXTERNAL_ void SH_SendStr(unsigned char *msg_);
-
-/*!
- * @brief Sends a error string to the shell/console stdout
- * @param msg_ Zero terminated string to write
- */
-EXTERNAL_ void SH_SendErrStr(unsigned char *msg_);
-
 /*! @brief Shell initialization */
 EXTERNAL_ void SH_Init(void);
 

@@ -16,7 +16,7 @@
 #include "RStack.h"
 #include "RApp.h"
 #include "CLS1.h"
-#include "sh.h"
+#include "sh_Types.h"
 
 static RNWK_ShortAddrType dstAddr = RNWK_ADDR_BROADCAST; /* destination node address */
 
