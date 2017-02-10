@@ -16,8 +16,8 @@
 #define SH_TYPES_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
-
-
+#include "CLS1.h"
+#include "RTT1.h"
 
 #ifdef MASTER_sh_C_
 #define EXTERNAL_
@@ -26,25 +26,34 @@
 #endif
 
 /*======================================= >> #DEFINES << =========================================*/
+/*!
+ * @brief Sends a string to the shell/console stdout
+ * @param msg_ Zero terminated string to write
+ */
+#define SH_SENDSTR(msg_)                   ( CLS1_SendStr(msg_, CLS1_GetStdio()->stdOut) \
+		                                   , CLS1_SendStr(msg_, RTT1_GetStdio()->stdOut) )
+/*!
+ * @brief Sends a error string to the shell/console stdout
+ * @param msg_ Zero terminated string to write
+ */
+#define SH_SENDERRSTR(msg_)                ( CLS1_SendStr(msg_, CLS1_GetStdio()->stdErr) \
+		                                   , CLS1_SendStr(msg_, RTT1_GetStdio()->stdErr) )
 
+#define SH_FPRINTF(stream_, fmt_, args_)   ( XF1_xvformat(CLS1_printfPutChar, RTT1_GetStdio()->stream_, fmt_, args_) \
+							               & XF1_xvformat(CLS1_printfPutChar, CLS1_GetStdio()->stream_, fmt_, args_) )
 
+#define SH_PRINTF(fmt_, args_)             ( XF1_xvformat(CLS1_printfPutChar, RTT1_GetStdio()->stdOut, fmt_, args_) \
+							               & XF1_xvformat(CLS1_printfPutChar, CLS1_GetStdio()->stdOut, fmt_, args_) )
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-/*!
- * @brief Sends a string to the shell/console stdout
- * @param msg_ Zero terminated string to write
- */
-EXTERNAL_ void SH_SendStr(unsigned char *msg_);
 
-/*!
- * @brief Sends a error string to the shell/console stdout
- * @param msg_ Zero terminated string to write
- */
-EXTERNAL_ void SH_SendErrStr(unsigned char *msg_);
+
+
+/*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 
 
 

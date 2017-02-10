@@ -36,6 +36,8 @@ EXTERNAL_ void SH_MainFct(void);
 /*! @brief Serial driver de-initialization */
 EXTERNAL_ void SH_Deinit(void);
 
+
+
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif

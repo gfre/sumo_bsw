@@ -17,6 +17,7 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "Platform.h"
+#include "Acon_Types.h"
 #include "sh.h"
 #include "sh_cfg.h"
 #include "sh_Types.h"
@@ -41,6 +42,8 @@
 #define SH_THANKS_LINE1      ("\r\n  Special thanks go to Prof. Erich Styger from the HSLU Luzern.\r\n")
 #define SH_THANKS_LINE2      (    "  >> Visit him on www.MCUonEclipse.com! \r\n")
 
+
+
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 
 
@@ -51,8 +54,9 @@ static void SH_PrintGoodByeMsg(const CLS1_StdIOType *io_);
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-const SH_IOCfg_t *ioCfg = NULL;
-const SH_IODesc_t *ios = NULL;
+static const SH_IOCfg_t *ioCfg = NULL;
+static const SH_IODesc_t *ios = NULL;
+
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 static void PrintWelcomeMsg(const CLS1_StdIOType *io_)
@@ -96,26 +100,13 @@ static void PrintGoodByeMsg(const CLS1_StdIOType *io_)
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-void SH_SendStr(unsigned char *msg_)
-{
-  CLS1_SendStr(msg_, CLS1_GetStdio()->stdOut);
-  CLS1_SendStr(msg_, RTT1_GetStdio()->stdOut);
-}
-
-void SH_SendErrStr(unsigned char *msg_)
-{
-  CLS1_SendStr(msg_, CLS1_GetStdio()->stdErr);
-  CLS1_SendStr(msg_, RTT1_GetStdio()->stdErr);
-}
-
-
 void SH_Init(void)
 {
 	uint8 i = 0u;
 
 	CLS1_Init();
-	ioCfg = Get_ShIOCfg();
-	ios = ioCfg->ios;
+	ioCfg     = Get_ShIOCfg();
+	ios       = ioCfg->ios;
 
 	if(( NULL != ioCfg ) && ( NULL != ios ) )
 	{
@@ -132,13 +123,13 @@ void SH_Init(void)
 			else
 			{
 				/*TODO print error msg */
-				SH_SendErrStr("Error 2\r\n");
+				SH_SENDERRSTR("Error 2\r\n");
 			}
 		}
 	}
 	else
 	{
-		SH_SendErrStr("Error 1\r\n");
+		SH_SENDERRSTR("Error 1\r\n");
 	}
 }
 
