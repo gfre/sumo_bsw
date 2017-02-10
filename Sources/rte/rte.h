@@ -17,6 +17,8 @@
 #include "ACon_Types.h"
 #include "rte_Types.h"
 
+
+
 #ifdef MASTER_RTE_C_
 #define EXTERNAL_
 #else
@@ -384,6 +386,16 @@ EXTERNAL_ StdRtn_t RTE_Write_RFDstAddr(const uint8 addr_);
 
 
 /*================================================================================================*/
+EXTERNAL_ RTE_STREAM RTE_stderr;
+EXTERNAL_ RTE_STREAM RTE_stdout;
+
+
+EXTERNAL_ unsigned int RTE_printf(unsigned char *fmt_, ...);
+
+
+EXTERNAL_ unsigned int RTE_fprintf(RTE_STREAM stream_ , unsigned char *fmt_, ...);
+
+
 
 #ifdef EXTERNAL_
 #undef EXTERNAL_

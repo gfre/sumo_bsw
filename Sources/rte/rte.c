@@ -11,6 +11,7 @@
  */
 
 #define MASTER_RTE_C_
+/*======================================= >> #INCLUDES << ========================================*/
 #include "LED1.h"
 #include "LED2.h"
 #include "KEY1.h"
@@ -21,8 +22,27 @@
 #include "RApp.h"
 #include "rnet.h"
 #include "sh.h"
+#include "sh_Types.h"
 
+
+
+/*======================================= >> #DEFINES << =========================================*/
 #define USER_SWITCH_MASK (0x01u)
+
+#define RTE_ERR_MSG_ADDRESS ("ERROR: Invliad pointer or address")
+
+
+
+/*=================================== >> GLOBAL VARIABLES << =====================================*/
+RTE_STREAM RTE_stderr = NULL;
+RTE_STREAM RTE_stdout = NULL;
+
+
+void RTE_Init(void)
+{
+	RTE_stdout = (RTE_STREAM)CLS1_GetStdio()->stdOut;
+	RTE_stderr = (RTE_STREAM)CLS1_GetStdio()->stdErr;
+}
 
 /**
  * Interface implementation for the left LED
@@ -437,6 +457,53 @@ StdRtn_t RTE_Write_RFDstAddr(uint8 addr_)
 	return ERR_OK;
 }
 /*================================================================================================*/
+unsigned int RTE_fprintf(RTE_STREAM stream_ ,unsigned char *fmt_, ...)
+{
+	va_list args;
+	unsigned int count = 0u;
+
+	if ( ( NULL != fmt_ ) && ( NULL != stream_ ) )
+	{
+		  va_start(args,fmt_);
+		  if ( RTE_stdout == stream_ )
+		  {
+			  count = SH_FPRINTF(stdOut, fmt_, args);
+		  }
+		  else if ( RTE_stderr == stream_ )
+		  {
+			  count = SH_FPRINTF(stdErr, fmt_, args);
+		  }
+		  else
+		  {
+			  SH_SENDERRSTR(RTE_ERR_MSG_ADDRESS);
+		  }
+		  va_end(args);
+	}
+	else
+	{
+		SH_SENDERRSTR(RTE_ERR_MSG_ADDRESS);
+	}
+	return count;
+}
+
+unsigned int RTE_printf(unsigned char *fmt_, ...)
+{
+	va_list args;
+	unsigned int count = 0u;
+
+	if( NULL != fmt_ )
+	{
+		va_start(args,fmt_);
+		count = SH_PRINTF(fmt_, args);
+		va_end(args);
+	}
+	else
+	{
+		SH_SENDERRSTR(RTE_ERR_MSG_ADDRESS);
+	}
+	return count;
+}
+
 
 
 StdRtn_t RTE_Write_DbgMsg(const uint8 *msg_)

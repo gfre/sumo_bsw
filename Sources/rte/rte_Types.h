@@ -26,6 +26,7 @@
 #endif
 
 /*======================================= >> #DEFINES << =========================================*/
+#define RTE_STREAM RTE_Stream_t
 
 
 
@@ -40,8 +41,9 @@ typedef enum BUZ_Tunes_e {
 } BUZ_Tunes_t;
 
 
+typedef void * RTE_Stream_t;
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-/* EXTERNAL_ StdRtn_t TMPL_CustomFct(const TmplType_t *input_, TmplType_t *output_); */
+EXTERNAL_ void RTE_Init(void);
 
 
 #ifdef EXTERNAL_

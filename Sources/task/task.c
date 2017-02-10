@@ -17,6 +17,7 @@
 #include "task.h"
 #include "task_cfg.h"
 #include "task_Types.h"
+#include "rte_Types.h"
 #include "buz.h"
 #include "Motor.h"
 #include "RNET1.h"
@@ -40,8 +41,8 @@
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-static void TASK_TaskCreate();
 static void TASK_AdoptToHardware(void);
+static void TASK_CreateTasks();
 
 
 
@@ -132,6 +133,7 @@ void TASK_Run(void) {
 	TASK_AdoptToHardware();
 	APPL_Init();
 	RNET_Init();
+	RTE_Init();
 	TASK_CreateTasks();
 }
 
