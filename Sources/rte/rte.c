@@ -506,24 +506,32 @@ unsigned int RTE_printf(unsigned char *fmt_, ...)
 
 
 
-StdRtn_t RTE_Write_DbgMsg(const uint8 *msg_)
+StdRtn_t RTE_Send_Msg(const uint8 *msg_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if( NULL != msg_)
 	{
-		SH_SendStr(msg_);
+		SH_SENDSTR(msg_);
 		retVal = ERR_OK;
+	}
+	else
+	{
+		SH_SENDERRSTR(RTE_ERR_MSG_ADDRESS);
 	}
 	return retVal;
 }
 
-StdRtn_t RTE_Write_DbgErrMsg(const uint8 *errMsg_)
+StdRtn_t RTE_Send_ErrMsg(const uint8 *errMsg_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if( NULL != errMsg_)
 	{
-		SH_SendErrStr(errMsg_);
+		SH_SENDERRSTR(errMsg_);
 		retVal = ERR_OK;
+	}
+	else
+	{
+		SH_SENDERRSTR(RTE_ERR_MSG_ADDRESS);
 	}
 	return retVal;
 }

@@ -395,6 +395,9 @@ EXTERNAL_ unsigned int RTE_printf(unsigned char *fmt_, ...);
 
 EXTERNAL_ unsigned int RTE_fprintf(RTE_STREAM stream_ , unsigned char *fmt_, ...);
 
+EXTERNAL_ StdRtn_t RTE_Send_Msg(const uint8 *msg_);
+
+EXTERNAL_ StdRtn_t RTE_Send_ErrMsg(const uint8 *msg_);
 
 
 #ifdef EXTERNAL_
