@@ -14,7 +14,6 @@
 #define RTE_H
 
 #include "Platform.h"
-#include "ACon_Types.h"
 #include "rte_Types.h"
 
 
@@ -34,22 +33,9 @@ typedef enum RTE_DrvMode_e {
   RTE_DRV_MODE_INVALID,
 } RTE_DrvMode_t;
 
-/*! type ID's for application messages */
-typedef enum {
-  MSG_TYPE_TESTDATA = 0xFE,
-  MSG_TYPE_INVALID = 0xFF,
-} RTE_RFMsgType_t;
-
-typedef struct {
-  uint8 flags;
-  uint8 size;
-  uint8 *data;
-  uint8 *rxtx;
-} RTE_RFPktDes_t;
 
 typedef void EvntCbFct_t(uint8);
 
-typedef StdRtn_t RTE_RFRxMsgCbFct_t(RTE_RFMsgType_t type_, uint8 size_, const uint8 *data_, uint8 srcAddr_, bool *handled_, const RTE_RFPktDes_t *pkt_);
 
 
 /*================================================================================================*/
@@ -329,7 +315,7 @@ EXTERNAL_ StdRtn_t RTE_Read_DrvHasRvsd(uint8 *hasRvsd_);
  *                     ERR_OVERFLOW for too big payload size
  *                     ERR_BUSY for queue overflow
  */
-EXTERNAL_ StdRtn_t RTE_Write_RFSendDataBlk(const uint8 *payLoad_, uint8 payLoadSize_, RTE_RFMsgType_t msgType_,  uint8 dstAddr_, uint8 flags_);
+EXTERNAL_ StdRtn_t RTE_Write_RFSendDataBlk(const uint8 *payLoad_, uint8 payLoadSize_, RFMsgType_t msgType_,  uint8 dstAddr_, uint8 flags_);
 
 /**
  * @brief RTE interface to set the pointer to the function which is called when a RF message is received
@@ -337,13 +323,13 @@ EXTERNAL_ StdRtn_t RTE_Write_RFSendDataBlk(const uint8 *payLoad_, uint8 payLoadS
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-EXTERNAL_ StdRtn_t RTE_Write_RFRxMsgCbFct(const RTE_RFRxMsgCbFct_t *cbFct_);
+EXTERNAL_ StdRtn_t RTE_Write_RFRxMsgCbFct(const RFRxMsgCbFct_t *cbFct_);
 
 /**
  * @brief RTE interface to get the pointer to the function which is called when a RF message is received
  * @return pointer to the callback function of type RTE_RFRxMsgCbFct_t
  */
-EXTERNAL_ const RTE_RFRxMsgCbFct_t *RTE_Get_RFRxMsgCbFct(void);
+EXTERNAL_ const RFRxMsgCbFct_t *RTE_Get_RFRxMsgCbFct(void);
 
 /**
  * @brief RTE interface to sniff the transmitted or received RF-packets
@@ -352,7 +338,7 @@ EXTERNAL_ const RTE_RFRxMsgCbFct_t *RTE_Get_RFRxMsgCbFct(void);
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-EXTERNAL_ StdRtn_t RTE_Read_RFSniffPkt(RTE_RFPktDes_t *pkt_, uint8 isTx_);
+EXTERNAL_ StdRtn_t RTE_Read_RFSniffPkt(RFPktDes_t *pkt_, uint8 isTx_);
 
 /**
  * @brief RTE interface to read the current network address of the source RF-node

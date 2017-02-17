@@ -16,7 +16,7 @@
 #define RTE_TYPES_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
-
+#include "ACon_Types.h"
 
 
 #ifdef MASTER_rte_Types_C_
@@ -42,6 +42,24 @@ typedef enum BUZ_Tunes_e {
 
 
 typedef void * RTE_Stream_t;
+
+
+/*! type ID's for application messages */
+typedef enum RFMsgType_e {
+  MSG_TYPE_TESTDATA = 0xFE,
+  MSG_TYPE_INVALID = 0xFF,
+} RFMsgType_t;
+
+typedef struct RFPktDes_e {
+  uint8 flags;
+  uint8 size;
+  uint8 *data;
+  uint8 *rxtx;
+} RFPktDes_t;
+
+
+typedef StdRtn_t RFRxMsgCbFct_t(RFMsgType_t type_, uint8 size_, const uint8 *data_, uint8 srcAddr_, bool *handled_, const RFPktDes_t *pkt_);
+
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 EXTERNAL_ void RTE_Init(void);
 

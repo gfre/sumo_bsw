@@ -54,8 +54,8 @@ static const RAPP_MsgHandler handlerTable[] =
 static uint8_t RNET_HdlRTERxMsgCbFct(RAPP_MSG_Type type_, uint8_t size_, uint8_t *data_, RAPP_ShortAddrType srcAddr_, bool *handled_, RPHY_PacketDesc *pktDes_)
 {
 	StdRtn_t retVal= ERR_PARAM_ADDRESS;
-	RTE_RFRxMsgCbFct_t *rxMsgCbFct = NULL;
-	RTE_RFPktDes_t pktDes = {0u};
+	RFRxMsgCbFct_t *rxMsgCbFct = NULL;
+	RFPktDes_t pktDes = {0u};
 	rxMsgCbFct =RTE_Get_RFRxMsgCbFct();
 	if((NULL != rxMsgCbFct) && (NULL != data_) && (NULL != pktDes_))
 	{
@@ -63,7 +63,7 @@ static uint8_t RNET_HdlRTERxMsgCbFct(RAPP_MSG_Type type_, uint8_t size_, uint8_t
 		pktDes.size  = (uint8)pktDes_->phySize;
 		pktDes.data  = (uint8 *)pktDes_->phyData;
 		pktDes.rxtx  = (uint8 *)pktDes_->rxtx;
-		rxMsgCbFct((RTE_RFMsgType_t)type_, (uint8)size_, (const uint8 *)data_, (uint8)srcAddr_, (uint8 *)handled_, &pktDes);
+		rxMsgCbFct((RFMsgType_t)type_, (uint8)size_, (const uint8 *)data_, (uint8)srcAddr_, (uint8 *)handled_, &pktDes);
 		retVal = ERR_OK;
 	}
 	return retVal;

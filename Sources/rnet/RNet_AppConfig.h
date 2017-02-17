@@ -15,9 +15,9 @@
 #ifndef __RNET_APPCONFIG__
 #define __RNET_APPCONFIG__
 
-#include "rte.h"
+#include "rte_Types.h"
 
-typedef RTE_RFMsgType_t RAPP_MSG_Type;
+typedef RFMsgType_t RAPP_MSG_Type;
 
 #endif /* __RNET_APPCONFIG__ */
 
