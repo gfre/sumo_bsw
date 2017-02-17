@@ -17,6 +17,7 @@
 #include "task_clshdlr.h"
 #include "appl_clshdlr.h"
 #include "sh_clshdlr.h"
+#include "rnet_clshdlr.h"
 
 #include "sh_cfg.h"
 #include "RTT1.h"
@@ -35,7 +36,7 @@
 #include "drv.h"
 #include "id.h"
 #include "nvm.h"
-#include "rnet.h"
+
 #include "FRTOS1.h"
 
 

@@ -5,44 +5,36 @@
  * \note MIT License (http://opensource.org/licenses/mit-license.html)
  */
 
-#ifndef RNET_APPL_H_
-#define RNET_APPL_H_
+#ifndef RNET_H_
+#define RNET_H_
 
-#include "Platform.h"
-#include "RNWK.h"
-#include "RApp.h"
+/*======================================= >> #INCLUDES << ========================================*/
 
-#ifdef MASTER_RNET_APPL_C_
+
+
+#ifdef MASTER_RNET_C_
 #define EXTERNAL_
 #else
 #define EXTERNAL_ extern
 #endif
 
+/*======================================= >> #DEFINES << =========================================*/
 #define RNET_SWC_STRING ("rnet")
 
-EXTERNAL_ uint8_t RNET_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
 
 
-/**
- * @brief Return the current network address of the RF-node.
- * @return network address
- */
-EXTERNAL_ RAPP_ShortAddrType RNET_GetDstAddr(void);
+/*=================================== >> TYPE DEFINITIONS << =====================================*/
 
-/**
- * @brief Set the network address of the RF-node.
- * @param addr_ network address
- * @return void
- */
-EXTERNAL_ void RNET_SetDstAddr(RAPP_ShortAddrType addr_);
 
+
+/*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 /** @brief Driver de-initialization */
 EXTERNAL_ void RNET_Deinit(void);
 
 /** @brief Driver initialization */
 EXTERNAL_ void RNET_Init(void);
 
-
+/** @brief Driver main function */
 EXTERNAL_ void RNET_MainFct(void);
 
 #ifdef EXTERNAL_
