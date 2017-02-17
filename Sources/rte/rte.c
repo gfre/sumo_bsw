@@ -20,7 +20,7 @@
 #include "tacho.h"
 #include "drv.h"
 #include "RApp.h"
-#include "rnet.h"
+#include "rnet_Types.h"
 #include "sh.h"
 #include "sh_Types.h"
 
