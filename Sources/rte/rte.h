@@ -372,8 +372,8 @@ EXTERNAL_ StdRtn_t RTE_Write_RFDstAddr(const uint8 addr_);
 
 
 /*================================================================================================*/
-EXTERNAL_ RTE_STREAM RTE_stderr;
-EXTERNAL_ RTE_STREAM RTE_stdout;
+EXTERNAL_ RTE_STREAM *RTE_stderr;
+EXTERNAL_ RTE_STREAM *RTE_stdout;
 
 /**
  * @brief RTE interface for printf-similar function, prints formatted byte output to stdout
@@ -390,7 +390,7 @@ EXTERNAL_ unsigned int RTE_printf(unsigned char *fmt_, ...);
  * @param ...  arguments specifying data to print
  * @return number of characters transmitted to the output stream
  */
-EXTERNAL_ unsigned int RTE_fprintf(RTE_STREAM stream_ , unsigned char *fmt_, ...);
+EXTERNAL_ unsigned int RTE_fprintf(RTE_STREAM *stream_ , unsigned char *fmt_, ...);
 
 /**
  * @brief RTE interface for puts-similar function, writes a byte string to stdout

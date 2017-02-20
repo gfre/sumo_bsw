@@ -26,8 +26,11 @@
 #endif
 
 /*======================================= >> #DEFINES << =========================================*/
-#define RTE_STREAM             RTE_Stream_t
-
+#ifdef ASW_STREAM_T
+#define RTE_STREAM             ASW_STREAM_T
+#else
+#define RTE_STREAM             Stream_t
+#endif
 
 #ifdef ASW_RF_MSG_TYPE_T
 #define RTE_RF_MSG_TYPE_T      ASW_RF_MSG_TYPE_T
@@ -43,7 +46,7 @@
  * >> #define ASW_STREAM with custom stream type in asw.h
  * >> include asw.h before rte.h
  */
-typedef void * RTE_Stream_t;
+typedef void Stream_t;
 
 /**
  * @brief ASW-customisable data type for application message type for RF messages

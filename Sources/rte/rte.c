@@ -34,14 +34,16 @@
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-RTE_STREAM RTE_stderr = NULL;
-RTE_STREAM RTE_stdout = NULL;
+RTE_STREAM *RTE_stderr = NULL;
+RTE_STREAM *RTE_stdout = NULL;
 
 
 void RTE_Init(void)
 {
-	RTE_stdout = (RTE_STREAM)CLS1_GetStdio()->stdOut;
-	RTE_stderr = (RTE_STREAM)CLS1_GetStdio()->stdErr;
+#ifndef ASW_STREAM_T
+	RTE_stdout = (RTE_STREAM *)CLS1_GetStdio()->stdOut;
+	RTE_stderr = (RTE_STREAM *)CLS1_GetStdio()->stdErr;
+#endif
 }
 
 /**
@@ -457,7 +459,7 @@ StdRtn_t RTE_Write_RFDstAddr(uint8 addr_)
 	return ERR_OK;
 }
 /*================================================================================================*/
-unsigned int RTE_fprintf(RTE_STREAM stream_ ,unsigned char *fmt_, ...)
+unsigned int RTE_fprintf(RTE_STREAM *stream_ ,unsigned char *fmt_, ...)
 {
 	va_list args;
 	unsigned int count = 0u;
