@@ -315,7 +315,7 @@ EXTERNAL_ StdRtn_t RTE_Read_DrvHasRvsd(uint8 *hasRvsd_);
  *                     ERR_OVERFLOW for too big payload size
  *                     ERR_BUSY for queue overflow
  */
-EXTERNAL_ StdRtn_t RTE_Write_RFSendDataBlk(const uint8 *payLoad_, uint8 payLoadSize_, RFMsgType_t msgType_,  uint8 dstAddr_, uint8 flags_);
+EXTERNAL_ StdRtn_t RTE_Write_RFSendDataBlk(const uint8 *payLoad_, uint8 payLoadSize_, RTE_RF_MSG_TYPE_T msgType_,  uint8 dstAddr_, uint8 flags_);
 
 /**
  * @brief RTE interface to set the pointer to the function which is called when a RF message is received
@@ -329,7 +329,7 @@ EXTERNAL_ StdRtn_t RTE_Write_RFRxMsgCbFct(const RFRxMsgCbFct_t *cbFct_);
  * @brief RTE interface to get the pointer to the function which is called when a RF message is received
  * @return pointer to the callback function of type RTE_RFRxMsgCbFct_t
  */
-EXTERNAL_ const RFRxMsgCbFct_t *RTE_Get_RFRxMsgCbFct(void);
+EXTERNAL_ RFRxMsgCbFct_t *RTE_Get_RFRxMsgCbFct(void);
 
 /**
  * @brief RTE interface to sniff the transmitted or received RF-packets

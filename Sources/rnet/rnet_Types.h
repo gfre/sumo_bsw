@@ -47,6 +47,10 @@ EXTERNAL_ RAPP_ShortAddrType RNET_GetDstAddr(void);
  */
 EXTERNAL_ void RNET_SetDstAddr(RAPP_ShortAddrType addr_);
 
+EXTERNAL_ RAPP_RxMsg_CbFct *RNET_GetRTERxMsgCbFct(void);
+
+
+EXTERNAL_ void RNET_SetRTERxMsgCbFct(const RAPP_RxMsg_CbFct *cbFct_);
 
 #ifdef EXTERNAL_
 #undef EXTERNAL_

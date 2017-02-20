@@ -17,7 +17,10 @@
 
 #include "rte_Types.h"
 
-typedef RFMsgType_t RAPP_MSG_Type;
+typedef RTE_RF_MSG_TYPE_T		RAPP_MSG_Type;
+typedef RFPktDes_t      		RAPP_PktDesc;
+typedef RFRxMsgCbFct_t  		RAPP_RxMsg_CbFct;
+
 
 #endif /* __RNET_APPCONFIG__ */
 

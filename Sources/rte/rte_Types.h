@@ -26,28 +26,24 @@
 #endif
 
 /*======================================= >> #DEFINES << =========================================*/
-#define RTE_STREAM RTE_Stream_t
+#define RTE_STREAM             RTE_Stream_t
 
+
+#ifdef ASW_RF_MSG_TYPE_T
+#define RTE_RF_MSG_TYPE_T      ASW_RF_MSG_TYPE_T
+#else
+#define RTE_RF_MSG_TYPE_T      RFMsgType_t
+#endif
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-typedef enum BUZ_Tunes_e {
-  BUZ_TUNE_WELCOME = 0
- ,BUZ_TUNE_BUTTON
- ,BUZ_TUNE_ACCEPT
- ,BUZ_TUNE_DECLINE
- ,BUZ_TUNE_BUTTON_LONG
- ,BUZ_TUNE_NOF_TUNES
-} BUZ_Tunes_t;
-
-
 typedef void * RTE_Stream_t;
 
 
 /*! type ID's for application messages */
 typedef enum RFMsgType_e {
   MSG_TYPE_TESTDATA = 0xFE,
-  MSG_TYPE_INVALID = 0xFF,
+  MSG_TYPE_INVALID  = 0xFF,
 } RFMsgType_t;
 
 typedef struct RFPktDes_e {
@@ -57,8 +53,17 @@ typedef struct RFPktDes_e {
   uint8 *rxtx;
 } RFPktDes_t;
 
+typedef StdRtn_t RFRxMsgCbFct_t(RTE_RF_MSG_TYPE_T type_, uint8 size_, const uint8 *data_, uint8 srcAddr_, bool *handled_, const RFPktDes_t *pktDes_);
 
-typedef StdRtn_t RFRxMsgCbFct_t(RFMsgType_t type_, uint8 size_, const uint8 *data_, uint8 srcAddr_, bool *handled_, const RFPktDes_t *pkt_);
+
+typedef enum BUZ_Tunes_e {
+  BUZ_TUNE_WELCOME = 0
+ ,BUZ_TUNE_BUTTON
+ ,BUZ_TUNE_ACCEPT
+ ,BUZ_TUNE_DECLINE
+ ,BUZ_TUNE_BUTTON_LONG
+ ,BUZ_TUNE_NOF_TUNES
+} BUZ_Tunes_t;
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 EXTERNAL_ void RTE_Init(void);

@@ -380,9 +380,7 @@ StdRtn_t RTE_Read_DrvHasRvsd(uint8 *hasRvsd_)
 /**
  * Interface implementation for the radio application layer
  */
-static const RFRxMsgCbFct_t *RFRxMsgCbFct = NULL;
-
-StdRtn_t RTE_Write_RFSendDataBlk(const uint8 *payload_, uint8 payloadSize_, RFMsgType_t msgType_,  uint8 dstAddr_, uint8 flags_)
+StdRtn_t RTE_Write_RFSendDataBlk(const uint8 *payload_, uint8 payloadSize_, RTE_RF_MSG_TYPE_T msgType_,  uint8 dstAddr_, uint8 flags_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != payload_)
@@ -392,20 +390,22 @@ StdRtn_t RTE_Write_RFSendDataBlk(const uint8 *payload_, uint8 payloadSize_, RFMs
 	return retVal;
 }
 
-StdRtn_t RTE_Write_RFRxMsgCbFctTbl(const RFRxMsgCbFct_t *cbFct_)
+StdRtn_t RTE_Write_RFRxMsgCbFct(const RFRxMsgCbFct_t *cbFct_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != cbFct_)
 	{
-		RFRxMsgCbFct = cbFct_;
+		RNET_SetRTERxMsgCbFct((const RAPP_RxMsg_CbFct *)cbFct_);
 	}
 	return retVal;
 }
 
-const RFRxMsgCbFct_t *RTE_Get_RFRxMsgCbFct(void)
+RFRxMsgCbFct_t *RTE_Get_RFRxMsgCbFct(void)
 {
-	return RFRxMsgCbFct;
+	return RNET_GetRTERxMsgCbFct();
 }
+
+
 
 StdRtn_t RTE_Read_RFSniffPkt(RFPktDes_t *pkt_, uint8 isTx_)
 {
