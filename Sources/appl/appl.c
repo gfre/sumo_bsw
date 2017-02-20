@@ -16,7 +16,6 @@
 /*======================================= >> #INCLUDES << ========================================*/
 #include "appl.h"
 #include "appl_Types.h"
-
 #include "Platform.h"
 #include "RNET1.h"
 #include "stud.h"
@@ -24,6 +23,10 @@
 #include "rte.h"
 #include "LED1.h"
 #include "sh.h"
+
+#ifdef ASW_ENABLED
+#include "asw.h"
+#endif
 
 /*======================================= >> #DEFINES << =========================================*/
 
@@ -182,7 +185,9 @@ static StdRtn_t APPL_msSTARTUP(void)
 static StdRtn_t APPL_msINIT(void)
 {
   StdRtn_t retVal = ERR_PARAM_ADDRESS;
-
+#ifdef ASW_ENABLED
+  ASW_Init();
+#endif
   STUD_Init();
 
   dbgTaskCfg = TASK_Get_DbgTaskCfg();
@@ -200,6 +205,9 @@ static StdRtn_t APPL_msIDLE(void)
 
 static StdRtn_t APPL_msNORMAL(void)
 {
+#ifdef ASW_ENABLED
+	ASW_Main();
+#endif
   STUD_Main();
   return ERR_OK;
 }
