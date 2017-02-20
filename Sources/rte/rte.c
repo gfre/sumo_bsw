@@ -506,7 +506,7 @@ unsigned int RTE_printf(unsigned char *fmt_, ...)
 
 
 
-StdRtn_t RTE_Send_Msg(const uint8 *msg_)
+StdRtn_t RTE_puts(const uint8 *msg_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if( NULL != msg_)
@@ -521,7 +521,7 @@ StdRtn_t RTE_Send_Msg(const uint8 *msg_)
 	return retVal;
 }
 
-StdRtn_t RTE_Send_ErrMsg(const uint8 *errMsg_)
+StdRtn_t RTE_putsErr(const uint8 *errMsg_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if( NULL != errMsg_)

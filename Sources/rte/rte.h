@@ -389,15 +389,38 @@ EXTERNAL_ StdRtn_t RTE_Write_RFDstAddr(const uint8 addr_);
 EXTERNAL_ RTE_STREAM RTE_stderr;
 EXTERNAL_ RTE_STREAM RTE_stdout;
 
-
+/**
+ * @brief RTE interface for printf-similar function, prints formatted byte output to stdout
+ * @param fmt_ pointer to a null-terminated multibyte string specifying how to interpret the data.
+ * @param ...  arguments specifying data to print
+ * @return number of characters transmitted to the output stream
+ */
 EXTERNAL_ unsigned int RTE_printf(unsigned char *fmt_, ...);
 
-
+/**
+ * @brief RTE interface for fprintf-similar function, prints formatted byte output to an output stream
+ * @param stream_  output file stream to write to
+ * @param fmt_ pointer to a null-terminated multibyte string specifying how to interpret the data.
+ * @param ...  arguments specifying data to print
+ * @return number of characters transmitted to the output stream
+ */
 EXTERNAL_ unsigned int RTE_fprintf(RTE_STREAM stream_ , unsigned char *fmt_, ...);
 
-EXTERNAL_ StdRtn_t RTE_Send_Msg(const uint8 *msg_);
+/**
+ * @brief RTE interface for puts-similar function, writes a byte string to stdout
+ * @param msg_ pointer to a null-terminated multibyte string specifying how to interpret the data.
+ * @return Error code, ERR_OK if everything was fine,
+ *                     ERR_PARAM_ADDRESS otherwise
+ */
+EXTERNAL_ StdRtn_t RTE_puts(const uint8 *msg_);
 
-EXTERNAL_ StdRtn_t RTE_Send_ErrMsg(const uint8 *msg_);
+/**
+ * @brief RTE interface for puts-similar function, writes a byte string to stderr
+ * @param msg_ pointer to a null-terminated multibyte string specifying how to interpret the data.
+ * @return Error code, ERR_OK if everything was fine,
+ *                     ERR_PARAM_ADDRESS otherwise
+ */
+EXTERNAL_ StdRtn_t RTE_putsErr(const uint8 *msg_);
 
 
 #ifdef EXTERNAL_
