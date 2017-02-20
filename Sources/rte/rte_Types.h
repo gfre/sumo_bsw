@@ -37,15 +37,29 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
+/**
+ * @brief ASW-customisable data type for application message type for RF messages
+ * How to customise:
+ * >> #define ASW_STREAM with custom stream type in asw.h
+ * >> include asw.h before rte.h
+ */
 typedef void * RTE_Stream_t;
 
-
-/*! type ID's for application messages */
+/**
+ * @brief ASW-customisable data type for application message type for RF messages
+ * How to customise:
+ * >> #define ASW_RF_MSG_TYPE_T with custom message type in asw.h
+ * >> include asw.h before rte.h
+ */
 typedef enum RFMsgType_e {
   MSG_TYPE_TESTDATA = 0xFE,
   MSG_TYPE_INVALID  = 0xFF,
 } RFMsgType_t;
 
+
+/**
+ * @brief Non-customizeable data type for packet descriptor of a RF message
+ */
 typedef struct RFPktDes_e {
   uint8 flags;
   uint8 size;
@@ -53,19 +67,27 @@ typedef struct RFPktDes_e {
   uint8 *rxtx;
 } RFPktDes_t;
 
+/**
+ * @brief Non-customizeable data type for a pointer to callback function for receiving RF messages
+ */
 typedef StdRtn_t RFRxMsgCbFct_t(RTE_RF_MSG_TYPE_T type_, uint8 size_, const uint8 *data_, uint8 srcAddr_, bool *handled_, const RFPktDes_t *pktDes_);
 
-
+/**
+ * @brief Non-customizeable data type for buzzer tunes
+ */
 typedef enum BUZ_Tunes_e {
-  BUZ_TUNE_WELCOME = 0
- ,BUZ_TUNE_BUTTON
- ,BUZ_TUNE_ACCEPT
- ,BUZ_TUNE_DECLINE
- ,BUZ_TUNE_BUTTON_LONG
- ,BUZ_TUNE_NOF_TUNES
+  BUZ_TUNE_WELCOME = 0//!< BUZ_TUNE_WELCOME
+ ,BUZ_TUNE_BUTTON     //!< BUZ_TUNE_BUTTON
+ ,BUZ_TUNE_ACCEPT     //!< BUZ_TUNE_ACCEPT
+ ,BUZ_TUNE_DECLINE    //!< BUZ_TUNE_DECLINE
+ ,BUZ_TUNE_BUTTON_LONG//!< BUZ_TUNE_BUTTON_LONG
+ ,BUZ_TUNE_NOF_TUNES  //!< BUZ_TUNE_NOF_TUNES
 } BUZ_Tunes_t;
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
+/**
+ * @brief Initializes the RTE interface
+ */
 EXTERNAL_ void RTE_Init(void);
 
 
