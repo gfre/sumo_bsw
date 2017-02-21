@@ -2,51 +2,48 @@
  * @brief 	>>TODO This is a brief description.
  *
  * @author 	>>TODO, gefr@tf.uni-kiel.de, University Kiel 
- * @date 	08.02.2017
+ * @date 	17.02.2017
  *  
  * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
  *
- * >>TODO This is the detailed description of the file appl_Types.h
+ * >>TODO This is the detailed description of the file rnet_clshdlr.h
  * 
  *==================================================================================================
  */
 
 
-#ifndef APPL_TYPES_H_
-#define APPL_TYPES_H_
+#ifndef RNET_CLSHDLR_H_
+#define RNET_CLSHDLR_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
+#include "CLS1.h"
 
 
-#ifdef MASTER_appl_C_
+#ifdef MASTER_rnet_clshdlr_C_
 #define EXTERNAL_
 #else
 #define EXTERNAL_ extern
 #endif
 
 /*======================================= >> #DEFINES << =========================================*/
+/* #define TMPL_MACRO (0xFFu) */
+
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-typedef enum APPL_State_e
-{
-	 APPL_STATE_NONE = 0x00 	/**< No or invalid state */
-	,APPL_STATE_STARTUP			/**< State during start up */
-	,APPL_STATE_INIT			/**< State during initialization */
-	,APPL_STATE_IDLE			/**< State for idle mode */
-	,APPL_STATE_NORMAL			/**< State for normal mode */
-	,APPL_STATE_DEBUG			/**< State for debug mode */
-	,APPL_STATE_ERROR			/**< State for error mode */
-	,APPL_STATE_NUM         	/**< Number of vaild states/modes */
-} APPL_State_t;
+/* typedef unit8 TmplType_t; */
+
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-/*!
- * @brief This function returns the address of the variable of the application state
- * @return pointer to the variable of the application state
+/**
+ * @brief Parses a command of the software component 'RF network stack'
+ * @param cmd Command string to be parsed
+ * @param handled Sets this variable to TRUE if command was handled
+ * @param io I/O stream to be used for input/output
+ * @return Error code, ERR_OK if everything was fine
  */
-EXTERNAL_ APPL_State_t APPL_Get_State(void);
+EXTERNAL_ uint8_t RNET_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
 
 
 #ifdef EXTERNAL_
@@ -54,4 +51,4 @@ EXTERNAL_ APPL_State_t APPL_Get_State(void);
 #endif
 
 
-#endif /* !APPL_TYPES_H_ */
+#endif /* !RNET_CLSHDLR_H_ */

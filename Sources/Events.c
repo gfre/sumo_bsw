@@ -35,8 +35,12 @@ extern "C" {
 
 
 /* User includes (#include below this line is not maintained by Processor Expert) */
-#include "Trigger.h"
 #include "Tacho.h"
+#include "rte.h"
+#include "task_cfg.h"
+#include "portmacro.h"
+
+
 
 /*
 ** ===================================================================
@@ -119,8 +123,7 @@ void FRTOS1_vApplicationTickHook(void)
   /* Called for every RTOS tick. */
   /* Write your code here ... */
   TACHO_Sample();
-	TRG1_AddTick();
-  TRG_AddTick();
+  TRG1_AddTick();
 }
 
 /*
@@ -184,11 +187,18 @@ void PTRC1_OnTraceWrap(void)
 **     Returns     : Nothing
 ** ===================================================================
 */
-void KEY1_OnKeyPressed(uint8_t keys)
+void KEY1_OnKeyPressed( uint8_t keys )
 {
-	// LED1_Neg();
   /* Write your code here. A bit in 'keys' indicates key pressed ... */
+  EvntCbFct_t *cbFct = NULL;
+
+  cbFct = RTE_Get_BtnOnPrsdCbFct();
+  if( NULL != cbFct )
+  {
+      cbFct( keys );
+  }
 }
+
 
 /*
 ** ===================================================================
@@ -206,7 +216,25 @@ void KEY1_OnKeyPressed(uint8_t keys)
 */
 void KEY1_OnKeyReleased(uint8_t keys)
 {
-  /* Write your code here. A bit in 'keys' indicates key released ... */
+	/* Write your code here. A bit in 'keys' indicates key released ... */
+	EvntCbFct_t *cbFct = NULL;
+	const TASK_CfgItm_t *applTaskCfg = NULL;
+	BaseType_t higherPriorityTaskWoken = pdFALSE;
+
+	cbFct = RTE_Get_BtnOnRlsdCbFct();
+	if(NULL != cbFct)
+	{
+		cbFct(keys);
+	}
+	applTaskCfg = TASK_Get_ApplTaskCfg();
+	if( (NULL != applTaskCfg ) && ( applTaskCfg->taskHdl ) )
+	{
+		FRTOS1_xTaskNotifyFromISR( applTaskCfg->taskHdl,
+				KEY_RELEASED_NOTIFICATION_VALUE,
+				eSetBits,
+				&higherPriorityTaskWoken );
+		portYIELD_FROM_ISR( higherPriorityTaskWoken );
+	}
 }
 
 /*
@@ -226,7 +254,26 @@ void KEY1_OnKeyReleased(uint8_t keys)
 */
 void KEY1_OnKeyPressedLong(uint8_t keys)
 {
-  /* Write your code here ... */
+	/* Write your code here ... */
+	EvntCbFct_t *cbFct = NULL;
+	const TASK_CfgItm_t *applTaskCfg = NULL;
+	BaseType_t higherPriorityTaskWoken = pdFALSE;
+
+	cbFct = RTE_Get_BtnOnLngPrsdCbFct();
+	if(NULL != cbFct)
+	{
+		cbFct(keys);
+	}
+
+	applTaskCfg = TASK_Get_ApplTaskCfg();
+	if ((NULL != applTaskCfg) && (applTaskCfg->taskHdl))
+	{
+		FRTOS1_xTaskNotifyFromISR( applTaskCfg->taskHdl,
+				KEY_PRESSED_LONG_NOTIFICATION_VALUE,
+				eSetBits,
+				&higherPriorityTaskWoken );
+		portYIELD_FROM_ISR( higherPriorityTaskWoken );
+	}
 }
 
 /*
@@ -247,6 +294,52 @@ void QuadInt_OnInterrupt(void)
 {
   Q4CLeft_Sample();
   Q4CRight_Sample();
+  /* Write your code here ... */
+}
+
+/*
+** ===================================================================
+**     Event       :  KEY1_OnKeyReleasedLong (module Events)
+**
+**     Component   :  KEY1 [Key]
+**     Description :
+**         Event generated after a key has been released (long key
+**         press).
+**     Parameters  :
+**         NAME            - DESCRIPTION
+**         keys            - the key(s) pressed, as bitset (e.g. 1 is
+**                           key 1, 2 is key 2, 4 is key 3, ....)
+**     Returns     : Nothing
+** ===================================================================
+*/
+void KEY1_OnKeyReleasedLong(uint8_t keys)
+{
+  /* Write your code here. A bit in 'keys' indicates key released after a long time ... */
+  EvntCbFct_t *cbFct = NULL;
+
+  cbFct = RTE_Get_BtnOnLngRlsdCbFct();
+  if(NULL != cbFct)
+  {
+      cbFct(keys);
+  }
+}
+
+/*
+** ===================================================================
+**     Event       :  RNET1_OnRadioEvent (module Events)
+**
+**     Component   :  RNET1 [RNet]
+**     Description :
+**         Event created for various radio states, like timeout, ack
+**         received, data sent, ...
+**     Parameters  :
+**         NAME            - DESCRIPTION
+**         event           - 
+**     Returns     : Nothing
+** ===================================================================
+*/
+void RNET1_OnRadioEvent(RNET1_RadioEvent event)
+{
   /* Write your code here ... */
 }
 

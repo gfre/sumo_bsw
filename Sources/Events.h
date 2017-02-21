@@ -258,6 +258,39 @@ void KEY1_OnKeyPressedLong(uint8_t keys);
  */
 void QuadInt_OnInterrupt(void);
 
+void KEY1_OnKeyReleasedLong(uint8_t keys);
+/*
+** ===================================================================
+**     Event       :  KEY1_OnKeyReleasedLong (module Events)
+**
+**     Component   :  KEY1 [Key]
+**     Description :
+**         Event generated after a key has been released (long key
+**         press).
+**     Parameters  :
+**         NAME            - DESCRIPTION
+**         keys            - the key(s) pressed, as bitset (e.g. 1 is
+**                           key 1, 2 is key 2, 4 is key 3, ....)
+**     Returns     : Nothing
+** ===================================================================
+*/
+
+void RNET1_OnRadioEvent(RNET1_RadioEvent event);
+/*
+** ===================================================================
+**     Event       :  RNET1_OnRadioEvent (module Events)
+**
+**     Component   :  RNET1 [RNet]
+**     Description :
+**         Event created for various radio states, like timeout, ack
+**         received, data sent, ...
+**     Parameters  :
+**         NAME            - DESCRIPTION
+**         event           - 
+**     Returns     : Nothing
+** ===================================================================
+*/
+
 /* END Events */
 
 #ifdef __cplusplus

@@ -13,16 +13,16 @@
  */
 
 #include "Platform.h"
-#include "Drive.h"
+#include "drv.h"
 #include "FRTOS1.h"
 #include "UTIL1.h"
+#include "sh.h"
 #include "Tacho.h"
 #include "Pid.h"
 #include "Motor.h"
 #include "CLS1.h"
 #include "Q4CLeft.h"
 #include "Q4CRight.h"
-#include "Shell.h"
 #include "WAIT1.h"
 
 #define PRINT_DRIVE_INFO  0 /* if we print debug info */
@@ -364,37 +364,13 @@ static uint8_t GetCmd(void) {
 	return ERR_OK;
 }
 
-static void DriveTask(void *pvParameters) {
-	portTickType xLastWakeTime;
-
-	(void)pvParameters;
-	xLastWakeTime = xTaskGetTickCount();
-	for(;;) {
-		while (GetCmd()==ERR_OK) { /* returns ERR_RXEMPTY if queue is empty */
-			/* process incoming commands */
-		}
-		if (DRV_Status.mode==DRV_MODE_SPEED) {
-			PID_Speed(TACHO_GetSpeed(TRUE), DRV_Status.speed.left, TRUE);
-			PID_Speed(TACHO_GetSpeed(FALSE), DRV_Status.speed.right, FALSE);
-		} else if (DRV_Status.mode==DRV_MODE_STOP) {
-			PID_Speed(TACHO_GetSpeed(TRUE), 0, TRUE);
-			PID_Speed(TACHO_GetSpeed(FALSE), 0, FALSE);
-		} else if (DRV_Status.mode==DRV_MODE_POS) {
-			PID_Pos(Q4CLeft_GetPos(), DRV_Status.pos.left, TRUE);
-			PID_Pos(Q4CRight_GetPos(), DRV_Status.pos.right, FALSE);
-		} else if (DRV_Status.mode==DRV_MODE_NONE) {
-			/* do nothing */
-		}
-		FRTOS1_vTaskDelayUntil(&xLastWakeTime, 5/portTICK_PERIOD_MS);
-	} /* for */
-}
 
 void DRV_DeInit(void) {
 	FRTOS1_vQueueDelete(DRV_Queue);
 }
 
 void DRV_Init(void) {
-	DRV_Status.mode = DRV_MODE_SPEED;
+	DRV_Status.mode = DRV_MODE_NONE;
 	DRV_Status.speed.left = 0;
 	DRV_Status.speed.right = 0;
 	DRV_Status.pos.left = 0;
@@ -404,7 +380,27 @@ void DRV_Init(void) {
 		for(;;){} /* out of memory? */
 	}
 	FRTOS1_vQueueAddToRegistry(DRV_Queue, "Drive");
-	if (FRTOS1_xTaskCreate(DriveTask, "Drive", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+3, NULL) != pdPASS) {
-		for(;;){} /* error */
+	//if (FRTOS1_xTaskCreate(DriveTask, "Drive", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+3, NULL) != pdPASS) {
+	//	for(;;){} /* error */
+	//}
+}
+
+void DRV_MainFct(void)
+{
+	while (GetCmd()==ERR_OK) { /* returns ERR_RXEMPTY if queue is empty */
+		/* process incoming commands */
 	}
+	if (DRV_Status.mode==DRV_MODE_SPEED) {
+		PID_Speed(TACHO_GetSpeed(TRUE), DRV_Status.speed.left, TRUE);
+		PID_Speed(TACHO_GetSpeed(FALSE), DRV_Status.speed.right, FALSE);
+	} else if (DRV_Status.mode==DRV_MODE_STOP) {
+		PID_Speed(TACHO_GetSpeed(TRUE), 0, TRUE);
+		PID_Speed(TACHO_GetSpeed(FALSE), 0, FALSE);
+	} else if (DRV_Status.mode==DRV_MODE_POS) {
+		PID_Pos(Q4CLeft_GetPos(), DRV_Status.pos.left, TRUE);
+		PID_Pos(Q4CRight_GetPos(), DRV_Status.pos.right, FALSE);
+	} else if (DRV_Status.mode==DRV_MODE_NONE) {
+		/* do nothing */
+	}
+	return;
 }

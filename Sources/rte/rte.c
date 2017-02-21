@@ -10,35 +10,66 @@
  * ==============================================================================
  */
 
-#define MASTER_ID_C_
+#define MASTER_RTE_C_
+/*======================================= >> #INCLUDES << ========================================*/
 #include "LED1.h"
 #include "LED2.h"
+#include "KEY1.h"
+#include "buz.h"
 #include "rte.h"
+#include "tacho.h"
+#include "drv.h"
+#include "RApp.h"
+#include "rnet_Types.h"
+#include "sh.h"
+#include "sh_Types.h"
 
 
-StdRtnType RTE_Write_LedRiOn()
+
+/*======================================= >> #DEFINES << =========================================*/
+#define USER_SWITCH_MASK (0x01u)
+
+#define RTE_ERR_MSG_ADDRESS ("ERROR: Invliad pointer or address")
+
+
+
+/*=================================== >> GLOBAL VARIABLES << =====================================*/
+RTE_STREAM *RTE_stderr = NULL;
+RTE_STREAM *RTE_stdout = NULL;
+
+
+void RTE_Init(void)
+{
+#ifndef ASW_STREAM_T
+	RTE_stdout = (RTE_STREAM *)CLS1_GetStdio()->stdOut;
+	RTE_stderr = (RTE_STREAM *)CLS1_GetStdio()->stdErr;
+#endif
+}
+
+/**
+ * Interface implementation for the left LED
+ */
+StdRtn_t RTE_Write_LedLeOn()
 {
 	LED1_On();
-	return RTN_OK;
+	return ERR_OK;
 }
 
-StdRtnType RTE_Write_LedRiOff()
+StdRtn_t RTE_Write_LedLeOff()
 {
 	LED1_Off();
-	return RTN_OK;
+	return ERR_OK;
 }
 
-StdRtnType RTE_Write_LedRiNeg()
+StdRtn_t RTE_Write_LedLeNeg()
 {
 	LED1_Neg();
-	return RTN_OK;
+	return ERR_OK;
 }
 
-
-
-StdRtnType RTE_Write_LedRiSt(uint8_t state)
+StdRtn_t RTE_Write_LedLeSt(uint8_t state)
 {
-	if(0u==state)
+	if(FALSE==state)
 	{
 		LED1_Put(FALSE);
 	}
@@ -46,46 +77,46 @@ StdRtnType RTE_Write_LedRiSt(uint8_t state)
 	{
 		LED1_Put(TRUE);
 	}
-	return RTN_OK;
+	return ERR_OK;
 }
 
-
-StdRtnType RTE_Read_LedRiSt(uint8 *state_)
+StdRtn_t RTE_Read_LedLeSt(uint8_t *state_)
 {
-	uint8 retVal = RTN_INVALID;
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL!=state_)
 	{
-		*state_ = (uint8)LED1_Get();
-		retVal = RTN_OK;
+		*state_ = (uint8_t)LED1_Get();
+		retVal = ERR_OK;
 	}
 	return retVal;
 }
+/*========================================================*/
 
 
-
-StdRtnType RTE_Write_LedLeOn()
+/**
+ * Interface implementation for the right LED
+ */
+StdRtn_t RTE_Write_LedRiOn()
 {
 	LED2_On();
-	return RTN_OK;
+	return ERR_OK;
 }
 
-StdRtnType RTE_Write_LedLeOff()
+StdRtn_t RTE_Write_LedRiOff()
 {
 	LED2_Off();
-	return RTN_OK;
+	return ERR_OK;
 }
 
-StdRtnType RTE_Write_LedLeNeg()
+StdRtn_t RTE_Write_LedRiNeg()
 {
 	LED2_Neg();
-	return RTN_OK;
+	return ERR_OK;
 }
 
-
-
-StdRtnType RTE_Write_LedLeSt(uint8 state_)
+StdRtn_t RTE_Write_LedRiSt(uint8_t state_)
 {
-	if(0u==state_)
+	if(FALSE==state_)
 	{
 		LED2_Put(FALSE);
 	}
@@ -93,23 +124,421 @@ StdRtnType RTE_Write_LedLeSt(uint8 state_)
 	{
 		LED2_Put(TRUE);
 	}
-	return RTN_OK;
+	return ERR_OK;
 }
 
-
-StdRtnType RTE_Read_LedLeSt(uint8 *state_)
+StdRtn_t RTE_Read_LedRiSt(uint8_t *state_)
 {
-	uint8 retVal = RTN_INVALID;
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL!=state_)
 	{
-		*state_ = (uint8)LED2_Get();
-		retVal = RTN_OK;
+		*state_ = (uint8_t)LED2_Get();
+		retVal = ERR_OK;
+	}
+	return retVal;
+}
+/*========================================================*/
+
+
+/**
+ * Interface implementation for the user switch
+ */
+typedef struct CbFctTab_s{
+	EvntCbFct_t *cbFctOnPrsd;
+	EvntCbFct_t *cbFctOnLngPrsd;
+	EvntCbFct_t *cbFctOnRlsd;
+	EvntCbFct_t *cbFctOnLngRlsd;
+}CbFctTab_t;
+
+static CbFctTab_t cbFctTab={NULL};
+
+StdRtn_t RTE_Read_BtnSt(uint8_t *state_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if(NULL!=state_)
+	{
+		*state_ = (uint8_t)KEY1_GetKeys() & USER_SWITCH_MASK;
+		retVal = ERR_OK;
+	}
+	return retVal;
+}
+
+StdRtn_t RTE_Write_BtnOnPrsdCbFct(const EvntCbFct_t *cbFct_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if(NULL != cbFct_)
+	{
+		cbFctTab.cbFctOnPrsd = cbFct_;
+		retVal = ERR_OK;
+	}
+	return retVal;
+}
+
+StdRtn_t RTE_Write_BtnOnLngPrsdCbFct(const EvntCbFct_t *cbFct_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if(NULL != cbFct_)
+	{
+		cbFctTab.cbFctOnLngPrsd = cbFct_;
+		retVal = ERR_OK;
+	}
+	return retVal;
+}
+
+StdRtn_t RTE_Write_BtnOnRlsdCbFct(const EvntCbFct_t *cbFct_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if(NULL != cbFct_)
+	{
+		cbFctTab.cbFctOnRlsd = cbFct_;
+		retVal = ERR_OK;
+	}
+	return retVal;
+}
+
+StdRtn_t RTE_Write_BtnOnLngRlsdCbFct(const EvntCbFct_t *cbFct_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if(NULL != cbFct_)
+	{
+		cbFctTab.cbFctOnLngRlsd = cbFct_;
+		retVal = ERR_OK;
+	}
+	return retVal;
+}
+
+EvntCbFct_t *RTE_Get_BtnOnPrsdCbFct(void)
+{
+	return cbFctTab.cbFctOnPrsd;
+}
+
+EvntCbFct_t *RTE_Get_BtnOnLngPrsdCbFct(void)
+{
+	return cbFctTab.cbFctOnLngPrsd;
+}
+
+EvntCbFct_t *RTE_Get_BtnOnRlsdCbFct(void)
+{
+	return cbFctTab.cbFctOnRlsd;
+}
+
+EvntCbFct_t *RTE_Get_BtnOnLngRlsdCbFct(void)
+{
+	return cbFctTab.cbFctOnLngRlsd;
+}
+/*========================================================*/
+
+
+/**
+ * Interface implementation for the buzzer
+ */
+StdRtn_t RTE_Write_BuzPlayTune(BUZ_Tunes_t tune_)
+{
+	StdRtn_t retVal = ERR_PARAM_VALUE;
+	if(BUZ_TUNE_NOF_TUNES > tune_)
+	{
+		retVal = (StdRtn_t)BUZ_PlayTune(tune_);
 	}
 	return retVal;
 }
 
 
+StdRtn_t RTE_Play_BuzBeep(uint16 freqHz_, uint16 durMs_)
+{
+	return (StdRtn_t)BUZ_Beep(freqHz_, durMs_);
+}
+/*========================================================*/
 
-#ifdef MASTER_ID_C_
-#undef MASTER_ID_C_
+
+/**
+ * Interface implementation for the speedometer
+ */
+#define LEFT   (TRUE)
+#define RIGHT  (FALSE)
+
+StdRtn_t RTE_Read_SpdoVelLe(uint16 *vel_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if(NULL != vel_)
+	{
+		*vel_ = TACHO_GetSpeed(TRUE);
+		retVal = ERR_OK;
+	}
+	return retVal;
+}
+
+
+StdRtn_t RTE_Read_SpdoVelRi(uint16 *vel_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if(NULL != vel_)
+	{
+		*vel_ = TACHO_GetSpeed(FALSE);
+		retVal = ERR_OK;
+	}
+	return retVal;
+}
+/*========================================================*/
+
+
+/**
+ * Interface implementation for the drive component
+ */
+static inline DRV_Mode Trsnlte_ModeRTE2DRV(RTE_DrvMode_t mode_);
+static inline RTE_DrvMode_t Trsnlte_ModeDRV2RTE(DRV_Mode mode_);
+
+static inline DRV_Mode Trsnlte_ModeRTE2DRV(RTE_DrvMode_t mode_)
+{
+	switch(mode_)
+	{
+		default:
+		case RTE_DRV_MODE_NONE:  return DRV_MODE_NONE;
+		case RTE_DRV_MODE_STOP:  return DRV_MODE_STOP;
+		case RTE_DRV_MODE_SPEED: return DRV_MODE_SPEED;
+		case RTE_DRV_MODE_POS:   return DRV_MODE_POS;
+	}
+	return DRV_MODE_NONE;
+}
+
+static inline RTE_DrvMode_t Trsnlte_ModeDRV2RTE(DRV_Mode mode_)
+{
+	switch(mode_)
+	{
+		case DRV_MODE_NONE:  return RTE_DRV_MODE_NONE;
+		case DRV_MODE_STOP:  return RTE_DRV_MODE_STOP;
+		case DRV_MODE_SPEED: return RTE_DRV_MODE_SPEED;
+		case DRV_MODE_POS:   return RTE_DRV_MODE_POS;
+		default:             return RTE_DRV_MODE_INVALID;
+	}
+	return RTE_DRV_MODE_INVALID;
+}
+
+StdRtn_t RTE_Write_DrvVel(int32 velLe_, int32 velRi_)
+{
+	return (StdRtn_t)DRV_SetSpeed(velLe_, velRi_);
+}
+
+StdRtn_t RTE_Write_DrvPos(int32 posLe_, int32 posRi_)
+{
+	return (StdRtn_t)DRV_SetSpeed(posLe_, posRi_);
+}
+
+StdRtn_t RTE_Write_DrvMode(RTE_DrvMode_t mode_)
+{
+	StdRtn_t retVal = ERR_PARAM_VALUE;
+	if((RTE_DRV_MODE_INVALID > mode_) && (RTE_DRV_MODE_NONE <= mode_))
+	{
+		retVal = (StdRtn_t)DRV_SetMode(Trsnlte_ModeRTE2DRV(mode_));
+	}
+	return retVal;
+}
+
+StdRtn_t RTE_Read_DrvMode(RTE_DrvMode_t *mode_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if(NULL != mode_)
+	{
+		*mode_ = Trsnlte_ModeDRV2RTE(DRV_GetMode());
+		retVal = ERR_OK;
+	}
+	return retVal;
+}
+
+StdRtn_t RTE_Read_DrvIsDrvgBkwd(uint8_t *isDrvgBkwd_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if(NULL != isDrvgBkwd_)
+	{
+		*isDrvgBkwd_ = DRV_IsDrivingBackward();
+		retVal = ERR_OK;
+	}
+	return retVal;
+}
+
+StdRtn_t RTE_Read_DrvHasStpd(uint8_t *hasStpd_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if(NULL != hasStpd_)
+	{
+		*hasStpd_ =  DRV_IsStopped();
+		retVal = ERR_OK;
+	}
+	return retVal;
+}
+
+StdRtn_t RTE_Read_DrvHasRvsd(uint8_t *hasRvsd_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if(NULL != hasRvsd_)
+	{
+		*hasRvsd_ =  DRV_HasTurned();
+		retVal = ERR_OK;
+	}
+	return retVal;
+}
+/*================================================================================================*/
+
+
+/**
+ * Interface implementation for the radio application layer
+ */
+StdRtn_t RTE_Write_RFSendDataBlk(const uint8_t *payload_, uint8_t payloadSize_, RTE_RF_MSG_TYPE_T msgType_,  uint8_t dstAddr_, uint8_t flags_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if(NULL != payload_)
+	{
+		retVal = (StdRtn_t)RAPP_SendPayloadDataBlock((uint8_t *)payload_, payloadSize_, msgType_,  (RAPP_ShortAddrType)dstAddr_,  (RAPP_FlagsType)flags_);
+	}
+	return retVal;
+}
+
+StdRtn_t RTE_Write_RFRxMsgCbFct(const RFRxMsgCbFct_t *cbFct_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if(NULL != cbFct_)
+	{
+		RNET_SetRTERxMsgCbFct((const RAPP_RxMsg_CbFct *)cbFct_);
+	}
+	return retVal;
+}
+
+RFRxMsgCbFct_t *RTE_Get_RFRxMsgCbFct(void)
+{
+	return RNET_GetRTERxMsgCbFct();
+}
+
+
+
+StdRtn_t RTE_Read_RFSniffPkt(RFPktDes_t *pkt_, uint8_t isTx_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	RAPP_PacketDesc pkt={0u};
+	if((NULL != pkt_) && (NULL != pkt_->data))
+	{
+		isTx_ &= TRUE;
+		pkt.flags  = (RPHY_FlagsType)pkt_->flags;
+		pkt.phySize = pkt_->size;
+		pkt.phyData = pkt_->data;
+		pkt.rxtx    = pkt_->rxtx;
+		RAPP_SniffPacket(&pkt, (bool)isTx_);
+		retVal = ERR_OK;
+	}
+	return retVal;
+}
+
+StdRtn_t RTE_Read_RFSrcAddr(uint8_t *addr_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if(NULL != addr_)
+	{
+		*addr_ = (uint8_t)RAPP_GetThisNodeAddr();
+		retVal = ERR_OK;
+	}
+	return retVal;
+}
+
+StdRtn_t RTE_Write_RFSrcAddr(uint8_t addr_)
+{
+	return (StdRtn_t)RAPP_SetThisNodeAddr((RAPP_ShortAddrType)addr_);
+}
+
+StdRtn_t RTE_Read_RFDstAddr(uint8_t *addr_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if(NULL != addr_)
+	{
+		*addr_ = (uint8_t)RNET_GetDstAddr();
+		retVal = ERR_OK;
+	}
+	return retVal;
+}
+
+StdRtn_t RTE_Write_RFDstAddr(uint8_t addr_)
+{
+	RNET_SetDstAddr((RAPP_ShortAddrType)addr_);
+	return ERR_OK;
+}
+/*================================================================================================*/
+unsigned int RTE_fprintf(RTE_STREAM *stream_ ,unsigned char *fmt_, ...)
+{
+	va_list args;
+	unsigned int count = 0u;
+
+	if ( ( NULL != fmt_ ) && ( NULL != stream_ ) )
+	{
+		  va_start(args,fmt_);
+		  if ( RTE_stdout == stream_ )
+		  {
+			  count = SH_FPRINTF(stdOut, fmt_, args);
+		  }
+		  else if ( RTE_stderr == stream_ )
+		  {
+			  count = SH_FPRINTF(stdErr, fmt_, args);
+		  }
+		  else
+		  {
+			  SH_SENDERRSTR(RTE_ERR_MSG_ADDRESS);
+		  }
+		  va_end(args);
+	}
+	else
+	{
+		SH_SENDERRSTR(RTE_ERR_MSG_ADDRESS);
+	}
+	return count;
+}
+
+unsigned int RTE_printf(unsigned char *fmt_, ...)
+{
+	va_list args;
+	unsigned int count = 0u;
+
+	if( NULL != fmt_ )
+	{
+		va_start(args,fmt_);
+		count = SH_PRINTF(fmt_, args);
+		va_end(args);
+	}
+	else
+	{
+		SH_SENDERRSTR(RTE_ERR_MSG_ADDRESS);
+	}
+	return count;
+}
+
+
+
+StdRtn_t RTE_puts(const uint8_t *msg_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if( NULL != msg_)
+	{
+		SH_SENDSTR(msg_);
+		retVal = ERR_OK;
+	}
+	else
+	{
+		SH_SENDERRSTR(RTE_ERR_MSG_ADDRESS);
+	}
+	return retVal;
+}
+
+StdRtn_t RTE_putsErr(const uint8_t *errMsg_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if( NULL != errMsg_)
+	{
+		SH_SENDERRSTR(errMsg_);
+		retVal = ERR_OK;
+	}
+	else
+	{
+		SH_SENDERRSTR(RTE_ERR_MSG_ADDRESS);
+	}
+	return retVal;
+}
+/*================================================================================================*/
+
+#ifdef MASTER_RTE_C_
+#undef MASTER_RTE_C_
 #endif

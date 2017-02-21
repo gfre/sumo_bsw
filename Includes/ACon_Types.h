@@ -1,24 +1,24 @@
-/*******************************************************************************
- * @brief 	This provides basic macros for the CAUsumo adaption.
+/***************************************************************************************************
+ * @brief 	This provides basic macros and typedef for the ACon Sumo Project
  *
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, CAU Kiel
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, University Kiel
  * @date 	09.01.2017
  *
  * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
  *
  *
- * ==============================================================================
+ * ====================================================================================================
  */
 
-#ifndef CAU_TYPES_H
-#define CAU_TYPES_H
-#include "PE_Types.h"
-#include <stddef.h> /* for size_t */
+#ifndef ACON_TYPES_H
+#define ACON_TYPES_H
+
+#include <stdint.h>
 
 /**
 * Type Definition for Standard Return Type
 */
-typedef uint8 StdRtnType;
+typedef uint8_t StdRtn_t;
 
 /**
     Standard macro for pressed buttons
@@ -30,20 +30,10 @@ typedef uint8 StdRtnType;
 */
 #define BTN_NPRESSED (0u)
 
-/**
-    Standard macro for positive return code
-*/
-#define RTN_OK (0u)
-
-/**
-    Standard macro for negative return code
-*/
-#define RTN_INVALID (1u)
-
 
 typedef enum SigStatus_tag_
 {
-	SIG_OK=0           /**< Signal status is ok. */
+    SIG_OK=0           /**< Signal status is ok. */
    ,SIG_INVALID=1      /**< Signal status is invalid. */
    ,SIG_ERROR=2        /**< Signal value shows error. */
    ,SIG_NA=3           /**< Signal value shows not available. */
@@ -57,7 +47,7 @@ typedef enum SigStatus_tag_
 
 typedef struct UInt8WithStatus_s
 {
-    uint8 value;      /**< Signal value [0..2^8-1]. */
+    uint8_t value;      /**< Signal value [0..2^8-1]. */
     SigStatus status; /**< Signal status. */
 }UInt8WithStatus;
 
@@ -67,7 +57,7 @@ typedef struct UInt8WithStatus_s
 
 typedef struct SInt8WithStatus_s
 {
-    int8 value;       /**< Signal value [-2^7..2^7-1]. */
+    int8_t value;       /**< Signal value [-2^7..2^7-1]. */
     SigStatus status; /**< Signal status. */
 }SInt8WithStatus;
 
@@ -77,7 +67,7 @@ typedef struct SInt8WithStatus_s
 
 typedef struct UInt16WithStatus_s
 {
-    uint16 value;     /**< Signal value [0..2^16-1]. */
+    uint16_t value;     /**< Signal value [0..2^16-1]. */
     SigStatus status; /**< Signal status. */
 }UInt16WithStatus;
 
@@ -87,7 +77,7 @@ typedef struct UInt16WithStatus_s
 
 typedef struct SInt16WithStatus_s
 {
-    int16 value;      /**< Signal value [-2^15..2^15-1]. */
+    int16_t value;      /**< Signal value [-2^15..2^15-1]. */
     SigStatus status; /**< Signal status. */
 }SInt16WithStatus;
 
@@ -97,7 +87,7 @@ typedef struct SInt16WithStatus_s
 
 typedef struct UInt32WithStatus_s
 {
-    uint32 value;     /**< Signal value [0..2^32-1]. */
+    uint32_t value;     /**< Signal value [0..2^32-1]. */
     SigStatus status; /**< Signal status. */
 }UInt32WithStatus;
 
@@ -107,7 +97,7 @@ typedef struct UInt32WithStatus_s
 
 typedef struct SInt32WithStatus_s
 {
-    int32 value;      /**< Signal value [-2^31..2^31-1]. */
+    int32_t value;      /**< Signal value [-2^31..2^31-1]. */
     SigStatus status; /**< Signal status. */
 }SInt32WithStatus;
 

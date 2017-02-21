@@ -1,49 +1,48 @@
 /***************************************************************************************************
- * @brief 	>>TODO This is a brief description.
+ * @brief 	This module handles the interface to the command line shell CLS
  *
- * @author 	>>TODO, gefr@tf.uni-kiel.de, University Kiel 
- * @date 	08.02.2017
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, University Kiel
+ * @date 	09.02.2017
  *  
  * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
  *
- * >>TODO This is the detailed description of the file appl.h
+ * >>TODO This is the detailed description of the file sh_clshdlr.h
  * 
  *==================================================================================================
  */
 
 
-#ifndef APPL_H_
-#define APPL_H_
+#ifndef SH_CLSHDLR_H_
+#define SH_CLSHDLR_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
+#include "CLS1.h"
 
 
-#ifdef MASTER_appl_C_
+#ifdef MASTER_sh_clshdlr_C_
 #define EXTERNAL_
 #else
 #define EXTERNAL_ extern
 #endif
 
 /*======================================= >> #DEFINES << =========================================*/
-#define APPL_SWC_STRING ("appl")
+
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 
 
+
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 /*!
- * @brief Init function of the software component 'application'
- * Initialises the state machine which handles the application software
+ * @brief Sends a error string to the shell/console stdout
+ * @param *cmd_ pointer to command
+ * @param *handeld_ pointer to flag which returns TRUE if cmd was handeld, otherwise FALSE (CBR).
+ * @param *io_ pointer to command line shell standard IO type
+ * @return always ERR_OK
  */
-EXTERNAL_ void APPL_Init(void);
+EXTERNAL_ uint8_t SH_ParseCommand(const unsigned char *cmd_, bool *handled_, const CLS1_StdIOType *io_);
 
-
-/*!
- * @brief Main function of the software component 'state'
- * Runs the state machine of the main state
- */
-EXTERNAL_ void APPL_MainFct(void);
 
 
 #ifdef EXTERNAL_
@@ -51,4 +50,4 @@ EXTERNAL_ void APPL_MainFct(void);
 #endif
 
 
-#endif /* !APPL_H_ */
+#endif /* !SH_CLSHDLR_H_ */

@@ -11,6 +11,7 @@
  *
  * ==============================================================================
  */
+#define MASTER_NVM_CFG_C_
 
 #include "Platform.h"
 #include "nvm_cfg.h"
@@ -64,5 +65,6 @@ const NVMC_RobotData *NVMC_GetRobotData(void) {
 }
 
 
-
-
+#ifdef MASTER_NVM_CFG_C_
+#undef MASTER_NVM_CFG_C_
+#endif

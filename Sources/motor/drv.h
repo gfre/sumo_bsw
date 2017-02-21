@@ -18,6 +18,8 @@
 #include "Platform.h"
 #include "CLS1.h"
 
+#define DRV_SWC_STRING ("drive")
+
 /*!
  * @brief Parses a command
  * @param cmd Command string to be parsed
@@ -58,5 +60,8 @@ void DRV_Init(void);
  * @brief Driver de-initialization.
  */
 void DRV_DeInit(void);
+
+
+void DRV_MainFct(void);
 
 #endif /* DRIVE_H_ */

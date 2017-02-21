@@ -1,21 +1,22 @@
-/*******************************************************************************
+/***************************************************************************************************
  * @brief 	Driver for the buzzer.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
- * @author 	Henning Weisbarth, hewe@tf.uni-kiel.de, CAU Kiel
- * @date 		09.01.2017
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, University Kiel
+ * @date 	09.01.2017
  *
  * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
  *
  *
- * ==============================================================================
+  *==================================================================================================
  */
 
-#ifndef BUZZER_H_
-#define BUZZER_H_
+#ifndef BUZ_H_
+#define BUZ_H_
 
 #include "Platform.h"
 #include "CLS1.h"
+#include "rte_Types.h"
 
 /*!
  * @brief Shell parser routine.
@@ -35,24 +36,20 @@ uint8_t BUZ_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_Std
  */
 uint8_t BUZ_Beep(uint16_t freqHz, uint16_t durationMs);
 
-typedef enum {
-	BUZ_TUNE_WELCOME,
-	BUZ_TUNE_BUTTON,
-	BUZ_TUNE_BUTTON_LONG,
-	BUZ_TUNE_NOF_TUNES
-} BUZ_Tunes;
 
 /*!
  * @brief Plays a tune
  * @param tune Tune to play
  * @return ERR_OK or error code
  */
-uint8_t BUZ_PlayTune(BUZ_Tunes tune);
+uint8_t BUZ_PlayTune(BUZ_Tunes_t tune);
+
 
 /*!
  * @brief Initialization of the driver
  */
 void BUZ_Init(void);
+
 
 /*!
  * @brief De-initialization of the driver
@@ -60,4 +57,4 @@ void BUZ_Init(void);
 void BUZ_Deinit(void);
 
 
-#endif /* BUZZER_H_ */
+#endif /* BUZ_H_ */
