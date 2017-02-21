@@ -41,7 +41,7 @@ static void RNET_RadioPowerUp(void);
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 static RNWK_ShortAddrType dstAddr = RNWK_ADDR_BROADCAST; /* destination node address */
 static RNET_State_t rnetState = RNET_NONE;
-static const RAPP_RxMsg_CbFct *rteRxMsgCbFct = NULL;
+static RAPP_RxMsg_CbFct *rteRxMsgCbFct = NULL;
 
 static const RAPP_MsgHandler handlerTable[] =
 {
