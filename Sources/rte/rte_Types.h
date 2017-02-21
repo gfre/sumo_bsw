@@ -64,16 +64,16 @@ typedef enum RFMsgType_e {
  * @brief Non-customizeable data type for packet descriptor of a RF message
  */
 typedef struct RFPktDes_e {
-  uint8 flags;
-  uint8 size;
-  uint8 *data;
-  uint8 *rxtx;
+  uint8_t flags;
+  uint8_t size;
+  uint8_t *data;
+  uint8_t *rxtx;
 } RFPktDes_t;
 
 /**
  * @brief Non-customizeable data type for a pointer to callback function for receiving RF messages
  */
-typedef StdRtn_t RFRxMsgCbFct_t(RTE_RF_MSG_TYPE_T type_, uint8 size_, const uint8 *data_, uint8 srcAddr_, bool *handled_, const RFPktDes_t *pktDes_);
+typedef StdRtn_t RFRxMsgCbFct_t(RTE_RF_MSG_TYPE_T type_, uint8_t size_, const uint8_t *data_, uint8_t srcAddr_, uint8_t *handled_, const RFPktDes_t *pktDes_);
 
 /**
  * @brief Non-customizeable data type for buzzer tunes

@@ -67,7 +67,7 @@ StdRtn_t RTE_Write_LedLeNeg()
 	return ERR_OK;
 }
 
-StdRtn_t RTE_Write_LedLeSt(uint8 state)
+StdRtn_t RTE_Write_LedLeSt(uint8_t state)
 {
 	if(FALSE==state)
 	{
@@ -80,12 +80,12 @@ StdRtn_t RTE_Write_LedLeSt(uint8 state)
 	return ERR_OK;
 }
 
-StdRtn_t RTE_Read_LedLeSt(uint8 *state_)
+StdRtn_t RTE_Read_LedLeSt(uint8_t *state_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL!=state_)
 	{
-		*state_ = (uint8)LED1_Get();
+		*state_ = (uint8_t)LED1_Get();
 		retVal = ERR_OK;
 	}
 	return retVal;
@@ -114,7 +114,7 @@ StdRtn_t RTE_Write_LedRiNeg()
 	return ERR_OK;
 }
 
-StdRtn_t RTE_Write_LedRiSt(uint8 state_)
+StdRtn_t RTE_Write_LedRiSt(uint8_t state_)
 {
 	if(FALSE==state_)
 	{
@@ -127,12 +127,12 @@ StdRtn_t RTE_Write_LedRiSt(uint8 state_)
 	return ERR_OK;
 }
 
-StdRtn_t RTE_Read_LedRiSt(uint8 *state_)
+StdRtn_t RTE_Read_LedRiSt(uint8_t *state_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL!=state_)
 	{
-		*state_ = (uint8)LED2_Get();
+		*state_ = (uint8_t)LED2_Get();
 		retVal = ERR_OK;
 	}
 	return retVal;
@@ -152,12 +152,12 @@ typedef struct CbFctTab_s{
 
 static CbFctTab_t cbFctTab={NULL};
 
-StdRtn_t RTE_Read_BtnSt(uint8 *state_)
+StdRtn_t RTE_Read_BtnSt(uint8_t *state_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL!=state_)
 	{
-		*state_ = (uint8)KEY1_GetKeys() & USER_SWITCH_MASK;
+		*state_ = (uint8_t)KEY1_GetKeys() & USER_SWITCH_MASK;
 		retVal = ERR_OK;
 	}
 	return retVal;
@@ -344,7 +344,7 @@ StdRtn_t RTE_Read_DrvMode(RTE_DrvMode_t *mode_)
 	return retVal;
 }
 
-StdRtn_t RTE_Read_DrvIsDrvgBkwd(uint8 *isDrvgBkwd_)
+StdRtn_t RTE_Read_DrvIsDrvgBkwd(uint8_t *isDrvgBkwd_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != isDrvgBkwd_)
@@ -355,7 +355,7 @@ StdRtn_t RTE_Read_DrvIsDrvgBkwd(uint8 *isDrvgBkwd_)
 	return retVal;
 }
 
-StdRtn_t RTE_Read_DrvHasStpd(uint8 *hasStpd_)
+StdRtn_t RTE_Read_DrvHasStpd(uint8_t *hasStpd_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != hasStpd_)
@@ -366,7 +366,7 @@ StdRtn_t RTE_Read_DrvHasStpd(uint8 *hasStpd_)
 	return retVal;
 }
 
-StdRtn_t RTE_Read_DrvHasRvsd(uint8 *hasRvsd_)
+StdRtn_t RTE_Read_DrvHasRvsd(uint8_t *hasRvsd_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != hasRvsd_)
@@ -382,12 +382,12 @@ StdRtn_t RTE_Read_DrvHasRvsd(uint8 *hasRvsd_)
 /**
  * Interface implementation for the radio application layer
  */
-StdRtn_t RTE_Write_RFSendDataBlk(const uint8 *payload_, uint8 payloadSize_, RTE_RF_MSG_TYPE_T msgType_,  uint8 dstAddr_, uint8 flags_)
+StdRtn_t RTE_Write_RFSendDataBlk(const uint8_t *payload_, uint8_t payloadSize_, RTE_RF_MSG_TYPE_T msgType_,  uint8_t dstAddr_, uint8_t flags_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != payload_)
 	{
-		retVal = (StdRtn_t)RAPP_SendPayloadDataBlock((uint8_t *)payload_, (uint8_t)payloadSize_, (uint8_t)msgType_,  (RAPP_ShortAddrType)dstAddr_,  (RAPP_FlagsType)flags_);
+		retVal = (StdRtn_t)RAPP_SendPayloadDataBlock((uint8_t *)payload_, payloadSize_, msgType_,  (RAPP_ShortAddrType)dstAddr_,  (RAPP_FlagsType)flags_);
 	}
 	return retVal;
 }
@@ -409,7 +409,7 @@ RFRxMsgCbFct_t *RTE_Get_RFRxMsgCbFct(void)
 
 
 
-StdRtn_t RTE_Read_RFSniffPkt(RFPktDes_t *pkt_, uint8 isTx_)
+StdRtn_t RTE_Read_RFSniffPkt(RFPktDes_t *pkt_, uint8_t isTx_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	RAPP_PacketDesc pkt={0u};
@@ -417,43 +417,43 @@ StdRtn_t RTE_Read_RFSniffPkt(RFPktDes_t *pkt_, uint8 isTx_)
 	{
 		isTx_ &= TRUE;
 		pkt.flags  = (RPHY_FlagsType)pkt_->flags;
-		pkt.phySize = (uint8_t)pkt_->size;
-		pkt.phyData = (uint8_t *)pkt_->data;
-		pkt.rxtx    = (uint8_t *)pkt_->rxtx;
+		pkt.phySize = pkt_->size;
+		pkt.phyData = pkt_->data;
+		pkt.rxtx    = pkt_->rxtx;
 		RAPP_SniffPacket(&pkt, (bool)isTx_);
 		retVal = ERR_OK;
 	}
 	return retVal;
 }
 
-StdRtn_t RTE_Read_RFSrcAddr(uint8 *addr_)
+StdRtn_t RTE_Read_RFSrcAddr(uint8_t *addr_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != addr_)
 	{
-		*addr_ = (uint8)RAPP_GetThisNodeAddr();
+		*addr_ = (uint8_t)RAPP_GetThisNodeAddr();
 		retVal = ERR_OK;
 	}
 	return retVal;
 }
 
-StdRtn_t RTE_Write_RFSrcAddr(uint8 addr_)
+StdRtn_t RTE_Write_RFSrcAddr(uint8_t addr_)
 {
 	return (StdRtn_t)RAPP_SetThisNodeAddr((RAPP_ShortAddrType)addr_);
 }
 
-StdRtn_t RTE_Read_RFDstAddr(uint8 *addr_)
+StdRtn_t RTE_Read_RFDstAddr(uint8_t *addr_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != addr_)
 	{
-		*addr_ = (uint8)RNET_GetDstAddr();
+		*addr_ = (uint8_t)RNET_GetDstAddr();
 		retVal = ERR_OK;
 	}
 	return retVal;
 }
 
-StdRtn_t RTE_Write_RFDstAddr(uint8 addr_)
+StdRtn_t RTE_Write_RFDstAddr(uint8_t addr_)
 {
 	RNET_SetDstAddr((RAPP_ShortAddrType)addr_);
 	return ERR_OK;
@@ -508,7 +508,7 @@ unsigned int RTE_printf(unsigned char *fmt_, ...)
 
 
 
-StdRtn_t RTE_puts(const uint8 *msg_)
+StdRtn_t RTE_puts(const uint8_t *msg_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if( NULL != msg_)
@@ -523,7 +523,7 @@ StdRtn_t RTE_puts(const uint8 *msg_)
 	return retVal;
 }
 
-StdRtn_t RTE_putsErr(const uint8 *errMsg_)
+StdRtn_t RTE_putsErr(const uint8_t *errMsg_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if( NULL != errMsg_)

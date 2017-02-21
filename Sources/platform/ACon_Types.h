@@ -13,11 +13,12 @@
 #ifndef ACON_TYPES_H
 #define ACON_TYPES_H
 
+#include <stdint.h>
 
 /**
 * Type Definition for Standard Return Type
 */
-typedef uint8 StdRtn_t;
+typedef uint8_t StdRtn_t;
 
 /**
     Standard macro for pressed buttons
@@ -46,7 +47,7 @@ typedef enum SigStatus_tag_
 
 typedef struct UInt8WithStatus_s
 {
-    uint8 value;      /**< Signal value [0..2^8-1]. */
+    uint8_t value;      /**< Signal value [0..2^8-1]. */
     SigStatus status; /**< Signal status. */
 }UInt8WithStatus;
 
@@ -56,7 +57,7 @@ typedef struct UInt8WithStatus_s
 
 typedef struct SInt8WithStatus_s
 {
-    int8 value;       /**< Signal value [-2^7..2^7-1]. */
+    int8_t value;       /**< Signal value [-2^7..2^7-1]. */
     SigStatus status; /**< Signal status. */
 }SInt8WithStatus;
 
@@ -66,7 +67,7 @@ typedef struct SInt8WithStatus_s
 
 typedef struct UInt16WithStatus_s
 {
-    uint16 value;     /**< Signal value [0..2^16-1]. */
+    uint16_t value;     /**< Signal value [0..2^16-1]. */
     SigStatus status; /**< Signal status. */
 }UInt16WithStatus;
 
@@ -76,7 +77,7 @@ typedef struct UInt16WithStatus_s
 
 typedef struct SInt16WithStatus_s
 {
-    int16 value;      /**< Signal value [-2^15..2^15-1]. */
+    int16_t value;      /**< Signal value [-2^15..2^15-1]. */
     SigStatus status; /**< Signal status. */
 }SInt16WithStatus;
 
@@ -86,7 +87,7 @@ typedef struct SInt16WithStatus_s
 
 typedef struct UInt32WithStatus_s
 {
-    uint32 value;     /**< Signal value [0..2^32-1]. */
+    uint32_t value;     /**< Signal value [0..2^32-1]. */
     SigStatus status; /**< Signal status. */
 }UInt32WithStatus;
 
@@ -96,7 +97,7 @@ typedef struct UInt32WithStatus_s
 
 typedef struct SInt32WithStatus_s
 {
-    int32 value;      /**< Signal value [-2^31..2^31-1]. */
+    int32_t value;      /**< Signal value [-2^31..2^31-1]. */
     SigStatus status; /**< Signal status. */
 }SInt32WithStatus;
 

@@ -13,9 +13,7 @@
 #ifndef RTE_H
 #define RTE_H
 
-#include "Platform.h"
 #include "rte_Types.h"
-
 
 
 #ifdef MASTER_RTE_C_
@@ -34,7 +32,7 @@ typedef enum RTE_DrvMode_e {
 } RTE_DrvMode_t;
 
 
-typedef void EvntCbFct_t(uint8);
+typedef void EvntCbFct_t(uint8_t);
 
 
 
@@ -65,7 +63,7 @@ EXTERNAL_ StdRtn_t RTE_Write_LedLeNeg();
  * @param state_ desired state of the LED
  * @return Error code, always ERR_OK
  */
-EXTERNAL_ StdRtn_t RTE_Write_LedLeSt(uint8 state_);
+EXTERNAL_ StdRtn_t RTE_Write_LedLeSt(uint8_t state_);
 
 /**
  * @brief RTE interface to read the state of the right LED
@@ -73,7 +71,7 @@ EXTERNAL_ StdRtn_t RTE_Write_LedLeSt(uint8 state_);
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-EXTERNAL_ StdRtn_t RTE_Read_LedLeSt(uint8 *state_);
+EXTERNAL_ StdRtn_t RTE_Read_LedLeSt(uint8_t *state_);
 
 /**
  * @brief RTE interface to turn the right LED ON
@@ -98,7 +96,7 @@ EXTERNAL_ StdRtn_t RTE_Write_LedRiNeg();
  * @param state_ desired state of the LED
  * @return Error code, always ERR_OK
  */
-EXTERNAL_ StdRtn_t RTE_Write_LedRiSt(uint8 state_);
+EXTERNAL_ StdRtn_t RTE_Write_LedRiSt(uint8_t state_);
 
 /**
  * @brief RTE interface to read the state of the right LED
@@ -106,7 +104,7 @@ EXTERNAL_ StdRtn_t RTE_Write_LedRiSt(uint8 state_);
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-EXTERNAL_ StdRtn_t RTE_Read_LedRiSt(uint8 *state_);
+EXTERNAL_ StdRtn_t RTE_Read_LedRiSt(uint8_t *state_);
 
 
 /*================================================================================================*/
@@ -118,7 +116,7 @@ EXTERNAL_ StdRtn_t RTE_Read_LedRiSt(uint8 *state_);
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-EXTERNAL_ StdRtn_t RTE_Read_BtnSt(uint8 *state_);
+EXTERNAL_ StdRtn_t RTE_Read_BtnSt(uint8_t *state_);
 
 /**
  * @brief RTE interface to set the pointer to a callback function
@@ -203,7 +201,7 @@ EXTERNAL_ StdRtn_t RTE_Write_BuzPlayTune(BUZ_Tunes_t tune_);
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_BUSY otherwise
  */
-EXTERNAL_ StdRtn_t RTE_Write_BuzBeep(uint16 freqHz_, uint16 durMs_);
+EXTERNAL_ StdRtn_t RTE_Write_BuzBeep(uint16_t freqHz_, uint16_t durMs_);
 
 
 /*================================================================================================*/
@@ -215,7 +213,7 @@ EXTERNAL_ StdRtn_t RTE_Write_BuzBeep(uint16 freqHz_, uint16 durMs_);
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-EXTERNAL_ StdRtn_t RTE_Read_SpdoVelLe(uint16 *vel_);
+EXTERNAL_ StdRtn_t RTE_Read_SpdoVelLe(uint16_t *vel_);
 
 
 /**
@@ -224,7 +222,7 @@ EXTERNAL_ StdRtn_t RTE_Read_SpdoVelLe(uint16 *vel_);
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-EXTERNAL_ StdRtn_t RTE_Read_SpdoVelRi(uint16 *vel_);
+EXTERNAL_ StdRtn_t RTE_Read_SpdoVelRi(uint16_t *vel_);
 
 
 /*================================================================================================*/
@@ -237,7 +235,7 @@ EXTERNAL_ StdRtn_t RTE_Read_SpdoVelRi(uint16 *vel_);
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_FAILED otherwise
  */
-EXTERNAL_ StdRtn_t RTE_Write_DrvVel(int32 velLe_, int32 velRi_);
+EXTERNAL_ StdRtn_t RTE_Write_DrvVel(int32_t velLe_, int32_t velRi_);
 
 /**
  * @brief RTE interface to write the target postion in position mode
@@ -246,7 +244,7 @@ EXTERNAL_ StdRtn_t RTE_Write_DrvVel(int32 velLe_, int32 velRi_);
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_FAILED otherwise
  */
-EXTERNAL_ StdRtn_t RTE_Write_DrvPos(int32 posLe_, int32 posRi_);
+EXTERNAL_ StdRtn_t RTE_Write_DrvPos(int32_t posLe_, int32_t posRi_);
 
 /**
  * @brief RTE interface to command the desired driving control mode
@@ -273,7 +271,7 @@ EXTERNAL_ StdRtn_t RTE_Read_DrvMode(RTE_DrvMode_t *mode_);
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-EXTERNAL_ StdRtn_t RTE_Read_DrvIsDrvgBkwd(uint8 *isDrvgBkwd_);
+EXTERNAL_ StdRtn_t RTE_Read_DrvIsDrvgBkwd(uint8_t *isDrvgBkwd_);
 
 /**
  * @brief RTE interface to read if the sumo has stopped
@@ -283,7 +281,7 @@ EXTERNAL_ StdRtn_t RTE_Read_DrvIsDrvgBkwd(uint8 *isDrvgBkwd_);
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-EXTERNAL_ StdRtn_t RTE_Read_DrvHasStpd(uint8 *hasStpd_);
+EXTERNAL_ StdRtn_t RTE_Read_DrvHasStpd(uint8_t *hasStpd_);
 
 /**
  * @brief RTE interface to read if the sumo has just reversed
@@ -293,7 +291,7 @@ EXTERNAL_ StdRtn_t RTE_Read_DrvHasStpd(uint8 *hasStpd_);
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-EXTERNAL_ StdRtn_t RTE_Read_DrvHasRvsd(uint8 *hasRvsd_);
+EXTERNAL_ StdRtn_t RTE_Read_DrvHasRvsd(uint8_t *hasRvsd_);
 
 
 /*================================================================================================*/
@@ -315,7 +313,7 @@ EXTERNAL_ StdRtn_t RTE_Read_DrvHasRvsd(uint8 *hasRvsd_);
  *                     ERR_OVERFLOW for too big payload size
  *                     ERR_BUSY for queue overflow
  */
-EXTERNAL_ StdRtn_t RTE_Write_RFSendDataBlk(const uint8 *payLoad_, uint8 payLoadSize_, RTE_RF_MSG_TYPE_T msgType_,  uint8 dstAddr_, uint8 flags_);
+EXTERNAL_ StdRtn_t RTE_Write_RFSendDataBlk(const uint8_t *payLoad_, uint8_t payLoadSize_, RTE_RF_MSG_TYPE_T msgType_,  uint8_t dstAddr_, uint8_t flags_);
 
 /**
  * @brief RTE interface to set the pointer to the function which is called when a RF message is received
@@ -338,7 +336,7 @@ EXTERNAL_ RFRxMsgCbFct_t *RTE_Get_RFRxMsgCbFct(void);
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-EXTERNAL_ StdRtn_t RTE_Read_RFSniffPkt(RFPktDes_t *pkt_, uint8 isTx_);
+EXTERNAL_ StdRtn_t RTE_Read_RFSniffPkt(RFPktDes_t *pkt_, uint8_t isTx_);
 
 /**
  * @brief RTE interface to read the current network address of the source RF-node
@@ -346,14 +344,14 @@ EXTERNAL_ StdRtn_t RTE_Read_RFSniffPkt(RFPktDes_t *pkt_, uint8 isTx_);
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-EXTERNAL_ StdRtn_t RTE_Read_RFSrcAddr(uint8 *addr_);
+EXTERNAL_ StdRtn_t RTE_Read_RFSrcAddr(uint8_t *addr_);
 
 /**
  * @brief RTE interface to write the network address of the source RF-node
  * @param addr_ the 1-byte network address
  * @return Error code, always ERR_OK
  */
-EXTERNAL_ StdRtn_t RTE_Write_RFSrcAddr(uint8 addr_);
+EXTERNAL_ StdRtn_t RTE_Write_RFSrcAddr(uint8_t addr_);
 
 /**
  * @brief RTE interface to read the current network address of the destination RF-node where the message should be sent
@@ -361,14 +359,14 @@ EXTERNAL_ StdRtn_t RTE_Write_RFSrcAddr(uint8 addr_);
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-EXTERNAL_ StdRtn_t RTE_Read_RFDstAddr(uint8 *addr_);
+EXTERNAL_ StdRtn_t RTE_Read_RFDstAddr(uint8_t *addr_);
 
 /**
  * @brief RTE interface to write the network address of the destination RF-node where the message should be sent
  * @param addr_ the 1-byte network address
  * @return Error code, always ERR_OK
  */
-EXTERNAL_ StdRtn_t RTE_Write_RFDstAddr(const uint8 addr_);
+EXTERNAL_ StdRtn_t RTE_Write_RFDstAddr(const uint8_t addr_);
 
 
 /*================================================================================================*/
@@ -398,7 +396,7 @@ EXTERNAL_ unsigned int RTE_fprintf(RTE_STREAM *stream_ , unsigned char *fmt_, ..
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-EXTERNAL_ StdRtn_t RTE_puts(const uint8 *msg_);
+EXTERNAL_ StdRtn_t RTE_puts(const uint8_t *msg_);
 
 /**
  * @brief RTE interface for puts-similar function, writes a byte string to stderr
@@ -406,7 +404,7 @@ EXTERNAL_ StdRtn_t RTE_puts(const uint8 *msg_);
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-EXTERNAL_ StdRtn_t RTE_putsErr(const uint8 *msg_);
+EXTERNAL_ StdRtn_t RTE_putsErr(const uint8_t *msg_);
 
 
 #ifdef EXTERNAL_
