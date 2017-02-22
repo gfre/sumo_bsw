@@ -14,8 +14,9 @@
 #ifndef ID_H
 #define ID_H
 
-#include "Platform.h"
-#include "KIN1.h"
+/*======================================= >> #INCLUDES << ========================================*/
+
+
 
 #ifdef MASTER_ID_C_
 #define EXTERNAL_
@@ -23,27 +24,23 @@
 #define EXTERNAL_ extern
 #endif
 
-#define MAX_NUMBER_OF_SUMOS    (25)
-#define MAX_ID_OF_SUMOS        (MAX_NUMBER_OF_SUMOS-(1))
-
-typedef struct ID_Cfg_s
-{
-	const KIN1_UID *ids;
-	uint8_t idNum;
-}ID_Cfg_t;
-
-typedef enum { /* do *not* change order of enumeration, they are used internally for a table index */
-	ID_SUMO_MAX_ID=MAX_ID_OF_SUMOS, 	        /* max custom ID of sumo */
-	ID_SUMO_UNKNOWN,         					/* unknown robot, unknown custom ID */
-	ID_SUMO_NONE             					/* initialization value, used internally */
-} ID_Sumos;
+/*======================================= >> #DEFINES << =========================================*/
 
 
 
-ID_Sumos ID_WhichSumo(void);
+/*=================================== >> TYPE DEFINITIONS << =====================================*/
 
+
+
+/*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
+/**
+ * @brief This function de-initialises the ID software component
+ */
 void ID_Deinit(void);
 
+/**
+ * @brief This function initialises the ID software component
+ */
 void ID_Init(void);
 
 

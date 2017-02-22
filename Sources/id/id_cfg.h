@@ -14,8 +14,9 @@
 #ifndef ID_CFG_H
 #define ID_CFG_H
 
-#include "Platform.h"
-#include "id.h"
+/*======================================= >> #INCLUDES << ========================================*/
+#include "KIN1.h"
+
 
 #ifdef MASTER_ID_CFG_C_
 #define EXTERNAL_
@@ -23,9 +24,24 @@
 #define EXTERNAL_ extern
 #endif
 
+/*======================================= >> #DEFINES << =========================================*/
 
 
-EXTERNAL_ const ID_Cfg_t *Get_ID_Cfg(void);
+
+/*=================================== >> TYPE DEFINITIONS << =====================================*/
+typedef struct ID_Cfg_s
+{
+	const KIN1_UID *uids;	/**< UID table of the MCUs */
+	uint8_t uidNum;			/**< Number of UIDs in the table */
+}ID_Cfg_t;
+
+
+/*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
+/**
+ * @brief This function returns configuration table of the MCU UIDs
+ * @return configuration table of the UIDs
+ */
+EXTERNAL_ const ID_Cfg_t *Get_IDCfg(void);
 
 
 

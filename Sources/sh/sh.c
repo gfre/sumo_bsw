@@ -21,7 +21,7 @@
 #include "sh.h"
 #include "sh_cfg.h"
 #include "sh_Types.h"
-#include "id.h"
+#include "id_Types.h"
 #include "RTT1.h"
 
 
@@ -63,7 +63,7 @@ static void PrintWelcomeMsg(const CLS1_StdIOType *io_)
 {
   uint8 sumoId;
   const char_t verStr[] = {SW_VERSION_CHAR_ARRAY};
-  sumoId = ID_WhichSumo();
+  sumoId = Get_SumoID();
   CLS1_SendStr((const uint8 *)SH_STAR_LINE, io_->stdOut);
   CLS1_SendStr((const uint8 *)SH_WELCOME_LINE1, io_->stdOut);
   CLS1_SendStr((const uint8 *)SH_WELCOME_LINE2, io_->stdOut);
@@ -84,7 +84,7 @@ static void PrintWelcomeMsg(const CLS1_StdIOType *io_)
 static void PrintGoodByeMsg(const CLS1_StdIOType *io_)
 {
   uint8 sumoId;
-  sumoId = ID_WhichSumo();
+  sumoId = Get_SumoID();
   CLS1_SendStr((const uint8 *)"\r\n\r\n", io_->stdOut);
   CLS1_SendStr((const uint8 *)SH_DASH_LINE, io_->stdOut);
   CLS1_SendStr((const uint8 *)"\r\n\r\n", io_->stdOut);

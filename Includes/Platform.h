@@ -30,4 +30,11 @@
 
 #define SW_VERSION_CHAR_ARRAY   SW_API_VERSION, '.', SW_MAJOR_VERSION, '.', SW_MINOR_VERSION,'-'
 
+
+
+
+#define MAX_NUMBER_OF_SUMOS    (25)
+#define MAX_ID_OF_SUMOS        (MAX_NUMBER_OF_SUMOS-(1))
+
+
 #endif /* PLATFORM_H_ */
