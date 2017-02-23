@@ -32,9 +32,4 @@
 
 
 
-
-#define MAX_NUMBER_OF_SUMOS    (25)
-#define MAX_ID_OF_SUMOS        (MAX_NUMBER_OF_SUMOS-(1))
-
-
 #endif /* PLATFORM_H_ */
