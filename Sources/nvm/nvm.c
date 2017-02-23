@@ -2,7 +2,7 @@
 #include "nvm_cfg.h"
 #include "nvm.h"
 
-#define NVM_VERSION  0x03
+#define NVMC_VERSION  0x03
 
 static const NVMC_RobotData *RoboDataPtr;
 
