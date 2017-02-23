@@ -18,6 +18,7 @@
 #include "appl_clshdlr.h"
 #include "sh_clshdlr.h"
 #include "rnet_clshdlr.h"
+#include "nvm_clshdlr.h"
 
 #include "sh_cfg.h"
 #include "RTT1.h"
@@ -35,8 +36,6 @@
 #include "Pid.h"
 #include "drv.h"
 #include "id.h"
-#include "nvm.h"
-
 #include "FRTOS1.h"
 
 
