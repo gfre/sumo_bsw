@@ -17,7 +17,7 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "ACon_Types.h"
-#include "Platform.h"
+
 
 #ifdef MASTER_rte_Types_C_
 #define EXTERNAL_
