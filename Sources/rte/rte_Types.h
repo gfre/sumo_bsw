@@ -17,7 +17,7 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "ACon_Types.h"
-
+#include "Platform.h"
 
 #ifdef MASTER_rte_Types_C_
 #define EXTERNAL_
@@ -38,6 +38,9 @@
 #define RTE_RF_MSG_TYPE_T      RFMsgType_t
 #endif
 
+#ifndef MAX_ID_OF_SUMOS
+#define MAX_ID_OF_SUMOS       (24)
+#endif
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 /**
@@ -86,6 +89,17 @@ typedef enum BUZ_Tunes_e {
  ,BUZ_TUNE_BUTTON_LONG//!< BUZ_TUNE_BUTTON_LONG
  ,BUZ_TUNE_NOF_TUNES  //!< BUZ_TUNE_NOF_TUNES
 } BUZ_Tunes_t;
+
+/**
+ * @brief Non-customizeable data type for sumo IDs
+ */
+typedef enum ID_Sumo_e { /* do *not* change order of enumeration, they are used internally for a table index */
+	 ID_SUMO_MIN  = 0						/**< min custom ID of sumo */
+	,ID_SUMO_MAX  = MAX_ID_OF_SUMOS         /**< max custom ID of sumo */
+	,ID_SUMO_UNKNOWN       					/**< unknown robot, unknown custom ID */
+	,ID_SUMO_NONE          					/**< initialization value, used internally */
+} ID_Sumo_t;
+
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 /**

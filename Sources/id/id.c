@@ -12,49 +12,50 @@
  */
 
 #define MASTER_ID_C_
-#include "Platform.h"
-#include "KIN1.h"
 #include "id.h"
+#include "id_Types.h"
 #include "id_cfg.h"
 
-static ID_Sumos currSumo = ID_SUMO_NONE;
-static const ID_Cfg_t *idSumoCfg = NULL;
+static ID_Sumo_t currID = ID_SUMO_NONE;
+static const ID_Cfg_t *idCfg = NULL;
 
-static ID_Sumos IdentifySumo(void) {
-	uint8_t res;
-	KIN1_UID id;
-	ID_Sumos i, sumo;
-//	const KIN1_UID *ids = idSumoCfg->ids;
+static ID_Sumo_t IdentifySumo(void) {
+	uint8_t res = 0u;
+	KIN1_UID uid = {0u};
+	uint8_t index = 0u;
+	ID_Sumo_t id = 0;
 
-	sumo = ID_SUMO_UNKNOWN;
-	res = KIN1_UIDGet(&id);
+	id = ID_SUMO_UNKNOWN;
+	res = KIN1_UIDGet(&uid);
 	if (res==ERR_OK) {
-		for(i=(ID_Sumos)0; i<idSumoCfg->idNum && ID_SUMO_UNKNOWN==sumo; i++) {
-			if (KIN1_UIDSame(&id, &(idSumoCfg->ids[i]))) {
-				sumo = i; /* found it */
+		for(index = 0u; index < idCfg->uidNum && ID_SUMO_UNKNOWN == id; index++) {
+			if (KIN1_UIDSame(&uid, &(idCfg->uids[index]))) {
+				id = (ID_Sumo_t)index; /* found it */
 			}
 		}
 	}
-	return sumo;
+	return id;
 }
 
-ID_Sumos ID_WhichSumo(void) {
-	if (currSumo == ID_SUMO_NONE)
-		currSumo = IdentifySumo();
-	if (currSumo < ID_SUMO_UNKNOWN)
-		return currSumo;
-	else
-		return ERR_PARAM_ADDRESS;
+ID_Sumo_t Get_SumoID(void) {
+	if (ID_SUMO_NONE == currID)
+	{
+		currID = IdentifySumo();
+	}
+	if ((ID_SUMO_MAX < currID) || (ID_SUMO_MIN > currID))
+	{
+		currID = ID_SUMO_UNKNOWN;
+	}
+	return currID;
 }
 
 void ID_Deinit(void) {
-	currSumo = ID_SUMO_NONE;
+	currID = ID_SUMO_NONE;
 }
 
 void ID_Init(void) {
-	currSumo = ID_SUMO_NONE;
-	idSumoCfg = Get_ID_Cfg();
-	//currSumo = IdentifySumo();
+	currID = ID_SUMO_NONE;
+	idCfg = Get_IDCfg();
 }
 
 #ifdef MASTER_ID_C_
