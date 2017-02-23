@@ -38,9 +38,10 @@
 #define RTE_RF_MSG_TYPE_T      RFMsgType_t
 #endif
 
-#ifndef MAX_ID_OF_SUMOS
-#define MAX_ID_OF_SUMOS       (24)
+#ifndef NUM_OF_SUMOS
+#define NUM_OF_SUMOS    (25)
 #endif
+#define MAX_ID_OF_SUMOS        (NUM_OF_SUMOS-(1))
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 /**
