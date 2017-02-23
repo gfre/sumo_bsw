@@ -15,7 +15,7 @@
 #define ID_TYPES_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "Platform.h"
+#include "rte_Types.h"
 
 
 #ifdef MASTER_id_C_
@@ -29,12 +29,7 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-typedef enum ID_Sumo_e { /* do *not* change order of enumeration, they are used internally for a table index */
-	 ID_SUMO_MIN  = 0x00					/**< min custom ID of sumo */
-	,ID_SUMO_MAX  = MAX_ID_OF_SUMOS         /**< max custom ID of sumo */
-	,ID_SUMO_UNKNOWN       					/**< unknown robot, unknown custom ID */
-	,ID_SUMO_NONE          					/**< initialization value, used internally */
-} ID_Sumo_t;
+
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/

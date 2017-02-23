@@ -407,6 +407,15 @@ EXTERNAL_ StdRtn_t RTE_puts(const uint8_t *msg_);
 EXTERNAL_ StdRtn_t RTE_putsErr(const uint8_t *msg_);
 
 
+
+/*================================================================================================*/
+/**
+ * @brief RTE interface function which determines the custom ID of the sumo robot
+ * @return custom ID of robot (index-like ID)
+ */
+EXTERNAL_ ID_Sumo_t RTE_GetSumoID(void);
+
+
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif

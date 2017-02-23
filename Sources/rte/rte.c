@@ -23,7 +23,7 @@
 #include "rnet_Types.h"
 #include "sh.h"
 #include "sh_Types.h"
-
+#include "id_Types.h"
 
 
 /*======================================= >> #DEFINES << =========================================*/
@@ -537,7 +537,16 @@ StdRtn_t RTE_putsErr(const uint8_t *errMsg_)
 	}
 	return retVal;
 }
+
+
+
 /*================================================================================================*/
+ID_Sumo_t RTE_GetSumoID(void)
+{
+	return Get_SumoID();
+}
+
+
 
 #ifdef MASTER_RTE_C_
 #undef MASTER_RTE_C_
