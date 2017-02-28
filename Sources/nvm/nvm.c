@@ -1,31 +1,38 @@
 #define MASTER_NVM_C_
+
+/*======================================= >> #INCLUDES << ========================================*/
 #include "nvm_cfg.h"
 #include "nvm.h"
+#include "nvm_Types.h"
+#include "Platform.h"
 
-#define NVMC_VERSION  0x03
+/*======================================= >> #DEFINES << =========================================*/
 
-static const NVMC_RobotData *RoboDataPtr;
 
+
+
+/*=================================== >> TYPE DEFINITIONS << =====================================*/
+
+
+
+/*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 static void InitNVMCValues(void);
 
 
+
+/*=================================== >> GLOBAL VARIABLES << =====================================*/
+
+
+
+
+/*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 static void InitNVMCValues(void) {
-	const NVMC_RobotData *ptr;
-	NVMC_RobotData data;
-	uint8_t res;
 
-
-	ptr = NVMC_GetRobotData();
-	if (ptr==NULL || ptr->version != NVMC_VERSION) {
-		data.version = NVMC_VERSION;
-		res = NVMC_SaveRobotData(&data);
-		if (res!=ERR_OK) {
-			for(;;); /* error */
-		}
-	}
 }
 
 
+
+/*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
  void NVM_Init(void){
 	 InitNVMCValues();
  }

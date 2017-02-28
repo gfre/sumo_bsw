@@ -16,20 +16,28 @@
 
 #include "Cpu.h" /* for PEcfg_FreeMASTER */
 #include <stddef.h> /* for size_t */
+#include "ACon_Types.h"
 
+#ifndef uchar_t
+typedef unsigned char uchar_t;
+#endif
 
 #define KEY_PRESSED_NOTIFICATION_VALUE        (0x01u)
 #define KEY_RELEASED_NOTIFICATION_VALUE       (0x02u)
 #define KEY_PRESSED_LONG_NOTIFICATION_VALUE   (0x04u)
 #define KEY_RELEASED_LONG_NOTIFICATION_VALUE  (0x08u)
 
-#define SW_API_VERSION      '1'
-#define SW_MAJOR_VERSION    '1'
-#define SW_MINOR_VERSION    '2'
-#define SW_YEAR             "2017"
+#define BSW_API_VERSION      '1'
+#define BSW_MAJOR_VERSION    '1'
+#define BSW_MINOR_VERSION    '2'
+#define BSW_YEAR             '2', '0', '1', '7'
 
-#define SW_VERSION_CHAR_ARRAY   SW_API_VERSION, '.', SW_MAJOR_VERSION, '.', SW_MINOR_VERSION,'-'
+#define BSW_VERSION_CHAR_ARRAY   BSW_API_VERSION, '.', BSW_MAJOR_VERSION, '.', BSW_MINOR_VERSION, '-', BSW_YEAR
 
+#define BSW_VERSION_FORMAT_BYTE_COUNT		    (sizeof("1.2.3-2045"))
 
 
 #endif /* PLATFORM_H_ */
+
+
+

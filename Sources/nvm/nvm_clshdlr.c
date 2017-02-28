@@ -15,7 +15,7 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "nvm_clshdlr.h"
-
+#include "nvm_Types.h"
 
 
 /*======================================= >> #DEFINES << =========================================*/
@@ -29,7 +29,7 @@
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 static uint8_t NVM_PrintHelp(const CLS1_StdIOType *io);
 static uint8_t NVM_PrintStatus(const CLS1_StdIOType *io);
-
+static uint8_t NVM_PrintVersion(const CLS1_StdIOType *io);
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
@@ -38,8 +38,9 @@ static uint8_t NVM_PrintStatus(const CLS1_StdIOType *io);
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 static uint8_t NVM_PrintHelp(const CLS1_StdIOType *io) {
-	CLS1_SendHelpStr((unsigned char*)"nvm", (unsigned char*)"Group of nvm commands\r\n", io->stdOut);
-	CLS1_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Shows nvm help or status\r\n", io->stdOut);
+	CLS1_SendHelpStr((unsigned char*)"nvm", (unsigned char*)"Group of NVM commands\r\n", io->stdOut);
+	CLS1_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Shows NVM help or status\r\n", io->stdOut);
+	CLS1_SendHelpStr((unsigned char*)"  version", (unsigned char*)"Shows NVM version\r\n", io->stdOut);
 	return ERR_OK;
 }
 
@@ -50,6 +51,15 @@ static uint8_t NVM_PrintStatus(const CLS1_StdIOType *io) {
 }
 
 
+static uint8_t NVM_PrintVersion(const CLS1_StdIOType *io)
+{
+	uint8_t ver = 0xFFu;
+	ver = NVM_Get_NvmVer();
+	CLS1_SendStatusStr((unsigned char*)"  version", "", io->stdOut);
+	CLS1_SendNum8u(ver,io->stdOut);
+	CLS1_SendStr("\r\n", io->stdOut);
+	return ERR_OK;
+}
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 uint8_t NVM_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io) {
@@ -60,6 +70,9 @@ uint8_t NVM_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_Std
  	} else if (UTIL1_strcmp((char*)cmd, (char*)CLS1_CMD_STATUS)==0 || UTIL1_strcmp((char*)cmd, (char*)"nvm status")==0) {
  		*handled = TRUE;
  		return NVM_PrintStatus(io);
+ 	} else if (UTIL1_strcmp((char*)cmd, (char*)"nvm version")==0) {
+ 		*handled = TRUE;
+ 		return NVM_PrintVersion(io);
  	}
  	return res;
  }

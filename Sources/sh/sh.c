@@ -32,7 +32,7 @@
 #define SH_WELCOME_LINE1     (    "        >> Welcome to the ACon Sumo Robots Project <<         \r\n")
 #define SH_WELCOME_LINE2     (    "         -------------------------------------------          \r\n")
 #define SH_SUMO_INTRO_LINE1  ("\r\n  Hello, my name is SULLEN SUMO and my ID is #%d. I am highly\r\n")
-#define SH_SUMO_INTRO_LINE2  (    "  trained with basic software version %s%s.\r\n")
+#define SH_SUMO_INTRO_LINE2  (    "  trained with basic software version %s.\r\n")
 #define SH_SHELL_INTRO_LINE1 ("\r\n  This is a command line shell for debugging the SUMO basic \r\n")
 #define SH_SHELL_INTRO_LINE2 (    "  software and firmware. Type \"help\" for usage documentation.\r\n")
 #define SH_COPYRIGHT_LINE1   ("\r\n  (c)2017 Gerhard Freudenthaler, gefr@tf.uni-kiel.de, CAU Kiel\r\n")
@@ -62,13 +62,14 @@ static const SH_IODesc_t *ios = NULL;
 static void PrintWelcomeMsg(const CLS1_StdIOType *io_)
 {
   uint8 sumoId;
-  const char_t verStr[] = {SW_VERSION_CHAR_ARRAY};
+  const char_t verStr[BSW_VERSION_FORMAT_BYTE_COUNT] = {BSW_VERSION_CHAR_ARRAY};
+
   sumoId = Get_SumoID();
   CLS1_SendStr((const uint8 *)SH_STAR_LINE, io_->stdOut);
   CLS1_SendStr((const uint8 *)SH_WELCOME_LINE1, io_->stdOut);
   CLS1_SendStr((const uint8 *)SH_WELCOME_LINE2, io_->stdOut);
   CLS1_printfIO(io_, (const char_t *)SH_SUMO_INTRO_LINE1, (int8)sumoId);
-  CLS1_printfIO(io_, (const char_t *)SH_SUMO_INTRO_LINE2, verStr, (const char_t *)SW_YEAR);
+  CLS1_printfIO(io_, (const char_t *)SH_SUMO_INTRO_LINE2, verStr);
   CLS1_SendStr((const uint8 *)SH_SHELL_INTRO_LINE1, io_->stdOut);
   CLS1_SendStr((const uint8 *)SH_SHELL_INTRO_LINE2, io_->stdOut);
   CLS1_SendStr((const uint8 *)SH_COPYRIGHT_LINE1, io_->stdOut);
