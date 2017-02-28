@@ -37,14 +37,7 @@ typedef struct {
 
 uint8_t PID_GetPIDConfig(PID_ConfigType config, PID_Config **confP);
 
-#include "CLS1.h"
-/*!
- * @brief Shell command line parser.
- * @param[in] cmd Pointer to command string
- * @param[out] handled If command is handled by the parser
- * @param[in] io Std I/O handler of shell
- */
-uint8_t PID_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
+
 
 /*!
  * @brief Performs PID on a line
@@ -79,5 +72,10 @@ void PID_Init(void);
 
 /*! @brief Driver de-initialization */
 void PID_Deinit(void);
+
+PID_Config *PID_Get_PosLeCfg(void);
+PID_Config *PID_Get_PosRiCfg(void);
+PID_Config *PID_Get_SpdLeCfg(void);
+PID_Config *PID_Get_SpdRiCfg(void);
 
 #endif /* PID_H_ */
