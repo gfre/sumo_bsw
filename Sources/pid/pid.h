@@ -14,7 +14,6 @@
 #ifndef PID_H_
 #define PID_H_
 
-#include "Platform.h"
 
 typedef enum {
   PID_CONFIG_LINE_FW,

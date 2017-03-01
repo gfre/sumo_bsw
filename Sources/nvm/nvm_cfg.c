@@ -1,16 +1,17 @@
-/*******************************************************************************
- * @brief 	Implementation of Non-Volatile-Memory (NVM) storage.
+/***************************************************************************************************
+ * @brief 	Configuration of the Non-Volatile-Memory (NVM) storage.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
- * @author 	Henning Weisbarth, hewe@tf.uni-kiel.de, CAU Kiel
- * @date 		10.01.2017
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	10.01.2017
  *
  * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
  *
- * This provides an implementation to store and retrieve data from the on-chip memory.
+ * This provides the configuration to store and retrieve data from the on-chip memory.
  *
- * ==============================================================================
+ * =================================================================================================
  */
+
 #define MASTER_NVM_CFG_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
@@ -27,8 +28,8 @@
 
 #define NVM_ERASABLE_UNIT_SIZE				(IntFlashLdd1_ERASABLE_UNIT_SIZE)       		/* 0x1000LU */
 #define NVM_ERASABLE_UNIT_MASK				(IntFlashLdd1_ERASABLE_UNIT_MASK)       		/* 0x0FFFLU */
-#define NVM_WRITE_UNIT_SIZE					(IntFlashLdd1_WRITE_UNIT_SIZE)          		/* 0x08LU */
-#define NVM_WRITE_UNIT_MASK					(IntFlashLdd1_WRITE_UNIT_MASK)         			 /* 0x07LU */
+#define NVM_WRITE_UNIT_SIZE					(IntFlashLdd1_WRITE_UNIT_SIZE)          		/* 0x08LU   */
+#define NVM_WRITE_UNIT_MASK					(IntFlashLdd1_WRITE_UNIT_MASK)         			/* 0x07LU   */
 
 
 
@@ -39,10 +40,10 @@
 #define PID_P_GAIN_BYTE_COUNT 						(sizeof(uint16_t))
 #define PID_I_GAIN_BYTE_COUNT 						(sizeof(uint16_t))
 #define PID_D_GAIN_BYTE_COUNT 						(sizeof(uint16_t))
+#define PID_MAX_SPEED_PERC_BYTE_COUNT				(sizeof(uint16_t))
 #define PID_I_ANTIWINDUP_BYTE_COUNT					(sizeof(uint32_t))
-#define PID_MAX_SPEED_PERC_BYTE_COUNT				(sizeof(uint8_t))
 #define PID_CFG_BYTE_COUNT 							(PID_P_GAIN_BYTE_COUNT + PID_I_GAIN_BYTE_COUNT + PID_D_GAIN_BYTE_COUNT \
-													+ PID_I_ANTIWINDUP_BYTE_COUNT + PID_MAX_SPEED_PERC_BYTE_COUNT)
+													+ PID_MAX_SPEED_PERC_BYTE_COUNT + PID_I_ANTIWINDUP_BYTE_COUNT)
 
 /* Define default values */
 #define PID_P_GAIN_POS_DEFAULT				(1000u)
@@ -68,19 +69,19 @@
 #define PID_I_GAIN_POS_END_ADDR					(PID_I_GAIN_POS_START_ADDR + PID_I_GAIN_BYTE_COUNT)
 
 #define PID_D_GAIN_POS_START_ADDR				(PID_I_GAIN_POS_END_ADDR)
-#define PID_D_GAIN_POS_END_ADDR					(PID_I_GAIN_POS_START_ADDR + PID_D_GAIN_BYTE_COUNT)
+#define PID_D_GAIN_POS_END_ADDR					(PID_D_GAIN_POS_START_ADDR + PID_D_GAIN_BYTE_COUNT)
 
-#define PID_I_ANTIWINDUP_POS_START_ADDR			(PID_D_GAIN_POS_END_ADDR)
-#define PID_I_ANTIWINDUP_POS_END_ADDR			(PID_I_ANTIWINDUP_POS_START_ADDR + PID_I_ANTIWINDUP_BYTE_COUNT)
-
-#define PID_MAX_SPEED_PERC_POS_START_ADDR		(PID_I_ANTIWINDUP_POS_END_ADDR)
+#define PID_MAX_SPEED_PERC_POS_START_ADDR		(PID_D_GAIN_POS_END_ADDR)
 #define PID_MAX_SPEED_PERC_POS_END_ADDR			(PID_MAX_SPEED_PERC_POS_START_ADDR + PID_MAX_SPEED_PERC_BYTE_COUNT)
+
+#define PID_I_ANTIWINDUP_POS_START_ADDR			(PID_MAX_SPEED_PERC_POS_END_ADDR)
+#define PID_I_ANTIWINDUP_POS_END_ADDR			(PID_I_ANTIWINDUP_POS_START_ADDR + PID_I_ANTIWINDUP_BYTE_COUNT)
 
 #define PID_POS_CFG_START_ADDR					(PID_P_GAIN_POS_START_ADDR)
 #define PID_POS_CFG_END_ADDR					(PID_POS_CFG_START_ADDR + PID_CFG_BYTE_COUNT)
 
 
-#define PID_P_GAIN_SPDLE_START_ADDR				(PID_MAX_SPEED_PERC_POS_END_ADDR)
+#define PID_P_GAIN_SPDLE_START_ADDR				(PID_I_ANTIWINDUP_POS_END_ADDR)
 #define PID_P_GAIN_SPDLE_END_ADDR				(PID_P_GAIN_SPDLE_START_ADDR + PID_P_GAIN_BYTE_COUNT)
 
 #define PID_I_GAIN_SPDLE_START_ADDR				(PID_P_GAIN_SPDLE_END_ADDR)
@@ -89,18 +90,18 @@
 #define PID_D_GAIN_SPDLE_START_ADDR				(PID_I_GAIN_SPDLE_END_ADDR)
 #define PID_D_GAIN_SPDLE_END_ADDR				(PID_D_GAIN_SPDLE_START_ADDR + PID_D_GAIN_BYTE_COUNT)
 
-#define PID_I_ANTIWINDUP_SPDLE_START_ADDR		(PID_D_GAIN_SPDLE_END_ADDR)
-#define PID_I_ANTIWINDUP_SPDLE_END_ADDR			(PID_I_ANTIWINDUP_SPDLE_START_ADDR + PID_I_ANTIWINDUP_BYTE_COUNT)
-
-#define PID_MAX_SPEED_PERC_SPDLE_START_ADDR		(PID_I_ANTIWINDUP_SPDLE_END_ADDR)
+#define PID_MAX_SPEED_PERC_SPDLE_START_ADDR		(PID_D_GAIN_SPDLE_END_ADDR)
 #define PID_MAX_SPEED_PERC_SPDLE_END_ADDR		(PID_MAX_SPEED_PERC_SPDLE_START_ADDR + PID_MAX_SPEED_PERC_BYTE_COUNT)
+
+#define PID_I_ANTIWINDUP_SPDLE_START_ADDR		(PID_MAX_SPEED_PERC_SPDLE_END_ADDR)
+#define PID_I_ANTIWINDUP_SPDLE_END_ADDR			(PID_I_ANTIWINDUP_SPDLE_START_ADDR + PID_I_ANTIWINDUP_BYTE_COUNT)
 
 #define PID_SPDLE_CFG_START_ADDR				(PID_P_GAIN_SPDLE_START_ADDR)
 #define PID_SPDLE_CFG_END_ADDR					(PID_SPDLE_CFG_START_ADDR + PID_CFG_BYTE_COUNT)
 
 
 
-#define PID_P_GAIN_SPDRI_START_ADDR				(PID_MAX_SPEED_PERC_SPDLE_END_ADDR)
+#define PID_P_GAIN_SPDRI_START_ADDR				(PID_I_ANTIWINDUP_SPDLE_END_ADDR)
 #define PID_P_GAIN_SPDRI_END_ADDR				(PID_P_GAIN_SPDRI_START_ADDR + PID_P_GAIN_BYTE_COUNT)
 
 #define PID_I_GAIN_SPDRI_START_ADDR				(PID_P_GAIN_SPDRI_END_ADDR)
@@ -109,11 +110,11 @@
 #define PID_D_GAIN_SPDRI_START_ADDR				(PID_I_GAIN_SPDRI_END_ADDR)
 #define PID_D_GAIN_SPDRI_END_ADDR				(PID_D_GAIN_SPDRI_START_ADDR + PID_D_GAIN_BYTE_COUNT)
 
-#define PID_I_ANTIWINDUP_SPDRI_START_ADDR		(PID_D_GAIN_SPDRI_END_ADDR)
-#define PID_I_ANTIWINDUP_SPDRI_END_ADDR			(PID_I_ANTIWINDUP_SPDRI_START_ADDR + PID_I_ANTIWINDUP_BYTE_COUNT)
-
-#define PID_MAX_SPEED_PERC_SPDRI_START_ADDR		(PID_I_ANTIWINDUP_SPDRI_END_ADDR)
+#define PID_MAX_SPEED_PERC_SPDRI_START_ADDR		(PID_D_GAIN_SPDRI_END_ADDR)
 #define PID_MAX_SPEED_PERC_SPDRI_END_ADDR		(PID_MAX_SPEED_PERC_SPDRI_START_ADDR + PID_MAX_SPEED_PERC_BYTE_COUNT)
+
+#define PID_I_ANTIWINDUP_SPDRI_START_ADDR		(PID_MAX_SPEED_PERC_SPDRI_END_ADDR)
+#define PID_I_ANTIWINDUP_SPDRI_END_ADDR			(PID_I_ANTIWINDUP_SPDRI_START_ADDR + PID_I_ANTIWINDUP_BYTE_COUNT)
 
 #define PID_SPDRI_CFG_START_ADDR				(PID_P_GAIN_SPDRI_START_ADDR)
 #define PID_SPDRI_CFG_END_ADDR					(PID_SPDRI_CFG_START_ADDR + PID_CFG_BYTE_COUNT)
@@ -134,14 +135,14 @@ typedef struct NVM_RomCfg_s
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 static bool isErased(uint8_t *addr_, uint16_t byteCount_);
 static inline StdRtn_t SaveBlock2Flash(const void *data_, const IFsh1_TAddress flashAddr_, const uint16 byteCount_, const uint16 xptdByteCount_);
-static inline StdRtn_t ReadBlockFromFlash(void *data_, const IFsh1_TAddress flashAddr_, const uint16 byteCount_);
+static inline StdRtn_t ReadBlockFromFlash(void **data_, const IFsh1_TAddress flashAddr_, const uint16 byteCount_);
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 const static NVM_RomCfg_t romCfg =
 {
-		/* pidCfgPos   */{PID_P_GAIN_POS_DEFAULT, PID_I_GAIN_POS_DEFAULT, PID_D_GAIN_POS_DEFAULT, PID_I_ANTIWINDUP_POS_DEFAULT, PID_MAX_SPEED_PERC_DEFAULT},
-		/* pidCfgSpdLe */{PID_P_GAIN_SPD_DEFAULT, PID_I_GAIN_SPD_DEFAULT, PID_D_GAIN_SPD_DEFAULT, PID_I_ANTIWINDUP_SPD_DEFAULT, PID_MAX_SPEED_PERC_DEFAULT},
-		/* pidCfgSpdRi */{PID_P_GAIN_SPD_DEFAULT, PID_I_GAIN_SPD_DEFAULT, PID_D_GAIN_SPD_DEFAULT, PID_I_ANTIWINDUP_SPD_DEFAULT, PID_MAX_SPEED_PERC_DEFAULT},
+		/* pidCfgPos   */{PID_P_GAIN_POS_DEFAULT, PID_I_GAIN_POS_DEFAULT, PID_D_GAIN_POS_DEFAULT, PID_MAX_SPEED_PERC_DEFAULT, PID_I_ANTIWINDUP_POS_DEFAULT},
+		/* pidCfgSpdLe */{PID_P_GAIN_SPD_DEFAULT, PID_I_GAIN_SPD_DEFAULT, PID_D_GAIN_SPD_DEFAULT, PID_MAX_SPEED_PERC_DEFAULT, PID_I_ANTIWINDUP_SPD_DEFAULT},
+		/* pidCfgSpdRi */{PID_P_GAIN_SPD_DEFAULT, PID_I_GAIN_SPD_DEFAULT, PID_D_GAIN_SPD_DEFAULT, PID_MAX_SPEED_PERC_DEFAULT, PID_I_ANTIWINDUP_SPD_DEFAULT},
 };
 
 
@@ -178,24 +179,23 @@ static inline StdRtn_t SaveBlock2Flash(const void *data_, const IFsh1_TAddress f
 }
 
 
-static inline StdRtn_t ReadBlockFromFlash(void *data_, const IFsh1_TAddress flashAddr_, const uint16 byteCount_)
+static inline StdRtn_t ReadBlockFromFlash(void **data_, const IFsh1_TAddress flashAddr_, const uint16 byteCount_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 
-	if(NULL != data_)
+	if (NULL != data_ )
 	{
 		if (!isErased((uint8_t*)flashAddr_, byteCount_))
 		{
-			 data_ = (void *)flashAddr_;
+			 *data_ = (void *)flashAddr_;
 			 retVal = ERR_OK;
 		}
 		else
 		{
-			data_ = NULL;
+			*data_ = NULL;
 			retVal = ERR_PARAM_DATA;
 		}
 	}
-
 	return retVal;
 }
 
@@ -209,19 +209,9 @@ StdRtn_t NVM_Save_PIDpGainPos(const uint16_t pGain_)
 	return SaveBlock2Flash((const void *)&pGain_,PID_P_GAIN_POS_START_ADDR, sizeof(uint16_t),  PID_P_GAIN_BYTE_COUNT);
 }
 
-StdRtn_t NVM_Read_PIDpGainPos(uint16_t *pGain_)
-{
-	return ReadBlockFromFlash((void *)pGain_,PID_P_GAIN_POS_START_ADDR, sizeof(uint16_t));
-}
-
 StdRtn_t NVM_Save_PIDiGainPos(const uint16_t iGain_)
 {
 	return SaveBlock2Flash((const void *)&iGain_,PID_I_GAIN_POS_START_ADDR, sizeof(uint16_t),  PID_I_GAIN_BYTE_COUNT);
-}
-
-StdRtn_t NVM_Read_PIDiGainPos(uint16_t *iGain_)
-{
-	return ReadBlockFromFlash((void *)iGain_,PID_I_GAIN_POS_START_ADDR, sizeof(uint16_t));
 }
 
 StdRtn_t NVM_Save_PIDdGainPos(const uint16_t dGain_)
@@ -229,9 +219,9 @@ StdRtn_t NVM_Save_PIDdGainPos(const uint16_t dGain_)
 	return SaveBlock2Flash((const void *)&dGain_,PID_D_GAIN_POS_START_ADDR, sizeof(uint16_t),  PID_D_GAIN_BYTE_COUNT);
 }
 
-StdRtn_t NVM_Read_PIDdGainPos(uint16_t *dGain_)
+StdRtn_t NVM_Save_PIDMaxSpdPercPos(const uint16_t maxSpdPerc_)
 {
-	return ReadBlockFromFlash((void *)dGain_,PID_D_GAIN_POS_START_ADDR, sizeof(uint16_t));
+	return SaveBlock2Flash((const void *)&maxSpdPerc_,PID_MAX_SPEED_PERC_POS_START_ADDR, sizeof(uint16_t),  PID_MAX_SPEED_PERC_BYTE_COUNT);
 }
 
 StdRtn_t NVM_Save_PIDiAntiWindUpPos(const uint32_t iAntiWindUp_)
@@ -239,25 +229,39 @@ StdRtn_t NVM_Save_PIDiAntiWindUpPos(const uint32_t iAntiWindUp_)
 	return SaveBlock2Flash((const void *)&iAntiWindUp_,PID_I_ANTIWINDUP_POS_START_ADDR, sizeof(uint32_t),  PID_I_ANTIWINDUP_BYTE_COUNT);
 }
 
-StdRtn_t NVM_Read_PIDiAntiWindUpPos(uint32_t *iAntiWindUp_)
+StdRtn_t NVM_Save_PIDPosCfg(const NVM_PidCfg_t *posCfg_)
 {
-	return ReadBlockFromFlash((void *)iAntiWindUp_,PID_I_ANTIWINDUP_POS_START_ADDR, sizeof(uint32_t));
+	return SaveBlock2Flash((const void *)posCfg_,PID_POS_CFG_START_ADDR, sizeof(NVM_PidCfg_t),  PID_CFG_BYTE_COUNT);
 }
 
-StdRtn_t NVM_Save_PIDMaxSpdPercPos(const uint8_t maxSpdPerc_)
+StdRtn_t NVM_Read_PIDPosCfg(NVM_PidCfg_t *posCfg_)
 {
-	return SaveBlock2Flash((const void *)&maxSpdPerc_,PID_MAX_SPEED_PERC_POS_START_ADDR, sizeof(uint8_t),  PID_MAX_SPEED_PERC_BYTE_COUNT);
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	NVM_PidCfg_t *addr = NULL;
+
+	if (NULL != posCfg_)
+	{
+		retVal = ReadBlockFromFlash((void *)&addr,PID_POS_CFG_START_ADDR, sizeof(NVM_PidCfg_t));
+		*posCfg_ = *addr;
+	}
+	return retVal;
 }
 
-StdRtn_t NVM_Read_PIDMaxSpdPercPos(uint8_t *maxSpdPerc_)
+StdRtn_t NVM_Read_Dflt_PIDPosCfg(NVM_PidCfg_t *posCfg_)
 {
-	return ReadBlockFromFlash((void *)maxSpdPerc_,PID_MAX_SPEED_PERC_POS_START_ADDR, sizeof(uint8_t));
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if (NULL != posCfg_)
+	{
+		*posCfg_ = (NVM_PidCfg_t)romCfg.pidCfgPos;
+		retVal = ERR_OK;
+	}
+	return  retVal;
 }
 
-StdRtn_t NVM_Save_PIDPosCfg(const NVM_PidCfg_t posCfg_)
-{
-	return SaveBlock2Flash((const void *)&posCfg_,PID_POS_CFG_START_ADDR, sizeof(NVM_PidCfg_t),  PID_CFG_BYTE_COUNT);
-}
+
+
+
+
 
 
 
@@ -277,19 +281,43 @@ StdRtn_t NVM_Save_PIDdGainSpdLe(const uint16_t dGain_)
 	return SaveBlock2Flash((const void *)&dGain_,PID_D_GAIN_SPDLE_START_ADDR, sizeof(uint16_t),  PID_D_GAIN_BYTE_COUNT);
 }
 
+StdRtn_t NVM_Save_PIDMaxSpdPercSpdLe(const uint16_t maxSpdPerc_)
+{
+	return SaveBlock2Flash((const void *)&maxSpdPerc_,PID_MAX_SPEED_PERC_SPDLE_START_ADDR, sizeof(uint16_t),  PID_MAX_SPEED_PERC_BYTE_COUNT);
+}
+
 StdRtn_t NVM_Save_PIDiAntiWindUpSpdLe(const uint32_t iAntiWindUp_)
 {
 	return SaveBlock2Flash((const void *)&iAntiWindUp_,PID_I_ANTIWINDUP_SPDLE_START_ADDR, sizeof(uint32_t),  PID_I_ANTIWINDUP_BYTE_COUNT);
 }
 
-StdRtn_t NVM_Save_PIDMaxSpdPercSpdLe(const uint8_t maxSpdPerc_)
+StdRtn_t NVM_Save_PIDSpdLeCfg(const NVM_PidCfg_t *spdCfg_)
 {
-	return SaveBlock2Flash((const void *)&maxSpdPerc_,PID_MAX_SPEED_PERC_SPDLE_START_ADDR, sizeof(uint8_t),  PID_MAX_SPEED_PERC_BYTE_COUNT);
+	return SaveBlock2Flash((const void *)spdCfg_,PID_SPDLE_CFG_START_ADDR, sizeof(NVM_PidCfg_t),  PID_CFG_BYTE_COUNT);
 }
 
-StdRtn_t NVM_Save_PIDSpdLeCfg(const NVM_PidCfg_t spdCfg_)
+StdRtn_t NVM_Read_PIDSpdLeCfg(NVM_PidCfg_t *spdCfg_)
 {
-	return SaveBlock2Flash((const void *)&spdCfg_,PID_SPDLE_CFG_START_ADDR, sizeof(NVM_PidCfg_t),  PID_CFG_BYTE_COUNT);
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	NVM_PidCfg_t *addr = NULL;
+
+	if (NULL != spdCfg_)
+	{
+		retVal = ReadBlockFromFlash((void *)&addr,PID_SPDLE_CFG_START_ADDR, sizeof(NVM_PidCfg_t));
+		*spdCfg_ = *addr;
+	}
+	return retVal;
+}
+
+StdRtn_t NVM_Read_Dflt_PIDSpdLeCfg(NVM_PidCfg_t *spdCfg_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if (NULL != spdCfg_)
+	{
+		*spdCfg_ = (NVM_PidCfg_t)romCfg.pidCfgSpdLe;
+		retVal = ERR_OK;
+	}
+	return  retVal;
 }
 
 
@@ -309,19 +337,43 @@ StdRtn_t NVM_Save_PIDdGainSpdRi(const uint16_t dGain_)
 	return SaveBlock2Flash((const void *)&dGain_,PID_D_GAIN_SPDRI_START_ADDR, sizeof(uint16_t),  PID_D_GAIN_BYTE_COUNT);
 }
 
+StdRtn_t NVM_Save_PIDMaxSpdPercSpdRi(const uint16_t maxSpdPerc_)
+{
+	return SaveBlock2Flash((const void *)&maxSpdPerc_,PID_MAX_SPEED_PERC_SPDRI_START_ADDR, sizeof(uint16_t),  PID_MAX_SPEED_PERC_BYTE_COUNT);
+}
+
 StdRtn_t NVM_Save_PIDiAntiWindUpSpdRi(const uint32_t iAntiWindUp_)
 {
 	return SaveBlock2Flash((const void *)&iAntiWindUp_,PID_I_ANTIWINDUP_SPDRI_START_ADDR, sizeof(uint32_t),  PID_I_ANTIWINDUP_BYTE_COUNT);
 }
 
-StdRtn_t NVM_Save_PIDMaxSpdPercSpdRi(const uint8_t maxSpdPerc_)
+StdRtn_t NVM_Save_PIDSpdRiCfg(const NVM_PidCfg_t *spdCfg_)
 {
-	return SaveBlock2Flash((const void *)&maxSpdPerc_,PID_MAX_SPEED_PERC_SPDRI_START_ADDR, sizeof(uint8_t),  PID_MAX_SPEED_PERC_BYTE_COUNT);
+	return SaveBlock2Flash((const void *)spdCfg_,PID_SPDRI_CFG_START_ADDR, sizeof(NVM_PidCfg_t),  PID_CFG_BYTE_COUNT);
 }
 
-StdRtn_t NVM_Save_PIDSpdRiCfg(const NVM_PidCfg_t spdCfg_)
+StdRtn_t NVM_Read_PIDSpdRiCfg(NVM_PidCfg_t *spdCfg_)
 {
-	return SaveBlock2Flash((const void *)&spdCfg_,PID_SPDRI_CFG_START_ADDR, sizeof(NVM_PidCfg_t),  PID_CFG_BYTE_COUNT);
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	NVM_PidCfg_t *addr = NULL;
+
+	if (NULL != spdCfg_)
+	{
+		retVal = ReadBlockFromFlash((void *)&addr,PID_SPDRI_CFG_START_ADDR, sizeof(NVM_PidCfg_t));
+		*spdCfg_ = *addr;
+	}
+	return retVal;
+}
+
+StdRtn_t NVM_Read_Dflt_PIDSpdRiCfg(NVM_PidCfg_t *spdCfg_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if (NULL != spdCfg_)
+	{
+		*spdCfg_ = (NVM_PidCfg_t)romCfg.pidCfgSpdRi;
+		retVal = ERR_OK;
+	}
+	return  retVal;
 }
 
 #ifdef MASTER_NVM_CFG_C_

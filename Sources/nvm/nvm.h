@@ -1,3 +1,17 @@
+/***************************************************************************************************
+ * @brief 	Implementation of the Non-Volatile-Memory (NVM) storage.
+ *
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	10.01.2017
+ *
+ * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ *
+ * This provides an implementation to store and retrieve data from the on-chip memory.
+ *
+ * =================================================================================================
+ */
+
 #ifndef NVM_H_
 #define NVM_H_
 

@@ -1,12 +1,14 @@
 /***************************************************************************************************
- * @brief 	>>TODO This is a brief description.
+ * @brief 	Command line shell handler of the Non-Volatile-Memory (NVM) storage.
  *
- * @author 	>>TODO, gefr@tf.uni-kiel.de, University Kiel 
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	23.02.2017
  *  
  * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
  *
- * >>TODO This is the detailed description of the file nvm_cls.h
+ * This module handles the interface between the NVM software component and
+ * the command line shell CLS.
  * 
  *==================================================================================================
  */

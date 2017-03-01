@@ -2,7 +2,7 @@
  * @brief 	PID controller implementation.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
- * @author 	Henning Weisbarth, hewe@tf.uni-kiel.de, CAU Kiel
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, CAU Kiel
  * @date 		06.01.2017
  *
  * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
@@ -14,8 +14,7 @@
 #include "Platform.h"
 #include "Pid.h"
 #include "Motor.h"
-#include "UTIL1.h"
-//#include "Reflectance.h"
+#include "nvm_Types.h"
 
 #define PID_DEBUG 0 /* careful: this will slow down the PID loop frequency! */
 
@@ -162,15 +161,32 @@ void PID_Deinit(void) {
 
 void PID_Init(void)
 {
-
-
-	posLeftConfig.pFactor100 = 1000;
-	posLeftConfig.iFactor100 = 1;
-	posLeftConfig.dFactor100 = 50;
-	posLeftConfig.iAntiWindup = 200;
-	posLeftConfig.maxSpeedPercent = 100;
+	NVM_PidCfg_t pidCfg = {0u};
+	if ( ERR_OK == NVM_Read_PIDPosCfg(&pidCfg) )
+	{
+		posLeftConfig.pFactor100 = (int32_t)pidCfg.pGain100;
+		posLeftConfig.iFactor100 = (int32_t)pidCfg.iGain100;
+		posLeftConfig.dFactor100 = (int32_t)pidCfg.dGain100;
+		posLeftConfig.iAntiWindup = (int32_t)pidCfg.iAntiWindup;
+		posLeftConfig.maxSpeedPercent = (int32_t)pidCfg.maxSpdPerc;
+	}
+	else if(ERR_OK == NVM_Read_Dflt_PIDPosCfg(&pidCfg))
+	{
+		posLeftConfig.pFactor100 = (int32_t)pidCfg.pGain100;
+		posLeftConfig.iFactor100 = (int32_t)pidCfg.iGain100;
+		posLeftConfig.dFactor100 = (int32_t)pidCfg.dGain100;
+		posLeftConfig.iAntiWindup = (int32_t)pidCfg.iAntiWindup;
+		posLeftConfig.maxSpeedPercent = (int32_t)pidCfg.maxSpdPerc;
+		NVM_Save_PIDPosCfg(&pidCfg);
+	}
+	else
+	{
+		/*TODO Error handling */
+	}
 	posLeftConfig.lastError = 0;
 	posLeftConfig.integral = 0;
+
+
 	posRightConfig.pFactor100 = posLeftConfig.pFactor100;
 	posRightConfig.iFactor100 = posLeftConfig.iFactor100;
 	posRightConfig.dFactor100 = posLeftConfig.dFactor100;
@@ -178,20 +194,51 @@ void PID_Init(void)
 	posRightConfig.maxSpeedPercent = posLeftConfig.maxSpeedPercent;
 	posRightConfig.lastError = posLeftConfig.lastError;
 	posRightConfig.integral = posLeftConfig.integral;
-	speedLeftConfig.pFactor100 = 2000;
-	speedLeftConfig.iFactor100 = 80;
-	speedLeftConfig.dFactor100 = 0;
-	speedLeftConfig.iAntiWindup = 120000;
-	speedLeftConfig.maxSpeedPercent = 100;
-	speedLeftConfig.lastError = 0;
-	speedLeftConfig.integral = 0;
-	speedRightConfig.pFactor100 = speedLeftConfig.pFactor100;
-	speedRightConfig.iFactor100 = speedLeftConfig.iFactor100;
-	speedRightConfig.dFactor100 = speedLeftConfig.dFactor100;
-	speedRightConfig.iAntiWindup = speedLeftConfig.iAntiWindup;
-	speedRightConfig.maxSpeedPercent = speedLeftConfig.maxSpeedPercent;
-	speedRightConfig.lastError = speedLeftConfig.lastError;
-	speedRightConfig.integral = speedLeftConfig.integral;
+
+
+	if ( ERR_OK == NVM_Read_PIDSpdLeCfg(&pidCfg) )
+	{
+		speedLeftConfig.pFactor100 = (int32_t)pidCfg.pGain100;
+		speedLeftConfig.iFactor100 = (int32_t)pidCfg.iGain100;
+		speedLeftConfig.dFactor100 = (int32_t)pidCfg.dGain100;
+		speedLeftConfig.iAntiWindup = (int32_t)pidCfg.iAntiWindup;
+		speedLeftConfig.maxSpeedPercent = (int32_t)pidCfg.maxSpdPerc;
+	}
+	else if(ERR_OK == NVM_Read_Dflt_PIDSpdLeCfg(&pidCfg))
+	{
+		speedLeftConfig.pFactor100 = (int32_t)pidCfg.pGain100;
+		speedLeftConfig.iFactor100 = (int32_t)pidCfg.iGain100;
+		speedLeftConfig.dFactor100 = (int32_t)pidCfg.dGain100;
+		speedLeftConfig.iAntiWindup = (int32_t)pidCfg.iAntiWindup;
+		speedLeftConfig.maxSpeedPercent = (int32_t)pidCfg.maxSpdPerc;
+		NVM_Save_PIDSpdLeCfg(&pidCfg);
+	}
+	else
+	{
+		/*TODO Error handling */
+	}
+
+	if ( ERR_OK == NVM_Read_PIDSpdRiCfg(&pidCfg) )
+	{
+		speedRightConfig.pFactor100 = (int32_t)pidCfg.pGain100;
+		speedRightConfig.iFactor100 = (int32_t)pidCfg.iGain100;
+		speedRightConfig.dFactor100 = (int32_t)pidCfg.dGain100;
+		speedRightConfig.iAntiWindup = (int32_t)pidCfg.iAntiWindup;
+		speedRightConfig.maxSpeedPercent = (int32_t)pidCfg.maxSpdPerc;
+	}
+	else if(ERR_OK == NVM_Read_Dflt_PIDSpdRiCfg(&pidCfg))
+	{
+		speedRightConfig.pFactor100 = (int32_t)pidCfg.pGain100;
+		speedRightConfig.iFactor100 = (int32_t)pidCfg.iGain100;
+		speedRightConfig.dFactor100 = (int32_t)pidCfg.dGain100;
+		speedRightConfig.iAntiWindup = (int32_t)pidCfg.iAntiWindup;
+		speedRightConfig.maxSpeedPercent = (int32_t)pidCfg.maxSpdPerc;
+		NVM_Save_PIDSpdRiCfg(&pidCfg);
+	}
+	else
+	{
+		/*TODO Error handling */
+	}
 }
 
 
