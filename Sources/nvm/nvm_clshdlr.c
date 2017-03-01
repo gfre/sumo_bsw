@@ -55,10 +55,12 @@ static uint8_t NVM_PrintStatus(const CLS1_StdIOType *io) {
 
 static uint8_t NVM_PrintVersion(const CLS1_StdIOType *io)
 {
-	uint8_t ver = 0xFFu;
-	ver = NVM_Get_NvmVer();
+	uint8_t strBuf[sizeof("0xFF")]={"0x\0"};
+	uint8_t ver = NVM_Get_NvmVer();
+
+	UTIL1_strcatNum8Hex(strBuf+2, sizeof("FF"), ver);
 	CLS1_SendStatusStr((unsigned char*)"  version", "", io->stdOut);
-	CLS1_SendNum8u(ver,io->stdOut);
+	CLS1_SendStr(strBuf,io->stdOut);
 	CLS1_SendStr("\r\n", io->stdOut);
 	return ERR_OK;
 }
