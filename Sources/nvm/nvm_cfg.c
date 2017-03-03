@@ -21,6 +21,12 @@
 #include "Pid.h"
 
 /*======================================= >> #DEFINES << =========================================*/
+ /*
+  * NVM Version number
+  */
+#define NVM_VERSION (0x01u)
+/* ========================= */
+
 #define NVM_DFLASH_START_ADDR          		(IntFlashLdd1_DFLASH_ADDRESS) 					/* 0x10000000LU DFLASH, NVRM_Config, start address of configuration data in flash */
 #define NVM_DFLASH_BLOCK_SIZE          		(IntFlashLdd1_DFLASH_SIZE)						/* 0x00020000LU */
 #define NVM_DFLASH_ERASABLE_UNIT_SIZE  		(IntFlashLdd1_DFLASH_ERASABLE_UNIT_SIZE)		/* 0x1000LU */
@@ -31,10 +37,7 @@
 #define NVM_WRITE_UNIT_SIZE					(IntFlashLdd1_WRITE_UNIT_SIZE)          		/* 0x08LU   */
 #define NVM_WRITE_UNIT_MASK					(IntFlashLdd1_WRITE_UNIT_MASK)         			/* 0x07LU   */
 
-
-
- /* NVM Version number  */
-#define NVM_VERSION (0x01u)
+#define BYTE_FILLER( numOfBytes_ )					(numOfBytes_)
 
 /* Define byte counts */
 #define PID_P_GAIN_BYTE_COUNT 						(sizeof(uint16_t))
@@ -58,11 +61,17 @@
 
 #define PID_MAX_SPEED_PERC_DEFAULT			(100u)
 
+
+
  /*  Define the memory areas
   * =========================
   */
 
-#define PID_P_GAIN_POS_START_ADDR				(NVM_DFLASH_START_ADDR)
+#define NVM_VERSION_START_ADDR					(NVM_DFLASH_START_ADDR)
+#define NVM_VERSION_BYTE_COUNT					(sizeof(uint8))
+#define NVM_VERSION_END_ADDR					(NVM_VERSION_START_ADDR + NVM_VERSION_BYTE_COUNT + BYTE_FILLER(3u) )
+
+#define PID_P_GAIN_POS_START_ADDR				(NVM_VERSION_END_ADDR)
 #define PID_P_GAIN_POS_END_ADDR					(PID_P_GAIN_POS_START_ADDR + PID_P_GAIN_BYTE_COUNT)
 
 #define PID_I_GAIN_POS_START_ADDR				(PID_P_GAIN_POS_END_ADDR)
@@ -119,15 +128,13 @@
 #define PID_SPDRI_CFG_START_ADDR				(PID_P_GAIN_SPDRI_START_ADDR)
 #define PID_SPDRI_CFG_END_ADDR					(PID_SPDRI_CFG_START_ADDR + PID_CFG_BYTE_COUNT)
 
+
+#define NVM_DFLASH_CURRENT_END_ADDR				(PID_SPDRI_CFG_END_ADDR)
+#define NVM_DFLASH_CURRENT_BYTE_COUNT			(NVM_DFLASH_CURRENT_END_ADDR - NVM_DFLASH_START_ADDR)
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 
 
-typedef struct NVM_RomCfg_s
-{
-	NVM_PidCfg_t pidCfgPos;
-	NVM_PidCfg_t pidCfgSpdLe;
-	NVM_PidCfg_t pidCfgSpdRi;
-} NVM_RomCfg_t;
+
 
 
 
@@ -140,6 +147,8 @@ static inline StdRtn_t ReadBlockFromFlash(void **data_, const IFsh1_TAddress fla
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 const static NVM_RomCfg_t romCfg =
 {
+		/* NVM Version */ NVM_VERSION,
+		/* 3Byte filler*/{0u},
 		/* pidCfgPos   */{PID_P_GAIN_POS_DEFAULT, PID_I_GAIN_POS_DEFAULT, PID_D_GAIN_POS_DEFAULT, PID_MAX_SPEED_PERC_DEFAULT, PID_I_ANTIWINDUP_POS_DEFAULT},
 		/* pidCfgSpdLe */{PID_P_GAIN_SPD_DEFAULT, PID_I_GAIN_SPD_DEFAULT, PID_D_GAIN_SPD_DEFAULT, PID_MAX_SPEED_PERC_DEFAULT, PID_I_ANTIWINDUP_SPD_DEFAULT},
 		/* pidCfgSpdRi */{PID_P_GAIN_SPD_DEFAULT, PID_I_GAIN_SPD_DEFAULT, PID_D_GAIN_SPD_DEFAULT, PID_MAX_SPEED_PERC_DEFAULT, PID_I_ANTIWINDUP_SPD_DEFAULT},
@@ -201,7 +210,46 @@ static inline StdRtn_t ReadBlockFromFlash(void **data_, const IFsh1_TAddress fla
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-uint8_t NVM_Get_NvmVer(void) 							      {return (uint8_t )NVM_VERSION; }
+StdRtn_t NVM_Read_NvmVerFromNVM(uint8 *nvmVer_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	uint8 *addr = NULL;
+
+	if (NULL != nvmVer_)
+	{
+		retVal = ReadBlockFromFlash((void *)&addr, NVM_VERSION_START_ADDR, sizeof(uint8));
+		*nvmVer_ = *addr;
+	}
+	return retVal;
+}
+
+StdRtn_t NVM_Read_NvmVerFromROM(uint8 *nvmVer_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if (NULL != nvmVer_)
+	{
+		*nvmVer_ = (uint8)romCfg.nvmVer;
+		retVal = ERR_OK;
+	}
+	return  retVal;
+}
+
+StdRtn_t NVM_Read_AllFromROM(NVM_RomCfg_t *romCfg_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if (NULL != romCfg_)
+	{
+		*romCfg_ = romCfg;
+		retVal = ERR_OK;
+	}
+	return  retVal;
+}
+
+StdRtn_t NVM_Save_All2NVM(const void *nvmCfg_)
+{
+	return SaveBlock2Flash(nvmCfg_,NVM_DFLASH_START_ADDR, sizeof(NVM_RomCfg_t),  NVM_DFLASH_CURRENT_BYTE_COUNT);
+}
+
 
 /* PID position control configuration */
 StdRtn_t NVM_Save_PIDpGainPos(const uint16_t pGain_)

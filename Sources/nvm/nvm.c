@@ -30,25 +30,47 @@
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-static void InitNVMCValues(void);
+static void NVM_InitValues(void);
 
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
+/* TODO
+ * - define restore all in nvm cls hdler
+ * - remove single save fcts. only PID blocks need to be saved
+ * - autosave when PID gains are updated, no explicit save needed
+ * - restore PID blocks only
+ * - typedef void_a void *
+ * - typedef NVM_PIDCfg_a NVM_PIDCfg_t *
+ * - then change parameters in read functions to pointers to addresses instead of pointers to structs/blocks.
+ */
 
 
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-static void InitNVMCValues(void) {
+static void NVM_InitValues(void)
+{
+	uint8_t verNVM = 0u;
+	uint8_t verROM = 0u;
+	NVM_RomCfg_t romCfg = {0u};
 
+	StdRtn_t res = NVM_Read_NvmVerFromNVM(&verNVM);
+	res |= NVM_Read_NvmVerFromROM(&verROM);
+
+
+	if( (ERR_OK != res) || (verNVM < verROM) )
+	{	/* TODO restore all fct. */
+		NVM_Read_AllFromROM(&romCfg);
+		NVM_Save_All2NVM((const void *)&romCfg);
+	}
 }
 
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
  void NVM_Init(void){
-	 InitNVMCValues();
+	 NVM_InitValues();
  }
 
 

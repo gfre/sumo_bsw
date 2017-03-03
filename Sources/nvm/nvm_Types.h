@@ -38,12 +38,23 @@ typedef struct NVM_PidCfg_s
 	uint16_t dGain100;			/**< differential gain */
 	uint16_t  maxSpdPerc;		/**< maximum speed command in percent */
 	uint32_t iAntiWindup;		/**< maximum integral value for anti windup procedure */
-} NVM_PidCfg_t;
+} NVM_PidCfg_t; /* 12Byte */
 
-
+typedef struct NVM_RomCfg_s
+{
+	uint8 nvmVer;
+	uint8 filler[3];
+	NVM_PidCfg_t pidCfgPos;
+	NVM_PidCfg_t pidCfgSpdLe;
+	NVM_PidCfg_t pidCfgSpdRi;
+} NVM_RomCfg_t; /* 1 + 3 + 3*12 = 40 Byte*/
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-EXTERNAL_ uint8_t NVM_Get_NvmVer(void);
+EXTERNAL_ StdRtn_t NVM_Read_NvmVerFromNVM(uint8 *nvmVer_);
+EXTERNAL_ StdRtn_t NVM_Read_NvmVerFromROM(uint8 *nvmVer_);
+
+EXTERNAL_ StdRtn_t NVM_Read_AllFromROM(NVM_RomCfg_t *romCfg_);
+EXTERNAL_ StdRtn_t NVM_Save_All2NVM(const void *romCfg_);
 
 EXTERNAL_ StdRtn_t NVM_Save_PIDpGainPos(const uint16_t pGain_);
 EXTERNAL_ StdRtn_t NVM_Save_PIDiGainPos(const uint16_t iGain_);
