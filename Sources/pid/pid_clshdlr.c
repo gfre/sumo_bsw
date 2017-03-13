@@ -50,10 +50,6 @@ static void PID_PrintHelp(const CLS1_StdIOType *io)
 	CLS1_SendHelpStr((unsigned char*)"  speed (L|R) speed <value>", (unsigned char*)"Maximum speed % value\r\n", io->stdOut);
 	CLS1_SendHelpStr((unsigned char*)"  pos restore", (unsigned char*)"Restores and saves default parameters for position control to NVM\r\n", io->stdOut);
 	CLS1_SendHelpStr((unsigned char*)"  speed (L|R) restore", (unsigned char*)"Restores and saves default parameters for (L|R) speed control to NVM\r\n", io->stdOut);
-	CLS1_SendHelpStr((unsigned char*)"  pos save", (unsigned char*)"Saves current parameters for position control to NVM\r\n", io->stdOut);
-	CLS1_SendHelpStr((unsigned char*)"  speed (L|R) save", (unsigned char*)"Saves current parameters for (L|R) speed control to NVM\r\n", io->stdOut);
-
-
 }
 
 static void PrintPIDstatus(PID_Config *config, const unsigned char *kindStr, const CLS1_StdIOType *io)
@@ -243,31 +239,36 @@ uint8_t PID_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_Std
 		{
 			*handled = TRUE;
 		}
-	} else if (UTIL1_strcmp((char*)cmd, (char*)"pid pos save")==0) {
-		if( ( ERR_OK == PID_saveCfg(NVM_Save_PIDPosCfg, PID_Get_PosLeCfg()) )
-		&&	( ERR_OK == PID_saveCfg(NVM_Save_PIDPosCfg, PID_Get_PosRiCfg()) ) )
-		{
-			*handled = TRUE;
-		}
-	} else if (UTIL1_strcmp((char*)cmd, (char*)"pid speed L save")==0) {
-		if( ERR_OK == PID_saveCfg(NVM_Save_PIDSpdLeCfg, PID_Get_SpdLeCfg()) )
-		{
-			*handled = TRUE;
-		}
-	} else if (UTIL1_strcmp((char*)cmd, (char*)"pid speed R save")==0) {
-		if( ERR_OK == PID_saveCfg(NVM_Save_PIDSpdRiCfg, PID_Get_SpdRiCfg()) )
-		{
-			*handled = TRUE;
-		}
+
 	} else if (UTIL1_strncmp((char*)cmd, (char*)"pid pos ", sizeof("pid pos ")-1)==0) {
 		res = ParsePidParameter(PID_Get_PosLeCfg(), cmd+sizeof("pid pos ")-1, handled, io);
-		if (res==ERR_OK) {
+		if (res==ERR_OK)
+		{
 			res = ParsePidParameter(PID_Get_PosRiCfg(), cmd+sizeof("pid pos ")-1, handled, io);
+		}
+
+		if (res==ERR_OK)
+		{
+			if( ( ERR_OK != PID_saveCfg(NVM_Save_PIDPosCfg, PID_Get_PosLeCfg()) )
+			||	( ERR_OK != PID_saveCfg(NVM_Save_PIDPosCfg, PID_Get_PosRiCfg()) ) )
+			{
+				/* TODO ERROR handling */
+			}
 		}
 	} else if (UTIL1_strncmp((char*)cmd, (char*)"pid speed L ", sizeof("pid speed L ")-1)==0) {
 		res = ParsePidParameter(PID_Get_SpdLeCfg(), cmd+sizeof("pid speed L ")-1, handled, io);
+
+		if( ERR_OK != PID_saveCfg(NVM_Save_PIDSpdLeCfg, PID_Get_SpdLeCfg()) )
+		{
+			/* TODO ERROR handling */
+		}
 	} else if (UTIL1_strncmp((char*)cmd, (char*)"pid speed R ", sizeof("pid speed R ")-1)==0) {
 		res = ParsePidParameter(PID_Get_SpdRiCfg(), cmd+sizeof("pid speed R ")-1, handled, io);
+
+		if( ERR_OK != PID_saveCfg(NVM_Save_PIDSpdRiCfg, PID_Get_SpdRiCfg()) )
+		{
+			/* TODO ERROR handling */
+		}
 	}
 	return res;
 }
