@@ -31,8 +31,8 @@
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 static uint8_t NVM_PrintHelp(const CLS1_StdIOType *io);
 static uint8_t NVM_PrintStatus(const CLS1_StdIOType *io);
-static uint8_t NVM_PrintVersion(const CLS1_StdIOType *io);
-
+static uint8_t NVM_PrintVersion(const CLS1_StdIOType *io_);
+static void NVM_PrintRestoreStatus(const CLS1_StdIOType *io_);
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 
@@ -43,6 +43,7 @@ static uint8_t NVM_PrintHelp(const CLS1_StdIOType *io) {
 	CLS1_SendHelpStr((unsigned char*)"nvm", (unsigned char*)"Group of NVM commands\r\n", io->stdOut);
 	CLS1_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Shows NVM help or status\r\n", io->stdOut);
 	CLS1_SendHelpStr((unsigned char*)"  version", (unsigned char*)"Shows NVM version\r\n", io->stdOut);
+	CLS1_SendStatusStr((unsigned char*)"  restore", (unsigned char*)"restores all NVM parameters from ROM and saves to NVM", io->stdOut);
 	return ERR_OK;
 }
 
@@ -53,23 +54,44 @@ static uint8_t NVM_PrintStatus(const CLS1_StdIOType *io) {
 }
 
 
-static uint8_t NVM_PrintVersion(const CLS1_StdIOType *io)
+static uint8_t NVM_PrintVersion(const CLS1_StdIOType *io_)
 {
 	uint8_t strBuf[sizeof("0xFF")]={"0x\0"};
 	uint8_t ver = 0u;
 	if( ERR_OK == NVM_Read_NvmVerFromNVM(&ver) )
 	{
 		UTIL1_strcatNum8Hex(strBuf+2, sizeof("FF"), ver);
-		CLS1_SendStatusStr((unsigned char*)"  version", "", io->stdOut);
-		CLS1_SendStr(strBuf,io->stdOut);
-		CLS1_SendStr("\r\n", io->stdOut);
+		CLS1_SendStatusStr((unsigned char*)"  version", "", io_->stdOut);
+		CLS1_SendStr(strBuf,io_->stdOut);
+		CLS1_SendStr("\r\n", io_->stdOut);
 	}
 	else
 	{
-		CLS1_SendStatusStr((unsigned char*)"  version", "** ERROR: parameter address invalid **\r\n", io->stdOut);
+		CLS1_SendStatusStr((unsigned char*)"  version", "** ERROR: parameter address invalid **\r\n", io_->stdOut);
 	}
 
 	return ERR_OK;
+}
+
+
+static void NVM_PrintRestoreStatus(const CLS1_StdIOType *io_)
+{
+	uint8_t strBuf[sizeof("0xFF")]={"0x\0"};
+	StdRtn_t res = NVM_RestoreAll();
+
+	if(ERR_OK == res)
+	{
+		CLS1_SendStr("...NVM restoration successful.\r\n\n",io_->stdOut);
+	}
+	else
+	{
+		UTIL1_strcatNum8Hex(strBuf+2, sizeof("FF"), res);
+		CLS1_SendStr("** ERROR ",io_->stdOut);
+		CLS1_SendStr(strBuf,io_->stdOut);
+		CLS1_SendStr(": NVM restoration failed **\r\n", io_->stdOut);
+	}
+
+	return;
 }
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
@@ -84,6 +106,10 @@ uint8_t NVM_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_Std
  	} else if (UTIL1_strcmp((char*)cmd, (char*)"nvm version")==0) {
  		*handled = TRUE;
  		return NVM_PrintVersion(io);
+ 	} else if (UTIL1_strcmp((char*)cmd, (char*)"nvm restore")==0) {
+		*handled = TRUE;
+		NVM_PrintRestoreStatus(io);
+		return ERR_OK;
  	}
  	return res;
  }

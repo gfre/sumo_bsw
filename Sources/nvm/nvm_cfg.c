@@ -210,20 +210,20 @@ static inline StdRtn_t ReadBlockFromFlash(void **data_, const IFsh1_TAddress fla
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-StdRtn_t NVM_Read_NvmVerFromNVM(uint8 *nvmVer_)
+StdRtn_t NVM_Read_NvmVerFromNVM(uint8_t *nvmVer_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	uint8 *addr = NULL;
 
 	if (NULL != nvmVer_)
 	{
-		retVal = ReadBlockFromFlash((void *)&addr, NVM_VERSION_START_ADDR, sizeof(uint8));
+		retVal = ReadBlockFromFlash((void *)&addr, NVM_VERSION_START_ADDR, sizeof(uint8_t));
 		*nvmVer_ = *addr;
 	}
 	return retVal;
 }
 
-StdRtn_t NVM_Read_NvmVerFromROM(uint8 *nvmVer_)
+StdRtn_t NVM_Read_NvmVerFromROM(uint8_t *nvmVer_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if (NULL != nvmVer_)
