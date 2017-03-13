@@ -36,8 +36,6 @@ static void NVM_InitValues(void);
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 /* TODO
- * - remove single save fcts. only PID blocks need to be saved
- * - autosave when PID gains are updated, no explicit save needed
  * - restore PID blocks only
  * - typedef void_a void *
  * - typedef NVM_PIDCfg_a NVM_PIDCfg_t *
@@ -60,7 +58,7 @@ static void NVM_InitValues(void)
 
 	if( (ERR_OK != res) || (verNVM < verROM) )
 	{
-		if(ERR_OK != NVM_RestoreAll())
+		if(ERR_OK != NVM_Restore_AllFromROM())
 		{
 			/* TODO - error handling */
 		}
@@ -76,18 +74,6 @@ void NVM_Init(void)
 }
 
 
-StdRtn_t NVM_RestoreAll(void)
-{
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	NVM_RomCfg_t romCfg = {0u};
-
- 	if( (ERR_OK == NVM_Read_AllFromROM(&romCfg)))
- 	{
- 		retVal = NVM_Save_All2NVM((const void *)&romCfg);
- 	}
-
- 	return retVal;
-}
 
 
 #ifdef MASTER_NVM_C_

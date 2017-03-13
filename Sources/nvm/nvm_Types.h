@@ -50,42 +50,22 @@ typedef struct NVM_RomCfg_s
 } NVM_RomCfg_t; /* 1 + 3 + 3*12 = 40 Byte*/
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-EXTERNAL_ StdRtn_t NVM_RestoreAll(void);
-
 EXTERNAL_ StdRtn_t NVM_Read_NvmVerFromNVM(uint8_t *nvmVer_);
 EXTERNAL_ StdRtn_t NVM_Read_NvmVerFromROM(uint8_t *nvmVer_);
 
 EXTERNAL_ StdRtn_t NVM_Read_AllFromROM(NVM_RomCfg_t *romCfg_);
-EXTERNAL_ StdRtn_t NVM_Save_All2NVM(const void *romCfg_);
+EXTERNAL_ StdRtn_t NVM_Restore_AllFromROM(void);
 
-
-EXTERNAL_ StdRtn_t NVM_Save_PIDpGainPos(const uint16_t pGain_);
-EXTERNAL_ StdRtn_t NVM_Save_PIDiGainPos(const uint16_t iGain_);
-EXTERNAL_ StdRtn_t NVM_Save_PIDdGainPos(const uint16_t dGain_);
-EXTERNAL_ StdRtn_t NVM_Save_PIDiAntiWindUpPos(const uint32_t iAntiWindUp_);
-EXTERNAL_ StdRtn_t NVM_Save_PIDMaxSpdPercPos(const uint16_t maxSpdPerc_);
 
 EXTERNAL_ StdRtn_t NVM_Save_PIDPosCfg(const NVM_PidCfg_t *posCfg_);
 EXTERNAL_ StdRtn_t NVM_Read_PIDPosCfg(NVM_PidCfg_t *posCfg_);
 EXTERNAL_ StdRtn_t NVM_Read_Dflt_PIDPosCfg(NVM_PidCfg_t *posCfg_);
 
 
-EXTERNAL_ StdRtn_t NVM_Save_PIDpGainSpdLe(const uint16_t pGain_);
-EXTERNAL_ StdRtn_t NVM_Save_PIDiGainSpdLe(const uint16_t iGain_);
-EXTERNAL_ StdRtn_t NVM_Save_PIDdGainSpdLe(const uint16_t dGain_);
-EXTERNAL_ StdRtn_t NVM_Save_PIDiAntiWindUpSpdLe(const uint32_t iAntiWindUp_);
-EXTERNAL_ StdRtn_t NVM_Save_PIDMaxSpdPercSpdLe(const uint16_t maxSpdPerc_);
-
 EXTERNAL_ StdRtn_t NVM_Save_PIDSpdLeCfg(const NVM_PidCfg_t *posCfg_);
 EXTERNAL_ StdRtn_t NVM_Read_PIDSpdLeCfg(NVM_PidCfg_t *spdCfg_);
 EXTERNAL_ StdRtn_t NVM_Read_Dflt_PIDSpdLeCfg(NVM_PidCfg_t *spdCfg_);
 
-
-EXTERNAL_ StdRtn_t NVM_Save_PIDpGainSpdRi(const uint16_t pGain_);
-EXTERNAL_ StdRtn_t NVM_Save_PIDiGainSpdRi(const uint16_t iGain_);
-EXTERNAL_ StdRtn_t NVM_Save_PIDdGainSpdRi(const uint16_t dGain_);
-EXTERNAL_ StdRtn_t NVM_Save_PIDMaxSpdPercSpdRi(const uint16_t maxSpdPerc_);
-EXTERNAL_ StdRtn_t NVM_Save_PIDiAntiWindUpSpdRi(const uint32_t iAntiWindUp_);
 
 EXTERNAL_ StdRtn_t NVM_Save_PIDSpdRiCfg(const NVM_PidCfg_t *posCfg_);
 EXTERNAL_ StdRtn_t NVM_Read_PIDSpdRiCfg(NVM_PidCfg_t *spdCfg_);

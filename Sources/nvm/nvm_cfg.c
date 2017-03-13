@@ -245,38 +245,13 @@ StdRtn_t NVM_Read_AllFromROM(NVM_RomCfg_t *romCfg_)
 	return  retVal;
 }
 
-StdRtn_t NVM_Save_All2NVM(const void *nvmCfg_)
-{
-	return SaveBlock2Flash(nvmCfg_,NVM_DFLASH_START_ADDR, sizeof(NVM_RomCfg_t),  NVM_DFLASH_CURRENT_BYTE_COUNT);
-}
 
+StdRtn_t NVM_Restore_AllFromROM(void)
+{
+	return SaveBlock2Flash((const void *)&romCfg, NVM_DFLASH_START_ADDR, sizeof(NVM_RomCfg_t),  NVM_DFLASH_CURRENT_BYTE_COUNT);
+}
 
 /* PID position control configuration */
-StdRtn_t NVM_Save_PIDpGainPos(const uint16_t pGain_)
-{
-	return SaveBlock2Flash((const void *)&pGain_,PID_P_GAIN_POS_START_ADDR, sizeof(uint16_t),  PID_P_GAIN_BYTE_COUNT);
-}
-
-StdRtn_t NVM_Save_PIDiGainPos(const uint16_t iGain_)
-{
-	return SaveBlock2Flash((const void *)&iGain_,PID_I_GAIN_POS_START_ADDR, sizeof(uint16_t),  PID_I_GAIN_BYTE_COUNT);
-}
-
-StdRtn_t NVM_Save_PIDdGainPos(const uint16_t dGain_)
-{
-	return SaveBlock2Flash((const void *)&dGain_,PID_D_GAIN_POS_START_ADDR, sizeof(uint16_t),  PID_D_GAIN_BYTE_COUNT);
-}
-
-StdRtn_t NVM_Save_PIDMaxSpdPercPos(const uint16_t maxSpdPerc_)
-{
-	return SaveBlock2Flash((const void *)&maxSpdPerc_,PID_MAX_SPEED_PERC_POS_START_ADDR, sizeof(uint16_t),  PID_MAX_SPEED_PERC_BYTE_COUNT);
-}
-
-StdRtn_t NVM_Save_PIDiAntiWindUpPos(const uint32_t iAntiWindUp_)
-{
-	return SaveBlock2Flash((const void *)&iAntiWindUp_,PID_I_ANTIWINDUP_POS_START_ADDR, sizeof(uint32_t),  PID_I_ANTIWINDUP_BYTE_COUNT);
-}
-
 StdRtn_t NVM_Save_PIDPosCfg(const NVM_PidCfg_t *posCfg_)
 {
 	return SaveBlock2Flash((const void *)posCfg_,PID_POS_CFG_START_ADDR, sizeof(NVM_PidCfg_t),  PID_CFG_BYTE_COUNT);
@@ -314,31 +289,6 @@ StdRtn_t NVM_Read_Dflt_PIDPosCfg(NVM_PidCfg_t *posCfg_)
 
 
 /* PID speed control configuration for the LEFT WHEEL */
-StdRtn_t NVM_Save_PIDpGainSpdLe(const uint16_t pGain_)
-{
-	return SaveBlock2Flash((const void *)&pGain_,PID_P_GAIN_SPDLE_START_ADDR, sizeof(uint16_t),  PID_P_GAIN_BYTE_COUNT);
-}
-
-StdRtn_t NVM_Save_PIDiGainSpdLe(const uint16_t iGain_)
-{
-	return SaveBlock2Flash((const void *)&iGain_,PID_I_GAIN_SPDLE_START_ADDR, sizeof(uint16_t),  PID_I_GAIN_BYTE_COUNT);
-}
-
-StdRtn_t NVM_Save_PIDdGainSpdLe(const uint16_t dGain_)
-{
-	return SaveBlock2Flash((const void *)&dGain_,PID_D_GAIN_SPDLE_START_ADDR, sizeof(uint16_t),  PID_D_GAIN_BYTE_COUNT);
-}
-
-StdRtn_t NVM_Save_PIDMaxSpdPercSpdLe(const uint16_t maxSpdPerc_)
-{
-	return SaveBlock2Flash((const void *)&maxSpdPerc_,PID_MAX_SPEED_PERC_SPDLE_START_ADDR, sizeof(uint16_t),  PID_MAX_SPEED_PERC_BYTE_COUNT);
-}
-
-StdRtn_t NVM_Save_PIDiAntiWindUpSpdLe(const uint32_t iAntiWindUp_)
-{
-	return SaveBlock2Flash((const void *)&iAntiWindUp_,PID_I_ANTIWINDUP_SPDLE_START_ADDR, sizeof(uint32_t),  PID_I_ANTIWINDUP_BYTE_COUNT);
-}
-
 StdRtn_t NVM_Save_PIDSpdLeCfg(const NVM_PidCfg_t *spdCfg_)
 {
 	return SaveBlock2Flash((const void *)spdCfg_,PID_SPDLE_CFG_START_ADDR, sizeof(NVM_PidCfg_t),  PID_CFG_BYTE_COUNT);
@@ -370,31 +320,6 @@ StdRtn_t NVM_Read_Dflt_PIDSpdLeCfg(NVM_PidCfg_t *spdCfg_)
 
 
 /* PID speed control configuration for the RIGHT WHEEL */
-StdRtn_t NVM_Save_PIDpGainSpdRi(const uint16_t pGain_)
-{
-	return SaveBlock2Flash((const void *)&pGain_,PID_P_GAIN_SPDRI_START_ADDR, sizeof(uint16_t),  PID_P_GAIN_BYTE_COUNT);
-}
-
-StdRtn_t NVM_Save_PIDiGainSpdRi(const uint16_t iGain_)
-{
-	return SaveBlock2Flash((const void *)&iGain_,PID_I_GAIN_SPDRI_START_ADDR, sizeof(uint16_t),  PID_I_GAIN_BYTE_COUNT);
-}
-
-StdRtn_t NVM_Save_PIDdGainSpdRi(const uint16_t dGain_)
-{
-	return SaveBlock2Flash((const void *)&dGain_,PID_D_GAIN_SPDRI_START_ADDR, sizeof(uint16_t),  PID_D_GAIN_BYTE_COUNT);
-}
-
-StdRtn_t NVM_Save_PIDMaxSpdPercSpdRi(const uint16_t maxSpdPerc_)
-{
-	return SaveBlock2Flash((const void *)&maxSpdPerc_,PID_MAX_SPEED_PERC_SPDRI_START_ADDR, sizeof(uint16_t),  PID_MAX_SPEED_PERC_BYTE_COUNT);
-}
-
-StdRtn_t NVM_Save_PIDiAntiWindUpSpdRi(const uint32_t iAntiWindUp_)
-{
-	return SaveBlock2Flash((const void *)&iAntiWindUp_,PID_I_ANTIWINDUP_SPDRI_START_ADDR, sizeof(uint32_t),  PID_I_ANTIWINDUP_BYTE_COUNT);
-}
-
 StdRtn_t NVM_Save_PIDSpdRiCfg(const NVM_PidCfg_t *spdCfg_)
 {
 	return SaveBlock2Flash((const void *)spdCfg_,PID_SPDRI_CFG_START_ADDR, sizeof(NVM_PidCfg_t),  PID_CFG_BYTE_COUNT);

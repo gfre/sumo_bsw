@@ -77,7 +77,7 @@ static uint8_t NVM_PrintVersion(const CLS1_StdIOType *io_)
 static void NVM_PrintRestoreStatus(const CLS1_StdIOType *io_)
 {
 	uint8_t strBuf[sizeof("0xFF")]={"0x\0"};
-	StdRtn_t res = NVM_RestoreAll();
+	StdRtn_t res = NVM_Restore_AllFromROM();
 
 	if(ERR_OK == res)
 	{
