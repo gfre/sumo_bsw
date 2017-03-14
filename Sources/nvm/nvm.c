@@ -35,9 +35,6 @@ static void NVM_InitValues(void);
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-/* TODO
- * - reload/init NVM parameters after NVM_Restore all
- */
 
 
 
