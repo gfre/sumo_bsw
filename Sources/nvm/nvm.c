@@ -36,10 +36,7 @@ static void NVM_InitValues(void);
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 /* TODO
- * - restore PID blocks only
- * - typedef void_a void *
- * - typedef NVM_PIDCfg_a NVM_PIDCfg_t *
- * - then change parameters in read functions to pointers to addresses instead of pointers to structs/blocks.
+ * - reload/init NVM parameters after NVM_Restore all
  */
 
 
