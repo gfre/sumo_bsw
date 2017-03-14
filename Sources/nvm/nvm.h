@@ -34,6 +34,10 @@
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
+/*!
+ * @brief Init function of the software component 'non-volatile memory'
+ * Initialises the NVM component - NVM is restored from ROM if it is not up2date
+ */
 EXTERNAL_ void NVM_Init(void);
 
 

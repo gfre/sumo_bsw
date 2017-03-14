@@ -42,33 +42,116 @@ typedef struct NVM_PidCfg_s
 
 typedef struct NVM_RomCfg_s
 {
-	uint8_t nvmVer;
-	uint8_t filler[3];
-	NVM_PidCfg_t pidCfgPos;
-	NVM_PidCfg_t pidCfgSpdLe;
-	NVM_PidCfg_t pidCfgSpdRi;
+	uint8_t nvmVer;					/**< NVM version						+ 1B mod4 1B */
+	uint8_t filler[3];				/**< filler 	 						+ 3B mod4 0B */
+	NVM_PidCfg_t pidCfgPos;			/**< PID position control config 	 	+12B mod4 0B */
+	NVM_PidCfg_t pidCfgSpdLe;		/**< PID speed control left config 	 	+12B mod4 0B */
+	NVM_PidCfg_t pidCfgSpdRi;		/**< PID speed control right config	 	+12B mod4 0B */
 } NVM_RomCfg_t; /* 1 + 3 + 3*12 = 40 Byte*/
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
+/**
+ * @brief Function reads the NVM version number
+ * @param nvmVer_ NVM version (call by ref)
+ * @return Error code, ERR_OK if everything was fine,
+ *                     ERR_PARAM_ADDRESS otherwise
+ */
 EXTERNAL_ StdRtn_t NVM_Read_NvmVerFromNVM(uint8_t *nvmVer_);
+
+/**
+ * @brief Function reads the ROM version number
+ * @param nvmVer_ ROM version (call by ref)
+ * @return Error code, ERR_OK if everything was fine,
+ *                     ERR_PARAM_ADDRESS otherwise
+ */
 EXTERNAL_ StdRtn_t NVM_Read_NvmVerFromROM(uint8_t *nvmVer_);
 
+/**
+ * @brief Function reads all default parameters from  ROM saved with const qualifier in programm flash
+ * @param romCfg_ default parameters (call by ref)
+ * @return Error code, ERR_OK if everything was fine,
+ *                     ERR_PARAM_ADDRESS otherwise
+ */
 EXTERNAL_ StdRtn_t NVM_Read_AllFromROM(NVM_RomCfg_t *romCfg_);
+
+/**
+ * @brief Function restores NVM with all parameters from ROM
+ * @return Error code, ERR_OK if everything was fine,
+ *                     specific ERROR CODE otherwise
+ */
 EXTERNAL_ StdRtn_t NVM_Restore_AllFromROM(void);
 
-
+/**
+ * @brief Function saves PID parameters of position control to NVM
+ * @param posCfg_ position control configuration
+ * @return Error code, ERR_OK if everything was fine,
+ *                     specific ERROR CODE otherwise
+ */
 EXTERNAL_ StdRtn_t NVM_Save_PIDPosCfg(const NVM_PidCfg_t *posCfg_);
+
+/**
+ * @brief Function reads PID parameters of position control from NVM
+ * @param posCfg_ position control configuration (call by ref)
+ * @return Error code, ERR_OK if everything was fine,
+ *                     specific ERROR CODE otherwise
+ */
 EXTERNAL_ StdRtn_t NVM_Read_PIDPosCfg(NVM_PidCfg_t *posCfg_);
+
+/**
+ * @brief Function reads default PID parameters of position control from ROM
+ * @param posCfg_ position control configuration (call by ref)
+ * @return Error code, ERR_OK if everything was fine,
+ *                     specific ERROR CODE otherwise
+ */
 EXTERNAL_ StdRtn_t NVM_Read_Dflt_PIDPosCfg(NVM_PidCfg_t *posCfg_);
 
+/**
+ * @brief Function saves PID parameters of left speed control to NVM
+ * @param spdCfg_ speed control configuration
+ * @return Error code, ERR_OK if everything was fine,
+ *                     specific ERROR CODE otherwise
+ */
+EXTERNAL_ StdRtn_t NVM_Save_PIDSpdLeCfg(const NVM_PidCfg_t *spdCfg_);
 
-EXTERNAL_ StdRtn_t NVM_Save_PIDSpdLeCfg(const NVM_PidCfg_t *posCfg_);
+/**
+ * @brief Function reads PID parameters of left speed control from NVM
+ * @param spdCfg_ speed control configuration (call by ref)
+ * @return Error code, ERR_OK if everything was fine,
+ *                     specific ERROR CODE otherwise
+ */
 EXTERNAL_ StdRtn_t NVM_Read_PIDSpdLeCfg(NVM_PidCfg_t *spdCfg_);
+
+/**
+ * @brief Function reads default PID parameters of left speed control from ROM
+ * @param spdCfg_ speed control configuration (call by ref)
+ * @return Error code, ERR_OK if everything was fine,
+ *                     specific ERROR CODE otherwise
+ */
+
 EXTERNAL_ StdRtn_t NVM_Read_Dflt_PIDSpdLeCfg(NVM_PidCfg_t *spdCfg_);
 
+/**
+ * @brief Function saves PID parameters of right speed control to NVM
+ * @param spdCfg_ speed control configuration
+ * @return Error code, ERR_OK if everything was fine,
+ *                     specific ERROR CODE otherwise
+ */
+EXTERNAL_ StdRtn_t NVM_Save_PIDSpdRiCfg(const NVM_PidCfg_t *spdCfg_);
 
-EXTERNAL_ StdRtn_t NVM_Save_PIDSpdRiCfg(const NVM_PidCfg_t *posCfg_);
+/**
+ * @brief Function reads PID parameters of right speed control from NVM
+ * @param spdCfg_ speed control configuration (call by ref)
+ * @return Error code, ERR_OK if everything was fine,
+ *                     specific ERROR CODE otherwise
+ */
 EXTERNAL_ StdRtn_t NVM_Read_PIDSpdRiCfg(NVM_PidCfg_t *spdCfg_);
+
+/**
+ * @brief Function reads default PID parameters of right speed control from ROM
+ * @param spdCfg_ speed control configuration (call by ref)
+ * @return Error code, ERR_OK if everything was fine,
+ *                     specific ERROR CODE otherwise
+ */
 EXTERNAL_ StdRtn_t NVM_Read_Dflt_PIDSpdRiCfg(NVM_PidCfg_t *spdCfg_);
 
 

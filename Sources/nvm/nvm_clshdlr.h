@@ -36,6 +36,13 @@
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
+/*!
+ * @brief Parses a command of the software component 'non-volatile memory'
+ * @param cmd Command string to be parsed
+ * @param handled Sets this variable to TRUE if command was handled
+ * @param io I/O stream to be used for input/output
+ * @return Error code, ERR_OK if everything was fine
+ */
 EXTERNAL_ uint8_t NVM_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
 
 
