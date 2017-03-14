@@ -81,7 +81,7 @@ static void NVM_PrintRestoreStatus(const CLS1_StdIOType *io_)
 
 	if(ERR_OK == res)
 	{
-		CLS1_SendStr("...NVM restoration successful.\r\n\n",io_->stdOut);
+		CLS1_SendStr("Done... NVM restoration successful\r\n\n",io_->stdOut);
 	}
 	else
 	{

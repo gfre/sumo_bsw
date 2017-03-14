@@ -24,7 +24,9 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-/* typedef unit8 TmplType_t;
+typedef StdRtn_t ReadPIDCfg_t(NVM_PidCfg_t *);
+typedef StdRtn_t SavePIDCfg_t(const NVM_PidCfg_t *);
+typedef PID_Config *GetPIDConfig_t(void);
 
 
 
@@ -162,9 +164,7 @@ static uint8_t ParsePidParameter(PID_Config *config, const unsigned char *cmd, b
 	return res;
 }
 
-typedef StdRtn_t ReadPIDCfg_t(NVM_PidCfg_t *);
-typedef StdRtn_t SavePIDCfg_t(const NVM_PidCfg_t *);
-typedef PID_Config *GetPIDConfig_t(void);
+
 
 static StdRtn_t PID_restoreCfg(ReadPIDCfg_t *readDfltCfg_, SavePIDCfg_t *saveCfg_, PID_Config *config_)
 {
