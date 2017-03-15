@@ -43,13 +43,13 @@ static uint8_t NVM_PrintHelp(const CLS1_StdIOType *io) {
 	CLS1_SendHelpStr((unsigned char*)"nvm", (unsigned char*)"Group of NVM commands\r\n", io->stdOut);
 	CLS1_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Shows NVM help or status\r\n", io->stdOut);
 	CLS1_SendHelpStr((unsigned char*)"  version", (unsigned char*)"Shows NVM version\r\n", io->stdOut);
-	CLS1_SendStatusStr((unsigned char*)"  restore", (unsigned char*)"restores all NVM parameters from ROM and saves to NVM", io->stdOut);
+	CLS1_SendHelpStr((unsigned char*)"  restore", (unsigned char*)"restores all NVM parameters from ROM and saves to NVM\r\n", io->stdOut);
 	return ERR_OK;
 }
 
 static uint8_t NVM_PrintStatus(const CLS1_StdIOType *io) {
 	CLS1_SendStatusStr((unsigned char*)"nvm", (unsigned char*)"\r\n", io->stdOut);
-	CLS1_SendStatusStr((unsigned char*)"  status", "no status information available", io->stdOut);
+	CLS1_SendStatusStr((unsigned char*)"  status", "no status information available\r\n", io->stdOut);
 	return ERR_OK;
 }
 
