@@ -108,7 +108,6 @@ inline static void TASK_CreateTasks()
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 void TASK_Init(void) {
-
 	TASK_CreateTasks();
 	TASK_AdoptToHardware();
 }
@@ -129,6 +128,7 @@ void TASK_PerdTaskFct(void * pvParameters_)
 	vTaskDelayUntil(). */
 	LastWakeTime = FRTOS1_xTaskGetTickCount();
 
+	/* Run initialisation before entering the loop */
 	if( (NULL != pvPar) && (NULL != pvPar->swcCfg) )
 	{
 		for(i = 0u; i < pvPar->numSwc; i++)
@@ -143,7 +143,7 @@ void TASK_PerdTaskFct(void * pvParameters_)
 	FRTOS1_vTaskDelay( pdMS_TO_TICKS( 100u ));
 	for( ;; )
 	{
-		/* This task should execute every 50 milliseconds.  Time is measured
+		/* This task should execute every x milliseconds.  Time is measured
 		in ticks. The pdMS_TO_TICKS macro is used to convert milliseconds
 		into ticks. xLastWakeTime is automatically updated within vTaskDelayUntil()
 		so is not explicitly updated by the task. */
@@ -170,6 +170,7 @@ void TASK_NonPerdTaskFct(void *pvParameters_)
 
 	pvPar = (const TASK_NonPerdTaskFctPar_t *)pvParameters_;
 
+	/* Run initialisation before entering the loop */
 	if( (NULL != pvPar) && (NULL != pvPar->swcCfg) )
 	{
 		for(i = 0u; i < pvPar->numSwc; i++)
@@ -181,6 +182,7 @@ void TASK_NonPerdTaskFct(void *pvParameters_)
 		}
 	}
 
+	/* Enter the loop that defines the task behavior. */
 	FRTOS1_vTaskDelay( pdMS_TO_TICKS( 100u ));
 	for(;;) {
 
