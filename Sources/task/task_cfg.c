@@ -51,14 +51,14 @@ static void DbgTaskFct(void *pvParameters_)   {return TASK_NonPerdTaskFct(pvPara
 /*
  * Configuration of the software component(s) run by the APPLICATION task
  */
-const TASK_SwcCfg_t applTaskMainFctCfg[] = {
+const TASK_SwcCfg_t applTaskSwcCfg[] = {
 		{APPL_SWC_STRING, APPL_MainFct, APPL_Init},
 };
 
 /*
  * Configuration of the software component(s) run by the COMMUNICATION task
  */
-const TASK_SwcCfg_t commTaskMainFctCfg[] = {
+const TASK_SwcCfg_t commTaskSwcCfg[] = {
 		{RNET_SWC_STRING, RNET_MainFct, RNET_Init},
 
 };
@@ -66,14 +66,14 @@ const TASK_SwcCfg_t commTaskMainFctCfg[] = {
 /*
  * Configuration of the software component(s) run by the DEBUG task
  */
-const TASK_SwcCfg_t dbgTaskMainFctCfg[] = {
+const TASK_SwcCfg_t dbgTaskSwcCfg[] = {
 		{SH_SWC_STRING, SH_MainFct, SH_Init},
 };
 
 /*
  * Configuration of the software component(s) run by the DRIVE task
  */
-const TASK_SwcCfg_t drvTaskMainFctCfg[] = {
+const TASK_SwcCfg_t drvTaskSwcCfg[] = {
 		{DRV_SWC_STRING, DRV_MainFct, DRV_Init},
 		{TACHO_SWC_STRING, TACHO_CalcSpeed, TACHO_Init},
 };
@@ -85,8 +85,8 @@ const TASK_SwcCfg_t drvTaskMainFctCfg[] = {
  */
 const TASK_PerdTaskFctPar_t applTaskFctPar = {
 		APPL_TASK_PERIOD,
-		applTaskMainFctCfg,
-		sizeof(applTaskMainFctCfg)/sizeof(applTaskMainFctCfg[0])
+		applTaskSwcCfg,
+		sizeof(applTaskSwcCfg)/sizeof(applTaskSwcCfg[0])
 };
 
 /*
@@ -94,8 +94,8 @@ const TASK_PerdTaskFctPar_t applTaskFctPar = {
  */
 const TASK_PerdTaskFctPar_t commTaskFctPar = {
 		COMM_TASK_PERIOD,
-		commTaskMainFctCfg,
-		sizeof(commTaskMainFctCfg)/sizeof(commTaskMainFctCfg[0])
+		commTaskSwcCfg,
+		sizeof(commTaskSwcCfg)/sizeof(commTaskSwcCfg[0])
 };
 
 /*
@@ -103,8 +103,8 @@ const TASK_PerdTaskFctPar_t commTaskFctPar = {
  */
 const TASK_NonPerdTaskFctPar_t dbgTaskFctPar = {
 		DBG_TASK_DELAY,
-		dbgTaskMainFctCfg,
-		sizeof(dbgTaskMainFctCfg)/sizeof(dbgTaskMainFctCfg[0])
+		dbgTaskSwcCfg,
+		sizeof(dbgTaskSwcCfg)/sizeof(dbgTaskSwcCfg[0])
 };
 
 /*
@@ -112,8 +112,8 @@ const TASK_NonPerdTaskFctPar_t dbgTaskFctPar = {
  */
 const TASK_PerdTaskFctPar_t drvTaskFctPar = {
 		DRV_TASK_PERIOD,
-		drvTaskMainFctCfg,
-		sizeof(drvTaskMainFctCfg)/sizeof(drvTaskMainFctCfg[0])
+		drvTaskSwcCfg,
+		sizeof(drvTaskSwcCfg)/sizeof(drvTaskSwcCfg[0])
 };
 /*------------------------------------------------------------------------------------------------*/
 
@@ -122,10 +122,10 @@ const TASK_PerdTaskFctPar_t drvTaskFctPar = {
  * Configuration of each task in an array
  */
 TASK_CfgItm_t taskCfgItems[]= {
-		{ApplTaskFct, APPL_TASK_STRING, configMINIMAL_STACK_SIZE,     (void *)&applTaskFctPar, tskIDLE_PRIORITY+1, (xTaskHandle*)NULL, TASK_SUSP_NEVER},
-		{DbgTaskFct,  DBG_TASK_STRING,  configMINIMAL_STACK_SIZE+50,  (void *)&dbgTaskFctPar,  tskIDLE_PRIORITY+1, (xTaskHandle*)NULL, TASK_SUSP_DEFAULT},
-		{CommTaskFct, COMM_TASK_STRING, configMINIMAL_STACK_SIZE+100, (void *)&commTaskFctPar, tskIDLE_PRIORITY+3, (xTaskHandle*)NULL, TASK_SUSP_NEVER},
-		{DrvTaskFct,  DRV_TASK_STRING,  configMINIMAL_STACK_SIZE,     (void *)&drvTaskFctPar,  tskIDLE_PRIORITY+3, (xTaskHandle*)NULL, TASK_SUSP_NEVER},
+		{ApplTaskFct, APPL_TASK_STRING, configMINIMAL_STACK_SIZE,     (void * const)&applTaskFctPar, tskIDLE_PRIORITY+1, (xTaskHandle*)NULL, TASK_SUSP_NEVER},
+		{DbgTaskFct,  DBG_TASK_STRING,  configMINIMAL_STACK_SIZE+50,  (void * const)&dbgTaskFctPar,  tskIDLE_PRIORITY+1, (xTaskHandle*)NULL, TASK_SUSP_DEFAULT},
+		{CommTaskFct, COMM_TASK_STRING, configMINIMAL_STACK_SIZE+100, (void * const)&commTaskFctPar, tskIDLE_PRIORITY+3, (xTaskHandle*)NULL, TASK_SUSP_NEVER},
+		{DrvTaskFct,  DRV_TASK_STRING,  configMINIMAL_STACK_SIZE,     (void * const)&drvTaskFctPar,  tskIDLE_PRIORITY+3, (xTaskHandle*)NULL, TASK_SUSP_NEVER},
 };
 /*------------------------------------------------------------------------------------------------*/
 

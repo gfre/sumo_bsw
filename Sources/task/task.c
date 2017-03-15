@@ -37,7 +37,6 @@
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 inline static void TASK_AdoptToHardware(void);
 inline static void TASK_CreateTasks(void);
-inline static void TASK_InitTasks(void);
 
 
 
@@ -48,11 +47,6 @@ inline static void TASK_InitTasks(void);
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 static void TASK_AdoptToHardware(void)
 {
-	/*Motor direction & Quadrature configuration for CAU_ZUMO */
-	(void)Q4CRight_SwapPins(TRUE);
-	MOT_Invert(MOT_GetMotorHandle(MOT_MOTOR_LEFT), TRUE); /* invert left motor */
-	MOT_Invert(MOT_GetMotorHandle(MOT_MOTOR_RIGHT), TRUE); /* invert right motor */
-
 	/* SW1: enable and turn on pull-up resistor for PTA14 (push button) */
 	PORT_PDD_SetPinPullSelect(PORTA_BASE_PTR, 14, PORT_PDD_PULL_UP);
 	PORT_PDD_SetPinPullEnable(PORTA_BASE_PTR, 14, PORT_PDD_PULL_ENABLE);
@@ -110,21 +104,12 @@ inline static void TASK_CreateTasks()
 	} /* NULL */
 }
 
-inline static void TASK_InitTasks(void)
-{
-	RNET_Init();
 
-	APPL_Init();
-
-	TACHO_Init();
-	DRV_Init();
-}
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 void TASK_Init(void) {
 
 	TASK_CreateTasks();
-	TASK_InitTasks();
 	TASK_AdoptToHardware();
 }
 
@@ -143,6 +128,17 @@ void TASK_PerdTaskFct(void * pvParameters_)
 	After this assignment, xLastWakeTime is update d automatically internally within
 	vTaskDelayUntil(). */
 	LastWakeTime = FRTOS1_xTaskGetTickCount();
+
+	if( (NULL != pvPar) && (NULL != pvPar->swcCfg) )
+	{
+		for(i = 0u; i < pvPar->numSwc; i++)
+		{
+			if(NULL != pvPar->swcCfg[i].initFct)
+			{
+				pvPar->swcCfg[i].initFct();
+			}
+		}
+	}
 	/* Enter the loop that defines the task behavior. */
 	FRTOS1_vTaskDelay( pdMS_TO_TICKS( 100u ));
 	for( ;; )
@@ -154,7 +150,7 @@ void TASK_PerdTaskFct(void * pvParameters_)
 		FRTOS1_vTaskDelayUntil( &LastWakeTime, pdMS_TO_TICKS( pvPar->taskPeriod ) );
 
 		/* Perform the periodic actions here. */
-		if(NULL != pvPar->swcCfg)
+		if( (NULL != pvPar) && (NULL != pvPar->swcCfg) )
 		{
 			for(i = 0u; i < pvPar->numSwc; i++)
 			{
@@ -174,11 +170,22 @@ void TASK_NonPerdTaskFct(void *pvParameters_)
 
 	pvPar = (const TASK_NonPerdTaskFctPar_t *)pvParameters_;
 
+	if( (NULL != pvPar) && (NULL != pvPar->swcCfg) )
+	{
+		for(i = 0u; i < pvPar->numSwc; i++)
+		{
+			if(NULL != pvPar->swcCfg[i].initFct)
+			{
+				pvPar->swcCfg[i].initFct();
+			}
+		}
+	}
+
 	FRTOS1_vTaskDelay( pdMS_TO_TICKS( 100u ));
 	for(;;) {
 
 		/* Perform the periodic actions here. */
-		if(NULL != pvPar->swcCfg)
+		if( (NULL != pvPar) && (NULL != pvPar->swcCfg) )
 		{
 			for(i = 0u; i < pvPar->numSwc; i++)
 			{
