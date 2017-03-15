@@ -17,17 +17,16 @@
 #include "appl.h"
 #include "appl_Types.h"
 #include "Platform.h"
-#include "RNET1.h"
 #include "stud.h"
 #include "task_cfg.h"
 #include "rte.h"
-#include "LED1.h"
 #include "sh.h"
 #include "buz.h"
 #include "batt.h"
 #include "id.h"
 #include "nvm.h"
 #include "rte_Types.h"
+#include "Pid.h"
 
 #ifdef ASW_ENABLED
 #include "asw.h"
@@ -185,6 +184,7 @@ static void APPL_RunStateMachine(void) {
 static StdRtn_t APPL_msSTARTUP(void)
 {
 	NVM_Init();
+	PID_Init();
 	RTE_Init();
 	return ERR_OK;
 }

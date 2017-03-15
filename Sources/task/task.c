@@ -22,7 +22,6 @@
 #include "Tacho.h"
 #include "Q4CLeft.h"
 #include "Q4CRight.h"
-#include "Pid.h"
 #include "drv.h"
 #include "rnet.h"
 #include "appl.h"
@@ -36,8 +35,9 @@
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-static void TASK_AdoptToHardware(void);
-static void TASK_CreateTasks();
+inline static void TASK_AdoptToHardware(void);
+inline static void TASK_CreateTasks(void);
+inline static void TASK_InitTasks(void);
 
 
 
@@ -69,7 +69,7 @@ static void TASK_AdoptToHardware(void)
 }
 
 
-static void TASK_CreateTasks()
+inline static void TASK_CreateTasks()
 {
 	uint8 i = 0u;
 	const TASK_Cfg_t *taskCfg = NULL;
@@ -110,20 +110,22 @@ static void TASK_CreateTasks()
 	} /* NULL */
 }
 
+inline static void TASK_InitTasks(void)
+{
+	RNET_Init();
+
+	APPL_Init();
+
+	TACHO_Init();
+	DRV_Init();
+}
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-void TASK_Run(void) {
+void TASK_Init(void) {
 
-	MOT_Init();
-	TACHO_Init();
-	PID_Init();
-	DRV_Init();
-
-	TASK_AdoptToHardware();
-	RNET_Init();
-	APPL_Init();
 	TASK_CreateTasks();
-
+	TASK_InitTasks();
+	TASK_AdoptToHardware();
 }
 
 

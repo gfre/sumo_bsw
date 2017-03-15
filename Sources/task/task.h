@@ -34,10 +34,10 @@
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-/*!
- * @brief Run the software
+/**
+ * @brief Creates the tasks and initialises the software components run by the created tasks
  */
-EXTERNAL_ void TASK_Run(void);
+EXTERNAL_ void TASK_Init(void);
 
 
 #ifdef EXTERNAL_

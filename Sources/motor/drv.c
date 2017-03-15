@@ -370,6 +370,8 @@ void DRV_DeInit(void) {
 }
 
 void DRV_Init(void) {
+	MOT_Init();
+
 	DRV_Status.mode = DRV_MODE_NONE;
 	DRV_Status.speed.left = 0;
 	DRV_Status.speed.right = 0;
