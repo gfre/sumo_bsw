@@ -87,12 +87,12 @@ static void TASK_PrintCalledMainFcts(const CLS1_StdIOType *io_)
 				if(NULL != taskFctPar)
 				{
 					UTIL1_strcat(buf, sizeof(buf), ">> " );
-					for(j = 0u; j < taskFctPar->numMainFcts; j++)
+					for(j = 0u; j < taskFctPar->numSwc; j++)
 					{
-						if(NULL != taskFctPar->mainFctCfg)
+						if(NULL != taskFctPar->swcCfg)
 						{
-							UTIL1_strcat(buf, sizeof(buf), taskFctPar->mainFctCfg[j].swcName);
-							if(j < taskFctPar->numMainFcts-1u)
+							UTIL1_strcat(buf, sizeof(buf), taskFctPar->swcCfg[j].swcName);
+							if(j < taskFctPar->numSwc-1u)
 							{
 								UTIL1_strcat(buf, sizeof(buf), ", ");
 							}

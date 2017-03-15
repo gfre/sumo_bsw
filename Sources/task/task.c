@@ -154,13 +154,13 @@ void TASK_PerdTaskFct(void * pvParameters_)
 		FRTOS1_vTaskDelayUntil( &LastWakeTime, pdMS_TO_TICKS( pvPar->taskPeriod ) );
 
 		/* Perform the periodic actions here. */
-		if(NULL != pvPar->mainFctCfg)
+		if(NULL != pvPar->swcCfg)
 		{
-			for(i = 0u; i < pvPar->numMainFcts; i++)
+			for(i = 0u; i < pvPar->numSwc; i++)
 			{
-				if(NULL != pvPar->mainFctCfg[i].mainFct)
+				if(NULL != pvPar->swcCfg[i].mainFct)
 				{
-					pvPar->mainFctCfg[i].mainFct();
+					pvPar->swcCfg[i].mainFct();
 				}
 			}
 		}
@@ -178,13 +178,13 @@ void TASK_NonPerdTaskFct(void *pvParameters_)
 	for(;;) {
 
 		/* Perform the periodic actions here. */
-		if(NULL != pvPar->mainFctCfg)
+		if(NULL != pvPar->swcCfg)
 		{
-			for(i = 0u; i < pvPar->numMainFcts; i++)
+			for(i = 0u; i < pvPar->numSwc; i++)
 			{
-				if(NULL != pvPar->mainFctCfg[i].mainFct)
+				if(NULL != pvPar->swcCfg[i].mainFct)
 				{
-					pvPar->mainFctCfg[i].mainFct();
+					pvPar->swcCfg[i].mainFct();
 				}
 			}
 		}
