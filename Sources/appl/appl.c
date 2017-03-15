@@ -27,15 +27,18 @@
 #include "nvm.h"
 #include "rte_Types.h"
 #include "Pid.h"
-
 #ifdef ASW_ENABLED
 #include "asw.h"
 #endif
 
+
+
 /*======================================= >> #DEFINES << =========================================*/
 
 
+
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
+
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
@@ -49,9 +52,12 @@ static void APPL_msERROR(void);
 static inline StdRtn_t Set_State(const APPL_State_t state_);
 
 
+
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 APPL_State_t applState = APPL_STATE_NONE;
 const TASK_CfgItm_t *dbgTaskCfg = NULL;
+
+
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 static inline StdRtn_t Set_State(const APPL_State_t state_)
@@ -112,7 +118,7 @@ static StdRtn_t APPL_SyncStateMachineWithISR()
 }
 
 static void APPL_RunStateMachine(void) {
-  static StdRtn_t retVal = ERR_OK;
+  static StdRtn_t retVal = ERR_FAULT;
   switch (applState)
   {
     case APPL_STATE_STARTUP:
@@ -121,10 +127,6 @@ static void APPL_RunStateMachine(void) {
       if(ERR_OK == retVal)
       {
     	  Set_State(APPL_STATE_INIT);
-      }
-      else
-      {
-    	  Set_State(APPL_STATE_ERROR);
       }
       break;
     }
@@ -135,37 +137,22 @@ static void APPL_RunStateMachine(void) {
       {
     	  Set_State(APPL_STATE_IDLE);
       }
-      else
-      {
-    	  Set_State(APPL_STATE_ERROR);
-      }
       break;
     }
     case APPL_STATE_IDLE:
     {
       retVal = APPL_msIDLE();
-      if(ERR_OK != retVal)
-      {
-    	  Set_State(APPL_STATE_ERROR);
-      }
       break;
     }
     case APPL_STATE_NORMAL:
     {
       retVal = APPL_msNORMAL();
       if(ERR_OK != retVal)
-      {
-    	  Set_State(APPL_STATE_ERROR);
-      }
       break;
     }
     case APPL_STATE_DEBUG:
     {
       retVal = APPL_msDEBUG();
-      if(ERR_OK != retVal)
-      {
-    	  Set_State(APPL_STATE_ERROR);
-      }
       break;
     }
     default:
@@ -175,6 +162,11 @@ static void APPL_RunStateMachine(void) {
       break;
     }
   }/* switch */
+
+  if(ERR_OK != retVal)
+  {
+	  Set_State(APPL_STATE_ERROR);
+  }
 
   APPL_SyncStateMachineWithISR();
 
@@ -191,9 +183,8 @@ static StdRtn_t APPL_msSTARTUP(void)
 
 static StdRtn_t APPL_msINIT(void)
 {
-	StdRtn_t retVal = ERR_OK;
-
 	dbgTaskCfg = TASK_Get_DbgTaskCfg();
+
 	ID_Init();
 	BUZ_Init();
 	BATT_Init();
@@ -202,7 +193,7 @@ static StdRtn_t APPL_msINIT(void)
 	ASW_Init();
 #endif
 
-    return retVal;
+    return ERR_OK;
 }
 
 static StdRtn_t APPL_msIDLE(void)
@@ -234,6 +225,7 @@ APPL_State_t APPL_Get_State(void)
 {
 	return applState;
 }
+
 void APPL_Init(void)
 {
 	Set_State(APPL_STATE_STARTUP);

@@ -226,6 +226,7 @@ void KEY1_OnKeyReleased(uint8_t keys)
 	{
 		cbFct(keys);
 	}
+
 	applTaskCfg = TASK_Get_ApplTaskCfg();
 	if( (NULL != applTaskCfg ) && ( applTaskCfg->taskHdl ) )
 	{
