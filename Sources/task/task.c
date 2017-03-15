@@ -17,18 +17,13 @@
 #include "task.h"
 #include "task_cfg.h"
 #include "task_Types.h"
-#include "rte_Types.h"
-#include "buz.h"
 #include "Motor.h"
 #include "RNET1.h"
-#include "batt.h"
 #include "Tacho.h"
 #include "Q4CLeft.h"
 #include "Q4CRight.h"
 #include "Pid.h"
 #include "drv.h"
-#include "nvm.h"
-#include "id.h"
 #include "rnet.h"
 #include "appl.h"
 
@@ -120,20 +115,14 @@ static void TASK_CreateTasks()
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 void TASK_Run(void) {
 
-	BUZ_Init();
 	MOT_Init();
-	RNET1_Init();
-	BATT_Init();
+	RNET_Init();
 	TACHO_Init();
 	PID_Init();
 	DRV_Init();
-	ID_Init();
-	NVM_Init();
 
 	TASK_AdoptToHardware();
 	APPL_Init();
-	RNET_Init();
-	RTE_Init();
 	TASK_CreateTasks();
 }
 

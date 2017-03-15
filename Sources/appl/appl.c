@@ -23,6 +23,11 @@
 #include "rte.h"
 #include "LED1.h"
 #include "sh.h"
+#include "buz.h"
+#include "batt.h"
+#include "id.h"
+#include "nvm.h"
+#include "rte_Types.h"
 
 #ifdef ASW_ENABLED
 #include "asw.h"
@@ -179,23 +184,25 @@ static void APPL_RunStateMachine(void) {
 
 static StdRtn_t APPL_msSTARTUP(void)
 {
+	NVM_Init();
+	RTE_Init();
 	return ERR_OK;
 }
 
 static StdRtn_t APPL_msINIT(void)
 {
-  StdRtn_t retVal = ERR_PARAM_ADDRESS;
-#ifdef ASW_ENABLED
-  ASW_Init();
-#endif
-  STUD_Init();
+	StdRtn_t retVal = ERR_OK;
 
-  dbgTaskCfg = TASK_Get_DbgTaskCfg();
-  if(NULL != dbgTaskCfg)
-  {
-	  retVal = ERR_OK;
-  }
-  return retVal;
+	dbgTaskCfg = TASK_Get_DbgTaskCfg();
+	ID_Init();
+	BUZ_Init();
+	BATT_Init();
+	STUD_Init();
+#ifdef ASW_ENABLED
+	ASW_Init();
+#endif
+
+    return retVal;
 }
 
 static StdRtn_t APPL_msIDLE(void)
