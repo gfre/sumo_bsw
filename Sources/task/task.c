@@ -103,7 +103,6 @@ static void TASK_CreateTasks()
 				} /* pdPASS */
 			}
 		}
-		FRTOS1_vTaskStartScheduler();
 	} /* !NULL */
 	else
 	{
@@ -116,14 +115,15 @@ static void TASK_CreateTasks()
 void TASK_Run(void) {
 
 	MOT_Init();
-	RNET_Init();
 	TACHO_Init();
 	PID_Init();
 	DRV_Init();
 
 	TASK_AdoptToHardware();
+	RNET_Init();
 	APPL_Init();
 	TASK_CreateTasks();
+
 }
 
 
