@@ -28,6 +28,7 @@
 static uint8 PrintHelp(const CLS1_StdIOType *io_);
 static uint8 PrintStatus(const CLS1_StdIOType *io_);
 static const uint8 * ReadStateString(APPL_State_t state_);
+static const uint8 * ReadCmdString(APPL_Cmd_t state_);
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 
@@ -42,22 +43,34 @@ static uint8 PrintHelp(const CLS1_StdIOType *io_) {
 static uint8 PrintStatus(const CLS1_StdIOType *io_)
 {
 	CLS1_SendStatusStr((unsigned char*)"appl", (unsigned char*)"\r\n", io_->stdOut);
-	CLS1_SendStatusStr((unsigned char*)"  curr. state", ReadStateString(APPL_Get_State()) , io_->stdOut);
+	CLS1_SendStatusStr((unsigned char*)"  sm state", ReadStateString(APPL_Get_SmState()) , io_->stdOut);
+	CLS1_SendStatusStr((unsigned char*)"  sm cmd", ReadCmdString(APPL_Get_SmCmd()) , io_->stdOut);
+	CLS1_SendStatusStr((unsigned char*)"  nextState", ReadStateString(APPL_Get_NextState()) , io_->stdOut);
 	return ERR_OK;
 }
 
 static const uint8 * ReadStateString(APPL_State_t state_){
-  switch(state_) {
-    case APPL_STATE_STARTUP: return "STARTUP\r\n";
-    case APPL_STATE_INIT:    return "INIT\r\n";
-    case APPL_STATE_IDLE:    return "IDLE\r\n";
-    case APPL_STATE_NORMAL:  return "NORMAL\r\n";
-    case APPL_STATE_DEBUG:  return "DEBUG\r\n";
-    case APPL_STATE_ERROR:   return "ERROR\r\n";
-    default: return ">> fatal error - invalid application state <<\r\n";
+  switch(state_)
+  {
+  	  case APPL_STATE_NONE: 	return "NO or INVALID STATE\r\n";
+  	  case APPL_STATE_STARTUP:	return "STARTUP\r\n";
+  	  case APPL_STATE_INIT:    	return "INIT\r\n";
+  	  case APPL_STATE_IDLE:    	return "IDLE\r\n";
+  	  case APPL_STATE_NORMAL:  	return "NORMAL\r\n";
+  	  case APPL_STATE_DEBUG:  	return "DEBUG\r\n";
+  	  case APPL_STATE_ERROR:   	return "ERROR\r\n";
+  	  default: 					return ">> fatal error - unknown application state <<\r\n";
   }
 }
 
+static const uint8 * ReadCmdString(APPL_Cmd_t state_){
+  switch(state_) {
+  	case Run: 		return "Run\r\n";
+    case Enter:    	return "Enter\r\n";
+    case Exit:    	return "Exit\r\n";
+    default: return ">> fatal error - invalid or unknown state machine command <<\r\n";
+  }
+}
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 uint8 APPL_ParseCommand(const unsigned char *cmd_, bool *handled, const CLS1_StdIOType *io_) {
