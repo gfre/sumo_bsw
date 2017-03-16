@@ -38,8 +38,15 @@
 
 
 /*======================================= >> #DEFINES << =========================================*/
+#define CLR_HOLD_ON_BIT(holdOn_, state_)				( (uint8_t)( holdOn_ & ~( 0x01u << state_ ) ) )
+#define SET_HOLD_ON_BIT(holdOn_, state_)				( (uint8_t)( holdOn_ |  ( 0x01u << state_ ) ) )
+#define GET_HOLD_ON_BIT(holdOn_, state_)				( (uint8_t)( 0x01u   &  ( holdOn_ >> state_ ) ) )
+#define CHK_HOLD_ON_BIT(holdOn_ , release_, state_)		( TRUE == GET_HOLD_ON_BIT(holdOn_, state_) ? GET_HOLD_ON_BIT(release_, state_) : TRUE)
 
-
+#define CHK_HOLD_ON_ENTER(state_)						(CHK_HOLD_ON_BIT(holdOnEnter, releaseEnter, state_))
+#define CHK_HOLD_ON_EXIT(state_)						(CHK_HOLD_ON_BIT(holdOnExit, releaseExit, state_))
+#define CLR_HOLD_ON_ENTER(state_)						(CLR_HOLD_ON_BIT(releaseEnter, state_))
+#define CLR_HOLD_ON_EXIT(state_)						(CLR_HOLD_ON_BIT(releaseExit, state_))
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 typedef struct SmType_s
@@ -79,7 +86,7 @@ static void Tick_StateMachine(void);
 static inline void Proc_States(const SmType_t sm_);
 static inline StdRtn_t Sync_StateMachineWithISR();
 
-
+static inline StdRtn_t Set_HoldOnMask(uint8_t *mask_, const APPL_State_t state_, const uint8_t holdOn_);
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 const TASK_CfgItm_t *dbgTaskCfg = NULL;
@@ -94,7 +101,10 @@ static SmStFcts_t smStFctTbl[APPL_STATE_NUM] = {
 /* ERROR */		{enterERROR, 	runERROR, 	NULL},
 };
 
-
+static uint8_t holdOnEnter  = 0x00u;
+static uint8_t holdOnExit   = 0x00u;
+static uint8_t releaseEnter = 0x00u;
+static uint8_t releaseExit  = 0x00u;
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 static inline void Proc_States(const SmType_t sm_)
 {
@@ -103,7 +113,7 @@ static inline void Proc_States(const SmType_t sm_)
 	{
 		case Enter:
 		{
-			if ( NULL != smStFctTbl[sm_.state].enterFct )
+			if ( ( NULL != smStFctTbl[sm_.state].enterFct ) )
 			{
 				retVal = smStFctTbl[sm_.state].enterFct();
 			}
@@ -141,8 +151,9 @@ static void Tick_StateMachine(void)
 	   Proc_States(sm);
 	   if ( nextState != APPL_STATE_NONE)
 	   {
-		   if (Exit == sm.cmd)
+		   if( (Exit == sm.cmd) && ( TRUE == CHK_HOLD_ON_EXIT(sm.state) ) )
 		   {
+			   CLR_HOLD_ON_EXIT(sm.state);
 			   sm.cmd = Enter;
 			   sm.state = nextState;
 			   nextState = APPL_STATE_NONE;
@@ -154,8 +165,9 @@ static void Tick_StateMachine(void)
 	   }
 	   else
 	   {
-		   if(Enter == sm.cmd)
+		   if((Enter == sm.cmd) && ( TRUE == CHK_HOLD_ON_ENTER(sm.state) ) )
 		   {
+			   CLR_HOLD_ON_ENTER(sm.state);
 			   sm.cmd = Run;
 		   }
 	   }
@@ -173,7 +185,7 @@ static void Tick_StateMachine(void)
 static inline StdRtn_t Sync_StateMachineWithISR()
 {
   BaseType_t notfRes = pdFAIL;
-  uint32 notfVal = 0u;
+  uint32_t notfVal = 0u;
 
   notfRes = FRTOS1_xTaskNotifyWait( pdFALSE,
 				    UINT32_MAX,
@@ -293,6 +305,26 @@ static StdRtn_t runERROR(void)
 	return ERR_OK;
 }
 
+static inline StdRtn_t Set_HoldOnMask(uint8_t *mask_, const APPL_State_t state_, const uint8_t holdOn_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if (NULL != mask_)
+	{
+		retVal = ERR_OK;
+		if ( FALSE == holdOn_)
+		{
+			*mask_ = CLR_HOLD_ON_BIT(*mask_,(uint8_t)state_);
+		}
+		else
+		{
+			*mask_ = SET_HOLD_ON_BIT(*mask_,(uint8_t)state_);
+		}
+	}
+
+	return retVal;
+}
+
+
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 APPL_State_t APPL_Get_NextState(void)
 {
@@ -309,10 +341,13 @@ APPL_Cmd_t APPL_Get_SmCmd(void)
 	return sm.cmd;
 }
 
+
 void APPL_Init(void)
 {
 	sm.state = APPL_STATE_STARTUP;
 	sm.cmd = Enter;
+	holdOnEnter = 0x00u;
+	holdOnExit  = 0x00u;
 }
 
 void APPL_MainFct(void)
