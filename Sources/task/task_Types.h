@@ -58,25 +58,27 @@ typedef struct TASK_Cfg_s
 
 typedef void (TASK_MainFct_t)(void);
 
-typedef struct TASK_MainFctCfg_s
+typedef void (TASK_InitFct_t)(void);
+
+typedef struct TASK_SwcCfg_s
 {
 	const char_t * const swcName;
 	TASK_MainFct_t * const mainFct;
-}TASK_MainFctCfg_t;
+	TASK_InitFct_t * const initFct;
+}TASK_SwcCfg_t;
 
 typedef struct TASK_PerdTaskFctPar_s
 {
 	const uint8 taskPeriod;
-	const TASK_MainFctCfg_t *mainFctCfg;
-	const uint8 numMainFcts;
-
+	const TASK_SwcCfg_t *swcCfg;
+	const uint8 numSwc;
 }TASK_PerdTaskFctPar_t;
 
 typedef struct TASK_NonPerdTaskFctPar_s
 {
 	const uint8 taskDelay;
-	const TASK_MainFctCfg_t *mainFctCfg;
-	const uint8 numMainFcts;
+	const TASK_SwcCfg_t *swcCfg;
+	const uint8 numSwc;
 }TASK_NonPerdTaskFctPar_t;
 
 

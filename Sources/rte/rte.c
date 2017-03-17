@@ -24,7 +24,7 @@
 #include "sh.h"
 #include "sh_Types.h"
 #include "id_Types.h"
-
+#include "appl_Types.h"
 
 /*======================================= >> #DEFINES << =========================================*/
 #define USER_SWITCH_MASK (0x01u)
@@ -547,6 +547,27 @@ ID_Sumo_t RTE_GetSumoID(void)
 }
 
 
+
+/*================================================================================================*/
+StdRtn_t RTE_Write_HoldOnEnterNormal(const uint8_t holdOn_)
+{
+	return Set_HoldOnEnter(APPL_STATE_NORMAL, holdOn_);
+}
+
+StdRtn_t RTE_Write_HoldOnEnterIdle(const uint8_t holdOn_)
+{
+	return Set_HoldOnEnter(APPL_STATE_IDLE, holdOn_);
+}
+
+StdRtn_t RTE_Release_HoldOnEnterNormal(void)
+{
+	return Set_ReleaseEnter(APPL_STATE_NORMAL);
+}
+
+StdRtn_t RTE_Release_HoldOnEnterIdle(void)
+{
+	return Set_ReleaseEnter(APPL_STATE_IDLE);
+}
 
 #ifdef MASTER_RTE_C_
 #undef MASTER_RTE_C_

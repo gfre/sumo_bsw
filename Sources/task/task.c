@@ -17,18 +17,12 @@
 #include "task.h"
 #include "task_cfg.h"
 #include "task_Types.h"
-#include "rte_Types.h"
-#include "buz.h"
 #include "Motor.h"
 #include "RNET1.h"
-#include "batt.h"
 #include "Tacho.h"
 #include "Q4CLeft.h"
 #include "Q4CRight.h"
-#include "Pid.h"
 #include "drv.h"
-#include "nvm.h"
-#include "id.h"
 #include "rnet.h"
 #include "appl.h"
 
@@ -41,8 +35,8 @@
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-static void TASK_AdoptToHardware(void);
-static void TASK_CreateTasks();
+inline static void TASK_AdoptToHardware(void);
+inline static void TASK_CreateTasks(void);
 
 
 
@@ -53,11 +47,6 @@ static void TASK_CreateTasks();
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 static void TASK_AdoptToHardware(void)
 {
-	/*Motor direction & Quadrature configuration for CAU_ZUMO */
-	(void)Q4CRight_SwapPins(TRUE);
-	MOT_Invert(MOT_GetMotorHandle(MOT_MOTOR_LEFT), TRUE); /* invert left motor */
-	MOT_Invert(MOT_GetMotorHandle(MOT_MOTOR_RIGHT), TRUE); /* invert right motor */
-
 	/* SW1: enable and turn on pull-up resistor for PTA14 (push button) */
 	PORT_PDD_SetPinPullSelect(PORTA_BASE_PTR, 14, PORT_PDD_PULL_UP);
 	PORT_PDD_SetPinPullEnable(PORTA_BASE_PTR, 14, PORT_PDD_PULL_ENABLE);
@@ -74,7 +63,7 @@ static void TASK_AdoptToHardware(void)
 }
 
 
-static void TASK_CreateTasks()
+inline static void TASK_CreateTasks()
 {
 	uint8 i = 0u;
 	const TASK_Cfg_t *taskCfg = NULL;
@@ -108,7 +97,6 @@ static void TASK_CreateTasks()
 				} /* pdPASS */
 			}
 		}
-		FRTOS1_vTaskStartScheduler();
 	} /* !NULL */
 	else
 	{
@@ -117,24 +105,11 @@ static void TASK_CreateTasks()
 }
 
 
+
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-void TASK_Run(void) {
-
-	BUZ_Init();
-	MOT_Init();
-	RNET1_Init();
-	BATT_Init();
-	TACHO_Init();
-	PID_Init();
-	DRV_Init();
-	ID_Init();
-	NVM_Init();
-
-	TASK_AdoptToHardware();
-	APPL_Init();
-	RNET_Init();
-	RTE_Init();
+void TASK_Init(void) {
 	TASK_CreateTasks();
+	TASK_AdoptToHardware();
 }
 
 
@@ -152,24 +127,36 @@ void TASK_PerdTaskFct(void * pvParameters_)
 	After this assignment, xLastWakeTime is update d automatically internally within
 	vTaskDelayUntil(). */
 	LastWakeTime = FRTOS1_xTaskGetTickCount();
+
+	/* Run initialisation before entering the loop */
+	if( (NULL != pvPar) && (NULL != pvPar->swcCfg) )
+	{
+		for(i = 0u; i < pvPar->numSwc; i++)
+		{
+			if(NULL != pvPar->swcCfg[i].initFct)
+			{
+				pvPar->swcCfg[i].initFct();
+			}
+		}
+	}
 	/* Enter the loop that defines the task behavior. */
 	FRTOS1_vTaskDelay( pdMS_TO_TICKS( 100u ));
 	for( ;; )
 	{
-		/* This task should execute every 50 milliseconds.  Time is measured
+		/* This task should execute every x milliseconds.  Time is measured
 		in ticks. The pdMS_TO_TICKS macro is used to convert milliseconds
 		into ticks. xLastWakeTime is automatically updated within vTaskDelayUntil()
 		so is not explicitly updated by the task. */
 		FRTOS1_vTaskDelayUntil( &LastWakeTime, pdMS_TO_TICKS( pvPar->taskPeriod ) );
 
 		/* Perform the periodic actions here. */
-		if(NULL != pvPar->mainFctCfg)
+		if( (NULL != pvPar) && (NULL != pvPar->swcCfg) )
 		{
-			for(i = 0u; i < pvPar->numMainFcts; i++)
+			for(i = 0u; i < pvPar->numSwc; i++)
 			{
-				if(NULL != pvPar->mainFctCfg[i].mainFct)
+				if(NULL != pvPar->swcCfg[i].mainFct)
 				{
-					pvPar->mainFctCfg[i].mainFct();
+					pvPar->swcCfg[i].mainFct();
 				}
 			}
 		}
@@ -183,17 +170,30 @@ void TASK_NonPerdTaskFct(void *pvParameters_)
 
 	pvPar = (const TASK_NonPerdTaskFctPar_t *)pvParameters_;
 
+	/* Run initialisation before entering the loop */
+	if( (NULL != pvPar) && (NULL != pvPar->swcCfg) )
+	{
+		for(i = 0u; i < pvPar->numSwc; i++)
+		{
+			if(NULL != pvPar->swcCfg[i].initFct)
+			{
+				pvPar->swcCfg[i].initFct();
+			}
+		}
+	}
+
+	/* Enter the loop that defines the task behavior. */
 	FRTOS1_vTaskDelay( pdMS_TO_TICKS( 100u ));
 	for(;;) {
 
 		/* Perform the periodic actions here. */
-		if(NULL != pvPar->mainFctCfg)
+		if( (NULL != pvPar) && (NULL != pvPar->swcCfg) )
 		{
-			for(i = 0u; i < pvPar->numMainFcts; i++)
+			for(i = 0u; i < pvPar->numSwc; i++)
 			{
-				if(NULL != pvPar->mainFctCfg[i].mainFct)
+				if(NULL != pvPar->swcCfg[i].mainFct)
 				{
-					pvPar->mainFctCfg[i].mainFct();
+					pvPar->swcCfg[i].mainFct();
 				}
 			}
 		}

@@ -247,8 +247,8 @@ void MOT_Deinit(void) {
 }
 
 void MOT_Init(void) {
-	motorL.inverted = FALSE;
-	motorR.inverted = FALSE;
+	motorL.inverted = CAU_SUMO_PLT_MOTOR_LEFT_INVERTED;
+	motorR.inverted = CAU_SUMO_PLT_MOTOR_RIGHT_INVERTED;
 	motorL.DirPutVal = DirLPutVal;
 	motorR.DirPutVal = DirRPutVal;
 	motorL.SetRatio16 = PWMLSetRatio16;

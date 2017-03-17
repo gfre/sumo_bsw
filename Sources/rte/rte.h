@@ -416,6 +416,40 @@ EXTERNAL_ StdRtn_t RTE_putsErr(const uint8_t *msg_);
 EXTERNAL_ ID_Sumo_t RTE_GetSumoID(void);
 
 
+
+/*================================================================================================*/
+/**
+ * @brief This function sets a flag which enables/disables hold on ENTER functionality for
+ * NORMAL application state/mode
+ * @param  holdOn_ TRUE/FALSE-flag for enabling or disabling holdOn ENTER functionality
+ * @return Error code, ERR_OK if everything was fine,
+ *                     ERR_PARAM_ADDRESS otherwise
+ */
+StdRtn_t RTE_Write_HoldOnEnterNormal(const uint8_t holdOn_);
+
+/**
+ * @brief This function sets a flag which enables/disables hold on ENTER functionality for
+ * IDLE application state/mode
+ * @param  holdOn_ TRUE/FALSE-flag for enabling or disabling holdOn ENTER functionality
+ * @return Error code, ERR_OK if everything was fine,
+ *                     ERR_PARAM_ADDRESS otherwise
+ */
+StdRtn_t RTE_Write_HoldOnEnterIdle(const uint8_t holdOn_);
+
+/**
+ * @brief This function allows to release hold on ENTER for NORMAL application state/mode
+ * @return Error code, ERR_OK if everything was fine,
+ *                     ERR_PARAM_ADDRESS otherwise
+ */
+StdRtn_t RTE_Release_HoldOnEnterNormal(void);
+
+/**
+ * @brief This function allows to release hold on ENTER for IDLE application state/mode
+ * @return Error code, ERR_OK if everything was fine,
+ *                     ERR_PARAM_ADDRESS otherwise
+ */
+StdRtn_t RTE_Release_HoldOnEnterIdle(void);
+
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
