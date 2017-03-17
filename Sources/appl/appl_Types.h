@@ -16,7 +16,7 @@
 #define APPL_TYPES_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
-
+#include "ACon_Types.h"
 
 #ifdef MASTER_appl_C_
 #define EXTERNAL_
@@ -61,6 +61,11 @@ typedef enum APPL_State_e
 EXTERNAL_ APPL_State_t APPL_Get_NextState(void);
 EXTERNAL_ APPL_State_t APPL_Get_SmState(void);
 EXTERNAL_ APPL_Cmd_t APPL_Get_SmCmd(void);
+
+EXTERNAL_ StdRtn_t Set_HoldOnEnter(const APPL_State_t state_, const uint8_t holdOn_);
+EXTERNAL_ StdRtn_t Set_HoldOnExit(const APPL_State_t state_, const uint8_t holdOn_);
+EXTERNAL_ StdRtn_t Set_ReleaseEnter(const APPL_State_t state_);
+EXTERNAL_ StdRtn_t Set_ReleaseExit(const APPL_State_t state_);
 
 #ifdef EXTERNAL_
 #undef EXTERNAL_

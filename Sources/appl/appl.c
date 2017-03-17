@@ -151,7 +151,7 @@ static void Tick_StateMachine(void)
 	   Proc_States(sm);
 	   if ( nextState != APPL_STATE_NONE)
 	   {
-		   if( (Exit == sm.cmd) && ( TRUE == CHK_HOLD_ON_EXIT(sm.state) ) )
+		   if( ( Exit == sm.cmd ) && ( TRUE == CHK_HOLD_ON_EXIT(sm.state) ) )
 		   {
 			   CLR_HOLD_ON_EXIT(sm.state);
 			   sm.cmd = Enter;
@@ -165,7 +165,7 @@ static void Tick_StateMachine(void)
 	   }
 	   else
 	   {
-		   if((Enter == sm.cmd) && ( TRUE == CHK_HOLD_ON_ENTER(sm.state) ) )
+		   if( ( Enter == sm.cmd ) && ( TRUE == CHK_HOLD_ON_ENTER(sm.state) ) )
 		   {
 			   CLR_HOLD_ON_ENTER(sm.state);
 			   sm.cmd = Run;
@@ -252,12 +252,12 @@ static StdRtn_t runIDLE(void)
 
 static StdRtn_t exitIDLE(void)
 {
-	return ERR_OK;
+	return RTE_Write_BuzPlayTune(BUZ_TUNE_BUTTON);
 }
 
 static StdRtn_t enterNORMAL(void)
 {
-	return RTE_Write_BuzPlayTune(BUZ_TUNE_BUTTON);
+	return ERR_OK;
 }
 
 static StdRtn_t runNORMAL(void)
@@ -341,6 +341,25 @@ APPL_Cmd_t APPL_Get_SmCmd(void)
 	return sm.cmd;
 }
 
+StdRtn_t Set_HoldOnEnter(const APPL_State_t state_, const uint8_t holdOn_)
+{
+	return Set_HoldOnMask(&holdOnEnter, state_, holdOn_);
+}
+
+StdRtn_t Set_HoldOnExit(const APPL_State_t state_, const uint8_t holdOn_)
+{
+	return Set_HoldOnMask(&holdOnExit, state_, holdOn_);
+}
+
+StdRtn_t Set_ReleaseEnter(const APPL_State_t state_)
+{
+	return Set_HoldOnMask(&releaseEnter, state_, TRUE);
+}
+
+StdRtn_t Set_ReleaseExit(const APPL_State_t state_)
+{
+	return Set_HoldOnMask(&releaseExit, state_,TRUE);
+}
 
 void APPL_Init(void)
 {

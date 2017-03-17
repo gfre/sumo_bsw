@@ -416,6 +416,16 @@ EXTERNAL_ StdRtn_t RTE_putsErr(const uint8_t *msg_);
 EXTERNAL_ ID_Sumo_t RTE_GetSumoID(void);
 
 
+
+/*================================================================================================*/
+StdRtn_t RTE_Write_HoldOnEnterNormal(const uint8_t holdOn_);
+
+StdRtn_t RTE_Write_HoldOnEnterIdle(const uint8_t holdOn_);
+
+StdRtn_t RTE_Release_HoldOnEnterNormal(void);
+
+StdRtn_t RTE_Release_HoldOnEnterIdle(void);
+
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
