@@ -12,8 +12,9 @@
 
 #ifndef RTE_H
 #define RTE_H
-
+/*======================================= >> #INCLUDES << ========================================*/
 #include "rte_Types.h"
+
 
 
 #ifdef MASTER_RTE_C_
@@ -23,6 +24,8 @@
 #endif
 
 
+
+/*=================================== >> TYPE DEFINITIONS << =====================================*/
 typedef enum RTE_DrvMode_e {
   RTE_DRV_MODE_NONE = 0,
   RTE_DRV_MODE_STOP,
@@ -36,9 +39,7 @@ typedef void EvntCbFct_t(uint8_t);
 
 
 
-/*================================================================================================*/
-
-
+/*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 /**
  * @brief RTE interface to turn the left LED ON
  * @param *state_ pointer to the LED state (call by reference)
@@ -64,6 +65,14 @@ EXTERNAL_ StdRtn_t RTE_Write_LedLeNeg();
  * @return Error code, always ERR_OK
  */
 EXTERNAL_ StdRtn_t RTE_Write_LedLeSt(uint8_t state_);
+
+/**
+ * @brief RTE interface to flash the left LED with a certain period
+ * @param perMS_ desired flashing period of the left LED in milliseconds
+ * @return Error code, ERR_OK if everything was fine,
+ *                     ERR_PARAM_ADDRESS otherwise
+ */
+EXTERNAL_ StdRtn_t RTE_Write_LedLeFlshWithPerMS(uint16_t perMS_);
 
 /**
  * @brief RTE interface to read the state of the right LED
@@ -99,13 +108,20 @@ EXTERNAL_ StdRtn_t RTE_Write_LedRiNeg();
 EXTERNAL_ StdRtn_t RTE_Write_LedRiSt(uint8_t state_);
 
 /**
+ * @brief RTE interface to flash the right LED with a certain period
+ * @param perMS_ desired flashing period of the right LED in milliseconds
+ * @return Error code, ERR_OK if everything was fine,
+ *                     ERR_PARAM_ADDRESS otherwise
+ */
+EXTERNAL_ StdRtn_t RTE_Write_LedRiFlshWithPerMS(uint16_t perMS_);
+
+/**
  * @brief RTE interface to read the state of the right LED
  * @param *state_ output: pointer to the LED state
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
 EXTERNAL_ StdRtn_t RTE_Read_LedRiSt(uint8_t *state_);
-
 
 /*================================================================================================*/
 

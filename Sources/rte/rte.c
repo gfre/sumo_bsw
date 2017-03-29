@@ -12,8 +12,7 @@
 
 #define MASTER_RTE_C_
 /*======================================= >> #INCLUDES << ========================================*/
-#include "LED1.h"
-#include "LED2.h"
+#include "ind_Types.h"
 #include "KEY1.h"
 #include "buz.h"
 #include "rte.h"
@@ -91,33 +90,36 @@ StdRtn_t RTE_Release_HoldOnEnterIdle(void)
  */
 StdRtn_t RTE_Write_LedLeOn()
 {
-	LED1_On();
-	return ERR_OK;
+	return IND_Set_LED1On();
 }
 
 StdRtn_t RTE_Write_LedLeOff()
 {
-	LED1_Off();
-	return ERR_OK;
+	return IND_Set_LED1Off();
 }
 
 StdRtn_t RTE_Write_LedLeNeg()
 {
-	LED1_Neg();
-	return ERR_OK;
+	return IND_Set_LED1Toggle();
 }
 
-StdRtn_t RTE_Write_LedLeSt(uint8_t state)
+StdRtn_t RTE_Write_LedLeSt(uint8_t state_)
 {
-	if(FALSE==state)
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if(FALSE==state_)
 	{
-		LED1_Put(FALSE);
+		retVal = IND_Set_LED1Off();
 	}
 	else
 	{
-		LED1_Put(TRUE);
+		retVal = IND_Set_LED1On();
 	}
-	return ERR_OK;
+	return retVal;
+}
+
+StdRtn_t RTE_Write_LedLeFlshWithPerMS(uint16_t perMS_)
+{
+	return IND_Flash_LED1WithPerMS(perMS_);
 }
 
 StdRtn_t RTE_Read_LedLeSt(uint8_t *state_)
@@ -125,7 +127,7 @@ StdRtn_t RTE_Read_LedLeSt(uint8_t *state_)
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL!=state_)
 	{
-		*state_ = (uint8_t)LED1_Get();
+		*state_ = IND_Get_LED1St();
 		retVal = ERR_OK;
 	}
 	return retVal;
@@ -139,33 +141,36 @@ StdRtn_t RTE_Read_LedLeSt(uint8_t *state_)
  */
 StdRtn_t RTE_Write_LedRiOn()
 {
-	LED2_On();
-	return ERR_OK;
+	return IND_Set_LED2On();
 }
 
 StdRtn_t RTE_Write_LedRiOff()
 {
-	LED2_Off();
-	return ERR_OK;
+	return IND_Set_LED2Off();
 }
 
 StdRtn_t RTE_Write_LedRiNeg()
 {
-	LED2_Neg();
-	return ERR_OK;
+	return IND_Set_LED2Toggle();
 }
 
 StdRtn_t RTE_Write_LedRiSt(uint8_t state_)
 {
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(FALSE==state_)
 	{
-		LED2_Put(FALSE);
+		retVal = IND_Set_LED2Off();
 	}
 	else
 	{
-		LED2_Put(TRUE);
+		retVal = IND_Set_LED2On();
 	}
-	return ERR_OK;
+	return retVal;
+}
+
+StdRtn_t RTE_Write_LedRiFlshWithPerMS(uint16_t perMS_)
+{
+	return IND_Flash_LED2WithPerMS(perMS_);
 }
 
 StdRtn_t RTE_Read_LedRiSt(uint8_t *state_)
@@ -173,7 +178,7 @@ StdRtn_t RTE_Read_LedRiSt(uint8_t *state_)
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL!=state_)
 	{
-		*state_ = (uint8_t)LED2_Get();
+		*state_ = IND_Get_LED2St();
 		retVal = ERR_OK;
 	}
 	return retVal;

@@ -166,6 +166,17 @@ StdRtn_t IND_Set_LED2Toggle()
 	return retVal;
 }
 
+uint8_t IND_Get_LED1St()
+{
+	return (uint8_t)LED1_Get();
+}
+
+uint8_t IND_Get_LED2St()
+{
+
+	return (uint8_t)LED2_Get();
+}
+
 void IND_Init(void)
 {
 	/* Create the LED1 timer, storing the handle to the created timer in xOneShotTimer. */

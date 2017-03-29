@@ -36,8 +36,14 @@
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
+/**
+ * Initialisation of indication
+ */
 EXTERNAL_ void IND_Init(void);
 
+/**
+ * Main function of indication
+ */
 EXTERNAL_ void IND_Main(void);
 
 
