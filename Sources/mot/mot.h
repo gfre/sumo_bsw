@@ -1,15 +1,15 @@
-/*******************************************************************************
- * @brief 	Motor driver implementation.
+/***************************************************************************************************
+ * @brief 	Implementation of the DC motor driver.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
- * @author 	Henning Weisbarth, hewe@tf.uni-kiel.de, CAU Kiel
- * @date 		06.01.2017
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	06.01.2017
  *
  * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
  *
- * This module a driver for up to two small DC motors.
+ * This module implements a driver for up to two small DC motors.
  *
- * ==============================================================================
+ *==================================================================================================
  */
 
 #ifndef MOT_H_

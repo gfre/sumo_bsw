@@ -1,12 +1,13 @@
 /***************************************************************************************************
- * @brief 	>>TODO This is a brief description.
+  * @brief 	Command line shell handler of the software component of the DC motors.
  *
- * @author 	>>TODO, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	29.03.2017
  *  
  * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
  *
- * >>TODO This is the detailed description of the file motor_clshdlr.c
+ * This module handles the interface between the software component of the DC motors
+ * and the command line shell CLS.
  * 
  *==================================================================================================
  */
