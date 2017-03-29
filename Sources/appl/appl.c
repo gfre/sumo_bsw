@@ -20,6 +20,7 @@
 /*======================================= >> #INCLUDES << ========================================*/
 #include "appl.h"
 #include "appl_Types.h"
+#include "FRTOS1.h"
 #include "Platform.h"
 #include "stud.h"
 #include "task_cfg.h"
@@ -105,6 +106,9 @@ static uint8_t holdOnEnter  = 0x00u;
 static uint8_t holdOnExit   = 0x00u;
 static uint8_t releaseEnter = 0x00u;
 static uint8_t releaseExit  = 0x00u;
+
+
+
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 static inline void Proc_States(const SmType_t sm_)
 {
@@ -206,15 +210,24 @@ static inline StdRtn_t Sync_StateMachineWithISR()
     	  nextState = APPL_STATE_DEBUG;
       }
   }
-  /* Transitions from DEBUG state */
-  else if( ( pdPASS == notfRes ) && ( APPL_STATE_DEBUG == sm.state ) )
+  /* Transitions from NORMAL state */
+  else if( ( pdPASS == notfRes ) && ( APPL_STATE_NORMAL == sm.state ) )
   {
-      /* Handle transition from DEBUG --> IDLE */
-      if( (notfVal & KEY_PRESSED_LONG_NOTIFICATION_VALUE) != FALSE)
+      /* Handle transition from NORMAL --> INIT */
+      if( (notfVal & KEY_RELEASED_NOTIFICATION_VALUE) != FALSE)
       {
-    	  nextState = APPL_STATE_IDLE;
+    	  nextState = APPL_STATE_INIT;
       }
   }
+  /* Transitions from DEBUG state */
+    else if( ( pdPASS == notfRes ) && ( APPL_STATE_DEBUG == sm.state ) )
+    {
+        /* Handle transition from DEBUG --> IDLE */
+        if( (notfVal & KEY_PRESSED_LONG_NOTIFICATION_VALUE) != FALSE)
+        {
+      	  nextState = APPL_STATE_IDLE;
+        }
+    }
   else
   {
 	  /* do nothing */
@@ -225,15 +238,15 @@ static StdRtn_t runSTARTUP(void)
 {
 	NVM_Init();
 	PID_Init();
+	ID_Init();
 	RTE_Init();
+	dbgTaskCfg = TASK_Get_DbgTaskCfg();
 	nextState = APPL_STATE_INIT;
 	return ERR_OK;
 }
 
 static StdRtn_t runINIT(void)
 {
-	dbgTaskCfg = TASK_Get_DbgTaskCfg();
-	ID_Init();
 	BUZ_Init();
 	BATT_Init();
 	STUD_Init();
@@ -339,6 +352,13 @@ APPL_State_t APPL_Get_SmState(void)
 APPL_Cmd_t APPL_Get_SmCmd(void)
 {
 	return sm.cmd;
+}
+
+void APPL_Set_ReInitAppl(void)
+{
+	nextState = APPL_STATE_INIT;
+
+	return;
 }
 
 StdRtn_t Set_HoldOnEnter(const APPL_State_t state_, const uint8_t holdOn_)

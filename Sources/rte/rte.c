@@ -38,6 +38,12 @@ RTE_STREAM *RTE_stderr = NULL;
 RTE_STREAM *RTE_stdout = NULL;
 
 
+
+/*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
+
+
+
+/*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 void RTE_Init(void)
 {
 #ifndef ASW_STREAM_T
@@ -45,6 +51,40 @@ void RTE_Init(void)
 	RTE_stderr = (RTE_STREAM *)CLS1_GetStdio()->stdErr;
 #endif
 }
+
+/*================================================================================================*/
+
+
+/**
+ * Interface to applicaton state machine
+ */
+void RTE_ReInitAppl(void)
+{
+	return APPL_Set_ReInitAppl();
+}
+
+StdRtn_t RTE_Write_HoldOnEnterNormal(const uint8_t holdOn_)
+{
+	return Set_HoldOnEnter(APPL_STATE_NORMAL, holdOn_);
+}
+
+StdRtn_t RTE_Write_HoldOnEnterIdle(const uint8_t holdOn_)
+{
+	return Set_HoldOnEnter(APPL_STATE_IDLE, holdOn_);
+}
+
+StdRtn_t RTE_Release_HoldOnEnterNormal(void)
+{
+	return Set_ReleaseEnter(APPL_STATE_NORMAL);
+}
+
+StdRtn_t RTE_Release_HoldOnEnterIdle(void)
+{
+	return Set_ReleaseEnter(APPL_STATE_IDLE);
+}
+
+/*================================================================================================*/
+
 
 /**
  * Interface implementation for the left LED
@@ -90,7 +130,8 @@ StdRtn_t RTE_Read_LedLeSt(uint8_t *state_)
 	}
 	return retVal;
 }
-/*========================================================*/
+
+/*================================================================================================*/
 
 
 /**
@@ -137,7 +178,8 @@ StdRtn_t RTE_Read_LedRiSt(uint8_t *state_)
 	}
 	return retVal;
 }
-/*========================================================*/
+
+/*================================================================================================*/
 
 
 /**
@@ -226,7 +268,8 @@ EvntCbFct_t *RTE_Get_BtnOnLngRlsdCbFct(void)
 {
 	return cbFctTab.cbFctOnLngRlsd;
 }
-/*========================================================*/
+
+/*================================================================================================*/
 
 
 /**
@@ -247,7 +290,8 @@ StdRtn_t RTE_Play_BuzBeep(uint16 freqHz_, uint16 durMs_)
 {
 	return (StdRtn_t)BUZ_Beep(freqHz_, durMs_);
 }
-/*========================================================*/
+
+/*================================================================================================*/
 
 
 /**
@@ -278,7 +322,8 @@ StdRtn_t RTE_Read_SpdoVelRi(uint16 *vel_)
 	}
 	return retVal;
 }
-/*========================================================*/
+
+/*================================================================================================*/
 
 
 /**
@@ -376,6 +421,7 @@ StdRtn_t RTE_Read_DrvHasRvsd(uint8_t *hasRvsd_)
 	}
 	return retVal;
 }
+
 /*================================================================================================*/
 
 
@@ -458,7 +504,13 @@ StdRtn_t RTE_Write_RFDstAddr(uint8_t addr_)
 	RNET_SetDstAddr((RAPP_ShortAddrType)addr_);
 	return ERR_OK;
 }
+
 /*================================================================================================*/
+
+
+/**
+ * Interface implementation for shell debugging
+ */
 unsigned int RTE_fprintf(RTE_STREAM *stream_ ,unsigned char *fmt_, ...)
 {
 	va_list args;
@@ -538,36 +590,19 @@ StdRtn_t RTE_putsErr(const uint8_t *errMsg_)
 	return retVal;
 }
 
-
-
 /*================================================================================================*/
+
+
+/**
+ * Interface implementation for the sumo ID
+ */
 ID_Sumo_t RTE_GetSumoID(void)
 {
 	return Get_SumoID();
 }
 
-
-
 /*================================================================================================*/
-StdRtn_t RTE_Write_HoldOnEnterNormal(const uint8_t holdOn_)
-{
-	return Set_HoldOnEnter(APPL_STATE_NORMAL, holdOn_);
-}
 
-StdRtn_t RTE_Write_HoldOnEnterIdle(const uint8_t holdOn_)
-{
-	return Set_HoldOnEnter(APPL_STATE_IDLE, holdOn_);
-}
-
-StdRtn_t RTE_Release_HoldOnEnterNormal(void)
-{
-	return Set_ReleaseEnter(APPL_STATE_NORMAL);
-}
-
-StdRtn_t RTE_Release_HoldOnEnterIdle(void)
-{
-	return Set_ReleaseEnter(APPL_STATE_IDLE);
-}
 
 #ifdef MASTER_RTE_C_
 #undef MASTER_RTE_C_
