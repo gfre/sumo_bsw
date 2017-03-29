@@ -19,7 +19,7 @@
 #include "sh.h"
 #include "Tacho.h"
 #include "Pid.h"
-#include "Motor.h"
+#include "mot.h"
 #include "CLS1.h"
 #include "Q4CLeft.h"
 #include "Q4CRight.h"

@@ -17,7 +17,7 @@
 #include "task.h"
 #include "task_cfg.h"
 #include "task_Types.h"
-#include "Motor.h"
+#include "mot.h"
 #include "RNET1.h"
 #include "Tacho.h"
 #include "Q4CLeft.h"

@@ -20,12 +20,12 @@
 #include "rnet_clshdlr.h"
 #include "nvm_clshdlr.h"
 #include "pid_clshdlr.h"
+#include "mot_clshdlr.h"
 
 #include "sh_cfg.h"
 #include "RTT1.h"
 
 #include "buz.h"
-#include "Motor.h"
 #include "RNET1.h"
 #include "LED1.h"
 #include "LED2.h"

@@ -13,7 +13,7 @@
 
 #include "Platform.h"
 #include "Pid.h"
-#include "Motor.h"
+#include "mot.h"
 #include "nvm_Types.h"
 
 #define PID_DEBUG 0 /* careful: this will slow down the PID loop frequency! */
