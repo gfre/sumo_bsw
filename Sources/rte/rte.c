@@ -12,8 +12,7 @@
 
 #define MASTER_RTE_C_
 /*======================================= >> #INCLUDES << ========================================*/
-#include "LED1.h"
-#include "LED2.h"
+#include "ind_Types.h"
 #include "KEY1.h"
 #include "buz.h"
 #include "rte.h"
@@ -38,6 +37,12 @@ RTE_STREAM *RTE_stderr = NULL;
 RTE_STREAM *RTE_stdout = NULL;
 
 
+
+/*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
+
+
+
+/*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 void RTE_Init(void)
 {
 #ifndef ASW_STREAM_T
@@ -46,38 +51,75 @@ void RTE_Init(void)
 #endif
 }
 
+/*================================================================================================*/
+
+
+/**
+ * Interface to applicaton state machine
+ */
+void RTE_ReInitAppl(void)
+{
+	return APPL_Set_ReInitAppl();
+}
+
+StdRtn_t RTE_Write_HoldOnEnterNormal(const uint8_t holdOn_)
+{
+	return Set_HoldOnEnter(APPL_STATE_NORMAL, holdOn_);
+}
+
+StdRtn_t RTE_Write_HoldOnEnterIdle(const uint8_t holdOn_)
+{
+	return Set_HoldOnEnter(APPL_STATE_IDLE, holdOn_);
+}
+
+StdRtn_t RTE_Release_HoldOnEnterNormal(void)
+{
+	return Set_ReleaseEnter(APPL_STATE_NORMAL);
+}
+
+StdRtn_t RTE_Release_HoldOnEnterIdle(void)
+{
+	return Set_ReleaseEnter(APPL_STATE_IDLE);
+}
+
+/*================================================================================================*/
+
+
 /**
  * Interface implementation for the left LED
  */
 StdRtn_t RTE_Write_LedLeOn()
 {
-	LED1_On();
-	return ERR_OK;
+	return IND_Set_LED1On();
 }
 
 StdRtn_t RTE_Write_LedLeOff()
 {
-	LED1_Off();
-	return ERR_OK;
+	return IND_Set_LED1Off();
 }
 
 StdRtn_t RTE_Write_LedLeNeg()
 {
-	LED1_Neg();
-	return ERR_OK;
+	return IND_Set_LED1Toggle();
 }
 
-StdRtn_t RTE_Write_LedLeSt(uint8_t state)
+StdRtn_t RTE_Write_LedLeSt(uint8_t state_)
 {
-	if(FALSE==state)
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if(FALSE==state_)
 	{
-		LED1_Put(FALSE);
+		retVal = IND_Set_LED1Off();
 	}
 	else
 	{
-		LED1_Put(TRUE);
+		retVal = IND_Set_LED1On();
 	}
-	return ERR_OK;
+	return retVal;
+}
+
+StdRtn_t RTE_Write_LedLeFlshWithPerMS(uint16_t perMS_)
+{
+	return IND_Flash_LED1WithPerMS(perMS_);
 }
 
 StdRtn_t RTE_Read_LedLeSt(uint8_t *state_)
@@ -85,12 +127,13 @@ StdRtn_t RTE_Read_LedLeSt(uint8_t *state_)
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL!=state_)
 	{
-		*state_ = (uint8_t)LED1_Get();
+		*state_ = IND_Get_LED1St();
 		retVal = ERR_OK;
 	}
 	return retVal;
 }
-/*========================================================*/
+
+/*================================================================================================*/
 
 
 /**
@@ -98,33 +141,36 @@ StdRtn_t RTE_Read_LedLeSt(uint8_t *state_)
  */
 StdRtn_t RTE_Write_LedRiOn()
 {
-	LED2_On();
-	return ERR_OK;
+	return IND_Set_LED2On();
 }
 
 StdRtn_t RTE_Write_LedRiOff()
 {
-	LED2_Off();
-	return ERR_OK;
+	return IND_Set_LED2Off();
 }
 
 StdRtn_t RTE_Write_LedRiNeg()
 {
-	LED2_Neg();
-	return ERR_OK;
+	return IND_Set_LED2Toggle();
 }
 
 StdRtn_t RTE_Write_LedRiSt(uint8_t state_)
 {
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(FALSE==state_)
 	{
-		LED2_Put(FALSE);
+		retVal = IND_Set_LED2Off();
 	}
 	else
 	{
-		LED2_Put(TRUE);
+		retVal = IND_Set_LED2On();
 	}
-	return ERR_OK;
+	return retVal;
+}
+
+StdRtn_t RTE_Write_LedRiFlshWithPerMS(uint16_t perMS_)
+{
+	return IND_Flash_LED2WithPerMS(perMS_);
 }
 
 StdRtn_t RTE_Read_LedRiSt(uint8_t *state_)
@@ -132,12 +178,13 @@ StdRtn_t RTE_Read_LedRiSt(uint8_t *state_)
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL!=state_)
 	{
-		*state_ = (uint8_t)LED2_Get();
+		*state_ = IND_Get_LED2St();
 		retVal = ERR_OK;
 	}
 	return retVal;
 }
-/*========================================================*/
+
+/*================================================================================================*/
 
 
 /**
@@ -226,7 +273,8 @@ EvntCbFct_t *RTE_Get_BtnOnLngRlsdCbFct(void)
 {
 	return cbFctTab.cbFctOnLngRlsd;
 }
-/*========================================================*/
+
+/*================================================================================================*/
 
 
 /**
@@ -247,7 +295,8 @@ StdRtn_t RTE_Play_BuzBeep(uint16 freqHz_, uint16 durMs_)
 {
 	return (StdRtn_t)BUZ_Beep(freqHz_, durMs_);
 }
-/*========================================================*/
+
+/*================================================================================================*/
 
 
 /**
@@ -278,7 +327,8 @@ StdRtn_t RTE_Read_SpdoVelRi(uint16 *vel_)
 	}
 	return retVal;
 }
-/*========================================================*/
+
+/*================================================================================================*/
 
 
 /**
@@ -376,6 +426,7 @@ StdRtn_t RTE_Read_DrvHasRvsd(uint8_t *hasRvsd_)
 	}
 	return retVal;
 }
+
 /*================================================================================================*/
 
 
@@ -458,7 +509,13 @@ StdRtn_t RTE_Write_RFDstAddr(uint8_t addr_)
 	RNET_SetDstAddr((RAPP_ShortAddrType)addr_);
 	return ERR_OK;
 }
+
 /*================================================================================================*/
+
+
+/**
+ * Interface implementation for shell debugging
+ */
 unsigned int RTE_fprintf(RTE_STREAM *stream_ ,unsigned char *fmt_, ...)
 {
 	va_list args;
@@ -538,36 +595,19 @@ StdRtn_t RTE_putsErr(const uint8_t *errMsg_)
 	return retVal;
 }
 
-
-
 /*================================================================================================*/
+
+
+/**
+ * Interface implementation for the sumo ID
+ */
 ID_Sumo_t RTE_GetSumoID(void)
 {
 	return Get_SumoID();
 }
 
-
-
 /*================================================================================================*/
-StdRtn_t RTE_Write_HoldOnEnterNormal(const uint8_t holdOn_)
-{
-	return Set_HoldOnEnter(APPL_STATE_NORMAL, holdOn_);
-}
 
-StdRtn_t RTE_Write_HoldOnEnterIdle(const uint8_t holdOn_)
-{
-	return Set_HoldOnEnter(APPL_STATE_IDLE, holdOn_);
-}
-
-StdRtn_t RTE_Release_HoldOnEnterNormal(void)
-{
-	return Set_ReleaseEnter(APPL_STATE_NORMAL);
-}
-
-StdRtn_t RTE_Release_HoldOnEnterIdle(void)
-{
-	return Set_ReleaseEnter(APPL_STATE_IDLE);
-}
 
 #ifdef MASTER_RTE_C_
 #undef MASTER_RTE_C_

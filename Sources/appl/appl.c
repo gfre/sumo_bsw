@@ -20,6 +20,7 @@
 /*======================================= >> #INCLUDES << ========================================*/
 #include "appl.h"
 #include "appl_Types.h"
+#include "FRTOS1.h"
 #include "Platform.h"
 #include "stud.h"
 #include "task_cfg.h"
@@ -31,6 +32,8 @@
 #include "nvm.h"
 #include "rte_Types.h"
 #include "Pid.h"
+#include "ind.h"
+#include "ind_Types.h"
 #ifdef ASW_ENABLED
 #include "asw.h"
 #endif
@@ -47,6 +50,9 @@
 #define CHK_HOLD_ON_EXIT(state_)						(CHK_HOLD_ON_BIT(holdOnExit, releaseExit, state_))
 #define CLR_HOLD_ON_ENTER(state_)						(CLR_HOLD_ON_BIT(releaseEnter, state_))
 #define CLR_HOLD_ON_EXIT(state_)						(CLR_HOLD_ON_BIT(releaseExit, state_))
+
+#define IDLE_IND_FLASH_PERIOD 							(1500u) /* 2/3 Hz */
+#define DEBUG_IND_FLASH_PERIOD 							(500u)  /* 2Hz */
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 typedef struct SmType_s
@@ -68,6 +74,7 @@ typedef struct SmStFcts_s
 static StdRtn_t runSTARTUP(void);
 static StdRtn_t runINIT(void);
 
+static StdRtn_t enterIDLE(void);
 static StdRtn_t runIDLE(void);
 static StdRtn_t exitIDLE(void);
 
@@ -95,7 +102,7 @@ static APPL_State_t nextState = APPL_STATE_NONE;
 static SmStFcts_t smStFctTbl[APPL_STATE_NUM] = {
 /* STARTUP */ 	{NULL, 			runSTARTUP, NULL},
 /* INIT */ 		{NULL, 			runINIT, 	NULL},
-/* IDLE */		{NULL, 			runIDLE, 	exitIDLE},
+/* IDLE */		{enterIDLE,		runIDLE, 	exitIDLE},
 /* NORMAL */	{enterNORMAL,	runNORMAL, 	exitNORMAL},
 /* DEBUG */		{enterDEBUG, 	runDEBUG, 	exitDEBUG},
 /* ERROR */		{enterERROR, 	runERROR, 	NULL},
@@ -105,6 +112,9 @@ static uint8_t holdOnEnter  = 0x00u;
 static uint8_t holdOnExit   = 0x00u;
 static uint8_t releaseEnter = 0x00u;
 static uint8_t releaseExit  = 0x00u;
+
+
+
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 static inline void Proc_States(const SmType_t sm_)
 {
@@ -206,15 +216,24 @@ static inline StdRtn_t Sync_StateMachineWithISR()
     	  nextState = APPL_STATE_DEBUG;
       }
   }
-  /* Transitions from DEBUG state */
-  else if( ( pdPASS == notfRes ) && ( APPL_STATE_DEBUG == sm.state ) )
+  /* Transitions from NORMAL state */
+  else if( ( pdPASS == notfRes ) && ( APPL_STATE_NORMAL == sm.state ) )
   {
-      /* Handle transition from DEBUG --> IDLE */
-      if( (notfVal & KEY_PRESSED_LONG_NOTIFICATION_VALUE) != FALSE)
+      /* Handle transition from NORMAL --> INIT */
+      if( (notfVal & KEY_RELEASED_NOTIFICATION_VALUE) != FALSE)
       {
-    	  nextState = APPL_STATE_IDLE;
+    	  nextState = APPL_STATE_INIT;
       }
   }
+  /* Transitions from DEBUG state */
+    else if( ( pdPASS == notfRes ) && ( APPL_STATE_DEBUG == sm.state ) )
+    {
+        /* Handle transition from DEBUG --> IDLE */
+        if( (notfVal & KEY_PRESSED_LONG_NOTIFICATION_VALUE) != FALSE)
+        {
+      	  nextState = APPL_STATE_IDLE;
+        }
+    }
   else
   {
 	  /* do nothing */
@@ -225,15 +244,17 @@ static StdRtn_t runSTARTUP(void)
 {
 	NVM_Init();
 	PID_Init();
+	ID_Init();
+	IND_Init();
 	RTE_Init();
+	dbgTaskCfg = TASK_Get_DbgTaskCfg();
 	nextState = APPL_STATE_INIT;
+
 	return ERR_OK;
 }
 
 static StdRtn_t runINIT(void)
 {
-	dbgTaskCfg = TASK_Get_DbgTaskCfg();
-	ID_Init();
 	BUZ_Init();
 	BATT_Init();
 	STUD_Init();
@@ -241,7 +262,13 @@ static StdRtn_t runINIT(void)
 	ASW_Init();
 #endif
 	nextState = APPL_STATE_IDLE;
+
     return ERR_OK;
+}
+
+static StdRtn_t enterIDLE(void)
+{
+	return IND_Flash_LED1WithPerMS(IDLE_IND_FLASH_PERIOD);
 }
 
 static StdRtn_t runIDLE(void)
@@ -252,12 +279,17 @@ static StdRtn_t runIDLE(void)
 
 static StdRtn_t exitIDLE(void)
 {
-	return RTE_Write_BuzPlayTune(BUZ_TUNE_BUTTON);
+	StdRtn_t retVal = ERR_OK;
+
+	retVal |= RTE_Write_BuzPlayTune(BUZ_TUNE_BUTTON);
+	retVal |= IND_Set_LED1Off();
+
+	return retVal;
 }
 
 static StdRtn_t enterNORMAL(void)
 {
-	return ERR_OK;
+	return IND_Set_LED1On();
 }
 
 static StdRtn_t runNORMAL(void)
@@ -272,15 +304,20 @@ static StdRtn_t runNORMAL(void)
 
 static StdRtn_t exitNORMAL(void)
 {
-	return ERR_OK;
+	return IND_Set_LED1Off();
 }
 
 
 static StdRtn_t enterDEBUG(void)
 {
+	StdRtn_t retVal = ERR_OK;
+
 	SH_Init();
 	FRTOS1_vTaskResume(dbgTaskCfg->taskHdl);
-	return RTE_Write_BuzPlayTune(BUZ_TUNE_ACCEPT);
+	retVal |= RTE_Write_BuzPlayTune(BUZ_TUNE_ACCEPT);
+	retVal |= IND_Flash_LED1WithPerMS(DEBUG_IND_FLASH_PERIOD);
+
+	return retVal;
 }
 
 static StdRtn_t runDEBUG(void)
@@ -290,9 +327,14 @@ static StdRtn_t runDEBUG(void)
 
 static StdRtn_t exitDEBUG(void)
 {
+	StdRtn_t retVal = ERR_OK;
+
 	SH_Deinit();
 	FRTOS1_vTaskSuspend(dbgTaskCfg->taskHdl);
-	return RTE_Write_BuzPlayTune(BUZ_TUNE_DECLINE);
+	retVal |= RTE_Write_BuzPlayTune(BUZ_TUNE_DECLINE);
+	retVal |= IND_Set_LED1Off();
+
+	return retVal;
 }
 
 static StdRtn_t enterERROR(void)
@@ -339,6 +381,13 @@ APPL_State_t APPL_Get_SmState(void)
 APPL_Cmd_t APPL_Get_SmCmd(void)
 {
 	return sm.cmd;
+}
+
+void APPL_Set_ReInitAppl(void)
+{
+	nextState = APPL_STATE_INIT;
+
+	return;
 }
 
 StdRtn_t Set_HoldOnEnter(const APPL_State_t state_, const uint8_t holdOn_)

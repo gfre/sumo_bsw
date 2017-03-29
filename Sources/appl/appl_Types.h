@@ -73,6 +73,11 @@ EXTERNAL_ APPL_State_t APPL_Get_SmState(void);
 EXTERNAL_ APPL_Cmd_t APPL_Get_SmCmd(void);
 
 /*!
+ * @brief This function re-initialises the application. The application state machine re-starts in INIT-state.
+ */
+EXTERNAL_ void APPL_Set_ReInitAppl(void);
+
+/*!
  * @brief This function sets a flag which enables/disables hold on ENTER functionality for a certain state
  * @param state_ corresponding application state for holdOn ENTER functionality
  * 		  holdOn_ TRUE/FALSE-flag for enabling or disabling holdOn ENTER functionality
