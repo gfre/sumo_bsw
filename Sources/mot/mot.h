@@ -1,19 +1,19 @@
-/*******************************************************************************
- * @brief 	Motor driver implementation.
+/***************************************************************************************************
+ * @brief 	Implementation of the DC motor driver.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
- * @author 	Henning Weisbarth, hewe@tf.uni-kiel.de, CAU Kiel
- * @date 		06.01.2017
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	06.01.2017
  *
  * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
  *
- * This module a driver for up to two small DC motors.
+ * This module implements a driver for up to two small DC motors.
  *
- * ==============================================================================
+ *==================================================================================================
  */
 
-#ifndef MOTOR_H_
-#define MOTOR_H_
+#ifndef MOT_H_
+#define MOT_H_
 
 #include "Platform.h"
 
@@ -108,22 +108,17 @@ void MOT_SetDirection(MOT_MotorDevice *motor, MOT_Direction dir);
  */
 MOT_Direction MOT_GetDirection(MOT_MotorDevice *motor);
 
-
-#include "CLS1.h"
-/*!
- * @brief Shell command line parser.
- * @param[in] cmd Pointer to command string
- * @param[out] handled If command is handled by the parser
- * @param[in] io Std I/O handler of shell
- */
-uint8_t MOT_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
-
-
 /*!
  * @brief Function to turn motors on/off, useful for debugging
  * @param on If motors shall be turned on or off. If turning off, the PWM is set to the 'off' level too.
  */
 void MOT_OnOff(bool on);
+
+/*!
+ * @brief Function returns motor state ON or OFF
+ * @return motor state ON or OFF
+ */
+uint8_t MOT_Get_IsMotorOn(void);
 
 /*!
  * @brief Deinitialization function.
@@ -136,4 +131,4 @@ void MOT_Deinit(void);
 void MOT_Init(void);
 
 
-#endif /* MOTOR_H_ */
+#endif /* MOT_H_ */

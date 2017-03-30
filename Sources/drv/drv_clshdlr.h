@@ -1,47 +1,49 @@
 /***************************************************************************************************
- * @brief 	Command line shell handler of the software component of the PID controllers.
+ * @brief 	>>TODO This is a brief description.
  *
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
- * @date 	28.02.2017
+ * @author 	>>TODO, gefr@tf.uni-kiel.de, University Kiel 
+ * @date 	30.03.2017
  *  
  * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
  *
- * This module handles the interface between the software component of the PID controllers
- * and the command line shell CLS.
+ * >>TODO This is the detailed description of the file drv_clshdlr.h
  * 
  *==================================================================================================
  */
 
 
-#ifndef PID_CLSHDLR_H_
-#define PID_CLSHDLR_H_
+#ifndef DRV_CLSHDLR_H_
+#define DRV_CLSHDLR_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "CLS1.h"
 
 
-#ifdef MASTER_pid_clshdlr_C_
+#ifdef MASTER_drv_clshdlr_C_
 #define EXTERNAL_
 #else
 #define EXTERNAL_ extern
 #endif
 
 /*======================================= >> #DEFINES << =========================================*/
+/* #define TMPL_MACRO (0xFFu) */
 
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
+/* typedef unit8 TmplType_t; */
 
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 /*!
- * @brief Shell command line parser.
- * @param[in] cmd Pointer to command string
- * @param[out] handled If command is handled by the parser
- * @param[in] io Std I/O handler of shell
+ * @brief Parses a command
+ * @param cmd Command string to be parsed
+ * @param handled Sets this variable to TRUE if command was handled
+ * @param io I/O stream to be used for input/output
+ * @return Error code, ERR_OK if everything was fine
  */
-EXTERNAL_ uint8_t PID_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
+uint8_t DRV_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
 
 
 #ifdef EXTERNAL_
@@ -49,4 +51,4 @@ EXTERNAL_ uint8_t PID_ParseCommand(const unsigned char *cmd, bool *handled, cons
 #endif
 
 
-#endif /* !PID_CLSHDLR_H_ */
+#endif /* !DRV_CLSHDLR_H_ */

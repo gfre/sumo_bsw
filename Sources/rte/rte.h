@@ -26,15 +26,6 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-typedef enum RTE_DrvMode_e {
-  RTE_DRV_MODE_NONE = 0,
-  RTE_DRV_MODE_STOP,
-  RTE_DRV_MODE_SPEED,
-  RTE_DRV_MODE_POS,
-  RTE_DRV_MODE_INVALID,
-} RTE_DrvMode_t;
-
-
 typedef void EvntCbFct_t(uint8_t);
 
 
@@ -269,7 +260,7 @@ EXTERNAL_ StdRtn_t RTE_Write_DrvPos(int32_t posLe_, int32_t posRi_);
  *                     ERR_PARAM_VALUE for invalid requested mode
  *                     ERR_FAILED for queue overflow
  */
-EXTERNAL_ StdRtn_t RTE_Write_DrvMode(RTE_DrvMode_t mode_);
+EXTERNAL_ StdRtn_t RTE_Write_DrvMode(DrvMode_t mode_);
 
 /**
  * @brief RTE interface to read the current driving control mode
@@ -277,7 +268,7 @@ EXTERNAL_ StdRtn_t RTE_Write_DrvMode(RTE_DrvMode_t mode_);
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-EXTERNAL_ StdRtn_t RTE_Read_DrvMode(RTE_DrvMode_t *mode_);
+EXTERNAL_ StdRtn_t RTE_Read_DrvMode(DrvMode_t *mode_);
 
 /**
  * @brief RTE interface to read if the sumo is driving backwards
