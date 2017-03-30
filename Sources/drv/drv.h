@@ -16,33 +16,9 @@
 #define DRIVE_H_
 
 #include "Platform.h"
-#include "CLS1.h"
 
 #define DRV_SWC_STRING ("drive")
 
-/*!
- * @brief Parses a command
- * @param cmd Command string to be parsed
- * @param handled Sets this variable to TRUE if command was handled
- * @param io I/O stream to be used for input/output
- * @return Error code, ERR_OK if everything was fine
- */
-uint8_t DRV_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
-
-typedef enum {
-  DRV_MODE_NONE,
-  DRV_MODE_STOP,
-  DRV_MODE_SPEED,
-  DRV_MODE_POS,
-} DRV_Mode;
-
-uint8_t DRV_SetSpeed(int32_t left, int32_t right);
-uint8_t DRV_SetPos(int32_t left, int32_t right);
-bool DRV_IsDrivingBackward(void);
-uint8_t DRV_SetMode(DRV_Mode mode);
-DRV_Mode DRV_GetMode(void);
-bool DRV_IsStopped(void);
-bool DRV_HasTurned(void);
 
 /*!
  * @brief Stops the engines
