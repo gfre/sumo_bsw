@@ -52,6 +52,7 @@
 #include "TMOUT1.h"
 #include "IFsh1.h"
 #include "IntFlashLdd1.h"
+#include "PTC.h"
 #include "MCUC1.h"
 #include "MOTTU.h"
 #include "DIRL.h"
