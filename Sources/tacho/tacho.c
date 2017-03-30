@@ -1,19 +1,20 @@
-/*******************************************************************************
- * @brief 	Tachometer implementation.
+/***************************************************************************************************
+ * @brief 	Implementation of the tachometer software component
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
- * @author 	Henning Weisbarth, hewe@tf.uni-kiel.de, CAU Kiel
- * @date 		06.01.2017
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	30.03.2017
  *
  * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
  *
- * Module to calculate the speed based on the quadrature counter.
+ * This module calculates the speed based on the quadrature counter. It implements an moving average
+ * filter for the speed signal based on a ring buffer.
  *
- * ==============================================================================
+ *==================================================================================================
  */
 
-#include "Platform.h" /* interface to the platform */
-#include "Tacho.h"    /* our own interface */
+#include "Platform.h"
+#include "tacho.h"
 #include "Q4CLeft.h"
 #include "Q4CRight.h"
 #include "CLS1.h"
@@ -111,39 +112,7 @@ void TACHO_Sample(void) {
 	}
 }
 
-/*!
- * \brief Prints the system low power status
- * \param io I/O channel to use for printing status
- */
-static void TACHO_PrintStatus(const CLS1_StdIOType *io) {
-	CLS1_SendStatusStr((unsigned char*)"Tacho", (unsigned char*)"\r\n", io->stdOut);
-	CLS1_SendStatusStr((unsigned char*)"  L speed", (unsigned char*)"", io->stdOut);
-	CLS1_SendNum32s(TACHO_GetSpeed(TRUE), io->stdOut);
-	CLS1_SendStr((unsigned char*)" steps/sec\r\n", io->stdOut);
-	CLS1_SendStatusStr((unsigned char*)"  R speed", (unsigned char*)"", io->stdOut);
-	CLS1_SendNum32s(TACHO_GetSpeed(FALSE), io->stdOut);
-	CLS1_SendStr((unsigned char*)" steps/sec\r\n", io->stdOut);
-}
 
-/*! 
- * \brief Prints the help text to the console
- * \param io I/O channel to be used
- */
-static void TACHO_PrintHelp(const CLS1_StdIOType *io) {
-	CLS1_SendHelpStr((unsigned char*)"tacho", (unsigned char*)"Group of tacho commands\r\n", io->stdOut);
-	CLS1_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Shows tacho help or status\r\n", io->stdOut);
-}
-
-uint8_t TACHO_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io) {
-	if (UTIL1_strcmp((char*)cmd, (char*)CLS1_CMD_HELP)==0 || UTIL1_strcmp((char*)cmd, (char*)"tacho help")==0) {
-		TACHO_PrintHelp(io);
-		*handled = TRUE;
-	} else if (UTIL1_strcmp((char*)cmd, (char*)CLS1_CMD_STATUS)==0 || UTIL1_strcmp((char*)cmd, (char*)"tacho status")==0) {
-		TACHO_PrintStatus(io);
-		*handled = TRUE;
-	}
-	return ERR_OK;
-}
 
 void TACHO_Deinit(void) {
 }

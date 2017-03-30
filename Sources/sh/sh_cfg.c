@@ -21,6 +21,7 @@
 #include "nvm_clshdlr.h"
 #include "pid_clshdlr.h"
 #include "mot_clshdlr.h"
+#include "tacho_clshdlr.h"
 
 #include "sh_cfg.h"
 #include "RTT1.h"
@@ -32,7 +33,6 @@
 #include "batt.h"
 #include "Q4CLeft.h"
 #include "Q4CRight.h"
-#include "Tacho.h"
 #include "KIN1.h"
 #include "drv.h"
 #include "id.h"

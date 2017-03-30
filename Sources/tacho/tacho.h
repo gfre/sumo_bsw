@@ -1,15 +1,16 @@
-/*******************************************************************************
- * @brief 	Tachometer implementation.
+/***************************************************************************************************
+ * @brief 	Implementation of the tachometer software component
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
- * @author 	Henning Weisbarth, hewe@tf.uni-kiel.de, CAU Kiel
- * @date 		06.01.2017
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	30.03.2017
  *
  * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
  *
- * Module to calculate the speed based on the quadrature counter.
+ * This module calculates the speed based on the quadrature counter. It implements an moving average
+ * filter for the speed signal based on a ring buffer.
  *
- * ==============================================================================
+ *==================================================================================================
  */
 
 #ifndef __TACHO_H_
@@ -36,16 +37,6 @@ void TACHO_CalcSpeed(void);
  * @brief Sampling routine to calculate speed, must be called periodically with a fixed frequency.
  */
 void TACHO_Sample(void);
-
-#include "CLS1.h"
-/*!
- * @brief Parses a command
- * @param cmd Command string to be parsed
- * @param handled Sets this variable to TRUE if command was handled
- * @param io I/O stream to be used for input/output
- * @return Error code, ERR_OK if everything was fine
- */
-uint8_t TACHO_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
 
 /*! @brief De-initialization of the module */
 void TACHO_Deinit(void);
