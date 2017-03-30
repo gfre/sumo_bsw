@@ -310,7 +310,7 @@ StdRtn_t RTE_Read_SpdoVelLe(uint16 *vel_)
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != vel_)
 	{
-		*vel_ = TACHO_GetSpeed(TRUE);
+		*vel_ = TACHO_GetSpeed(LEFT);
 		retVal = ERR_OK;
 	}
 	return retVal;
@@ -322,11 +322,19 @@ StdRtn_t RTE_Read_SpdoVelRi(uint16 *vel_)
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != vel_)
 	{
-		*vel_ = TACHO_GetSpeed(FALSE);
+		*vel_ = TACHO_GetSpeed(RIGHT);
 		retVal = ERR_OK;
 	}
 	return retVal;
 }
+
+#ifdef LEFT
+#undef LEFT
+#endif
+
+#ifdef RIGHT
+#undef RIGHT
+#endif
 
 /*================================================================================================*/
 
@@ -334,35 +342,6 @@ StdRtn_t RTE_Read_SpdoVelRi(uint16 *vel_)
 /**
  * Interface implementation for the drive component
  */
-static inline DRV_Mode_t Trsnlte_ModeRTE2DRV(RTE_DrvMode_t mode_);
-static inline RTE_DrvMode_t Trsnlte_ModeDRV2RTE(DRV_Mode_t mode_);
-
-static inline DRV_Mode_t Trsnlte_ModeRTE2DRV(RTE_DrvMode_t mode_)
-{
-	switch(mode_)
-	{
-		default:
-		case RTE_DRV_MODE_NONE:  return DRV_MODE_NONE;
-		case RTE_DRV_MODE_STOP:  return DRV_MODE_STOP;
-		case RTE_DRV_MODE_SPEED: return DRV_MODE_SPEED;
-		case RTE_DRV_MODE_POS:   return DRV_MODE_POS;
-	}
-	return DRV_MODE_NONE;
-}
-
-static inline RTE_DrvMode_t Trsnlte_ModeDRV2RTE(DRV_Mode_t mode_)
-{
-	switch(mode_)
-	{
-		case DRV_MODE_NONE:  return RTE_DRV_MODE_NONE;
-		case DRV_MODE_STOP:  return RTE_DRV_MODE_STOP;
-		case DRV_MODE_SPEED: return RTE_DRV_MODE_SPEED;
-		case DRV_MODE_POS:   return RTE_DRV_MODE_POS;
-		default:             return RTE_DRV_MODE_INVALID;
-	}
-	return RTE_DRV_MODE_INVALID;
-}
-
 StdRtn_t RTE_Write_DrvVel(int32 velLe_, int32 velRi_)
 {
 	return (StdRtn_t)DRV_SetSpeed(velLe_, velRi_);
@@ -373,22 +352,22 @@ StdRtn_t RTE_Write_DrvPos(int32 posLe_, int32 posRi_)
 	return (StdRtn_t)DRV_SetSpeed(posLe_, posRi_);
 }
 
-StdRtn_t RTE_Write_DrvMode(RTE_DrvMode_t mode_)
+StdRtn_t RTE_Write_DrvMode(DrvMode_t mode_)
 {
 	StdRtn_t retVal = ERR_PARAM_VALUE;
-	if((RTE_DRV_MODE_INVALID > mode_) && (RTE_DRV_MODE_NONE <= mode_))
+	if((DRV_MODE_INVALID > mode_) && (DRV_MODE_NONE <= mode_))
 	{
-		retVal = (StdRtn_t)DRV_SetMode(Trsnlte_ModeRTE2DRV(mode_));
+		retVal = (StdRtn_t)DRV_SetMode((DRV_Mode_t)(mode_));
 	}
 	return retVal;
 }
 
-StdRtn_t RTE_Read_DrvMode(RTE_DrvMode_t *mode_)
+StdRtn_t RTE_Read_DrvMode(DrvMode_t *mode_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != mode_)
 	{
-		*mode_ = Trsnlte_ModeDRV2RTE(DRV_GetMode());
+		*mode_ = (DrvMode_t)DRV_GetMode();
 		retVal = ERR_OK;
 	}
 	return retVal;

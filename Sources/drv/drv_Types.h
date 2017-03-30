@@ -16,7 +16,7 @@
 #define DRV_TYPES_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
-/* #include "Acon_Types.h" */
+#include "rte_Types.h"
 
 
 #ifdef MASTER_drv_C_
@@ -31,12 +31,16 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
+#ifdef DRV_MODE_T
+typedef DrvMode_t DRV_Mode_t;
+#else
 typedef enum DRV_Mode_e {
   DRV_MODE_NONE,
   DRV_MODE_STOP,
   DRV_MODE_SPEED,
   DRV_MODE_POS,
 } DRV_Mode_t;
+#endif
 
 typedef struct DRV_Status_s {
 	DRV_Mode_t mode;
