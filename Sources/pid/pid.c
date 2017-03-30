@@ -1,28 +1,54 @@
-/*******************************************************************************
- * @brief 	PID controller implementation.
+/***************************************************************************************************
+ * @brief 	Implementation of PID controllers.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, CAU Kiel
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 		06.01.2017
  *
  * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
  *
+ * This module implements PID controllers for position and speed control of the sumo robots. It uses
+ * the NVM software component for storing the controller parameters.
  *
- * ==============================================================================
+ *==================================================================================================
  */
 
+
+#define MASTER_pid_C_
+
+/*======================================= >> #INCLUDES << ========================================*/
 #include "Platform.h"
 #include "Pid.h"
 #include "mot.h"
 #include "nvm_Types.h"
 
+
+
+/*======================================= >> #DEFINES << =========================================*/
 #define PID_DEBUG 0 /* careful: this will slow down the PID loop frequency! */
 
+
+
+/*=================================== >> TYPE DEFINITIONS << =====================================*/
+
+
+
+/*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
+static int32_t PID(int32_t currVal, int32_t setVal, PID_Config *config);
+static void PID_PosCfg(int32_t currPos, int32_t setPos, bool isLeft, PID_Config *config);
+static void PID_SpeedCfg(int32_t currSpeed, int32_t setSpeed, bool isLeft, PID_Config *config);
+
+
+
+/*=================================== >> GLOBAL VARIABLES << =====================================*/
 static PID_Config posLeftConfig = {0u};
 static PID_Config posRightConfig = {0u};
 static PID_Config speedLeftConfig = {0u};
 static PID_Config speedRightConfig = {0u};
 
+
+
+/*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 static int32_t PID(int32_t currVal, int32_t setVal, PID_Config *config) {
 	int32_t error;
 	int32_t pid;
@@ -94,13 +120,6 @@ static void PID_PosCfg(int32_t currPos, int32_t setPos, bool isLeft, PID_Config 
 	MOT_UpdatePercent(motHandle, direction);
 }
 
-void PID_Pos(int32_t currPos, int32_t setPos, bool isLeft) {
-	if (isLeft) {
-		PID_PosCfg(currPos, setPos, isLeft, &posLeftConfig);
-	} else {
-		PID_PosCfg(currPos, setPos, isLeft, &posRightConfig);
-	}
-}
 
 static void PID_SpeedCfg(int32_t currSpeed, int32_t setSpeed, bool isLeft, PID_Config *config) {
 	int32_t speed;
@@ -132,6 +151,19 @@ static void PID_SpeedCfg(int32_t currSpeed, int32_t setSpeed, bool isLeft, PID_C
 	MOT_SetDirection(motHandle, direction);
 	MOT_UpdatePercent(motHandle, direction);
 }
+
+
+
+/*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
+void PID_Pos(int32_t currPos, int32_t setPos, bool isLeft) {
+	if (isLeft) {
+		PID_PosCfg(currPos, setPos, isLeft, &posLeftConfig);
+	} else {
+		PID_PosCfg(currPos, setPos, isLeft, &posRightConfig);
+	}
+}
+
+
 
 void PID_Speed(int32_t currSpeed, int32_t setSpeed, bool isLeft) {
 	if (isLeft) {
@@ -246,3 +278,10 @@ PID_Config *PID_Get_PosLeCfg(void) { return &posLeftConfig; }
 PID_Config *PID_Get_PosRiCfg(void) { return &posRightConfig; }
 PID_Config *PID_Get_SpdLeCfg(void) { return &speedLeftConfig; }
 PID_Config *PID_Get_SpdRiCfg(void) { return &speedRightConfig; }
+
+
+
+#ifdef MASTER_pid_C_
+#undef MASTER_pid_C_
+#endif /* !MASTER_pid_C_ */
+

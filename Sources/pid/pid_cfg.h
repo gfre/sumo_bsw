@@ -1,12 +1,12 @@
 /***************************************************************************************************
- * @brief 	>>TODO This is a brief description.
+ * @brief 	Configuration of the PID controller software component
  *
- * @author 	>>TODO, gefr@tf.uni-kiel.de, University Kiel 
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	28.02.2017
  *  
  * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
  *
- * >>TODO This is the detailed description of the file pid_cfg.h
+ * This module implements the configuration of the software component for PID controllers
  * 
  *==================================================================================================
  */

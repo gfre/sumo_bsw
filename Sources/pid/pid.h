@@ -1,20 +1,36 @@
-/*******************************************************************************
- * @brief 	PID controller implementation.
+/***************************************************************************************************
+ * @brief 	Implementation of PID controllers.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
- * @author 	Henning Weisbarth, hewe@tf.uni-kiel.de, CAU Kiel
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 		06.01.2017
  *
  * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
  *
+ * This module implements PID controllers for position and speed control of the sumo robots. It uses
+ * the NVM software component for storing the controller parameters.
  *
- * ==============================================================================
+ *==================================================================================================
  */
+
 
 #ifndef PID_H_
 #define PID_H_
 
+/*======================================= >> #INCLUDES << ========================================*/
 
+
+#ifdef MASTER_pid_C_
+#define EXTERNAL_
+#else
+#define EXTERNAL_ extern
+#endif
+
+/*======================================= >> #DEFINES << =========================================*/
+
+
+
+/*=================================== >> TYPE DEFINITIONS << =====================================*/
 typedef enum {
   PID_CONFIG_LINE_FW,
   PID_CONFIG_LINE_BW,
@@ -34,10 +50,9 @@ typedef struct {
   int32_t integral;
 } PID_Config;
 
-uint8_t PID_GetPIDConfig(PID_ConfigType config, PID_Config **confP);
 
 
-
+/*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 /*!
  * @brief Performs PID on a line
  * @param currLinePos Current line position
@@ -72,9 +87,33 @@ void PID_Init(void);
 /*! @brief Driver de-initialization */
 void PID_Deinit(void);
 
+/*!
+ * @brief Function returns PID parameter configuration for position control on the left hand side
+ * @return PID parameter configuration
+ */
 PID_Config *PID_Get_PosLeCfg(void);
+
+/*!
+ * @brief Function returns PID parameter configuration for position control on the right hand side
+ * @return PID parameter configuration
+ */
 PID_Config *PID_Get_PosRiCfg(void);
+
+/*!
+ * @brief Function returns PID parameter configuration for speed control on the left hand side
+ * @return PID parameter configuration
+ */
 PID_Config *PID_Get_SpdLeCfg(void);
+
+/*!
+ * @brief Function returns PID parameter configuration for speed control on the right hand side
+ * @return PID parameter configuration
+ */
 PID_Config *PID_Get_SpdRiCfg(void);
+
+
+#ifdef EXTERNAL_
+#undef EXTERNAL_
+#endif
 
 #endif /* PID_H_ */
