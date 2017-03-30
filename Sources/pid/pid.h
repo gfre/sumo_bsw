@@ -31,16 +31,7 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-typedef enum {
-  PID_CONFIG_LINE_FW,
-  PID_CONFIG_LINE_BW,
-  PID_CONFIG_POS_LEFT,
-  PID_CONFIG_POS_RIGHT,
-  PID_CONFIG_SPEED_LEFT,
-  PID_CONFIG_SPEED_RIGHT
-} PID_ConfigType;
-
-typedef struct {
+typedef struct PID_Config_s {
   int32_t pFactor100;
   int32_t iFactor100;
   int32_t dFactor100;
