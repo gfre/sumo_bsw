@@ -13,14 +13,28 @@
  *==================================================================================================
  */
 
-#ifndef __TACHO_H_
-#define __TACHO_H_
+#ifndef TACHO_H_
+#define TACHO_H_
 
+/*======================================= >> #INCLUDES << ========================================*/
 #include "Platform.h"
 
+#ifdef MASTER_tacho_C_
+#define EXTERNAL_
+#else
+#define EXTERNAL_ extern
+#endif
 
+/*======================================= >> #DEFINES << =========================================*/
 #define TACHO_SWC_STRING ("tacho")
 
+
+
+/*=================================== >> TYPE DEFINITIONS << =====================================*/
+
+
+
+/*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 /*!
  * @brief Returns the previously calculated speed of the motor.
  * @param isLeft TRUE for left speed, FALSE for right speed.
@@ -44,5 +58,9 @@ void TACHO_Deinit(void);
 /*! @brief Initialization of the module */
 void TACHO_Init(void);
 
+
+#ifdef EXTERNAL_
+#undef EXTERNAL_
+#endif
 
 #endif /* __TACHO_H_ */

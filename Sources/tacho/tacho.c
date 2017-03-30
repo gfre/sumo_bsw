@@ -13,6 +13,10 @@
  *==================================================================================================
  */
 
+
+#define MASTER_tacho_C_
+
+/*======================================= >> #INCLUDES << ========================================*/
 #include "Platform.h"
 #include "tacho.h"
 #include "Q4CLeft.h"
@@ -22,19 +26,40 @@
 #include "FRTOS1.h"
 #include "CS1.h"
 
-#define TACHO_SAMPLE_PERIOD_MS (5)     
-/*!< speed sample period in ms. Make sure that speed is sampled at the given rate. */
-#define NOF_HISTORY (16U+1U) 
-/*!< number of samples for speed calculation (>0):the more, the better, but the slower. */
 
-static volatile Q4CLeft_QuadCntrType TACHO_LeftPosHistory[NOF_HISTORY], TACHO_RightPosHistory[NOF_HISTORY];
+
+/*======================================= >> #DEFINES << =========================================*/
+/*!< speed sample period in ms. Make sure that speed is sampled at the given rate. */
+#define TACHO_SAMPLE_PERIOD_MS (5)     
+/*!< number of samples for speed calculation (>0):the more, the better, but the slower. */
+#define NOF_HISTORY (16U+1U) 
+
+
+
+/*=================================== >> TYPE DEFINITIONS << =====================================*/
+
+
+
+/*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
+
+
+
+/*=================================== >> GLOBAL VARIABLES << =====================================*/
 /*!< for better accuracy, we calculate the speed over some samples */
-static volatile uint8_t TACHO_PosHistory_Index = 0;
+static volatile Q4CLeft_QuadCntrType TACHO_LeftPosHistory[NOF_HISTORY], TACHO_RightPosHistory[NOF_HISTORY];
 /*!< position index in history */
+static volatile uint8_t TACHO_PosHistory_Index = 0;
 
 static int32_t TACHO_currLeftSpeed = 0, TACHO_currRightSpeed = 0;
-/*!< position index in history */
 
+
+
+
+/*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
+
+
+
+/*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 int32_t TACHO_GetSpeed(bool isLeft) {
 	if (isLeft) {
 		return TACHO_currLeftSpeed;
@@ -124,3 +149,6 @@ void TACHO_Init(void) {
 }
 
 
+#ifdef MASTER_tacho_C_
+#undef MASTER_tacho_C_
+#endif /* !MASTER_tacho_C_ */

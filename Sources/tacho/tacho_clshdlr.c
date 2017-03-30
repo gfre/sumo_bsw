@@ -21,22 +21,18 @@
 
 
 /*======================================= >> #DEFINES << =========================================*/
-/* #define TMPL_MACRO (0x01u) */
 
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-/* typedef unit8 TmplType_t;
 
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-/* static StdRtn_t TMPL_CustomFct(const TmplType_t *input_, TmplType_t *output_); */
 
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-/* static TmplType_t tmplArray[STUD_MACRO] = {0u,TRUE,FALSE};
 
 
 
