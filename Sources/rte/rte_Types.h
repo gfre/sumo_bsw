@@ -41,7 +41,12 @@
 #ifndef NUM_OF_SUMOS
 #define NUM_OF_SUMOS    (25)
 #endif
+
 #define MAX_ID_OF_SUMOS        (NUM_OF_SUMOS-(1))
+
+#define DRV_MODE_T DrvMode_t
+
+
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 /**
@@ -101,6 +106,17 @@ typedef enum ID_Sumo_e { /* do *not* change order of enumeration, they are used 
 	,ID_SUMO_NONE          					/**< initialization value, used internally */
 } ID_Sumo_t;
 
+
+/**
+ * @brief Non-customizeable data type for driving modes
+ */
+typedef enum DrvMode_e {
+  DRV_MODE_NONE = 0,
+  DRV_MODE_STOP,
+  DRV_MODE_SPEED,
+  DRV_MODE_POS,
+  DRV_MODE_INVALID,
+} DrvMode_t;
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 /**

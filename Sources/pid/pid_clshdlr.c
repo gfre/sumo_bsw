@@ -1,12 +1,13 @@
 /***************************************************************************************************
- * @brief 	>>TODO This is a brief description.
+ * @brief 	Command line shell handler of the software component of the PID controllers.
  *
- * @author 	>>TODO, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	28.02.2017
  *  
  * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
  *
- * >>TODO This is the detailed description of the file pid_clshdlr.c
+ * This module handles the interface between the software component of the PID controllers
+ * and the command line shell CLS.
  * 
  *==================================================================================================
  */
@@ -19,7 +20,6 @@
 #include "nvm_Types.h"
 
 /*======================================= >> #DEFINES << =========================================*/
-/* #define TMPL_MACRO (0x01u) */
 
 
 
@@ -34,10 +34,13 @@ typedef PID_Config *GetPIDConfig_t(void);
 static void PID_PrintHelp(const CLS1_StdIOType *io);
 static void PID_PrintStatus(const CLS1_StdIOType *io);
 static void PrintPIDstatus(PID_Config *config, const unsigned char *kindStr, const CLS1_StdIOType *io);
+static uint8_t ParsePidParameter(PID_Config *config, const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
+static StdRtn_t PID_restoreCfg(ReadPIDCfg_t *readDfltCfg_, SavePIDCfg_t *saveCfg_, PID_Config *config_);
+static StdRtn_t PID_saveCfg(SavePIDCfg_t *saveCfg_, PID_Config *config_);
+
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-/* static TmplType_t tmplArray[STUD_MACRO] = {0u,TRUE,FALSE};
 
 
 

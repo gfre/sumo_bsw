@@ -17,14 +17,16 @@
 #include "task.h"
 #include "task_cfg.h"
 #include "task_Types.h"
-#include "Motor.h"
+#include "mot.h"
 #include "RNET1.h"
-#include "Tacho.h"
+#include "tacho.h"
 #include "Q4CLeft.h"
 #include "Q4CRight.h"
 #include "drv.h"
 #include "rnet.h"
 #include "appl.h"
+
+
 
 /*======================================= >> #DEFINES << =========================================*/
 
@@ -35,8 +37,7 @@
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-inline static void TASK_AdoptToHardware(void);
-inline static void TASK_CreateTasks(void);
+static inline void TASK_CreateTasks(void);
 
 
 
@@ -45,25 +46,7 @@ inline static void TASK_CreateTasks(void);
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-static void TASK_AdoptToHardware(void)
-{
-	/* SW1: enable and turn on pull-up resistor for PTA14 (push button) */
-	PORT_PDD_SetPinPullSelect(PORTA_BASE_PTR, 14, PORT_PDD_PULL_UP);
-	PORT_PDD_SetPinPullEnable(PORTA_BASE_PTR, 14, PORT_PDD_PULL_ENABLE);
-
-	/* pull-ups for Quadrature Encoder Pins */
-	PORT_PDD_SetPinPullSelect(PORTC_BASE_PTR, 10, PORT_PDD_PULL_UP);
-	PORT_PDD_SetPinPullEnable(PORTC_BASE_PTR, 10, PORT_PDD_PULL_ENABLE);
-	PORT_PDD_SetPinPullSelect(PORTC_BASE_PTR, 11, PORT_PDD_PULL_UP);
-	PORT_PDD_SetPinPullEnable(PORTC_BASE_PTR, 11, PORT_PDD_PULL_ENABLE);
-	PORT_PDD_SetPinPullSelect(PORTC_BASE_PTR, 16, PORT_PDD_PULL_UP);
-	PORT_PDD_SetPinPullEnable(PORTC_BASE_PTR, 16, PORT_PDD_PULL_ENABLE);
-	PORT_PDD_SetPinPullSelect(PORTC_BASE_PTR, 17, PORT_PDD_PULL_UP);
-	PORT_PDD_SetPinPullEnable(PORTC_BASE_PTR, 17, PORT_PDD_PULL_ENABLE);
-}
-
-
-inline static void TASK_CreateTasks()
+static inline void TASK_CreateTasks()
 {
 	uint8 i = 0u;
 	const TASK_Cfg_t *taskCfg = NULL;
@@ -109,7 +92,6 @@ inline static void TASK_CreateTasks()
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 void TASK_Init(void) {
 	TASK_CreateTasks();
-	TASK_AdoptToHardware();
 }
 
 
