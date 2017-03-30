@@ -19,7 +19,7 @@
 #include "task_Types.h"
 #include "mot.h"
 #include "RNET1.h"
-#include "Tacho.h"
+#include "tacho.h"
 #include "Q4CLeft.h"
 #include "Q4CRight.h"
 #include "drv.h"
