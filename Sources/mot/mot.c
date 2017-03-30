@@ -183,5 +183,6 @@ void MOT_Init(void) {
 	MOT_SetSpeedPercent(&motorR, 0);
 	(void)PWML_Enable();
 	(void)PWMR_Enable();
+	isMotorOn = TRUE;
 }
 

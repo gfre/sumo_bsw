@@ -36,10 +36,10 @@ typedef enum DRV_Mode_e {
   DRV_MODE_STOP,
   DRV_MODE_SPEED,
   DRV_MODE_POS,
-} DRV_Mode;
+} DRV_Mode_t;
 
 typedef struct DRV_Status_s {
-	DRV_Mode mode;
+	DRV_Mode_t mode;
 	struct {
 		int32_t left, right;
 	} speed;
@@ -51,8 +51,8 @@ typedef struct DRV_Status_s {
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-EXTERNAL_ uint8_t DRV_SetMode(DRV_Mode mode);
-EXTERNAL_ DRV_Mode DRV_GetMode(void);
+EXTERNAL_ uint8_t DRV_SetMode(DRV_Mode_t mode);
+EXTERNAL_ DRV_Mode_t DRV_GetMode(void);
 
 
 EXTERNAL_ uint8_t DRV_SetSpeed(int32_t left, int32_t right);

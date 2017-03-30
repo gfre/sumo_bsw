@@ -334,10 +334,10 @@ StdRtn_t RTE_Read_SpdoVelRi(uint16 *vel_)
 /**
  * Interface implementation for the drive component
  */
-static inline DRV_Mode Trsnlte_ModeRTE2DRV(RTE_DrvMode_t mode_);
-static inline RTE_DrvMode_t Trsnlte_ModeDRV2RTE(DRV_Mode mode_);
+static inline DRV_Mode_t Trsnlte_ModeRTE2DRV(RTE_DrvMode_t mode_);
+static inline RTE_DrvMode_t Trsnlte_ModeDRV2RTE(DRV_Mode_t mode_);
 
-static inline DRV_Mode Trsnlte_ModeRTE2DRV(RTE_DrvMode_t mode_)
+static inline DRV_Mode_t Trsnlte_ModeRTE2DRV(RTE_DrvMode_t mode_)
 {
 	switch(mode_)
 	{
@@ -350,7 +350,7 @@ static inline DRV_Mode Trsnlte_ModeRTE2DRV(RTE_DrvMode_t mode_)
 	return DRV_MODE_NONE;
 }
 
-static inline RTE_DrvMode_t Trsnlte_ModeDRV2RTE(DRV_Mode mode_)
+static inline RTE_DrvMode_t Trsnlte_ModeDRV2RTE(DRV_Mode_t mode_)
 {
 	switch(mode_)
 	{

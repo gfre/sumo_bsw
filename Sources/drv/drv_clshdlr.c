@@ -30,7 +30,7 @@
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-static uint8_t *DRV_GetModeStr(DRV_Mode mode);
+static uint8_t *DRV_GetModeStr(DRV_Mode_t mode);
 
 
 
@@ -40,7 +40,7 @@ static uint8_t *DRV_GetModeStr(DRV_Mode mode);
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-static uint8_t *DRV_GetModeStr(DRV_Mode mode) {
+static uint8_t *DRV_GetModeStr(DRV_Mode_t mode) {
 	switch(mode) {
 	case DRV_MODE_NONE:   return (uint8_t*)"NONE";
 	case DRV_MODE_STOP:   return (uint8_t*)"STOP";
