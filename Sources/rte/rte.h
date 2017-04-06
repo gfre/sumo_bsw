@@ -1,17 +1,22 @@
-/*******************************************************************************
- * @brief 	This is the interface entrance layer for students.
+/***********************************************************************************************//**
+ * @file		rte.h
+ * @ingroup		rte
+ * @brief 		Application Interface of the RTE
  *
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, CAU Kiel
- * @date	 	10.01.2017
+ * The *Real-Time Environment* (@b RTE) is the application interface for application software development
+ * within the ACon Sumo Robot Project. The firmware and basic software of the Sumo Robot is abstracted
+ * to allow hardware independent development of C99-compliant application software
  *
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	10.01.2017
  *
+ * @copyright @LGPL2_1
  *
- * ==============================================================================
- */
+ ***************************************************************************************************/
 
-#ifndef RTE_H
-#define RTE_H
+#ifndef RTE_H_
+#define RTE_H_
+
 /*======================================= >> #INCLUDES << ========================================*/
 #include "rte_Types.h"
 
@@ -23,8 +28,10 @@
 #define EXTERNAL_ extern
 #endif
 
-
-
+/**
+ * @addtogroup rte
+ * @{
+ */
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 typedef void EvntCbFct_t(uint8_t);
 
@@ -457,8 +464,13 @@ StdRtn_t RTE_Release_HoldOnEnterNormal(void);
  */
 StdRtn_t RTE_Release_HoldOnEnterIdle(void);
 
+
+
+/**
+ * @}
+ */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
 
-#endif /* RTE_H */
+#endif /* !RTE_H_ */

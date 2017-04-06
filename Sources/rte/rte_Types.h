@@ -1,15 +1,19 @@
-/***************************************************************************************************
- * @brief 	>>TODO This is a brief description.
+/***********************************************************************************************//**
+ * @file		rte_Types.h
+ * @ingroup		rte
+ * @brief 		Customisable and non-customisable RTE - data types for application software
+ * 				development.
  *
- * @author 	>>TODO, gefr@tf.uni-kiel.de, University Kiel 
+ * The *Real-Time Environment* (@b RTE) is the application interface for application software development
+ * within the ACon Sumo Robot Project. The firmware and basic software of the Sumo Robot is abstracted
+ * to allow hardware independent development of C99-compliant application software
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	06.02.2017
- *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
  *
- * >>TODO This is the detailed description of the file rte_Types.h
- * 
- *==================================================================================================
- */
+ * @copyright @LGPL2_1
+ *
+ ***************************************************************************************************/
 
 
 #ifndef RTE_TYPES_H_
@@ -19,12 +23,17 @@
 #include "ACon_Types.h"
 
 
+
 #ifdef MASTER_rte_Types_C_
 #define EXTERNAL_
 #else
 #define EXTERNAL_ extern
 #endif
 
+/**
+ * @addtogroup rte
+ * @{
+ */
 /*======================================= >> #DEFINES << =========================================*/
 #ifdef ASW_STREAM_T
 #define RTE_STREAM             ASW_STREAM_T
@@ -50,18 +59,19 @@
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 /**
- * @brief ASW-customisable data type for application message type for RF messages
- * How to customise:
- * >> #define ASW_STREAM with custom stream type in asw.h
- * >> include asw.h before rte.h
+ * @brief ASW-customisable data type for application message type for RF messages.
+ *
+ * > *How to customise:*\n
+ * > 1. define @c ASW_STREAM with custom stream type in asw.h\n
+ * > 2. include asw.h before rte.h
  */
 typedef void Stream_t;
 
 /**
  * @brief ASW-customisable data type for application message type for RF messages
- * How to customise:
- * >> #define ASW_RF_MSG_TYPE_T with custom message type in asw.h
- * >> include asw.h before rte.h
+ * >**How to customise:**
+ * >define ASW_RF_MSG_TYPE_T with custom message type in asw.h
+ * >include asw.h before rte.h
  */
 typedef enum RFMsgType_e {
   MSG_TYPE_TESTDATA = 0xFE,
@@ -125,9 +135,12 @@ typedef enum DrvMode_e {
 EXTERNAL_ void RTE_Init(void);
 
 
+
+/**
+ * @}
+ */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
-
 
 #endif /* !RTE_TYPES_H_ */

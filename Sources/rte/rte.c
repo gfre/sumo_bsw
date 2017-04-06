@@ -1,16 +1,21 @@
-/*******************************************************************************
- * @brief 	This is the interface entrance layer for students.
+/***********************************************************************************************//**
+ * @file		rte.c
+ * @ingroup		rte
+ * @brief 		Implementation of the RTE
  *
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, CAU Kiel
- * @date	 	10.01.2017
+ * The *Real-Time Environment* (@b RTE) is the application interface for application software development
+ * within the ACon Sumo Robot Project. The firmware and basic software of the Sumo Robot is abstracted
+ * to allow hardware independent development of C99-compliant application software
  *
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	10.01.2017
  *
+ * @copyright @LGPL2_1
  *
- * ==============================================================================
- */
+ ***************************************************************************************************/
 
 #define MASTER_RTE_C_
+
 /*======================================= >> #INCLUDES << ========================================*/
 #include "ind_Types.h"
 #include "KEY1.h"
@@ -25,9 +30,10 @@
 #include "id_Types.h"
 #include "appl_Types.h"
 
-/*======================================= >> #DEFINES << =========================================*/
-#define USER_SWITCH_MASK (0x01u)
 
+
+/*======================================= >> #DEFINES << =========================================*/
+#define USER_SWITCH_MASK 	(0x01u)
 #define RTE_ERR_MSG_ADDRESS ("ERROR: Invliad pointer or address")
 
 
@@ -590,4 +596,4 @@ ID_Sumo_t RTE_GetSumoID(void)
 
 #ifdef MASTER_RTE_C_
 #undef MASTER_RTE_C_
-#endif
+#endif /* !MASTER_RTE_C_ */
