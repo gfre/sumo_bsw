@@ -1,12 +1,12 @@
 /***********************************************************************************************//**
  * @file		rte_Types.h
  * @ingroup		rte
- * @brief 		Customisable and non-customisable RTE - data types for application software
- * 				development.
+ * @brief 		Customisable and Non-Customisable RTE - Data Types for Application Software
+ * 				Development.
  *
  * The *Real-Time Environment* (@b RTE) is the application interface for application software development
- * within the ACon Sumo Robot Project. The firmware and basic software of the Sumo Robot is abstracted
- * to allow hardware independent development of C99-compliant application software
+ * within the ACon Sumo Robot Project. This header file provides the customisable and non-customisable RTE-
+ * data types for the development of hardware-independent application software.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	06.02.2017
@@ -14,7 +14,6 @@
  * @copyright @LGPL2_1
  *
  ***************************************************************************************************/
-
 
 #ifndef RTE_TYPES_H_
 #define RTE_TYPES_H_

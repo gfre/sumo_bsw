@@ -1,11 +1,11 @@
 /***********************************************************************************************//**
  * @file		rte.h
  * @ingroup		rte
- * @brief 		Application Interface of the RTE
+ * @brief 		RTE Application Interface Header
  *
  * The *Real-Time Environment* (@b RTE) is the application interface for application software development
- * within the ACon Sumo Robot Project. The firmware and basic software of the Sumo Robot is abstracted
- * to allow hardware independent development of C99-compliant application software
+ * within the ACon Sumo Robot Project. This header file provides the interface functions for the
+ * development of hardware-independent application software.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	10.01.2017
