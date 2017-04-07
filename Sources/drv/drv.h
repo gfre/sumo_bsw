@@ -22,7 +22,7 @@
 
 /*!
  * @brief Stops the engines
- * @param timoutMs timout in milliseconds for operation
+ * @param timeoutMs timout in milliseconds for operation
  * @return ERR_OK if stopped, ERR_BUSY for timeout condition.
  */
 uint8_t DRV_Stop(int32_t timeoutMs);

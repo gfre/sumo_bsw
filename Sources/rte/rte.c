@@ -91,7 +91,7 @@ StdRtn_t RTE_Release_HoldOnEnterIdle(void)
 /*================================================================================================*/
 
 
-/**
+/*
  * Interface implementation for the left LED
  */
 StdRtn_t RTE_Write_LedLeOn()
@@ -413,9 +413,7 @@ StdRtn_t RTE_Read_DrvHasRvsd(uint8_t *hasRvsd_)
 }
 
 /*================================================================================================*/
-
-
-/**
+/*
  * Interface implementation for the radio application layer
  */
 StdRtn_t RTE_Write_RFSendDataBlk(const uint8_t *payload_, uint8_t payloadSize_, RTE_RF_MSG_TYPE_T msgType_,  uint8_t dstAddr_, uint8_t flags_)

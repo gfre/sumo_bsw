@@ -228,7 +228,7 @@ TAB_SIZE = 4
 # "Side Effects:". You can put \n's in the value part of an alias to insert
 # newlines.
 
-ALIASES = "LGPL2_1=[LGPL-2.1](https://opensource.org/licenses/LGPL-2.1 \"GNU Lesser General Public License version 2.1\")" "LGPL3_0=[LGPL-3.0](https://opensource.org/licenses/LGPL-3.0 \"GNU Lesser General Public License version 3.0\")" 
+ALIASES = "LGPL2_1=[LGPL-2.1](https://opensource.org/licenses/LGPL-2.1 \"GNU Lesser General Public License version 2.1\")" "LGPL3_0=[LGPL-3.0](https://opensource.org/licenses/LGPL-3.0 \"GNU Lesser General Public License version 3.0\")"
 
 # This tag can be used to specify a number of word-keyword mappings (TCL only).
 # A mapping has the form "name=value". For example adding "class=itcl::class"
@@ -443,7 +443,7 @@ EXTRACT_PACKAGE = NO
 # included in the documentation.
 # The default value is: NO.
 
-EXTRACT_STATIC = NO
+EXTRACT_STATIC = YES
 
 # If the EXTRACT_LOCAL_CLASSES tag is set to YES, classes (and structs) defined
 # locally in source files will be included in the documentation. If set to NO,

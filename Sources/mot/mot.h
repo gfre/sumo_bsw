@@ -41,7 +41,7 @@ typedef enum {
 /*!
  * @brief Inverts the forward/backward signal for a motor
  * @param motor Motor handle
- * @param revert TRUE to invert logic, FALSE otherwise
+ * @param invert TRUE to invert logic, FALSE otherwise
  */
 void MOT_Invert(MOT_MotorDevice *motor, bool invert);
 
