@@ -43,8 +43,11 @@
 
 /**
  * @defgroup	batt Battery
- * @brief		Software Component
+ * @brief		ADC Battery Voltage Measurement
  *
+ * This software component provides the battery voltage for debugging and error handling purposes.
+ * The voltage is measured by means of an Analogue-Digital-Converter. Its interface is provided by
+ * the firmware component @b AD1.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	08.02.2017

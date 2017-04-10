@@ -1,30 +1,54 @@
-/*******************************************************************************
- * @brief 	Module for the battery management.
+/***********************************************************************************************//**
+ * @file		batt.c
+ * @ingroup		batt
+ * @brief 		Implementation of battery voltage measurement via ADC
+ *
+ * This module implements measurement functionality of a battery voltage by means of an ADC
+ * provided by the firmware component @a AD1.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, CAU Kiel
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date		09.01.2017
  *
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @copyright @LGPL2_1
  *
- * Deals with the robot battery.
- *
- * ==============================================================================
- */
+ ***************************************************************************************************/
 
-#include "Platform.h"
+#define MASTER_batt_clshdlr_C_
+
+/*======================================= >> #INCLUDES << ========================================*/
+#include "ACon_Types.h"
 #include "batt.h"
+#include "batt_api.h"
 #include "AD1.h"
-#include "CLS1.h"
 #include "FRTOS1.h"
 
-uint8_t BATT_MeasureBatteryVoltage(uint16_t *cvP) {
-  #define SAMPLE_GROUP_SIZE 1U
+
+
+/*======================================= >> #DEFINES << =========================================*/
+#define SAMPLE_GROUP_SIZE 1U
+#define BAT_V_DIVIDER_UP   62 /* voltage divider pull-up */
+#define BAT_V_DIVIDER_DOWN 30 /* voltage divider pull-down */
+
+
+/*=================================== >> TYPE DEFINITIONS << =====================================*/
+
+
+
+/*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
+
+
+
+/*=================================== >> GLOBAL VARIABLES << =====================================*/
+
+
+
+/*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
+StdRtn_t BATT_MeasureBatteryVoltage(uint16_t *cvP)
+{
   AD1_TResultData results[SAMPLE_GROUP_SIZE]={0};
   LDD_ADC_TSample SampleGroup[SAMPLE_GROUP_SIZE];
   uint32_t milliVolts;
-#define BAT_V_DIVIDER_UP   62 /* voltage divider pull-up */
-#define BAT_V_DIVIDER_DOWN 30 /* voltage divider pull-down */
 
   *cvP = 0; /* init */
   SampleGroup[0].ChannelIdx = 0U;  /* Create one-sample group */
@@ -46,48 +70,19 @@ uint8_t BATT_MeasureBatteryVoltage(uint16_t *cvP) {
   return ERR_OK;
 }
 
-static uint8_t BATT_PrintStatus(const CLS1_StdIOType *io) {
-  uint8_t buf[32];
-  uint16_t cv;
 
-  CLS1_SendStatusStr((unsigned char*)"battery", (unsigned char*)"\r\n", io->stdOut);
-  buf[0] = '\0';
-  if (BATT_MeasureBatteryVoltage(&cv)==ERR_OK) {
-    UTIL1_strcatNum32sDotValue100(buf, sizeof(buf), cv);
-    UTIL1_strcat(buf, sizeof(buf), (uint8_t*)" V\r\n");
-  } else {
-    UTIL1_strcat(buf, sizeof(buf), (uint8_t*)"ERROR\r\n");
-  }
-  CLS1_SendStatusStr((unsigned char*)"  Voltage", buf, io->stdOut);
-  return ERR_OK;
+void BATT_Init(void)
+{
+	/* nothing to do */
 }
 
-static uint8_t BATT_PrintHelp(const CLS1_StdIOType *io) {
-  CLS1_SendHelpStr((unsigned char*)"battery", (unsigned char*)"Group of battery commands\r\n", io->stdOut);
-  CLS1_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Shows battery help or status\r\n", io->stdOut);
-  return ERR_OK;
+void BATT_Deinit(void)
+{
+	/* nothing to do */
 }
 
 
-uint8_t BATT_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io) {
-  uint8_t res = ERR_OK;
 
-  if (UTIL1_strcmp((char*)cmd, (char*)CLS1_CMD_HELP)==0 || UTIL1_strcmp((char*)cmd, (char*)"battery help")==0) {
-    *handled = TRUE;
-    return BATT_PrintHelp(io);
-
-  } else if (UTIL1_strcmp((char*)cmd, (char*)CLS1_CMD_STATUS)==0 || UTIL1_strcmp((char*)cmd, (char*)"battery status")==0) {
-    *handled = TRUE;
-    return BATT_PrintStatus(io);
-  }
-  return res;
-}
-
-
-void BATT_Init(void){
-}
-
-void BATT_Deinit(void) {
-}
-
-
+#ifdef MASTER_batt_C_
+#undef MASTER_batt_C_
+#endif /* !MASTER_batt_C_ */

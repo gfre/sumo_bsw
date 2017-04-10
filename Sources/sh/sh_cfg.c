@@ -23,6 +23,7 @@
 #include "mot_clshdlr.h"
 #include "tacho_clshdlr.h"
 #include "drv_clshdlr.h"
+#include "batt_clshdlr.h"
 
 #include "sh_cfg.h"
 #include "RTT1.h"
@@ -31,7 +32,6 @@
 #include "RNET1.h"
 #include "LED1.h"
 #include "LED2.h"
-#include "batt.h"
 #include "Q4CLeft.h"
 #include "Q4CRight.h"
 #include "KIN1.h"
