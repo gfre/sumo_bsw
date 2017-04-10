@@ -3,7 +3,7 @@
  * @ingroup		appl
  * @brief 		Header of the SWC @a Application for internal use
  *
- * This header file provides internal interface between the SWC @a APPL and the
+ * This header file provides the internal interface between the SWC @a APPL and the
  * SWC @a TASK which runs the initialisation and periodic main function within a FreeRTOS task.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel

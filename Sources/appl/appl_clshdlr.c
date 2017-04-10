@@ -3,9 +3,9 @@
  * @ingroup		appl
  * @brief 		Implementation of the command line shell handler for the SWC @a Application
  *
- * This module implements the interface from the SWC Application (@b APPL) to the SWC Shell (@b SH).
- * It introduces application specific commands for debugging or requests of status information
- * via command line shell (@b CLS).
+ * This module implements the interface from the SWC @a Application (@b APPL) to the SWC
+ * @a Shell (@b SH). It introduces application specific commands for debugging or requests of status
+ * information via command line shell (@b CLS).
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	08.02.2017

@@ -3,7 +3,7 @@
  * @ingroup		appl
  * @brief 		API of the SWC @a Application
  *
- * This API provides internal interface of the Basic Software from the SWC @a Application to the
+ * This API provides the internal interface of the Basic Software from the SWC @a Application to the
  * all other Basic Software Components.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
