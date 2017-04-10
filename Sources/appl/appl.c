@@ -1,19 +1,22 @@
-/***************************************************************************************************
- * @brief 	State machine for handling application software
+/***********************************************************************************************//**
+ * @file		appl.c
+ * @ingroup		appl
+ * @brief 		State machine for handling application software
  *
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
- * @date 	08.02.2017
- *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
- *
- * This software component implements an extended state machine which handles
+ * * This module implements an extended state machine which handles
  * - startup procedures
  * - initialisations of application software without its own task
  * - custom application software in IDLE and NORMAL mode
  * - debug state for debugging basic software on command line shell
  * - an ERROR state for error handling
- *==================================================================================================
- */
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	08.02.2017
+ *
+ * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ *
+ *
+ ***************************************************************************************************/
 
 #define MASTER_appl_C_
 
