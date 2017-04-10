@@ -49,6 +49,7 @@
  * The voltage is measured by means of an Analogue-Digital-Converter. Its interface is provided by
  * the firmware component @b AD1.
  *
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	08.02.2017
  *
