@@ -3,12 +3,14 @@
  * @ingroup		appl
  * @brief		Header for the command line shell handler of the SWC @a Application
  *
- * This header files provides the interface to the command line shell (@b CLS). It introduces
- * application specific commands for debugging or gathering status information about the
- * application via CLS.
+ * This header files provides the interface from the SWC Application (@b APPL) to the SWC Shell (@b SH).
+ * It introduces application specific commands for debugging or requests of status information
+ * via command line shell (@b CLS).
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	08.02.2017
+ *
+ * @note Interface for specific BSW use only
  *
  * @copyright @LGPL2_1
  *
@@ -29,7 +31,7 @@
 #endif
 
 /**
- * @addtogroup <group label>
+ * @addtogroup appl
  * @{
  */
 /*======================================= >> #DEFINES << =========================================*/

@@ -27,11 +27,13 @@
  * > - @b INIT for initialisations of the application and application software;
  * > - @b IDLE for custom application software in IDLE, and
  * > - @b NORMAL for custom application software in NORMAL mode;
- * > - @b DEBUG state for debugging basic software on command line shell; and an
+ * > - @b DEBUG state for debugging the Sumo Basic Software on command line shell; and an
  * > - @b ERROR state for error handling.
- * \n\n
- * In DEBUG state the DEBUG task is awake which enables debugging activities of the basic software
- * components via command line shell (CLS).
+ *
+ * In DEBUG state the DEBUG task gets resumed which enables debugging activities and status requests
+ * of the Basic Software Components via command line shell (CLS). The software component provides
+ * its own status information for debugging my means of the module *application command line shell
+ * handler* (@b APPL_CLSHDLR).
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	08.02.2017

@@ -1,22 +1,28 @@
-/***************************************************************************************************
- * @brief 	>>TODO This is a brief description.
+/***********************************************************************************************//**
+ * @file		appl_api.h
+ * @ingroup		appl
+ * @brief 		API of the SWC @a Application
  *
- * @author 	>>TODO, gefr@tf.uni-kiel.de, University Kiel 
+ * This API provides internal interface of the Basic Software from the SWC @a Application to the
+ * all other Basic Software Components.
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	08.02.2017
- *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
  *
- * >>TODO This is the detailed description of the file appl_Types.h
- * 
- *==================================================================================================
- */
+ * @note API for internal BSW use only
+ *
+ * @copyright 	@LGPL2_1
+ *
+ ***************************************************************************************************/
 
 
-#ifndef APPL_TYPES_H_
-#define APPL_TYPES_H_
+#ifndef APPL_API_H_
+#define APPL_API_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "ACon_Types.h"
+
+
 
 #ifdef MASTER_appl_C_
 #define EXTERNAL_
@@ -24,6 +30,10 @@
 #define EXTERNAL_ extern
 #endif
 
+/**
+ * @addtogroup appl
+ * @{
+ */
 /*======================================= >> #DEFINES << =========================================*/
 
 
@@ -111,9 +121,13 @@ EXTERNAL_ StdRtn_t Set_ReleaseEnter(const APPL_State_t state_);
  */
 EXTERNAL_ StdRtn_t Set_ReleaseExit(const APPL_State_t state_);
 
+
+
+/**
+ * @}
+ */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
 
-
-#endif /* !APPL_TYPES_H_ */
+#endif /* !APPL_API_H_ */
