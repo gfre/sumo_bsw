@@ -32,6 +32,11 @@ typedef void EvntCbFct_t(uint8_t);
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 /**
+ * @brief RTE interface to re-initialise the application (software)
+ */
+EXTERNAL_ void RTE_ReInitAppl(void);
+
+/**
  * @brief RTE interface to turn the left LED ON
  * @param *state_ pointer to the LED state (call by reference)
  * @return Error code, always ERR_OK
