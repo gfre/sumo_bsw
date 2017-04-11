@@ -41,7 +41,7 @@ typedef void EvntCbFct_t(uint8_t);
 /**
  * @brief RTE interface to re-initialise the application (software)
  */
-EXTERNAL_ void RTE_ReInitAppl(void);
+EXTERNAL_ void RTE_Set_ReInitAppl(void);
 
 /**
  * @brief This function provides a RTE interface to trigger the transition from IDLE state to
