@@ -23,7 +23,7 @@
 #include "ACon_Types.h"
 
 
-#ifdef MASTER_batt_api_C_
+#ifdef MASTER_batt_C_
 #define EXTERNAL_
 #else
 #define EXTERNAL_ extern

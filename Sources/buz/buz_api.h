@@ -24,7 +24,7 @@
 
 
 
-#ifdef MASTER_buz_api_C_
+#ifdef MASTER_buz_C_
 #define EXTERNAL_
 #else
 #define EXTERNAL_ extern
