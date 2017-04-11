@@ -49,7 +49,7 @@ EXTERNAL_ void RTE_Set_ReInitAppl(void);
  * @return Error code, - ERR_OK if everything was fine,\n
  * 					   - ERR_PARAM_CONDITION if calling state was not IDLE.
  */
-EXTERNAL_ StdRtn_t RTE_Set_TransIdle2NormalL(void);
+EXTERNAL_ StdRtn_t RTE_Set_TransIdle2Normal(void);
 
 /**
  * @brief RTE interface to turn the left LED ON

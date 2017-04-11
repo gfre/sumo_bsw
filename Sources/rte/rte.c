@@ -68,7 +68,7 @@ void RTE_Set_ReInitAppl(void)
 	return APPL_Set_ReInitAppl();
 }
 
-StdRtn_t RTE_Set_TransIdle2NormalL(void)
+StdRtn_t RTE_Set_TransIdle2Normal(void)
 {
 	return APPL_Set_TransIdle2Normal();
 }
