@@ -44,7 +44,8 @@ typedef void EvntCbFct_t(uint8_t);
 EXTERNAL_ void RTE_ReInitAppl(void);
 
 /**
- * @brief This function triggers the transition from IDLE state to NORMAL state.
+ * @brief This function provides a RTE interface to trigger the transition from IDLE state to
+ * NORMAL state.
  * @return Error code, - ERR_OK if everything was fine,\n
  * 					   - ERR_PARAM_CONDITION if calling state was not IDLE.
  */
