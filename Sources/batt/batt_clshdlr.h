@@ -11,7 +11,7 @@
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	10.04.2017
  *
- * @note Interface for specific BSW use only
+ * @note Interface for CLS-specific use only
  *
  * @copyright @LGPL2_1
  *
@@ -51,7 +51,7 @@
  * @param io_ I/O stream to be used for input/output
  * @return Error code, ERR_OK if everything was fine
  */
-uint8_t BATT_ParseCommand(const unsigned char *cmd_, bool *handled_, const CLS1_StdIOType *io_);
+EXTERNAL_ uint8_t BATT_ParseCommand(const unsigned char *cmd_, bool *handled_, const CLS1_StdIOType *io_);
 
 
 

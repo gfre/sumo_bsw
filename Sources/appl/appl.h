@@ -1,7 +1,7 @@
 /***********************************************************************************************//**
  * @file		appl.h
  * @ingroup		appl
- * @brief 		Header of the SWC @a Application for internal use
+ * @brief 		Interface of the SWC @a Application for initialisation- and runtime-calls
  *
  * This header file provides the internal interface between the SWC @a APPL and the
  * SWC @a TASK which runs the initialisation and periodic main function within a FreeRTOS task.
@@ -9,7 +9,7 @@
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	08.02.2017
  *
- * @note Interface for specific BSW use only
+ * @note Interface for BSW-specific use only
  *
  * @copyright 	@LGPL2_1
  *

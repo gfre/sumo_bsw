@@ -8,7 +8,7 @@
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
- * @date		09.01.2017
+ * @date	09.01.2017
  *
  * @copyright @LGPL2_1
  *

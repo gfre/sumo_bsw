@@ -1,7 +1,7 @@
 /***********************************************************************************************//**
  * @file		batt.h
  * @ingroup		batt
- * @brief 		Header of the SWC @a Battery for internal use
+ * @brief 		Header of the SWC @a Battery for initialisation- and runtime-calls
  *
  * This header file provides the internal interface between the SWC @a BATT and the
  * SWC @a APPL which runs the initialisation within its INIT state.
@@ -10,7 +10,7 @@
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date	09.01.2017
  *
- * @note Interface for specific BSW use only
+ * @note Interface for BSW-specific use only
  *
  * @copyright @LGPL2_1
  *
@@ -45,12 +45,12 @@
 /**
  * @brief Module Initialization.
  */
-void BATT_Init(void);
+EXTERNAL_ void BATT_Init(void);
 
 /**
  * @brief Module De-initialization.
  */
-void BATT_Deinit(void);
+EXTERNAL_ void BATT_Deinit(void);
 
 
 

@@ -9,7 +9,7 @@
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	08.02.2017
  *
- * @note API for internal BSW use only
+ * @note API for BSW-internal use only
  *
  * @copyright 	@LGPL2_1
  *

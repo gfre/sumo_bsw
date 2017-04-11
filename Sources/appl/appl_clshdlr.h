@@ -1,7 +1,7 @@
 /***********************************************************************************************//**
  * @file		appl_clshdlr.h
  * @ingroup		appl
- * @brief		Header for the command line shell handler of the SWC @a Application
+ * @brief		Interface for the command line shell handler of the SWC @a Application
  *
  * This header files provides the interface from the SWC @a Application (@b APPL) to the SWC
  * @a Shell (@b SH). It introduces application specific commands for debugging or requests of status
@@ -10,7 +10,7 @@
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	08.02.2017
  *
- * @note Interface for specific BSW use only
+ * @note Interface for CLS-specific use only
  *
  * @copyright @LGPL2_1
  *

@@ -3,14 +3,14 @@
  * @ingroup		batt
  * @brief 		API of the SWC @a Battery
  *
- * This API provides the internal interface of the Basic Software from the SWC @a Battery to the
+ * This API provides an internal interface of the Basic Software from the SWC @a Battery to the
  * all other Basic Software Components.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
  * @date 	10.04.2017
  *
- * @note API for internal BSW use only
+ * @note API for BSW-internal use only
  *
  * @copyright @LGPL2_1
  *
@@ -47,7 +47,7 @@
  * @param cvP Pointer to variable where to store the voltage in centi-voltage units (330 is 3.3V)
  * @return Error code, ERR_OK if everything was fine
  */
-StdRtn_t BATT_MeasureBatteryVoltage(uint16_t *cvP);
+EXTERNAL_ StdRtn_t BATT_MeasureBatteryVoltage(uint16_t *cvP);
 
 
 

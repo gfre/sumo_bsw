@@ -1,7 +1,7 @@
 /***********************************************************************************************//**
  * @file		batt_clshdlr.c
  * @ingroup		batt
- * @brief 		Implementation of the command line shell handler for the SWC @a Application
+ * @brief 		Implementation of the command line shell handler for the SWC @a Battery
  *
  * This module implements the interface from the SWC Battery (@b BATT) to the SWC Shell (@b SH).
  * It introduces application specific commands for requesting battery voltage information
