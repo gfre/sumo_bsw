@@ -16,6 +16,8 @@
  * @copyright	@LGPL2_1
  */
 
+
+
 /**
  * @defgroup	appl Application
  * @brief		Advanced state machine which handles the application and custom application software
@@ -41,6 +43,8 @@
  * @copyright	@LGPL2_1
  */
 
+
+
 /**
  * @defgroup	batt Battery
  * @brief		ADC Battery Voltage Measurement
@@ -52,6 +56,28 @@
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	08.02.2017
+ *
+ * @copyright	@LGPL2_1
+ */
+
+
+
+/**
+ * @defgroup	buz Buzzer
+ * @brief		Buzzer
+ *
+ * This software component implements a driver for the buzzer. It uses the firmware components
+ * @b BUZ1 and @b TRG1 to play predefined melodies or tunes, or make certain noises.\n
+ * > Pre-configured melodies and tunes are:
+ * > - a Welcome Melody
+ * > - sound for *Button pressed*
+ * > - sound for *Button pressed long*
+ * > - sound for *Accepted*
+ * > - sound for *Declined*
+ *
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	09.01.2017
  *
  * @copyright	@LGPL2_1
  */
