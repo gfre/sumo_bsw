@@ -50,7 +50,7 @@
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 void STUD_Init(void)
 {
-	/**
+	/*
 	 * Write your initialization code here!
 	 */
 }
@@ -60,7 +60,7 @@ void STUD_Init(void)
 
 void STUD_Main(void)
 {
-	/**
+	/*
 	 * Write your main function here!
 	 */
 }
