@@ -37,18 +37,22 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-/*!
- * Command ID's of the actions in the state
+/**
+ * @brief Command ID's of the actions in the state
  */
 typedef enum APPL_Cmd_e
 {
-	 Run = 0x00		/*!< called in every cycle in the current state */
-    ,Enter			/*!< called when entering the target state */
-    ,Exit  			/*!< called when leaving the current state */
-	,CmdCnt			/*!< count of valid commands */
-	,noCmd			/*!< no or invalid command */
+	 Run = 0x00		/**< called in every cycle in the current state */
+    ,Enter			/**< called when entering the target state */
+    ,Exit  			/**< called when leaving the current state */
+	,CmdCnt			/**< count of valid commands */
+	,noCmd			/**< no or invalid command */
 }APPL_Cmd_t;
 
+
+/**
+ * @brief ID's of Application states
+ */
 typedef enum APPL_State_e
 {
 	 APPL_STATE_STARTUP = 0x00	/**< State during start up */

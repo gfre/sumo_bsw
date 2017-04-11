@@ -39,21 +39,30 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
+/**
+ * @brief Data type which holds trigger information
+ */
 typedef struct {
   uint16_t buzPeriodTicks;		/**< number of trigger ticks for a PWM period */
   uint16_t buzIterationCntr;	/**< number of iterations */
 } BUZ_TrgInfo;
 
+/**
+ * @brief  Data type which holds tune data
+ */
 typedef struct {
-  uint16_t freq; 				/**< frequency */
-  uint16_t ms; 					/**< milliseconds */
+  uint16_t freq; 				/**< frequency of sound in Hertz */
+  uint16_t ms; 					/**< duration of sound in milliseconds */
 } BUZ_Tune;
 
+/**
+ * @brief Descriptor type of a melody
+ */
 typedef struct {
   uint8_t idx; 					/**< current index */
   const uint8_t maxIdx; 		/**< maximum index */
-  BUZ_TrgInfo trgInfo;
-  const BUZ_Tune *melody;
+  BUZ_TrgInfo trgInfo;			/**< trigger information */
+  const BUZ_Tune *melody;		/**< pointer to the melody data */
 } MelodyDesc;
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
