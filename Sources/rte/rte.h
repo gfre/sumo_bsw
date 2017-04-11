@@ -44,6 +44,13 @@ typedef void EvntCbFct_t(uint8_t);
 EXTERNAL_ void RTE_ReInitAppl(void);
 
 /**
+ * @brief This function triggers the transition from IDLE state to NORMAL state.
+ * @return Error code, - ERR_OK if everything was fine,\n
+ * 					   - ERR_PARAM_CONDITION if calling state was not IDLE.
+ */
+EXTERNAL_ StdRtn_t RTE_Set_TransIdle2NormalL(void);
+
+/**
  * @brief RTE interface to turn the left LED ON
  * @return Error code, always ERR_OK
  */

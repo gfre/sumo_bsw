@@ -87,6 +87,13 @@ EXTERNAL_ APPL_Cmd_t APPL_Get_SmCmd(void);
 EXTERNAL_ void APPL_Set_ReInitAppl(void);
 
 /**
+ * @brief This function triggers the transition from IDLE state to NORMAL state.
+ * @return Error code, - ERR_OK if everything was fine,\n
+ * 					   - ERR_PARAM_CONDITION if calling state was not IDLE.
+ */
+EXTERNAL_ StdRtn_t APPL_Set_TransIdle2Normal(void);
+
+/**
  * @brief This function sets a flag which enables/disables hold on ENTER functionality for a certain state
  * @param state_ corresponding application state for holdOn ENTER functionality
  * @param holdOn_ TRUE/FALSE-flag for enabling or disabling holdOn ENTER functionality

@@ -60,12 +60,17 @@ void RTE_Init(void)
 /*================================================================================================*/
 
 
-/**
+/*
  * Interface to applicaton state machine
  */
-void RTE_ReInitAppl(void)
+void RTE_Set_ReInitAppl(void)
 {
 	return APPL_Set_ReInitAppl();
+}
+
+StdRtn_t RTE_Set_TransIdle2NormalL(void)
+{
+	return APPL_Set_TransIdle2Normal();
 }
 
 StdRtn_t RTE_Write_HoldOnEnterNormal(const uint8_t holdOn_)
@@ -581,7 +586,7 @@ StdRtn_t RTE_putsErr(const uint8_t *errMsg_)
 /*================================================================================================*/
 
 
-/**
+/*
  * Interface implementation for the sumo ID
  */
 ID_Sumo_t RTE_GetSumoID(void)

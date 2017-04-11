@@ -393,6 +393,18 @@ void APPL_Set_ReInitAppl(void)
 	return;
 }
 
+StdRtn_t APPL_Set_TransIdle2Normal(void)
+{
+	StdRtn_t retVal = ERR_PARAM_CONDITION;
+	if(APPL_STATE_IDLE == sm.state)
+	{
+		nextState = APPL_STATE_NORMAL;
+		retVal = ERR_OK;
+	}
+	return retVal;
+}
+
+
 StdRtn_t Set_HoldOnEnter(const APPL_State_t state_, const uint8_t holdOn_)
 {
 	return Set_HoldOnMask(&holdOnEnter, state_, holdOn_);
