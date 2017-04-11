@@ -51,8 +51,8 @@
 
 #define CHK_HOLD_ON_ENTER(state_)						(CHK_HOLD_ON_BIT(holdOnEnter, releaseEnter, state_))
 #define CHK_HOLD_ON_EXIT(state_)						(CHK_HOLD_ON_BIT(holdOnExit, releaseExit, state_))
-#define CLR_HOLD_ON_ENTER(state_)						(CLR_HOLD_ON_BIT(releaseEnter, state_))
-#define CLR_HOLD_ON_EXIT(state_)						(CLR_HOLD_ON_BIT(releaseExit, state_))
+#define CLR_HOLD_ON_ENTER(state_)						(releaseEnter = CLR_HOLD_ON_BIT(releaseEnter, state_))
+#define CLR_HOLD_ON_EXIT(state_)						(releaseExit = CLR_HOLD_ON_BIT(releaseExit, state_))
 
 #define IDLE_IND_FLASH_PERIOD 							(1500u) /* 2/3 Hz */
 #define DEBUG_IND_FLASH_PERIOD 							(500u)  /* 2Hz */
