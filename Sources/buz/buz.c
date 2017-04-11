@@ -1,22 +1,26 @@
-/*******************************************************************************
- * @brief 	Driver for the buzzer.
+/***********************************************************************************************//**
+ * @file		buz.c
+ * @ingroup		buz
+ * @brief 		Implementation of a driver component for a buzzer.
+ *
+ * This module implements driver component for a buzzer by means of trigger provided and enhanced
+ * by the firmware components @a TRG1 and @a BUZ1.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de,  University Kiel
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	09.01.2017
  *
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @copyright @LGPL2_1
  *
- * ==============================================================================
- */
+ ***************************************************************************************************/
 
 #include "Platform.h"
 #include "buz.h"
 #include "buz_cfg.h"
+#include "buz_api.h"
 #include "BUZ1.h"
 #include "TRG1.h"
-#include "UTIL1.h"
-#include "CLS1.h"
+
 
 #define TRG_TICKS_MS  1
 
@@ -67,48 +71,6 @@ uint8_t BUZ_PlayTune(BUZ_Tunes_t tune_) {
   BUZ_Melodies[tune].idx = 0; /* reset index */
   TRG1_AddTrigger(TRG1_BUZ_TUNE, 0, BUZ_Play);
   return ERR_OK;
-}
-
-
-
-static uint8_t BUZ_PrintHelp(const CLS1_StdIOType *io) {
-  CLS1_SendHelpStr((unsigned char*)"buzzer", (unsigned char*)"Group of buzzer commands\r\n", io->stdOut);
-  CLS1_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Shows radio help or status\r\n", io->stdOut);
-  CLS1_SendHelpStr((unsigned char*)"  buz <freq> <time>", (unsigned char*)"Beep for time (ms) and frequency (kHz)\r\n", io->stdOut);
-  CLS1_SendHelpStr((unsigned char*)"  play tune", (unsigned char*)"Play tune\r\n", io->stdOut);
-  return ERR_OK;
-}
-
-static uint8_t BUZ_PrintStatus(const CLS1_StdIOType *io) {
-  (void)io; /* not used */
-  return ERR_OK;
-}
-
-uint8_t BUZ_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io) {
-	const unsigned char *p;
-	uint16_t freq, duration;
-
-	if (UTIL1_strcmp((char*)cmd, (char*)CLS1_CMD_HELP)==0 || UTIL1_strcmp((char*)cmd, (char*)"buzzer help")==0) {
-		*handled = TRUE;
-		return BUZ_PrintHelp(io);
-	} else if (UTIL1_strcmp((char*)cmd, (char*)CLS1_CMD_STATUS)==0 || UTIL1_strcmp((char*)cmd, (char*)"buzzer status")==0) {
-		*handled = TRUE;
-		return BUZ_PrintStatus(io);
-	} else if (UTIL1_strncmp((char*)cmd, (char*)"buzzer buz ", sizeof("buzzer buz ")-1)==0) {
-		*handled = TRUE;
-		p = cmd+sizeof("buzzer buz ")-1;
-		if (UTIL1_ScanDecimal16uNumber(&p, &freq)==ERR_OK && UTIL1_ScanDecimal16uNumber(&p, &duration)==ERR_OK) {
-			if (BUZ_Beep(freq, duration)!=ERR_OK) {
-				CLS1_SendStr((unsigned char*)"Starting buzzer failed\r\n", io->stdErr);
-				return ERR_FAILED;
-			}
-			return ERR_OK;
-		}
-	} else if (UTIL1_strcmp((char*)cmd, (char*)"buzzer play tune")==0) {
-		*handled = TRUE;
-		return BUZ_PlayTune(BUZ_TUNE_WELCOME);
-	}
-	return ERR_OK;
 }
 
 

@@ -1,20 +1,25 @@
-/*******************************************************************************
- * @brief 	This is the interface entrance layer for students.
+/***********************************************************************************************//**
+ * @file		rte.c
+ * @ingroup		rte
+ * @brief 		Implementation of the RTE Application Interface
  *
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, CAU Kiel
- * @date	 	10.01.2017
+ * The *Real-Time Environment* (@b RTE) is the application interface for application software development
+ * within the ACon Sumo Robot Project. This source file implements the interface functions for the
+ * development of hardware-independent application software.
  *
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	10.01.2017
  *
+ * @copyright @LGPL2_1
  *
- * ==============================================================================
- */
+ ***************************************************************************************************/
 
 #define MASTER_RTE_C_
+
 /*======================================= >> #INCLUDES << ========================================*/
 #include "ind_Types.h"
 #include "KEY1.h"
-#include "buz.h"
+#include "buz_api.h"
 #include "rte.h"
 #include "tacho.h"
 #include "drv_Types.h"
@@ -23,11 +28,12 @@
 #include "sh.h"
 #include "sh_Types.h"
 #include "id_Types.h"
-#include "appl_Types.h"
+#include "appl_api.h"
+
+
 
 /*======================================= >> #DEFINES << =========================================*/
-#define USER_SWITCH_MASK (0x01u)
-
+#define USER_SWITCH_MASK 	(0x01u)
 #define RTE_ERR_MSG_ADDRESS ("ERROR: Invliad pointer or address")
 
 
@@ -54,12 +60,17 @@ void RTE_Init(void)
 /*================================================================================================*/
 
 
-/**
+/*
  * Interface to applicaton state machine
  */
-void RTE_ReInitAppl(void)
+void RTE_Set_ReInitAppl(void)
 {
 	return APPL_Set_ReInitAppl();
+}
+
+StdRtn_t RTE_Set_TransIdle2NormalL(void)
+{
+	return APPL_Set_TransIdle2Normal();
 }
 
 StdRtn_t RTE_Write_HoldOnEnterNormal(const uint8_t holdOn_)
@@ -85,7 +96,7 @@ StdRtn_t RTE_Release_HoldOnEnterIdle(void)
 /*================================================================================================*/
 
 
-/**
+/*
  * Interface implementation for the left LED
  */
 StdRtn_t RTE_Write_LedLeOn()
@@ -407,9 +418,7 @@ StdRtn_t RTE_Read_DrvHasRvsd(uint8_t *hasRvsd_)
 }
 
 /*================================================================================================*/
-
-
-/**
+/*
  * Interface implementation for the radio application layer
  */
 StdRtn_t RTE_Write_RFSendDataBlk(const uint8_t *payload_, uint8_t payloadSize_, RTE_RF_MSG_TYPE_T msgType_,  uint8_t dstAddr_, uint8_t flags_)
@@ -577,7 +586,7 @@ StdRtn_t RTE_putsErr(const uint8_t *errMsg_)
 /*================================================================================================*/
 
 
-/**
+/*
  * Interface implementation for the sumo ID
  */
 ID_Sumo_t RTE_GetSumoID(void)
@@ -590,4 +599,4 @@ ID_Sumo_t RTE_GetSumoID(void)
 
 #ifdef MASTER_RTE_C_
 #undef MASTER_RTE_C_
-#endif
+#endif /* !MASTER_RTE_C_ */

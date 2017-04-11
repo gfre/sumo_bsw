@@ -1,21 +1,24 @@
-/***************************************************************************************************
- * @brief 	>>TODO This is a brief description.
+/***********************************************************************************************//**
+ * @file		appl_clshdlr.c
+ * @ingroup		appl
+ * @brief 		Implementation of the command line shell handler for the SWC @a Application
  *
- * @author 	>>TODO, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * This module implements the interface from the SWC @a Application (@b APPL) to the SWC
+ * @a Shell (@b SH). It introduces application specific commands for debugging or requests of status
+ * information via command line shell (@b CLS).
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	08.02.2017
- *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
  *
- * >>TODO This is the detailed description of the file appl_clshdlr.c
- * 
- *==================================================================================================
- */
+ * @copyright @LGPL2_1
+ *
+ ***************************************************************************************************/
 
 #define MASTER_appl_clshdlr_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "appl_clshdlr.h"
-#include "appl_Types.h"
+#include "appl_api.h"
 
 
 /*======================================= >> #DEFINES << =========================================*/

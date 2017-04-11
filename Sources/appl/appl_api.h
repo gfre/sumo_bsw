@@ -1,22 +1,27 @@
-/***************************************************************************************************
- * @brief 	>>TODO This is a brief description.
+/***********************************************************************************************//**
+ * @file		appl_api.h
+ * @ingroup		appl
+ * @brief 		API of the SWC @a Application
  *
- * @author 	>>TODO, gefr@tf.uni-kiel.de, University Kiel 
+ * This API provides the internal interface of the Basic Software from the SWC @a Application to the
+ * all other Basic Software Components.
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	08.02.2017
- *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
  *
- * >>TODO This is the detailed description of the file appl_Types.h
- * 
- *==================================================================================================
- */
+ * @note API for BSW-internal use only
+ *
+ * @copyright 	@LGPL2_1
+ *
+ ***************************************************************************************************/
 
-
-#ifndef APPL_TYPES_H_
-#define APPL_TYPES_H_
+#ifndef APPL_API_H_
+#define APPL_API_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "ACon_Types.h"
+
+
 
 #ifdef MASTER_appl_C_
 #define EXTERNAL_
@@ -24,22 +29,30 @@
 #define EXTERNAL_ extern
 #endif
 
+/**
+ * @addtogroup appl
+ * @{
+ */
 /*======================================= >> #DEFINES << =========================================*/
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-/*!
- * Command ID's of the actions in the state
+/**
+ * @brief Command ID's of the actions in the state
  */
 typedef enum APPL_Cmd_e
 {
-	 Run = 0x00		/*!< called in every cycle in the current state */
-    ,Enter			/*!< called when entering the target state */
-    ,Exit  			/*!< called when leaving the current state */
-	,CmdCnt			/*!< count of valid commands */
-	,noCmd			/*!< no or invalid command */
+	 Run = 0x00		/**< called in every cycle in the current state */
+    ,Enter			/**< called when entering the target state */
+    ,Exit  			/**< called when leaving the current state */
+	,CmdCnt			/**< count of valid commands */
+	,noCmd			/**< no or invalid command */
 }APPL_Cmd_t;
 
+
+/**
+ * @brief ID's of Application states
+ */
 typedef enum APPL_State_e
 {
 	 APPL_STATE_STARTUP = 0x00	/**< State during start up */
@@ -72,30 +85,37 @@ EXTERNAL_ APPL_State_t APPL_Get_SmState(void);
  */
 EXTERNAL_ APPL_Cmd_t APPL_Get_SmCmd(void);
 
-/*!
+/**
  * @brief This function re-initialises the application. The application state machine re-starts in INIT-state.
  */
 EXTERNAL_ void APPL_Set_ReInitAppl(void);
 
-/*!
+/**
+ * @brief This function triggers the transition from IDLE state to NORMAL state.
+ * @return Error code, - ERR_OK if everything was fine,\n
+ * 					   - ERR_PARAM_CONDITION if calling state was not IDLE.
+ */
+EXTERNAL_ StdRtn_t APPL_Set_TransIdle2Normal(void);
+
+/**
  * @brief This function sets a flag which enables/disables hold on ENTER functionality for a certain state
  * @param state_ corresponding application state for holdOn ENTER functionality
- * 		  holdOn_ TRUE/FALSE-flag for enabling or disabling holdOn ENTER functionality
+ * @param holdOn_ TRUE/FALSE-flag for enabling or disabling holdOn ENTER functionality
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
 EXTERNAL_ StdRtn_t Set_HoldOnEnter(const APPL_State_t state_, const uint8_t holdOn_);
 
-/*!
+/**
  * @brief This function sets a flag which enables/disables hold on EXIT functionality for a certain state
  * @param state_ corresponding application state for holdOn EXIT functionality
- * 		  holdOn_ TRUE/FALSE-flag for enabling or disabling holdOn EXIT functionality
+ * @param holdOn_ TRUE/FALSE-flag for enabling or disabling holdOn EXIT functionality
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
 EXTERNAL_ StdRtn_t Set_HoldOnExit(const APPL_State_t state_, const uint8_t holdOn_);
 
-/*!
+/**
  * @brief This function allows to release hold on ENTER for a certain state during runtime
  * @param state_ corresponding application state which shall be released
  * @return Error code, ERR_OK if everything was fine,
@@ -103,7 +123,7 @@ EXTERNAL_ StdRtn_t Set_HoldOnExit(const APPL_State_t state_, const uint8_t holdO
  */
 EXTERNAL_ StdRtn_t Set_ReleaseEnter(const APPL_State_t state_);
 
-/*!
+/**
  * @brief This function allows to release hold on EXIT for a certain state during runtime
  * @param state_ corresponding application state which shall be released
  * @return Error code, ERR_OK if everything was fine,
@@ -111,9 +131,13 @@ EXTERNAL_ StdRtn_t Set_ReleaseEnter(const APPL_State_t state_);
  */
 EXTERNAL_ StdRtn_t Set_ReleaseExit(const APPL_State_t state_);
 
+
+
+/**
+ * @}
+ */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
 
-
-#endif /* !APPL_TYPES_H_ */
+#endif /* !APPL_API_H_ */

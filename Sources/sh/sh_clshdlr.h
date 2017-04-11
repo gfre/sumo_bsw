@@ -37,7 +37,7 @@
 /*!
  * @brief Sends a error string to the shell/console stdout
  * @param *cmd_ pointer to command
- * @param *handeld_ pointer to flag which returns TRUE if cmd was handeld, otherwise FALSE (CBR).
+ * @param *handled_ pointer to flag which returns TRUE if cmd_ was handled_, otherwise FALSE (CBR).
  * @param *io_ pointer to command line shell standard IO type
  * @return always ERR_OK
  */

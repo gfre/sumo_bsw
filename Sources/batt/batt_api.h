@@ -1,37 +1,36 @@
 /***********************************************************************************************//**
- * @file		appl_clshdlr.h
- * @ingroup		appl
- * @brief		Interface for the command line shell handler of the SWC @a Application
+ * @file		batt_api.h
+ * @ingroup		batt
+ * @brief 		API of the SWC @a Battery
  *
- * This header files provides the interface from the SWC @a Application (@b APPL) to the SWC
- * @a Shell (@b SH). It introduces application specific commands for debugging or requests of status
- * information via command line shell (@b CLS).
+ * This API provides an internal interface of the Basic Software from the SWC @a Battery to the
+ * all other Basic Software Components.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
- * @date 	08.02.2017
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
+ * @date 	10.04.2017
  *
- * @note Interface for CLS-specific use only
+ * @note API for BSW-internal use only
  *
  * @copyright @LGPL2_1
  *
  ***************************************************************************************************/
 
-#ifndef APPL_CLSHDLR_H_
-#define APPL_CLSHDLR_H_
+#ifndef BATT_API_H_
+#define BATT_API_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "CLS1.h"
+#include "ACon_Types.h"
 
 
-
-#ifdef MASTER_appl_clshdlr_C_
+#ifdef MASTER_batt_C_
 #define EXTERNAL_
 #else
 #define EXTERNAL_ extern
 #endif
 
 /**
- * @addtogroup appl
+ * @addtogroup batt
  * @{
  */
 /*======================================= >> #DEFINES << =========================================*/
@@ -43,15 +42,12 @@
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-/*!
- * @brief Parses a command of the software component 'application'
- *
- * @param cmd_ Command string to be parsed
- * @param handled_ Sets this variable to TRUE if command was handled
- * @param io_ I/O stream to be used for input/output
+/**
+ * @brief Does a measurement of the battery voltage
+ * @param cvP Pointer to variable where to store the voltage in centi-voltage units (330 is 3.3V)
  * @return Error code, ERR_OK if everything was fine
  */
-EXTERNAL_ uint8 APPL_ParseCommand(const unsigned char *cmd_, bool *handled_, const CLS1_StdIOType *io_);
+EXTERNAL_ StdRtn_t BATT_MeasureBatteryVoltage(uint16_t *cvP);
 
 
 
@@ -62,4 +58,4 @@ EXTERNAL_ uint8 APPL_ParseCommand(const unsigned char *cmd_, bool *handled_, con
 #undef EXTERNAL_
 #endif
 
-#endif /* !APPL_CLSHDLR_H_ */
+#endif /* !BATT_API_H_ */

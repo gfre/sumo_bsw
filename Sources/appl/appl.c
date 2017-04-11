@@ -1,25 +1,29 @@
-/***************************************************************************************************
- * @brief 	State machine for handling application software
+/***********************************************************************************************//**
+ * @file		appl.c
+ * @ingroup		appl
+ * @brief 		Implementation of an advanced state machine for handling application and
+ * application software
  *
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * This module implements an advanced state machine which handles *6 states*\n
+ * > - @b STARTUP for one-time startup procedures;
+ * > - @b INIT for initialisations of the application and application software;
+ * > - @b IDLE for custom application software in IDLE, and
+ * > - @b NORMAL for custom application software in NORMAL mode;
+ * > - @b DEBUG state for debugging the Sumo Basic Software on command line shell; and an
+ * > - @b ERROR state for error handling.
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	08.02.2017
- *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
  *
- * This software component implements an extended state machine which handles
- * - startup procedures
- * - initialisations of application software without its own task
- * - custom application software in IDLE and NORMAL mode
- * - debug state for debugging basic software on command line shell
- * - an ERROR state for error handling
- *==================================================================================================
- */
+ * @copyright 	@LGPL2_1
+ *
+ ***************************************************************************************************/
 
 #define MASTER_appl_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "appl.h"
-#include "appl_Types.h"
+#include "appl_api.h"
 #include "FRTOS1.h"
 #include "Platform.h"
 #include "stud.h"
@@ -30,7 +34,6 @@
 #include "batt.h"
 #include "id.h"
 #include "nvm.h"
-#include "rte_Types.h"
 #include "Pid.h"
 #include "ind.h"
 #include "ind_Types.h"
@@ -389,6 +392,18 @@ void APPL_Set_ReInitAppl(void)
 
 	return;
 }
+
+StdRtn_t APPL_Set_TransIdle2Normal(void)
+{
+	StdRtn_t retVal = ERR_PARAM_CONDITION;
+	if(APPL_STATE_IDLE == sm.state)
+	{
+		nextState = APPL_STATE_NORMAL;
+		retVal = ERR_OK;
+	}
+	return retVal;
+}
+
 
 StdRtn_t Set_HoldOnEnter(const APPL_State_t state_, const uint8_t holdOn_)
 {

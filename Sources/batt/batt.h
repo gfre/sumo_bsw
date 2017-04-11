@@ -1,50 +1,64 @@
-/*******************************************************************************
- * @brief 	Module for the battery management.
+/***********************************************************************************************//**
+ * @file		batt.h
+ * @ingroup		batt
+ * @brief 		Header of the SWC @a Battery for initialisation- and runtime-calls
+ *
+ * This header file provides the internal interface between the SWC @a BATT and the
+ * SWC @a APPL which runs the initialisation within its INIT state.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, CAU Kiel
- * @date		09.01.2017
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date	09.01.2017
  *
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @note Interface for BSW-specific use only
  *
- * Deals with the robot battery.
+ * @copyright @LGPL2_1
  *
- * ==============================================================================
+ ***************************************************************************************************/
+
+#ifndef BATT__H_
+#define BATT__H_
+
+/*======================================= >> #INCLUDES << ========================================*/
+
+
+
+#ifdef MASTER_batt_C_
+#define EXTERNAL_
+#else
+#define EXTERNAL_ extern
+#endif
+
+/**
+ * @addtogroup batt
+ * @{
  */
-
-#ifndef BATT_H_
-#define BATT_H_
-
-#include "Platform.h"
-#include "CLS1.h"
-/*!
- * @brief Parses a command
- * @param cmd Command string to be parsed
- * @param handled Sets this variable to TRUE if command was handled
- * @param io I/O stream to be used for input/output
- * @return Error code, ERR_OK if everything was fine
- */
-uint8_t BATT_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
+/*======================================= >> #DEFINES << =========================================*/
 
 
-/*!
- * @brief Does a measurement of the battery voltage
- * @param cvP Pointer to variable where to store the voltage in centi-voltage units (330 is 3.3V)
- * @return Error code, ERR_OK if everything was fine
- */
-uint8_t BATT_MeasureBatteryVoltage(uint16_t *cvP);
+
+/*=================================== >> TYPE DEFINITIONS << =====================================*/
 
 
-/*!
+
+/*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
+/**
  * @brief Module Initialization.
  */
-void BATT_Init(void);
+EXTERNAL_ void BATT_Init(void);
 
-/*!
+/**
  * @brief Module De-initialization.
  */
-void BATT_Deinit(void);
+EXTERNAL_ void BATT_Deinit(void);
 
 
+
+/**
+ * @}
+ */
+#ifdef EXTERNAL_
+#undef EXTERNAL_
+#endif
 
 #endif /* BATT_H_ */
