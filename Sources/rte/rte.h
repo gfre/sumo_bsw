@@ -45,7 +45,6 @@ EXTERNAL_ void RTE_ReInitAppl(void);
 
 /**
  * @brief RTE interface to turn the left LED ON
- * @param *state_ pointer to the LED state (call by reference)
  * @return Error code, always ERR_OK
  */
 EXTERNAL_ StdRtn_t RTE_Write_LedLeOn();

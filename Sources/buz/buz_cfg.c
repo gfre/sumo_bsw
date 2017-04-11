@@ -1,15 +1,18 @@
-/***************************************************************************************************
- * @brief 	>>TODO This is a brief description.
+/***********************************************************************************************//**
+ * @file		buz_clshdlr.c
+ * @ingroup		buz
+ * @brief 		Implementation of the configuration of the SWC @a Buzzer
  *
- * @author 	(c) 2017 Gerhard Freudenthaler, gefr@tf.uni-kiel.de, University Kiel
+ * This file implements the configuration of pre-defined melodies and tunes of the software
+ * component SWC @a Buzzer and its internal interface.
+ *
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	06.02.2017
  *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @copyright @LGPL2_1
  *
- * >>TODO This is the detailed description of the file buz_cfg.c
- * 
- *==================================================================================================
- */
+ ***************************************************************************************************/
 
 #define MASTER_buz_cfg_C_
 

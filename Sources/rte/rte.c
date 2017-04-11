@@ -19,7 +19,7 @@
 /*======================================= >> #INCLUDES << ========================================*/
 #include "ind_Types.h"
 #include "KEY1.h"
-#include "buz.h"
+#include "buz_api.h"
 #include "rte.h"
 #include "tacho.h"
 #include "drv_Types.h"

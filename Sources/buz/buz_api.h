@@ -1,30 +1,30 @@
 /***********************************************************************************************//**
- * @file		buz_cfg.h
+ * @file		buz_api.h
  * @ingroup		buz
- * @brief 		SWC-internal configuration interface of the SWC @a Buzzer
+ * @brief 		API of the SWC @a Buzzer
  *
- * This header file provides an internal interface within the software component SWC @a Buzzer
- * for the configuration of pre-defined melodies and tunes.
+ * This API provides an internal interface of the Basic Software from the SWC @a Buzzer to the
+ * all other Basic Software Components.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
- * @date 	06.02.2017
- *  
- * @note Interface for SWC-specific use only
+ * @date 	11.04.2017
+ *
+ * @note API for BSW-internal use only
  *
  * @copyright @LGPL2_1
  *
  ***************************************************************************************************/
 
-#ifndef BUZ_CFG_H_
-#define BUZ_CFG_H_
+#ifndef BUZ_API_H_
+#define BUZ_API_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "Platform.h"
+#include "rte_Types.h"
 
 
 
-#ifdef MASTER_buz_cfg_C_
+#ifdef MASTER_buz_api_C_
 #define EXTERNAL_
 #else
 #define EXTERNAL_ extern
@@ -39,25 +39,26 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-typedef struct {
-  uint16_t buzPeriodTicks;		/**< number of trigger ticks for a PWM period */
-  uint16_t buzIterationCntr;	/**< number of iterations */
-} BUZ_TrgInfo;
 
-typedef struct {
-  uint16_t freq; 				/**< frequency */
-  uint16_t ms; 					/**< milliseconds */
-} BUZ_Tune;
 
-typedef struct {
-  uint8_t idx; 					/**< current index */
-  const uint8_t maxIdx; 		/**< maximum index */
-  BUZ_TrgInfo trgInfo;
-  const BUZ_Tune *melody;
-} MelodyDesc;
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-EXTERNAL_ MelodyDesc *Get_BUZMelodies(void);
+/**
+ * @brief Let the buzzer sound for a specified time.
+ * @param freqHz_ Frequency of the sound. Ignored if the buzzer is not supporting it.
+ * @param durationMs_ Duration in milliseconds.
+ * @return Error code, ERR_OK if everything is fine.
+ */
+EXTERNAL_ uint8_t BUZ_Beep(uint16_t freqHz_, uint16_t durationMs_);
+
+
+
+/**
+ * @brief Plays a tune
+ * @param tune_ Tune to play
+ * @return ERR_OK or error code
+ */
+EXTERNAL_ uint8_t BUZ_PlayTune(BUZ_Tunes_t tune_);
 
 
 
@@ -68,5 +69,4 @@ EXTERNAL_ MelodyDesc *Get_BUZMelodies(void);
 #undef EXTERNAL_
 #endif
 
-
-#endif /* !BUZ_CFG_H_ */
+#endif /* !BUZ_API_H_ */
