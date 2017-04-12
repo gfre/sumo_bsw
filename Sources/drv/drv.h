@@ -64,4 +64,8 @@ void DRV_MainFct(void);
 /**
  * @}
  */
+#ifdef EXTERNAL_
+#undef EXTERNAL_
+#endif
+
 #endif /* DRIVE_H_ */
