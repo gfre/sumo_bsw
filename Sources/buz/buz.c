@@ -4,7 +4,7 @@
  * @brief 		Implementation of a driver component for a buzzer.
  *
  * This module implements driver component for a buzzer by means of trigger provided and enhanced
- * by the firmware components @a TRG1 and @a BUZ1.
+ * by the firmware components @b TRG1 and @b BUZ1.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel

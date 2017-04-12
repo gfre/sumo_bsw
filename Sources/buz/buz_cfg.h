@@ -3,7 +3,7 @@
  * @ingroup		buz
  * @brief 		SWC-internal configuration interface of the SWC @a Buzzer
  *
- * This header file provides an internal interface within the software component SWC @a Buzzer
+ * This header file provides an internal interface within the software component SWC @ref buz
  * for the configuration of pre-defined melodies and tunes.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern

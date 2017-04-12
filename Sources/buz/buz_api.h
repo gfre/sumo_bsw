@@ -3,8 +3,8 @@
  * @ingroup		buz
  * @brief 		API of the SWC @a Buzzer
  *
- * This API provides an internal interface of the Basic Software from the SWC @a Buzzer to the
- * all other Basic Software Components.
+ * This API provides a BSW-internal interface of the SWC @ref buz. It is supposed to be available
+ * to all other Basic Software Components.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel

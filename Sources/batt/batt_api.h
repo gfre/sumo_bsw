@@ -3,8 +3,8 @@
  * @ingroup		batt
  * @brief 		API of the SWC @a Battery
  *
- * This API provides an internal interface of the Basic Software from the SWC @a Battery to the
- * all other Basic Software Components.
+ * This API provides a BSW-internal interface of the SWC @ref batt. It is supposed to be available
+ * to all other Basic Software Components.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern

@@ -3,7 +3,7 @@
  * @ingroup		buz
  * @brief 		Interface for the command line shell handler of the SWC @a Buzzer
  *
- * This header files provides the interface from the SWC @a Buzzer (@b BUZ) to the SWC Shell (@b SH).
+ * This header files provides the interface from the SWC @ref buz which is addressed the SWC @ref sh.
  * It introduces application specific commands for requesting buzzer help and status information
  * via command line shell (@b CLS).
  *

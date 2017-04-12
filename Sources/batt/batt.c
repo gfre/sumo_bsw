@@ -4,7 +4,7 @@
  * @brief 		Implementation of battery voltage measurement via ADC
  *
  * This module implements measurement functionality of a battery voltage by means of an ADC
- * provided by the firmware component @a AD1.
+ * provided by the firmware component @b AD1.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
