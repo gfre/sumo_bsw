@@ -85,32 +85,12 @@ StdRtn_t RTE_Write_HoldOnEnterIdle(const uint8_t holdOn_)
 
 StdRtn_t RTE_Release_HoldOnEnterNormal(void)
 {
-	StdRtn_t retVal = ERR_OK;
-
-	if( ( APPL_STATE_NORMAL == APPL_Get_SmState() ) && ( APPL_Cmd_Enter == APPL_Get_SmCmd() ) )
-	{
-		retVal = Set_ReleaseEnter(APPL_STATE_NORMAL);
-	}
-	else
-	{
-		retVal = ERR_PARAM_CONDITION;
-	}
-	return retVal;
+	return Set_ReleaseEnter(APPL_STATE_NORMAL);
 }
 
 StdRtn_t RTE_Release_HoldOnEnterIdle(void)
 {
-	StdRtn_t retVal = ERR_OK;
-
-	if( ( APPL_STATE_IDLE == APPL_Get_SmState() ) && ( APPL_Cmd_Enter == APPL_Get_SmCmd() ) )
-	{
-		retVal = Set_ReleaseEnter(APPL_STATE_IDLE);
-	}
-	else
-	{
-		retVal = ERR_PARAM_CONDITION;
-	}
-	return retVal;
+	return Set_ReleaseEnter(APPL_STATE_IDLE);
 }
 
 /*================================================================================================*/
