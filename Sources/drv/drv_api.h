@@ -39,19 +39,18 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-#ifdef DRV_MODE_T
 /**
- * DRV_Mode_t is inherited from DRV_Mode_t, which is defined within the Real-time
- * environment (@ref rte).
+ * @typedef DRV_Mode_t
+ * @brief DRV_Mode_t is either inherited from DRV_Mode_t or defined as an enumeration
+ *
+ * For inheritance DRV_Mode_t must be defined within the Real-time environment (@ref rte) in
+ * rte_Types.h. If it is not defined there it is defined in @ref drv as the enumeration
+ * @ref DRV_Mode_e.
  */
+#ifdef DRV_MODE_T
 typedef DrvMode_t DRV_Mode_t;
 #else
 /**
- * @typedef DRV_Mode_t
- * @brief DRV_Mode_t is defined from scratch as the enumeration @ref DRV_Mode_e.
- *
- * In this case it was not previously defined within the Real-time environment (@ref rte).
- *
  * @enum DRV_Mode_e
  * @brief Definition of available *drive modes*.
  */
@@ -71,22 +70,22 @@ typedef enum DRV_Mode_e {
  * @brief This data type defines the driving status information available.
  */
 typedef struct DRV_Status_s {
-	DRV_Mode_t mode;		/**< current [drive mode](@ref DRV_Mode_e) */
+	DRV_Mode_t mode;		/**< current [drive mode](@ref DRV_Mode_t) */
 	struct {
 		int32_t left;			/**< control target value for the left-hand side */
 		int32_t right;			/**< control target value for the right-hand side */
-	} speed;				/**< current controller target values in case of [DRV_MODE_SPEED](@ref DRV_Mode_e) implemented as anonymous struct */
+	} speed;				/**< current controller target values in case of [DRV_MODE_SPEED](@ref DRV_Mode_t) implemented as anonymous struct */
 	struct {
 		int32_t left;
 		int32_t right;
-	} pos;					/**< current controller target values in case of [DRV_MODE_POS](@ref DRV_Mode_e) implemented as anonymous struct */
+	} pos;					/**< current controller target values in case of [DRV_MODE_POS](@ref DRV_Mode_t) implemented as anonymous struct */
 } DRV_Status_t;
 
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 /**
- * @brief Sends a command to the queue to set a target [drive mode](@ref DRV_Mode_e)
+ * @brief Sends a command to the queue to set a target [drive mode](@ref DRV_Mode_t)
  * @param mode target mode
  * @return Error code, ERR_OK if everything was fine\n
  * ERR_FAILED if sending to queues fails.
@@ -94,7 +93,7 @@ typedef struct DRV_Status_s {
 EXTERNAL_ uint8_t DRV_SetMode(DRV_Mode_t mode);
 
 /**
- * Returns the current [drive mode](@ref DRV_Mode_e).
+ * Returns the current [drive mode](@ref DRV_Mode_t).
  * @return current drive mode.
  */
 EXTERNAL_ DRV_Mode_t DRV_GetMode(void);
@@ -130,7 +129,7 @@ EXTERNAL_ bool DRV_IsDrivingBackward(void);
 EXTERNAL_ bool DRV_IsStopped(void);
 
 /**
- * @brief In [postion mode](@ref DRV_Mode_e) this function returns TRUE when the robot has just changed direction.
+ * @brief In [postion mode](@ref DRV_Mode_t) this function returns TRUE when the robot has just changed direction.
  * @return FALSE if the robot is driving faster than 50 steps/sec in position mode.\n TRUE otherwise.
  *
  */
@@ -141,10 +140,10 @@ EXTERNAL_ bool DRV_HasTurned(void);
  * @param timeoutMs timout in milliseconds for operation
  * @return ERR_OK if stopped, ERR_BUSY for timeout condition.
  */
-EXTERNAL_uint8_t DRV_Stop(int32_t timeoutMs);
+EXTERNAL_ uint8_t DRV_Stop(int32_t timeoutMs);
 
 /**
- * @brief Returns the reference to the current [status information](@ref DRV_Status_s).
+ * @brief Returns the reference to the current [status information](@ref DRV_Status_t).
  * @return pointer to the status information
  */
 EXTERNAL_ DRV_Status_t *DRV_GetCurStatus(void);
