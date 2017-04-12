@@ -64,7 +64,7 @@
 
 /**
  * @defgroup	buz Buzzer
- * @brief		Buzzer
+ * @brief		Buzzer for playing sound, tunes and melodies
  *
  * This software component implements a driver for the buzzer. It uses the firmware components
  * @b BUZ1 and @b TRG1 to play predefined melodies or tunes, or make certain noises.\n
@@ -80,4 +80,38 @@
  * @date 	09.01.2017
  *
  * @copyright	@LGPL2_1
+ */
+
+
+
+/**
+ * @defgroup 	drv Drive
+ * @brief		Speed and position control
+ *
+ * This software component implements a driver for controlling the movement of the robot in
+ * certain modes. The driver runs its own FreeRTOS task. Moreover it decouples the drive
+ * control behaviour from the actual application using a @a queue for the communication
+ * between the application and the SWC @a DRIVE .\n
+ * > It implements the following driving control modes:
+ * > - STOP for standstill control
+ * > - SPEED for velocity control and
+ * > - POSITION control which provides to drive to a certain odometer target value.
+ * Speed and position control is provided independently for the left-hand and right.hand side.
+ *
+ *
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	11.01.2017
+ *
+ * @copyright	@LGPL2_1
+ */
+
+/**
+ * @defgroup 	sh Shell
+ * @brief 		Command Line Shell
+ */
+
+/**
+ * @defgroup 	task Task
+ * @brief 		Task
  */

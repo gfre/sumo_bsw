@@ -1,23 +1,30 @@
-/*******************************************************************************
- * @brief 	Module to drive the robot.
+/***********************************************************************************************//**
+ * @file		drv.c
+ * @ingroup		drv
+ * @brief 		Implementation of a driver for controlling the movement of the robot.
+ *
+ * This software component implements a driver for controlling the movement of the robot in
+ * the following driving control modes:
+ * > - STOP for standstill control
+ * > - SPEED for velocity control and
+ * > - POSITION control which provides to drive to a certain odometer target value.
+ * It decouples the drive control algorithm from the actual application using a @a queue for the
+ * communication between the application and this component.\n
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
- * @author 	Henning Weisbarth, hewe@tf.uni-kiel.de, CAU Kiel
- * @date 		06.01.2017
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	06.01.2017
  *
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @copyright @LGPL2_1
  *
- * This module allows to drive the robot and to perform turns.
- *
- * ==============================================================================
- */
+ ***************************************************************************************************/
 
 
 #define MASTER_drv_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "drv.h"
-#include "drv_Types.h"
+#include "drv_api.h"
 #include "ACon_Types.h"
 #include "FRTOS1.h"
 #include "UTIL1.h"

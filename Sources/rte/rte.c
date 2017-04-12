@@ -22,7 +22,7 @@
 #include "buz_api.h"
 #include "rte.h"
 #include "tacho.h"
-#include "drv_Types.h"
+#include "drv_api.h"
 #include "RApp.h"
 #include "rnet_Types.h"
 #include "sh.h"
