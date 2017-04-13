@@ -1,5 +1,5 @@
 /***********************************************************************************************//**
- * @file		buz_clshdlr.c
+ * @file		buz_cfg.c
  * @ingroup		buz
  * @brief 		Implementation of the configuration of the SWC @a Buzzer
  *
