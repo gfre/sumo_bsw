@@ -106,10 +106,30 @@
  * @copyright	@LGPL2_1
  */
 
+
+
+/**
+ * @defgroup	id Identification
+ * @brief		Unique identification of the robot
+ *
+ * This software component identifies the robot by means of the the 128bit *Universally Unique
+ * Identifier* (@b UUID) of the MK22FX512VLK12 processor unit. With this it gives the robot a
+ * custom, but more readable ID as enumeration between 0 and MAX_ID_OF_SUMOS.
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	11.01.2017
+ *
+ * @copyright	@LGPL2_1
+ */
+
+
+
 /**
  * @defgroup 	sh Shell
  * @brief 		Command Line Shell
  */
+
+
 
 /**
  * @defgroup 	task Task
