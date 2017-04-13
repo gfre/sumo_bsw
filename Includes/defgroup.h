@@ -113,8 +113,8 @@
  * @brief		Unique identification of the robot
  *
  * This software component identifies the robot by means of the the 128bit *Universally Unique
- * Identifier* (@b UUID) of the MK22FX512VLK12 processor unit. With this it gives the robot a
- * custom, but more readable ID as enumeration between 0 and MAX_ID_OF_SUMOS.
+ * Identifier* (@b UID or @b UUID) of the MCU MK22FX512VLK12. With this the component gives the
+ * robot a custom, but more readable ID as an enumeration between 0 and MAX_ID_OF_SUMOS.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	11.01.2017
