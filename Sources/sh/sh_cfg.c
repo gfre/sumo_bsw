@@ -14,6 +14,8 @@
 #define MASTER_sh_cfg_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
+#include "sh_cfg.h"
+/* BSW components */
 #include "task_clshdlr.h"
 #include "appl_clshdlr.h"
 #include "sh_clshdlr.h"
@@ -25,17 +27,14 @@
 #include "drv_clshdlr.h"
 #include "batt_clshdlr.h"
 #include "buz_clshdlr.h"
-
-#include "sh_cfg.h"
+/* Firmware components */
 #include "RTT1.h"
-
 #include "RNET1.h"
 #include "LED1.h"
 #include "LED2.h"
 #include "Q4CLeft.h"
 #include "Q4CRight.h"
 #include "KIN1.h"
-#include "id.h"
 #include "FRTOS1.h"
 
 
