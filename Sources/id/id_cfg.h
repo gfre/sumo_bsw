@@ -42,7 +42,7 @@
  * @typedef ID_Cfg_t
  * @brief ID_Cfg_t is defined as the struct ID_Cfg_s
  *
- * @typedef ID_Cfg_s
+ * @struct ID_Cfg_s
  * @brief Struct which holds the UID information.
  */
 typedef struct ID_Cfg_s
