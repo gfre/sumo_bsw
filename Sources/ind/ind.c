@@ -15,7 +15,7 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "ind.h"
-#include "ind_Types.h"
+#include "ind_api.h"
 #include "LED1.h"
 #include "LED2.h"
 

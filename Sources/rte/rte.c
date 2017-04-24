@@ -17,18 +17,19 @@
 #define MASTER_RTE_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "ind_Types.h"
-#include "KEY1.h"
-#include "buz_api.h"
 #include "rte.h"
-#include "tacho.h"
-#include "drv_api.h"
-#include "RApp.h"
-#include "rnet_Types.h"
-#include "sh.h"
-#include "sh_Types.h"
+#include "KEY1.h"
+#include "ind_api.h"
+#include "buz_api.h"
 #include "id_api.h"
 #include "appl_api.h"
+#include "drv_api.h"
+#include "rnet_Types.h"
+#include "sh_Types.h"
+#include "tacho.h"
+#include "RApp.h"
+#include "sh.h"
+
 
 
 

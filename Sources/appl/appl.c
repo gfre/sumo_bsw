@@ -24,8 +24,9 @@
 /*======================================= >> #INCLUDES << ========================================*/
 #include "appl.h"
 #include "appl_api.h"
-#include "FRTOS1.h"
+#include "ind_api.h"
 #include "Platform.h"
+#include "FRTOS1.h"
 #include "stud.h"
 #include "task_cfg.h"
 #include "rte.h"
@@ -36,7 +37,7 @@
 #include "nvm.h"
 #include "Pid.h"
 #include "ind.h"
-#include "ind_Types.h"
+
 #ifdef ASW_ENABLED
 #include "asw.h"
 #endif

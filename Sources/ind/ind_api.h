@@ -12,13 +12,13 @@
  */
 
 
-#ifndef IND_TYPES_H_
-#define IND_TYPES_H_
+#ifndef IND_API_H_
+#define IND_API_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "ACon_Types.h"
 
-#ifdef MASTER_ind_Types_C_
+#ifdef MASTER_ind_C_
 #define EXTERNAL_
 #else
 #define EXTERNAL_ extern
@@ -103,9 +103,10 @@ EXTERNAL_ uint8_t IND_Get_LED1St();
  */
 EXTERNAL_ uint8_t IND_Get_LED2St();
 
+
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
 
 
-#endif /* !IND_TYPES_H_ */
+#endif /* !IND_API_H_ */
