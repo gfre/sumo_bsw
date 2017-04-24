@@ -1,23 +1,28 @@
-/***************************************************************************************************
- * @brief 	>>TODO This is a brief description.
+/***********************************************************************************************//**
+ * @file		ind.h
+ * @ingroup		ind
+ * @brief 		Interface of the SWC @a Indication for initialisation call
  *
- * @author 	>>TODO, gefr@tf.uni-kiel.de, University Kiel 
+ * This header file provides the internal interface between the SWC @ref ind and the
+ * SWC @ref appl which runs the initialisation within its STARTUP state.
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	27.03.2017
  *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @note Interface for BSW-specific use only
  *
- * >>TODO This is the detailed description of the file ind.h
- * 
- *==================================================================================================
- */
-
+ * @copyright @LGPL2_1
+ *
+ ***************************************************************************************************/
 
 #ifndef IND_H_
 #define IND_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "FRTOS1.h"
 #include "ACon_Types.h"
+#include "FRTOS1.h"
+
+
 
 #ifdef MASTER_ind_C_
 #define EXTERNAL_
@@ -25,13 +30,15 @@
 #define EXTERNAL_ extern
 #endif
 
+/**
+ * @addtogroup ind
+ * @{
+ */
 /*======================================= >> #DEFINES << =========================================*/
-/* #define TMPL_MACRO (0xFFu) */
 
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-
 
 
 
@@ -41,15 +48,13 @@
  */
 EXTERNAL_ void IND_Init(void);
 
+
+
 /**
- * Main function of indication
+ * @}
  */
-EXTERNAL_ void IND_Main(void);
-
-
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
-
 
 #endif /* !IND_H_ */

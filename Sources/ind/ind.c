@@ -1,15 +1,16 @@
-/***************************************************************************************************
- * @brief 	>>TODO This is a brief description.
+/***********************************************************************************************//**
+ * @file		ind.c
+ * @ingroup		ind
+ * @brief 		Implementation of the indication swc
  *
- * @author 	>>TODO, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ *
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	27.03.2017
  *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @copyright @LGPL2_1
  *
- * >>TODO This is the detailed description of the file ind.c
- * 
- *==================================================================================================
- */
+ ***************************************************************************************************/
 
 #define MASTER_ind_C_
 
@@ -18,6 +19,7 @@
 #include "ind_api.h"
 #include "LED1.h"
 #include "LED2.h"
+
 
 
 /*======================================= >> #DEFINES << =========================================*/
@@ -202,12 +204,6 @@ void IND_Init(void)
 	{
 		for(;;);
 	}
-}
-
-
-void IND_Main(void)
-{
-	/* nothing to do */
 }
 
 

@@ -1,16 +1,19 @@
-/***************************************************************************************************
- * @brief 	>>TODO This is a brief description.
+/***********************************************************************************************//**
+ * @file		ind_api.h
+ * @ingroup		ind
+ * @brief 		API of the SWC @a Indication
  *
- * @author 	>>TODO, gefr@tf.uni-kiel.de, University Kiel 
+ * This API provides a BSW-internal interface of the SWC @ref ind. It is supposed to be available
+ * to all other Basic Software Components.
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	29.03.2017
  *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @note API for BSW-internal use only
  *
- * >>TODO This is the detailed description of the file ind_Types.h
- * 
- *==================================================================================================
- */
-
+ * @copyright @LGPL2_1
+ *
+ ***************************************************************************************************/
 
 #ifndef IND_API_H_
 #define IND_API_H_
@@ -18,12 +21,18 @@
 /*======================================= >> #INCLUDES << ========================================*/
 #include "ACon_Types.h"
 
+
+
 #ifdef MASTER_ind_C_
 #define EXTERNAL_
 #else
 #define EXTERNAL_ extern
 #endif
 
+/**
+ * @addtogroup ind
+ * @{
+ */
 /*======================================= >> #DEFINES << =========================================*/
 
 
@@ -104,9 +113,12 @@ EXTERNAL_ uint8_t IND_Get_LED1St();
 EXTERNAL_ uint8_t IND_Get_LED2St();
 
 
+
+/**
+ * @}
+ */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
-
 
 #endif /* !IND_API_H_ */

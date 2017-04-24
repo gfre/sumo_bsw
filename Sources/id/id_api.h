@@ -1,9 +1,9 @@
 /***********************************************************************************************//**
  * @file		id_api.h
- * @ingroup		id
+ * @ingroup		ind
  * @brief 		API of the SWC @a Identification
  *
- * This API provides a BSW-internal interface of the SWC @ref it. It is supposed to be available
+ * This API provides a BSW-internal interface of the SWC @ref id. It is supposed to be available
  * to all other Basic Software Components.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
@@ -49,11 +49,11 @@ EXTERNAL_ ID_Sumo_t Get_SumoID(void);
 
 
 
+/**
+ * @}
+ */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
 
-/**
- * @}
- */
 #endif /* !ID_API_H_ */
