@@ -113,7 +113,8 @@ static void TASK_PrintCalledMainFcts(const CLS1_StdIOType *io_)
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-uint8_t TASK_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io) {
+uint8_t TASK_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io)
+{
 	uint8_t res = ERR_OK;
 	if (UTIL1_strcmp((char*)cmd, (char*)CLS1_CMD_HELP)==0 || UTIL1_strcmp((char*)cmd, (char*)"task help")==0) {
 		*handled = TRUE;
