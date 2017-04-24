@@ -44,7 +44,7 @@
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 /**
- * Initialisation of indication
+ * This function initialises the indication software component
  */
 EXTERNAL_ void IND_Init(void);
 
