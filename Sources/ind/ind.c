@@ -1,9 +1,11 @@
 /***********************************************************************************************//**
  * @file		ind.c
  * @ingroup		ind
- * @brief 		Implementation of the indication swc
+ * @brief 		Implementation of indication using User-LEDs
  *
- *
+ * This software component implements status indication using the on-board User-LEDs. The LEDs may be
+ * set to ON, OFF, can be toggled or flash with a configurable frequency. Therefor it uses the timer-
+ * functionality provided by FreeRTOS.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	27.03.2017

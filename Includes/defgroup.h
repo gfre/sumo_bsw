@@ -127,9 +127,12 @@
 
 /**
  * @defgroup	ind Indication
- * @brief		Indication
+ * @brief		Indication with User-LEDs
  *
- *
+ * This software component implements status indication using the on-board User-LEDs. For this,
+ * the LEDs may be set to ON or OFF state or, can be toggled. Moreover they can flash with a
+ * configurable frequency. The component makes use of the efficient timer-functionality provided
+ * by FreeRTOS in the so-called timer service (or daemon) task.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	24.04.2017
