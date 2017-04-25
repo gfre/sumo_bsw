@@ -1,16 +1,18 @@
-/***************************************************************************************************
-  * @brief 	Command line shell handler of the software component of the DC motors.
+/***********************************************************************************************//**
+ * @file		mot_clshdlr.c
+ * @ingroup		mot
+ * @brief 		Implementation of the command line shell handler for the SWC @a Motor Driver
  *
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * This module implements the interface of the SWC @ref mot which is addressed to
+ * the SWC @ref sh. It introduces application specific commands for debugging or requests
+ * of status information via command line shell (@b CLS).
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	29.03.2017
  *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @copyright @LGPL2_1
  *
- * This module handles the interface between the software component of the DC motors
- * and the command line shell CLS.
- * 
- *==================================================================================================
- */
+ ***************************************************************************************************/
 
 #define MASTER_mot_clshdlr_C_
 
@@ -144,7 +146,6 @@ uint8_t MOT_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_Std
 	}
 	return res;
 }
-
 
 
 

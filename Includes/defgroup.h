@@ -143,6 +143,18 @@
 
 
 /**
+ * @defgroup	mot DC Motor Driver
+ * @brief		Driver component for electric DC motors
+ *
+ *
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	25.04.2017
+ *
+ * @copyright	@LGPL2_1
+ */
+
+/**
  * @defgroup 	sh Shell
  * @brief 		Command Line Shell
  */
