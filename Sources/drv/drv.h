@@ -35,6 +35,7 @@
  * @{
  */
 /*======================================= >> #DEFINES << =========================================*/
+/** String identification of the SWC @ref drv */
 #define DRV_SWC_STRING ("drive")
 
 

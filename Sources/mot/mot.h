@@ -38,6 +38,10 @@
 
 
 
+/*=================================== >> TYPE DEFINITIONS << =====================================*/
+
+
+
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 /**
  * This function de-initialises the motor driver software component
