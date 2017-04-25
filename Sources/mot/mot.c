@@ -16,6 +16,7 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "mot.h"
+#include "mot_api.h"
 #include "DIRR.h"
 #include "DIRL.h"
 #include "PWMR.h"

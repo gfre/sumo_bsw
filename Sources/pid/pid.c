@@ -19,7 +19,7 @@
 /*======================================= >> #INCLUDES << ========================================*/
 #include "Platform.h"
 #include "Pid.h"
-#include "mot.h"
+#include "mot_api.h"
 #include "nvm_Types.h"
 
 
