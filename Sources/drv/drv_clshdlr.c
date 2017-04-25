@@ -24,12 +24,10 @@
 #include "Q4CRight.h"
 
 /*======================================= >> #DEFINES << =========================================*/
-/* #define TMPL_MACRO (0x01u) */
 
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-/* typedef unit8 TmplType_t;
 
 
 
@@ -39,7 +37,6 @@ static uint8_t *DRV_GetModeStr(DRV_Mode_t mode);
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-/* static TmplType_t tmplArray[STUD_MACRO] = {0u,TRUE,FALSE};
 
 
 

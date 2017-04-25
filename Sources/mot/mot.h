@@ -3,7 +3,7 @@
  * @ingroup		mot
  * @brief 		Interface of the SWC @a Motor Driver for initialisation call
  *
- * This header file provides the internal interface between the SWC @ref motor and the
+ * This header file provides the internal interface between the SWC @ref mot and the
  * SWC @ref drv which runs the initialisation within its initialisation routine.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern

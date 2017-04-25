@@ -85,8 +85,8 @@ static int32_t PID(int32_t currVal, int32_t setVal, PID_Config *config) {
 
 static void PID_PosCfg(int32_t currPos, int32_t setPos, bool isLeft, PID_Config *config) {
 	int32_t speed;
-	MOT_Direction direction=MOT_DIR_FORWARD;
-	MOT_MotorDevice *motHandle;
+	MOT_Direction_t direction = MOT_DIR_FORWARD;
+	MOT_MotorDevice_t *motHandle;
 
 	int error;
 
@@ -123,8 +123,8 @@ static void PID_PosCfg(int32_t currPos, int32_t setPos, bool isLeft, PID_Config 
 
 static void PID_SpeedCfg(int32_t currSpeed, int32_t setSpeed, bool isLeft, PID_Config *config) {
 	int32_t speed;
-	MOT_Direction direction=MOT_DIR_FORWARD;
-	MOT_MotorDevice *motHandle;
+	MOT_Direction_t direction = MOT_DIR_FORWARD;
+	MOT_MotorDevice_t *motHandle;
 
 	if (setSpeed==0) {
 		speed = 0;

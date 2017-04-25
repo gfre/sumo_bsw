@@ -44,7 +44,7 @@ static void DirRPutVal(bool val);
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-static MOT_MotorDevice motorL, motorR;
+static MOT_MotorDevice_t motorL, motorR;
 static bool isMotorOn = TRUE;
 
 
@@ -69,7 +69,7 @@ static void DirRPutVal(bool val) {
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-MOT_MotorDevice *MOT_GetMotorHandle(MOT_MotorSide side) {
+MOT_MotorDevice_t *MOT_GetMotorHandle(MOT_MotorSide_t side) {
 	if (side==MOT_MOTOR_LEFT) {
 		return &motorL;
 	} else {
@@ -78,7 +78,7 @@ MOT_MotorDevice *MOT_GetMotorHandle(MOT_MotorSide side) {
 }
 
 
-void MOT_SetVal(MOT_MotorDevice *motor, uint16_t val) {
+void MOT_SetVal(MOT_MotorDevice_t *motor, uint16_t val) {
 	if (isMotorOn) {
 		motor->currPWMvalue = val;
 		(void)motor->SetRatio16(val);
@@ -96,15 +96,15 @@ void MOT_OnOff(bool on) {
 	}
 }
 
-uint16_t MOT_GetVal(MOT_MotorDevice *motor) {
+uint16_t MOT_GetVal(const MOT_MotorDevice_t *motor) {
 	return motor->currPWMvalue;
 }
 
-void MOT_Invert(MOT_MotorDevice *motor, bool inverted) {
+void MOT_Invert(MOT_MotorDevice_t *motor, bool inverted) {
 	motor->inverted = inverted;
 }
 
-void MOT_SetSpeedPercent(MOT_MotorDevice *motor, MOT_SpeedPercent percent) {
+void MOT_SetSpeedPercent(MOT_MotorDevice_t *motor, MOT_SpeedPercent percent) {
 	uint32_t val;
 
 	if (percent>100) { /* make sure we are within 0..100 */
@@ -123,18 +123,18 @@ void MOT_SetSpeedPercent(MOT_MotorDevice *motor, MOT_SpeedPercent percent) {
 	MOT_SetVal(motor, (uint16_t)val);
 }
 
-void MOT_UpdatePercent(MOT_MotorDevice *motor, MOT_Direction dir) {
+void MOT_UpdatePercent(MOT_MotorDevice_t *motor, MOT_Direction_t dir) {
 	motor->currSpeedPercent = ((0xffff-motor->currPWMvalue)*100)/0xffff;
 	if (dir==MOT_DIR_BACKWARD) {
 		motor->currSpeedPercent = -motor->currSpeedPercent;
 	}
 }
 
-MOT_SpeedPercent MOT_GetSpeedPercent(MOT_MotorDevice *motor) {
+MOT_SpeedPercent MOT_GetSpeedPercent(const MOT_MotorDevice_t *motor) {
 	return motor->currSpeedPercent;
 }
 
-void MOT_ChangeSpeedPercent(MOT_MotorDevice *motor, MOT_SpeedPercent relPercent) {
+void MOT_ChangeSpeedPercent(MOT_MotorDevice_t *motor, MOT_SpeedPercent relPercent) {
 	relPercent += motor->currSpeedPercent; /* make absolute number */
 	if (relPercent>100) { /* check for overflow */
 		relPercent = 100;
@@ -144,7 +144,7 @@ void MOT_ChangeSpeedPercent(MOT_MotorDevice *motor, MOT_SpeedPercent relPercent)
 	MOT_SetSpeedPercent(motor, relPercent);  /* set speed. This will care about the direction too */
 }
 
-void MOT_SetDirection(MOT_MotorDevice *motor, MOT_Direction dir) {
+void MOT_SetDirection(MOT_MotorDevice_t *motor, MOT_Direction_t dir) {
 	if (dir==MOT_DIR_FORWARD ) {
 		motor->DirPutVal(motor->inverted?0:1);
 		if (motor->currSpeedPercent<0) {
@@ -158,7 +158,7 @@ void MOT_SetDirection(MOT_MotorDevice *motor, MOT_Direction dir) {
 	}
 }
 
-MOT_Direction MOT_GetDirection(MOT_MotorDevice *motor) {
+MOT_Direction_t MOT_GetDirection(const MOT_MotorDevice_t *motor) {
 	if (motor->currSpeedPercent<0) {
 		return MOT_DIR_BACKWARD;
 	} else {
