@@ -143,10 +143,13 @@
 
 
 /**
- * @defgroup	mot DC Motor Driver
- * @brief		Driver component for electric DC motors
+ * @defgroup	mot Motor
+ * @brief		Software Driver for the DC motors
  *
- *
+ * This software component implements a driver for the two DC motors on the left- and right-hand sided
+ * of the robot. It uses @a PWM and @a BitIO firmware components from Kinets to influence the speed
+ * and direction of the motors. The driver can handle inverted polarity which makes the provided interface
+ * independent of the assembly of the motors.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	25.04.2017

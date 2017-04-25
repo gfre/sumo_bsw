@@ -3,7 +3,9 @@
  * @ingroup		mot
  * @brief 		Implementation of the DC motor driver.
  *
- * This module implements a driver for up to two small DC motors.
+ * This software component implements a  driver for up to two small DC motors. It uses @a PWM and
+ * @a BitIO firmware components from Kinets to influence the speed and direction of the motors.
+ * The driver can handle inverted polarity from assembly point of view.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
