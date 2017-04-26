@@ -1,16 +1,20 @@
-/***************************************************************************************************
- * @brief 	Implementation of the Non-Volatile-Memory (NVM) storage.
+/***********************************************************************************************//**
+ * @file		nvm.h
+ * @ingroup		nvm
+ * @brief 		Interface of the SWC @a NVM for initialisation call
+ *
+ * This header file provides the internal interface between the SWC @ref nvm and the
+ * SWC @ref appl which runs the initialisation within its STARTUP state.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
  * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	10.01.2017
  *
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @note Interface for BSW-specific use only
  *
- * This provides an implementation to store and retrieve data from the on-chip memory.
+ * @copyright 	@LGPL2_1
  *
- * =================================================================================================
- */
+ ***************************************************************************************************/
 
 #ifndef NVM_H_
 #define NVM_H_
@@ -25,6 +29,10 @@
 #define EXTERNAL_ extern
 #endif
 
+/**
+ * @addtogroup nvm
+ * @{
+ */
 /*======================================= >> #DEFINES << =========================================*/
 
 
@@ -41,7 +49,9 @@
 EXTERNAL_ void NVM_Init(void);
 
 
-
+/**
+ * @}
+ */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
