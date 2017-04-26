@@ -1,6 +1,6 @@
 /***********************************************************************************************//**
  * @file		id_api.h
- * @ingroup		ind
+ * @ingroup		id
  * @brief 		API of the SWC @a Identification
  *
  * This API provides a BSW-internal interface of the SWC @ref id. It is supposed to be available
