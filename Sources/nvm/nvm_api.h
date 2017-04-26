@@ -38,6 +38,13 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
+/**
+ * @typedef NVM_PidCfg_t
+ * @brief Data type definition of the structure NVM_PidCfg_s
+ *
+ * @struct NVM_PidCfg_s
+ * @brief This structure defines the parameters of a [PID controller](@ref pid) stored in the NVM.
+ */
 typedef struct NVM_PidCfg_s
 {
 	uint16_t pGain100;			/**< proportional gain */
@@ -47,6 +54,14 @@ typedef struct NVM_PidCfg_s
 	uint32_t iAntiWindup;		/**< maximum integral value for anti windup procedure */
 } NVM_PidCfg_t; /* 12Byte */
 
+/**
+ * @typedef NVM_RomCfg_t
+ * @brief Data type definition of the structure NVM_RomCfg_s
+ *
+ * @struct NVM_RomCfg_s
+ * @brief This structure defines a data configuration which mirrors all parameters stored in the NVM.
+ * It is used to store constant default values of all parameters in a ROM-similar fashion.
+ */
 typedef struct NVM_RomCfg_s
 {
 	uint8_t nvmVer;					/**< NVM version						+ 1B mod4 1B */
