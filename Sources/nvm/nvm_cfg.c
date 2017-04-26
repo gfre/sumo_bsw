@@ -16,9 +16,8 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "nvm_cfg.h"
+#include "nvm_api.h"
 #include "IFsh1.h"
-#include "nvm_Types.h"
-#include "Pid.h"
 
 
 
@@ -161,7 +160,6 @@ const static NVM_RomCfg_t romCfg =
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-
 static bool isErased(uint8_t *addr_, uint16_t byteCout_) {
 	while (byteCout_>0) {
 		if (*addr_!=0xFF) {

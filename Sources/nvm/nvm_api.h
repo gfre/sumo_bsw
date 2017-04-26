@@ -12,14 +12,14 @@
  * =================================================================================================
  */
 
-#ifndef NVM_TYPES_H_
-#define NVM_TYPES_H_
+#ifndef NVM_API_H_
+#define NVM_API_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "Acon_Types.h"
 
 
-#ifdef MASTER_nvm_Types_C_
+#ifdef MASTER_nvm_C_
 #define EXTERNAL_
 #else
 #define EXTERNAL_ extern
@@ -159,4 +159,4 @@ EXTERNAL_ StdRtn_t NVM_Read_Dflt_PIDSpdRiCfg(NVM_PidCfg_t *spdCfg_);
 #endif
 
 
-#endif /* !NVM_TYPES_H_ */
+#endif /* !NVM_API_H_ */

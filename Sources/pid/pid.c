@@ -20,7 +20,7 @@
 #include "Platform.h"
 #include "Pid.h"
 #include "mot_api.h"
-#include "nvm_Types.h"
+#include "nvm_api.h"
 
 
 
