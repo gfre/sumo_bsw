@@ -163,7 +163,10 @@
  * @defgroup	nvm NVM
  * @brief		Non-volatile memory - *Data Flash Memory*
  *
- *
+ * This software component provides an implementation to store and retrieve data and parameter values
+ * from the on-chip memory of the micro-controller MK22FX512VLK12. The MCU provides 128KB FlexNVM which
+ * is entirely used as non-volatile Data Flash Memory in this project. No EEPROM is emulated in this
+ * project.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	26.04.2017

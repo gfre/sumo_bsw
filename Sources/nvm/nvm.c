@@ -1,16 +1,19 @@
-/***************************************************************************************************
- * @brief 	Implementation of the Non-Volatile-Memory (NVM) storage.
+/***********************************************************************************************//**
+ * @file		nvm.c
+ * @ingroup		nvm
+ * @brief 		Implementation of the Non-Volatile-Memory (NVM) storage.
+ *
+ * This software component provides an implementation to store and retrieve data and parameter values
+ * from the on-chip memory of the micro-controller MK22FX512VLK12. In this project the enitre 128KB
+ * FlexNVM is used as NVM and no EEPROM is emulated.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
  * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	10.01.2017
  *
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @copyright 	@LGPL2_1
  *
- * This provides an implementation to store and retrieve data from the on-chip memory.
- *
- * =================================================================================================
- */
+ ***************************************************************************************************/
 
 #define MASTER_NVM_C_
 
@@ -20,8 +23,9 @@
 #include "nvm_api.h"
 #include "Platform.h"
 
-/*======================================= >> #DEFINES << =========================================*/
 
+
+/*======================================= >> #DEFINES << =========================================*/
 
 
 
