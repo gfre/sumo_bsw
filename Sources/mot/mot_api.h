@@ -19,7 +19,7 @@
 #define MOT_API_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
-
+#include "Platform.h"
 
 
 #ifdef MASTER_mot_C_
