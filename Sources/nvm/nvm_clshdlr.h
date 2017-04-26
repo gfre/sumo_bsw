@@ -1,17 +1,21 @@
-/***************************************************************************************************
- * @brief 	Command line shell handler of the Non-Volatile-Memory (NVM) storage.
+/***********************************************************************************************//**
+ * @file		nvm_clshdlr.h
+ * @ingroup		nvm
+ * @brief		Interface for the command line shell handler of the SWC @a NVM
+ *
+ * This header files provides the interface from the SWC @ref nvm to the SWC @ref sh.
+ * It introduces application specific commands for requests of status information or
+ * restoring the NVM from ROM via command line shell (@b CLS).
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
  * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	23.02.2017
  *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @note Interface for CLS-specific use only
  *
- * This module handles the interface between the NVM software component and
- * the command line shell CLS.
- * 
- *==================================================================================================
- */
+ * @copyright @LGPL2_1
+ *
+ ***************************************************************************************************/
 
 
 #ifndef NVM_CLSHDLR_H_
@@ -27,6 +31,10 @@
 #define EXTERNAL_ extern
 #endif
 
+/**
+ * @addtogroup nvm
+ * @{
+ */
 /*======================================= >> #DEFINES << =========================================*/
 
 
@@ -46,9 +54,12 @@
 EXTERNAL_ uint8_t NVM_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
 
 
+
+/**
+ * @}
+ */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
-
 
 #endif /* !NVM_CLSHDLR_H_ */
