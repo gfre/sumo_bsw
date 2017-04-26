@@ -1,16 +1,20 @@
-/***************************************************************************************************
- * @brief 	Iinterface of the Non-Volatile-Memory (NVM) storage.
+/***********************************************************************************************//**
+ * @file		nvm_api.h
+ * @ingroup		nvm
+ * @brief 		API of the SWC *Non-volatile memory*
+ *
+ * This API provides a BSW-internal interface of the SWC @ref nvm. It is supposed to be
+ * available to all other Basic Software Components.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
  * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	10.01.2017
  *
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @note API for BSW-internal use only
  *
- * This provides an interface of the NVM software component to other software components
+ * @copyright @LGPL2_1
  *
- * =================================================================================================
- */
+ ***************************************************************************************************/
 
 #ifndef NVM_API_H_
 #define NVM_API_H_
@@ -25,6 +29,10 @@
 #define EXTERNAL_ extern
 #endif
 
+/**
+ * @addtogroup nvm
+ * @{
+ */
 /*======================================= >> #DEFINES << =========================================*/
 
 
@@ -153,7 +161,9 @@ EXTERNAL_ StdRtn_t NVM_Read_PIDSpdRiCfg(NVM_PidCfg_t *spdCfg_);
  */
 EXTERNAL_ StdRtn_t NVM_Read_Dflt_PIDSpdRiCfg(NVM_PidCfg_t *spdCfg_);
 
-
+/**
+ * @}
+ */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
