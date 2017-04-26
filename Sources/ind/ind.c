@@ -19,6 +19,7 @@
 /*======================================= >> #INCLUDES << ========================================*/
 #include "ind.h"
 #include "ind_api.h"
+#include "FRTOS1.h"
 #include "LED1.h"
 #include "LED2.h"
 
