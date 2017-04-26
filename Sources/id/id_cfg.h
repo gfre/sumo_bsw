@@ -23,6 +23,7 @@
 #include "KIN1.h"
 
 
+
 #ifdef MASTER_ID_CFG_C_
 #define EXTERNAL_
 #else

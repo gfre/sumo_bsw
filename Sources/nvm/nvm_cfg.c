@@ -1,16 +1,18 @@
-/***************************************************************************************************
- * @brief 	Configuration of the Non-Volatile-Memory (NVM) storage.
+/***********************************************************************************************//**
+ * @file		nvm_cfg.c
+ * @ingroup		nvm
+ * @brief 		Implementation of the configuration of the SWC @a NVM
+ *
+ * This file implements the configuration of the data storage using the internal non-volatile memory
+ * of the MCU for the component SWC @ref nvm and its internal interface.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
  * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	10.01.2017
  *
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @copyright @LGPL2_1
  *
- * This provides the configuration to store and retrieve data from the on-chip memory.
- *
- * =================================================================================================
- */
+ ***************************************************************************************************/
 
 #define MASTER_NVM_CFG_C_
 
@@ -28,7 +30,7 @@
 #define NVM_VERSION (0x01u)
 /* ========================= */
 
-#define NVM_DFLASH_START_ADDR          		(IntFlashLdd1_DFLASH_ADDRESS) 					/* 0x10000000LU DFLASH, NVRM_Config, start address of configuration data in flash */
+#define NVM_DFLASH_START_ADDR          		(IntFlashLdd1_DFLASH_ADDRESS) 					/* 0x10000000LU DFLASH, NVM_Config, start address of configuration data in flash */
 #define NVM_DFLASH_BLOCK_SIZE          		(IntFlashLdd1_DFLASH_SIZE)						/* 0x00020000LU */
 #define NVM_DFLASH_ERASABLE_UNIT_SIZE  		(IntFlashLdd1_DFLASH_ERASABLE_UNIT_SIZE)		/* 0x1000LU */
 #define NVM_DFLASH_PROT_UNIT_SIZE      		(IntFlashLdd1_DFLASH_PROT_UNIT_SIZE)			/* 0x4000LU */

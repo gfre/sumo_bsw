@@ -157,6 +157,22 @@
  * @copyright	@LGPL2_1
  */
 
+
+
+/**
+ * @defgroup	nvm NVM
+ * @brief		Non-volatile memory - *Data Flash Memory*
+ *
+ *
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	26.04.2017
+ *
+ * @copyright	@LGPL2_1
+ */
+
+
+
 /**
  * @defgroup 	sh Shell
  * @brief 		Command Line Shell
