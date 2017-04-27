@@ -1,17 +1,20 @@
-/***************************************************************************************************
- * @brief 	Implementation of PID controllers.
+/***********************************************************************************************//**
+ * @file		pid.c
+ * @ingroup		pid
+ * @brief 		Implementation of PID controllers.
+ *
+ * This module implements PID controllers for position and speed control of the Sumo robots. An Anti-
+ * Wind-Up algorithm avoids drifting of the integral part and the maximum allowed control value can
+ * changed by parameter. Controller parameters are read from the [NVM software component](@ref nvm)
+ * during initialisation and may be changed via [command line shell](@ref sh).
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
- * @date 		06.01.2017
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	06.01.2017
  *
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @copyright 	@LGPL2_1
  *
- * This module implements PID controllers for position and speed control of the sumo robots. It uses
- * the NVM software component for storing the controller parameters.
- *
- *==================================================================================================
- */
+ ***************************************************************************************************/
 
 
 #define MASTER_pid_C_
@@ -175,7 +178,8 @@ void PID_Speed(int32_t currSpeed, int32_t setSpeed, bool isLeft) {
 
 
 
-void PID_Start(void) {
+void PID_Start(void)
+{
 	posLeftConfig.lastError = 0;
 	posLeftConfig.integral = 0;
 	posRightConfig.lastError = 0;
@@ -186,7 +190,9 @@ void PID_Start(void) {
 	speedRightConfig.integral = 0;
 }
 
-void PID_Deinit(void) {
+void PID_Deinit(void)
+{
+	/* nothing to do */
 }
 
 

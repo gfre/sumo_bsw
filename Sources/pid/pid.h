@@ -1,23 +1,26 @@
-/***************************************************************************************************
- * @brief 	Implementation of PID controllers.
+/***********************************************************************************************//**
+ * @file		pid.h
+ * @ingroup		pid
+ * @brief 		Interface of the SWC @a PID for initialisation call
+ *
+ * This header file provides the internal interface between the SWC @ref pid and the
+ * SWC @ref appl which runs the initialisation within its STARTUP state.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
- * @date 		06.01.2017
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	06.01.2017
  *
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+  * @note Interface for BSW-specific use only
  *
- * This module implements PID controllers for position and speed control of the sumo robots. It uses
- * the NVM software component for storing the controller parameters.
+ * @copyright 	@LGPL2_1
  *
- *==================================================================================================
- */
-
+ ***************************************************************************************************/
 
 #ifndef PID_H_
 #define PID_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
+
 
 
 #ifdef MASTER_pid_C_
@@ -26,6 +29,10 @@
 #define EXTERNAL_ extern
 #endif
 
+/**
+ * @addtogroup pid
+ * @{
+ */
 /*======================================= >> #DEFINES << =========================================*/
 
 
@@ -35,15 +42,21 @@
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-/*! @brief Driver initialization */
+/**
+ * @brief Driver initialization
+ */
 void PID_Init(void);
 
-/*! @brief Driver de-initialization */
+/**
+ * @brief Driver de-initialization
+ */
 void PID_Deinit(void);
 
 
 
-
+/**
+ * @}
+ */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif

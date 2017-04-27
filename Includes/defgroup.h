@@ -180,7 +180,11 @@
  * @defgroup	pid PID
  * @brief		PID Controller
  *
- *
+ * This software component PID controllers for position and speed control of the Sumo robots. An Anti-
+ * Wind-Up algorithm avoids drifting of the integral part and the maximum allowed control value can
+ * changed by parameter. Controller parameters are read from the [NVM software component](@ref nvm)
+ * during initialisation. They may be changed or default parameter values can be restored via
+ * [command line shell](@ref sh). Changed parameter values are saved back to the NVM again.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	27.04.2017
