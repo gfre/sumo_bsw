@@ -21,7 +21,7 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "rte_Types.h"
-
+#include "Platform.h"
 
 
 #ifdef MASTER_drv_C_

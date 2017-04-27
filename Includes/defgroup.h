@@ -177,6 +177,20 @@
 
 
 /**
+ * @defgroup	pid PID
+ * @brief		PID Controller
+ *
+ *
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	27.04.2017
+ *
+ * @copyright	@LGPL2_1
+ */
+
+
+
+/**
  * @defgroup 	sh Shell
  * @brief 		Command Line Shell
  */

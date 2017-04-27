@@ -31,76 +31,17 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-typedef struct PID_Config_s {
-  int32_t pFactor100;
-  int32_t iFactor100;
-  int32_t dFactor100;
-  int32_t iAntiWindup;
-  uint8_t maxSpeedPercent; /* max speed if 100% on the line, 0xffff would be full speed */
-  int32_t lastError;
-  int32_t integral;
-} PID_Config;
 
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-/*!
- * @brief Performs PID on a line
- * @param currLinePos Current line position
- * @param setLinePos Desired line position
- * @param currLineWidth Indication of line width (in 1000er units for a line)
- * @param forward If we are moving forward or backward
- */
-void PID_Line(uint16_t currLinePos, uint16_t setLinePos, uint16_t currLineWidth, bool forward);
-
-/*!
- * @brief Performs PID closed loop calculation for the speed
- * @param currSpeed Current speed of motor
- * @param setSpeed desired speed of motor
- * @param isLeft TRUE if is for the left motor, otherwise for the right motor
- */
-void PID_Speed(int32_t currSpeed, int32_t setSpeed, bool isLeft);
-
-/*!
- * @brief Performs PID closed loop calculation for the line position
- * @param currPos Current position of wheel
- * @param setPos Desired wheel position
- * @param isLeft TRUE if is for the left wheel, otherwise for the right wheel
- */
-void PID_Pos(int32_t currPos, int32_t setPos, bool isLeft);
-
-/*! @brief Driver initialization */
-void PID_Start(void);
-
 /*! @brief Driver initialization */
 void PID_Init(void);
 
 /*! @brief Driver de-initialization */
 void PID_Deinit(void);
 
-/*!
- * @brief Function returns PID parameter configuration for position control on the left hand side
- * @return PID parameter configuration
- */
-PID_Config *PID_Get_PosLeCfg(void);
 
-/*!
- * @brief Function returns PID parameter configuration for position control on the right hand side
- * @return PID parameter configuration
- */
-PID_Config *PID_Get_PosRiCfg(void);
-
-/*!
- * @brief Function returns PID parameter configuration for speed control on the left hand side
- * @return PID parameter configuration
- */
-PID_Config *PID_Get_SpdLeCfg(void);
-
-/*!
- * @brief Function returns PID parameter configuration for speed control on the right hand side
- * @return PID parameter configuration
- */
-PID_Config *PID_Get_SpdRiCfg(void);
 
 
 #ifdef EXTERNAL_

@@ -20,8 +20,6 @@
 #define DRIVE_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "Platform.h"
-
 
 
 #ifdef MASTER_drv_C_

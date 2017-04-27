@@ -16,7 +16,7 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "pid_clshdlr.h"
-#include "pid.h"
+#include "pid_api.h"
 #include "nvm_api.h"
 
 /*======================================= >> #DEFINES << =========================================*/
@@ -26,17 +26,17 @@
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 typedef StdRtn_t ReadPIDCfg_t(NVM_PidCfg_t *);
 typedef StdRtn_t SavePIDCfg_t(const NVM_PidCfg_t *);
-typedef PID_Config *GetPIDConfig_t(void);
+typedef PID_Config_t *GetPIDConfig_t(void);
 
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 static void PID_PrintHelp(const CLS1_StdIOType *io);
 static void PID_PrintStatus(const CLS1_StdIOType *io);
-static void PrintPIDstatus(PID_Config *config, const unsigned char *kindStr, const CLS1_StdIOType *io);
-static uint8_t ParsePidParameter(PID_Config *config, const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
-static StdRtn_t PID_restoreCfg(ReadPIDCfg_t *readDfltCfg_, SavePIDCfg_t *saveCfg_, PID_Config *config_);
-static StdRtn_t PID_saveCfg(SavePIDCfg_t *saveCfg_, PID_Config *config_);
+static void PrintPIDstatus(PID_Config_t *config, const unsigned char *kindStr, const CLS1_StdIOType *io);
+static uint8_t ParsePidParameter(PID_Config_t *config, const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
+static StdRtn_t PID_restoreCfg(ReadPIDCfg_t *readDfltCfg_, SavePIDCfg_t *saveCfg_, PID_Config_t *config_);
+static StdRtn_t PID_saveCfg(SavePIDCfg_t *saveCfg_, PID_Config_t *config_);
 
 
 
@@ -57,7 +57,7 @@ static void PID_PrintHelp(const CLS1_StdIOType *io)
 	CLS1_SendHelpStr((unsigned char*)"  speed (L|R) restore", (unsigned char*)"Restores and saves default parameters for (L|R) speed control to NVM\r\n", io->stdOut);
 }
 
-static void PrintPIDstatus(PID_Config *config, const unsigned char *kindStr, const CLS1_StdIOType *io)
+static void PrintPIDstatus(PID_Config_t *config, const unsigned char *kindStr, const CLS1_StdIOType *io)
 {
 	unsigned char buf[48];
 	unsigned char kindBuf[16];
@@ -112,7 +112,7 @@ static void PID_PrintStatus(const CLS1_StdIOType *io)
 	PrintPIDstatus(PID_Get_SpdRiCfg(), (unsigned char*)"speed R", io);
 }
 
-static uint8_t ParsePidParameter(PID_Config *config, const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io) {
+static uint8_t ParsePidParameter(PID_Config_t *config, const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io) {
 	const unsigned char *p;
 	uint32_t val32u;
 	uint8_t val8u;
@@ -169,7 +169,7 @@ static uint8_t ParsePidParameter(PID_Config *config, const unsigned char *cmd, b
 
 
 
-static StdRtn_t PID_restoreCfg(ReadPIDCfg_t *readDfltCfg_, SavePIDCfg_t *saveCfg_, PID_Config *config_)
+static StdRtn_t PID_restoreCfg(ReadPIDCfg_t *readDfltCfg_, SavePIDCfg_t *saveCfg_, PID_Config_t *config_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	NVM_PidCfg_t tmp = {0u};
@@ -194,7 +194,7 @@ static StdRtn_t PID_restoreCfg(ReadPIDCfg_t *readDfltCfg_, SavePIDCfg_t *saveCfg
 }
 
 
-static StdRtn_t PID_saveCfg(SavePIDCfg_t *saveCfg_, PID_Config *config_)
+static StdRtn_t PID_saveCfg(SavePIDCfg_t *saveCfg_, PID_Config_t *config_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	NVM_PidCfg_t tmp = {0u};

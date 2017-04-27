@@ -17,8 +17,8 @@
 #define MASTER_pid_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "Platform.h"
-#include "Pid.h"
+#include "pid.h"
+#include "pid_api.h"
 #include "mot_api.h"
 #include "nvm_api.h"
 
@@ -34,22 +34,22 @@
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-static int32_t PID(int32_t currVal, int32_t setVal, PID_Config *config);
-static void PID_PosCfg(int32_t currPos, int32_t setPos, bool isLeft, PID_Config *config);
-static void PID_SpeedCfg(int32_t currSpeed, int32_t setSpeed, bool isLeft, PID_Config *config);
+static int32_t PID(int32_t currVal, int32_t setVal, PID_Config_t *config);
+static void PID_PosCfg(int32_t currPos, int32_t setPos, bool isLeft, PID_Config_t *config);
+static void PID_SpeedCfg(int32_t currSpeed, int32_t setSpeed, bool isLeft, PID_Config_t *config);
 
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-static PID_Config posLeftConfig = {0u};
-static PID_Config posRightConfig = {0u};
-static PID_Config speedLeftConfig = {0u};
-static PID_Config speedRightConfig = {0u};
+static PID_Config_t posLeftConfig = {0u};
+static PID_Config_t posRightConfig = {0u};
+static PID_Config_t speedLeftConfig = {0u};
+static PID_Config_t speedRightConfig = {0u};
 
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-static int32_t PID(int32_t currVal, int32_t setVal, PID_Config *config) {
+static int32_t PID(int32_t currVal, int32_t setVal, PID_Config_t *config) {
 	int32_t error;
 	int32_t pid;
 
@@ -83,7 +83,7 @@ static int32_t PID(int32_t currVal, int32_t setVal, PID_Config *config) {
 
 
 
-static void PID_PosCfg(int32_t currPos, int32_t setPos, bool isLeft, PID_Config *config) {
+static void PID_PosCfg(int32_t currPos, int32_t setPos, bool isLeft, PID_Config_t *config) {
 	int32_t speed;
 	MOT_Direction_t direction = MOT_DIR_FORWARD;
 	MOT_MotorDevice_t *motHandle;
@@ -121,7 +121,7 @@ static void PID_PosCfg(int32_t currPos, int32_t setPos, bool isLeft, PID_Config 
 }
 
 
-static void PID_SpeedCfg(int32_t currSpeed, int32_t setSpeed, bool isLeft, PID_Config *config) {
+static void PID_SpeedCfg(int32_t currSpeed, int32_t setSpeed, bool isLeft, PID_Config_t *config) {
 	int32_t speed;
 	MOT_Direction_t direction = MOT_DIR_FORWARD;
 	MOT_MotorDevice_t *motHandle;
@@ -274,10 +274,10 @@ void PID_Init(void)
 }
 
 
-PID_Config *PID_Get_PosLeCfg(void) { return &posLeftConfig; }
-PID_Config *PID_Get_PosRiCfg(void) { return &posRightConfig; }
-PID_Config *PID_Get_SpdLeCfg(void) { return &speedLeftConfig; }
-PID_Config *PID_Get_SpdRiCfg(void) { return &speedRightConfig; }
+PID_Config_t *PID_Get_PosLeCfg(void) { return &posLeftConfig; }
+PID_Config_t *PID_Get_PosRiCfg(void) { return &posRightConfig; }
+PID_Config_t *PID_Get_SpdLeCfg(void) { return &speedLeftConfig; }
+PID_Config_t *PID_Get_SpdRiCfg(void) { return &speedRightConfig; }
 
 
 
