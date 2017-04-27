@@ -1,16 +1,19 @@
-/***************************************************************************************************
- * @brief 	Command line shell handler of the software component of the PID controllers.
+/***********************************************************************************************//**
+ * @file		pid_clshdlr.c
+ * @ingroup		pid
+ * @brief 		Implementation of the command line shell handler for the SWC @a PID
+ *
+ * This module implements the interface of the SWC @ref pid which is addressed to
+ * the SWC @ref sh. It introduces application specific commands for requests of status information,
+ * changing PID controller parameters, or restoring them from NVM via command line shell (@b CLS).
+ * The changed parameters are immediately saved to the @ref nvm.
  *
  * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	28.02.2017
  *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @copyright @LGPL2_1
  *
- * This module handles the interface between the software component of the PID controllers
- * and the command line shell CLS.
- * 
- *==================================================================================================
- */
+ ***************************************************************************************************/
 
 #define MASTER_pid_clshdlr_C_
 
@@ -18,6 +21,8 @@
 #include "pid_clshdlr.h"
 #include "pid_api.h"
 #include "nvm_api.h"
+
+
 
 /*======================================= >> #DEFINES << =========================================*/
 
@@ -275,7 +280,6 @@ uint8_t PID_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_Std
 	}
 	return res;
 }
-
 
 
 

@@ -8,7 +8,7 @@
  * restoring the NVM from ROM via command line shell (@b CLS).
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	23.02.2017
  *  
  * @note Interface for CLS-specific use only
