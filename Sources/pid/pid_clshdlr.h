@@ -1,5 +1,5 @@
 /***********************************************************************************************//**
- * @file		npid_clshdlr.h
+ * @file		pid_clshdlr.h
  * @ingroup		pid
  * @brief		Interface for the command line shell handler of the SWC @a PID
  *
