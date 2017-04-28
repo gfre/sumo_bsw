@@ -22,7 +22,7 @@
 #include "ACon_Types.h"
 #include "Platform.h"
 
-#ifdef MASTER_pid_api_C_
+#ifdef MASTER_pid_C_
 #define EXTERNAL_
 #else
 #define EXTERNAL_ extern

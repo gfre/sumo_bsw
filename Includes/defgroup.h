@@ -196,8 +196,8 @@
 
 
 /**
- * @defgroup	rnet Radio Net
- * @brief		Radio Network Stack
+ * @defgroup	rnet RNet
+ * @brief		Application Interface Component for the Radio Network Stack
  *
  *
  *
