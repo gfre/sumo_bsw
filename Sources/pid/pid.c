@@ -219,7 +219,7 @@ void PID_Init(void)
 	}
 	else
 	{
-		/*TODO Error handling */
+		/* error handling */
 	}
 	posLeftConfig.lastError = 0;
 	posLeftConfig.integral = 0;
@@ -253,7 +253,7 @@ void PID_Init(void)
 	}
 	else
 	{
-		/*TODO Error handling */
+		/* error handling */
 	}
 
 	if ( ERR_OK == NVM_Read_PIDSpdRiCfg(&pidCfg) )

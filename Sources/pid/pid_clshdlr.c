@@ -260,7 +260,7 @@ uint8_t PID_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_Std
 			if( ( ERR_OK != PID_saveCfg(NVM_Save_PIDPosCfg, PID_Get_PosLeCfg()) )
 			||	( ERR_OK != PID_saveCfg(NVM_Save_PIDPosCfg, PID_Get_PosRiCfg()) ) )
 			{
-				/* TODO ERROR handling */
+				/* error handling */
 			}
 		}
 	} else if (UTIL1_strncmp((char*)cmd, (char*)"pid speed L ", sizeof("pid speed L ")-1)==0) {
@@ -268,14 +268,14 @@ uint8_t PID_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_Std
 
 		if( ERR_OK != PID_saveCfg(NVM_Save_PIDSpdLeCfg, PID_Get_SpdLeCfg()) )
 		{
-			/* TODO ERROR handling */
+			/* error handling */
 		}
 	} else if (UTIL1_strncmp((char*)cmd, (char*)"pid speed R ", sizeof("pid speed R ")-1)==0) {
 		res = ParsePidParameter(PID_Get_SpdRiCfg(), cmd+sizeof("pid speed R ")-1, handled, io);
 
 		if( ERR_OK != PID_saveCfg(NVM_Save_PIDSpdRiCfg, PID_Get_SpdRiCfg()) )
 		{
-			/* TODO ERROR handling */
+			/* error handling */
 		}
 	}
 	return res;

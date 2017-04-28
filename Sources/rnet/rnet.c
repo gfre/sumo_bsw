@@ -3,7 +3,10 @@
  * @ingroup		rnet
  * @brief 		This is main application file
  *
- * This module implements the application part of the program.
+ * This software component implements an application entry layer for the Radio Network Stack. It
+ * runs a state machine where the radio is powered up and the radio network stack gets processed.
+ * Furthermore the it implements callback functions for handling received message and allows to
+ * set and get the destination addresses. The component includes the firmware component @a RApp.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
@@ -16,11 +19,10 @@
 #define MASTER_RNET_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "Platform.h"
 #include "rnet.h"
 #include "rnet_api.h"
-#include "RNetConf.h"
 #include "sh_Types.h"
+#include "RNetConf.h"
 
 
 

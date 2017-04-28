@@ -58,7 +58,7 @@ static void NVM_InitValues(void)
 	{
 		if(ERR_OK != NVM_Restore_AllFromROM())
 		{
-			/* TODO - error handling */
+			/* error handling */
 		}
 	}
 }

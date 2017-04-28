@@ -199,9 +199,13 @@
 
 /**
  * @defgroup	rnet RNet
- * @brief		Application Interface Component for the Radio Network Stack
+ * @brief		Application entry layer for the Radio Network Stack
  *
- *
+ * This software component implements an application entry layer for the Radio Network Stack. It
+ * runs a state machine where the radio is powered up and the radio network stack gets processed.
+ * Furthermore the it implements callback functions for handling received message and allows to
+ * set and get the destination addresses where messages are supposed to send to. The component
+ * is based upon the firmware component @a RApp of the Radio Network Stack.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	27.04.2017
