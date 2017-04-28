@@ -8,7 +8,7 @@
  * changing PID controller parameters, or restoring them from NVM via command line shell (@b CLS).
  * The changed parameters are immediately saved to the @ref nvm.
  *
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	28.02.2017
  *  
  * @copyright @LGPL2_1

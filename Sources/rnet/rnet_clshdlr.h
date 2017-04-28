@@ -1,16 +1,21 @@
-/***************************************************************************************************
- * @brief 	>>TODO This is a brief description.
+/***********************************************************************************************//**
+ * @file		rnet_clshdlr.h
+ * @ingroup		rnet
+ * @brief		Interface for the command line shell handler of the SWC @a RNet
  *
- * @author 	>>TODO, gefr@tf.uni-kiel.de, University Kiel 
+ * This header files provides the interface from the SWC @ref rnet to the SWC @ref sh.
+ * It introduces application specific commands for requests of status information
+ * via command line shell (@b CLS).
+ *
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	17.02.2017
  *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @note Interface for CLS-specific use only
  *
- * >>TODO This is the detailed description of the file rnet_clshdlr.h
- * 
- *==================================================================================================
- */
-
+ * @copyright @LGPL2_1
+ *
+ ***************************************************************************************************/
 
 #ifndef RNET_CLSHDLR_H_
 #define RNET_CLSHDLR_H_
@@ -19,19 +24,22 @@
 #include "CLS1.h"
 
 
+
 #ifdef MASTER_rnet_clshdlr_C_
 #define EXTERNAL_
 #else
 #define EXTERNAL_ extern
 #endif
 
+/**
+ * @addtogroup rnet
+ * @{
+ */
 /*======================================= >> #DEFINES << =========================================*/
-/* #define TMPL_MACRO (0xFFu) */
 
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-/* typedef unit8 TmplType_t; */
 
 
 
@@ -46,9 +54,12 @@
 EXTERNAL_ uint8_t RNET_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
 
 
+
+/**
+ * @}
+ */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
-
 
 #endif /* !RNET_CLSHDLR_H_ */

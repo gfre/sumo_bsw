@@ -1,15 +1,19 @@
-/***************************************************************************************************
- * @brief 	>>TODO This is a brief description.
+/***********************************************************************************************//**
+ * @file		rnet_clshdlr.c
+ * @ingroup		rnet
+ * @brief 		Implementation of the command line shell handler for the SWC @a RNet
  *
- * @author 	>>TODO, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * This module implements the interface of the SWC @ref rnet which is addressed to
+ * the SWC @ref sh. It introduces application specific commands for requests
+ * of status information via command line shell (@b CLS).
+ *
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	17.02.2017
  *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @copyright @LGPL2_1
  *
- * >>TODO This is the detailed description of the file rnet_clshdlr.c
- * 
- *==================================================================================================
- */
+ ***************************************************************************************************/
 
 #define MASTER_rnet_clshdlr_C_
 
