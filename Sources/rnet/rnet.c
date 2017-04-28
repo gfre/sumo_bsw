@@ -12,7 +12,7 @@
 /*======================================= >> #INCLUDES << ========================================*/
 #include "Platform.h"
 #include "rnet.h"
-#include "rnet_Types.h"
+#include "rnet_api.h"
 #include "RNetConf.h"
 #include "sh_Types.h"
 

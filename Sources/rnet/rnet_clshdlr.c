@@ -15,7 +15,7 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "rnet_clshdlr.h"
-#include "rnet_Types.h"
+#include "rnet_api.h"
 #include "RNWK.h"
 #include "UTIL1.h"
 

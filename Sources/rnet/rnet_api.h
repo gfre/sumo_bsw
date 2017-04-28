@@ -12,8 +12,8 @@
  */
 
 
-#ifndef RNET_TYPES_H_
-#define RNET_TYPES_H_
+#ifndef RNET_API_H_
+#define RNET_API_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "RApp.h"
@@ -69,4 +69,4 @@ EXTERNAL_ void RNET_SetRTERxMsgCbFct(const RAPP_RxMsg_CbFct *cbFct_);
 #endif
 
 
-#endif /* !RNET_TYPES_H_ */
+#endif /* !RNET_API_H_ */

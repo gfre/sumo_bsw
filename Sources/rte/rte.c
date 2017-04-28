@@ -18,17 +18,17 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "rte.h"
-#include "KEY1.h"
 #include "ind_api.h"
 #include "buz_api.h"
 #include "id_api.h"
 #include "appl_api.h"
 #include "drv_api.h"
-#include "rnet_Types.h"
+#include "rnet_api.h"
 #include "sh_Types.h"
 #include "tacho.h"
+#include "KEY1.h"
 #include "RApp.h"
-#include "sh.h"
+
 
 
 
