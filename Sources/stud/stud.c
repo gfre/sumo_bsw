@@ -34,7 +34,7 @@
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-/* static studType_t studArray[STUD_MACRO] = {0u,TRUE,FALSE};
+/* static studType_t studArray[STUD_MACRO] = {0u,TRUE,FALSE}; */
 
 
 

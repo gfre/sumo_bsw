@@ -6,9 +6,10 @@
  * @defgroup	rte RTE
  * @brief		*Real-Time Environment* - Application Interface for Application Software Development.
  *
- * The *Real-Time Environment* (@b RTE) is the application interface for application software development
- * within the *ACon Sumo Robot Project*. The firmware and basic software of the Sumo Robot is abstracted to the
- * RTE layer, which allows hardware-independent development of C99-compliant application software.
+ * The *Real-Time Environment* (@b RTE) is the application interface for application software
+ * development within the *ACon Sumo Robot Project*. The firmware and basic software of the Sumo
+ * Robot is abstracted to the RTE layer, which allows hardware-independent development of
+ * C99-compliant application software.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	06.02.2017
@@ -146,10 +147,10 @@
  * @defgroup	mot Motor
  * @brief		Software Driver for the DC motors
  *
- * This software component implements a driver for the two DC motors on the left- and right-hand sided
- * of the robot. It uses @a PWM and @a BitIO firmware components from Kinets to influence the speed
- * and direction of the motors. The driver can handle inverted polarity which makes the provided interface
- * independent of the assembly of the motors.
+ * This software component implements a driver for the two DC motors on the left- and right-hand
+ * sided of the robot. It uses @a PWM and @a BitIO firmware components from Kinets to influence the
+ * speed and direction of the motors. The driver can handle inverted polarity which makes the
+ * provided interface independent of the assembly of the motors.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	25.04.2017
@@ -163,10 +164,10 @@
  * @defgroup	nvm NVM
  * @brief		Non-volatile memory - *Data Flash Memory*
  *
- * This software component provides an implementation to store and retrieve data and parameter values
- * from the on-chip memory of the micro-controller MK22FX512VLK12. The MCU provides 128KB FlexNVM which
- * is entirely used as non-volatile Data Flash Memory in this project. No EEPROM is emulated in this
- * project.
+ * This software component provides an implementation to store and retrieve data and parameter
+ * values from the on-chip memory of the micro-controller MK22FX512VLK12. The MCU provides 128KB
+ * FlexNVM which is entirely used as non-volatile Data Flash Memory in this project. No EEPROM is
+ * emulated in this project.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	26.04.2017
@@ -180,11 +181,12 @@
  * @defgroup	pid PID
  * @brief		PID Controller
  *
- * This software component PID controllers for position and speed control of the Sumo robots. An Anti-
- * Wind-Up algorithm avoids drifting of the integral part and the maximum allowed control value can
- * changed by parameter. Controller parameters are read from the [NVM software component](@ref nvm)
- * during initialisation. They may be changed or default parameter values can be restored via
- * [command line shell](@ref sh). Changed parameter values are saved back to the NVM again.
+ * This software component provides PID controllers for position and speed control of the Sumo
+ * robots. An Anti-Wind-Up algorithm avoids drifting of the integral part and the maximum allowed
+ * control value can changed by parameter. Controller parameters are read from the [NVM software
+ * component](@ref nvm) during initialisation. They may be changed or default parameter values can
+ * be restored via [command line shell](@ref sh). Changed parameter values are saved back to the NVM
+ * again.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	27.04.2017

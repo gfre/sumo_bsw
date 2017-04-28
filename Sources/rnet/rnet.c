@@ -1,11 +1,17 @@
-/**
- * \file
- * \brief This is main application file
- * \author (c) 2016 Erich Styger, http://mcuoneclipse.com/
- * \note MIT License (http://opensource.org/licenses/mit-license.html)
+/***********************************************************************************************//**
+ * @file		rnet.c
+ * @ingroup		rnet
+ * @brief 		This is main application file
  *
  * This module implements the application part of the program.
- */
+ *
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+  * @date 	06.01.2017
+ *
+ * @copyright @LGPL2_1
+ *
+ ***************************************************************************************************/
 
 #define MASTER_RNET_C_
 
