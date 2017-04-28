@@ -3,7 +3,7 @@
  * @ingroup		drv
  * @brief 		Interface of the SWC @a Drive for initialisation- and runtime-calls.
  *
- * This header file provides the internal interface between the SWC @ref appl and the
+ * This header file provides the internal interface between the SWC @ref drv and the
  * SWC @ref task which runs the initialisation and periodic main function within a FreeRTOS task.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
