@@ -1,15 +1,19 @@
-/***************************************************************************************************
- * @brief 	This module handles the interface to the command line shell CLS
+/***********************************************************************************************//**
+ * @file		sh_clshdlr.c
+ * @ingroup		sh
+ * @brief 		Implementation of the command line shell handler for the SWC @a sh
  *
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, University Kiel
+ * This module implements the internal interface of the SWC @ref sh which allows to debug the over-
+ * laying @a shell component by itself. It introduces application specific commands for requests
+ * of status information via command line shell (@b CLS).
+ *
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	09.02.2017
  *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @copyright @LGPL2_1
  *
- * >>TODO This is the detailed description of the file sh_clshdlr.c
- * 
- *==================================================================================================
- */
+ **************************************************************************************************/
 
 #define MASTER_sh_clshdlr_C_
 
