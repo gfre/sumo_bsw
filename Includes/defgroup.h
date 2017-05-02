@@ -218,6 +218,17 @@
 /**
  * @defgroup 	sh Shell
  * @brief 		Command Line Shell
+ *
+ * This software component implements an application entry layer for command line shell (@a CLS). It
+ * loops through the callback functions of BSW components, which have implemented a command parser
+ * for the comman line shell. Furthermore it sends some nice Welcome and Goodbye message to the
+ * configured ouptput streams of the CLS. Here, the standard IN and OUT, and standard ERR streams
+ * of both hardware interfaces, the RTT and USB, are used for I/O streaming.
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	02.05.2017
+ *
+ * @copyright	@LGPL2_1
  */
 
 

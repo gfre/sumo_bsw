@@ -1,17 +1,20 @@
-/***************************************************************************************************
- * @brief 	Shell and console interface implementation.
+/***********************************************************************************************//**
+ * @file		rnet.c
+ * @ingroup		rnet
+ * @brief 		Implementation of the application entry layer for the commmand line shell
+ *
+ * This software component implements an application entry layer for command line shell (@a CLS). It
+ * loops through the callback functions of BSW components, which have implemented a command parser
+ * for the comman line shell. Furthermore it sends some nice Welcome and Goodbye message to the
+ * configured output streams of the CLS.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, CAU Kiel
- * @author 	Henning Weisbarth, hewe@tf.uni-kiel.de, CAU Kiel
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	02.01.2017
  *
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @copyright @LGPL2_1
  *
- * This module implements the front to the console/shell functionality.
- *
- * =================================================================================================
- */
+ **************************************************************************************************/
 
 #define MASTER_SH_C_
 
@@ -23,6 +26,7 @@
 #include "sh_api.h"
 #include "id_api.h"
 #include "RTT1.h"
+
 
 
 /*======================================= >> #DEFINES << =========================================*/
@@ -53,9 +57,11 @@ static void SH_PrintWelcomeMsg(const CLS1_StdIOType *io_);
 static void SH_PrintGoodByeMsg(const CLS1_StdIOType *io_);
 
 
+
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 static const SH_IOCfg_t *ioCfg = NULL;
 static const SH_IODesc_t *ios = NULL;
+
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
@@ -122,7 +128,7 @@ void SH_Init(void)
 			}
 			else
 			{
-				/*TODO print error msg */
+				/* print error msg */
 				SH_SENDERRSTR("Error 2\r\n");
 			}
 		}

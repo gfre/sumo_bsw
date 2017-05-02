@@ -9,12 +9,12 @@
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	10.01.2017
-
+ *
  * @note Interface for BSW-specific use only
  *
  * @copyright 	@LGPL2_1
  *
- ***************************************************************************************************/
+ **************************************************************************************************/
 
 #ifndef RNET_H_
 #define RNET_H_
