@@ -48,17 +48,17 @@
 #define SH_SENDERRSTR(msg_)                ( CLS1_SendStr(msg_, CLS1_GetStdio()->stdErr) \
 		                                   , CLS1_SendStr(msg_, RTT1_GetStdio()->stdErr) )
 /**
- * @brief Sends a formatted string to the a user-defined I/O stream_
+ * @brief Sends a formatted string to the a user-defined I/O stream
  * @param stream_ user-defined I/O stream
  * @param fmt_ formatted string to write
- * @param arg_ arguments within string
+ * @param args_ arguments within string
  */
 #define SH_FPRINTF(stream_, fmt_, args_)   ( XF1_xvformat(CLS1_printfPutChar, RTT1_GetStdio()->stream_, fmt_, args_) \
 							               & XF1_xvformat(CLS1_printfPutChar, CLS1_GetStdio()->stream_, fmt_, args_) )
 /**
  * @brief Sends a formatted string to the shell/console stdout
  * @param fmt_ formatted string to write
- * @param arg_ arguments within string
+ * @param args_ arguments within string
  */
 #define SH_PRINTF(fmt_, args_)             ( XF1_xvformat(CLS1_printfPutChar, RTT1_GetStdio()->stdOut, fmt_, args_) \
 							               & XF1_xvformat(CLS1_printfPutChar, CLS1_GetStdio()->stdOut, fmt_, args_) )

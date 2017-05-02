@@ -1,6 +1,6 @@
 /***********************************************************************************************//**
- * @file		id_clshdlr.h
- * @ingroup		id
+ * @file		sh_clshdlr.h
+ * @ingroup		sh
  * @brief 		Interface for the command line shell handler of the SWC @a Shell
  *
  * This header files provides the internal interface of the SWC @ref sh  which allows to debug the
