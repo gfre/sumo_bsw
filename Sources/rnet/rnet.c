@@ -21,7 +21,7 @@
 /*======================================= >> #INCLUDES << ========================================*/
 #include "rnet.h"
 #include "rnet_api.h"
-#include "sh_Types.h"
+#include "sh_api.h"
 #include "RNetConf.h"
 
 
