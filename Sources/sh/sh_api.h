@@ -1,6 +1,6 @@
 /***********************************************************************************************//**
- * @file		rnet_api.h
- * @ingroup		rnet
+ * @file		sh_api.h
+ * @ingroup		sh
  * @brief 		API of the SWC @a Shell
  *
  * This API provides a BSW-internal interface of the SWC @ref sh. It is supposed to be
