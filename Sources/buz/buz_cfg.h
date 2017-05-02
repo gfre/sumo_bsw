@@ -14,7 +14,7 @@
  *
  * @copyright @LGPL2_1
  *
- ***************************************************************************************************/
+ **************************************************************************************************/
 
 #ifndef BUZ_CFG_H_
 #define BUZ_CFG_H_
@@ -66,6 +66,10 @@ typedef struct {
 } MelodyDesc;
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
+/**
+ * @brief Function returns the reference to the melody descriptor array
+ * @return reference to the melody descriptor array
+ */
 EXTERNAL_ MelodyDesc *Get_BUZMelodies(void);
 
 
@@ -76,6 +80,5 @@ EXTERNAL_ MelodyDesc *Get_BUZMelodies(void);
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
-
 
 #endif /* !BUZ_CFG_H_ */
