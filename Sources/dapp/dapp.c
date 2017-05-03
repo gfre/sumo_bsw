@@ -1,16 +1,17 @@
-/***************************************************************************************************
- * @brief 	Simple framework for custom application software.
+/***********************************************************************************************//**
+ * @file		dapp.c
+ * @ingroup		dapp
+ * @brief 		Simple framework for demo application software.
  *
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, CAU Kiel
- * @date 	14.01.2017
+ * This module implements a simple framework for custom demo application, e.g., for demonstration,
+ * testing, debugging or education purposes at Univeristy Kiel.
  *
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	09.01.2017
  *
- * This module implements a simple framework for custom applications software
- * for education at Univeristy Kiel.
+ * @copyright @LGPL2_1
  *
- * =================================================================================================
- */
+ ***************************************************************************************************/
 
 #define MASTER_DAPP_C_
 

@@ -1,25 +1,4 @@
 /**
- *
- */
-
-/**
- * @defgroup	rte RTE
- * @brief		*Real-Time Environment* - Application Interface for Application Software Development.
- *
- * The *Real-Time Environment* (@b RTE) is the application interface for application software
- * development within the *ACon Sumo Robot Project*. The firmware and basic software of the Sumo
- * Robot is abstracted to the RTE layer, which allows hardware-independent development of
- * C99-compliant application software.
- *
- * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
- * @date 	06.02.2017
- *
- * @copyright	@LGPL2_1
- */
-
-
-
-/**
  * @defgroup	appl Application
  * @brief		Advanced state machine which handles the application and custom application software
  *
@@ -79,6 +58,21 @@
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	09.01.2017
+ *
+ * @copyright	@LGPL2_1
+ */
+
+
+
+/**
+ * @defgroup	dapp Demo Application
+ * @brief		Simple framework for custom demo application software.
+ *
+ * This module implements a simple framework for custom demo application, e.g., for demonstration,
+ * testing, debugging or education purposes at Univeristy Kiel.
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	03.05.2017
  *
  * @copyright	@LGPL2_1
  */
@@ -209,6 +203,23 @@
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	27.04.2017
+ *
+ * @copyright	@LGPL2_1
+ */
+
+
+
+/**
+ * @defgroup	rte RTE
+ * @brief		*Real-Time Environment* - Application Interface for Application Software Development.
+ *
+ * The *Real-Time Environment* (@b RTE) is the application interface for application software
+ * development within the *ACon Sumo Robot Project*. The firmware and basic software of the Sumo
+ * Robot is abstracted to the RTE layer, which allows hardware-independent development of
+ * C99-compliant application software.
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	06.02.2017
  *
  * @copyright	@LGPL2_1
  */

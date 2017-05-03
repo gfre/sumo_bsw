@@ -1,16 +1,19 @@
-/*******************************************************************************
- * @brief 	Simple framework for custom demo application software.
+/***********************************************************************************************//**
+ * @file		dapp.h
+ * @ingroup		dapp
+ * @brief 		Interface of the SWC *Demo Application* for initialisation- and runtime-calls
  *
- * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, CAU Kiel
- * @date 	14.01.2017
+ * This header file provides the internal interface between the SWC @ref dapp and the SWC @ref appl
+ * which runs the initialisation within its INIT state and the main routine within its NORMAL state.
  *
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	03.05.2017
  *
- * This module implements a simple framework for custom applications software
- * for education at Univeristy Kiel.
+ * @note Interface for BSW-specific use only
  *
- * ==============================================================================
- */
+ * @copyright @LGPL2_1
+ *
+ **************************************************************************************************/
 
 #ifndef DAPP_H_
 #define DAPP_H_
@@ -24,13 +27,15 @@
 #define EXTERNAL_ extern
 #endif
 
+/**
+ * @addtogroup dapp
+ * @{
+ */
 /*======================================= >> #DEFINES << =========================================*/
-/* #define STUD_MACRO (0x01u) */
 
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-/* typedef unit8 StudType_t; */
 
 
 
@@ -42,6 +47,7 @@
 EXTERNAL_ void DAPP_Init(void);
 
 
+
 /**
  * @brief Main function of the software component @ref dapp
  * Calls main routine of demo application
@@ -49,6 +55,10 @@ EXTERNAL_ void DAPP_Init(void);
 EXTERNAL_ void DAPP_Main(void);
 
 
+
+/**
+ * @}
+ */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
