@@ -27,7 +27,7 @@
 #include "ind_api.h"
 #include "Platform.h"
 #include "FRTOS1.h"
-#include "stud.h"
+#include "dapp.h"
 #include "task_cfg.h"
 #include "rte.h"
 #include "sh.h"
@@ -261,7 +261,7 @@ static StdRtn_t runINIT(void)
 {
 	BUZ_Init();
 	BATT_Init();
-	STUD_Init();
+	DAPP_Init();
 #ifdef ASW_ENABLED
 	ASW_Init();
 #endif
@@ -301,7 +301,7 @@ static StdRtn_t runNORMAL(void)
 #ifdef ASW_ENABLED
 	ASW_Main();
 #endif
-  STUD_Main();
+  DAPP_Main();
 
   return ERR_OK;
 }

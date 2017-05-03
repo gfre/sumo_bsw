@@ -12,10 +12,10 @@
  * =================================================================================================
  */
 
-#define MASTER_STUD_C_
+#define MASTER_DAPP_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "stud.h"
+#include "dapp.h"
 
 
 /*======================================= >> #DEFINES << =========================================*/
@@ -48,7 +48,7 @@
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-void STUD_Init(void)
+void DAPP_Init(void)
 {
 	/*
 	 * Write your initialization code here!
@@ -58,7 +58,7 @@ void STUD_Init(void)
 
 
 
-void STUD_Main(void)
+void DAPP_Main(void)
 {
 	/*
 	 * Write your main function here!

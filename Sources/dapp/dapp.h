@@ -1,7 +1,7 @@
 /*******************************************************************************
- * @brief 	Simple framework for custom application software.
+ * @brief 	Simple framework for custom demo application software.
  *
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, CAU Kiel
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, CAU Kiel
  * @date 	14.01.2017
  *
  * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
@@ -12,13 +12,13 @@
  * ==============================================================================
  */
 
-#ifndef STUD_H_
-#define STUD_H_
+#ifndef DAPP_H_
+#define DAPP_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "rte.h"
 
-#ifdef MASTER_STUD_C_
+#ifdef MASTER_DAPP_C_
 #define EXTERNAL_
 #else
 #define EXTERNAL_ extern
@@ -35,22 +35,22 @@
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-/*!
- * @brief Init function of the software component 'stud'
- * Initializes custom application software
+/**
+ * @brief Init function of the software component @ref dapp
+ * Initialises demo application
  */
-EXTERNAL_ void STUD_Init(void);
+EXTERNAL_ void DAPP_Init(void);
 
 
-/*!
- * @brief Main function of the software component 'stud'
- * Runs custom application software
+/**
+ * @brief Main function of the software component @ref dapp
+ * Calls main routine of demo application
  */
-EXTERNAL_ void STUD_Main(void);
+EXTERNAL_ void DAPP_Main(void);
 
 
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
 
-#endif /* !STUD_H_ */
+#endif /* !DAPP_H_ */
