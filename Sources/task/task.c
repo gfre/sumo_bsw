@@ -16,7 +16,7 @@
 /*======================================= >> #INCLUDES << ========================================*/
 #include "task.h"
 #include "task_cfg.h"
-#include "task_Types.h"
+#include "task_api.h"
 #include "mot.h"
 #include "RNET1.h"
 #include "tacho.h"
@@ -37,7 +37,7 @@
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-static inline void TASK_CreateTasks(void);
+static void TASK_CreateTasks(void);
 
 
 
@@ -46,7 +46,7 @@ static inline void TASK_CreateTasks(void);
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-static inline void TASK_CreateTasks()
+static void TASK_CreateTasks()
 {
 	uint8 i = 0u;
 	const TASK_Cfg_t *taskCfg = NULL;
