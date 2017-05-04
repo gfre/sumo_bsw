@@ -17,7 +17,8 @@
 #define TACHO_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "Platform.h"
+
+
 
 #ifdef MASTER_tacho_C_
 #define EXTERNAL_
@@ -35,28 +36,26 @@
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-/*!
- * @brief Returns the previously calculated speed of the motor.
- * @param isLeft TRUE for left speed, FALSE for right speed.
- * @return Actual speed value
- */
-int32_t TACHO_GetSpeed(bool isLeft);
-
-/*!
+/**
  * @brief Calculates the speed based on the position information from the encoder.
  */
 void TACHO_CalcSpeed(void);
 
-/*!
+/**
  * @brief Sampling routine to calculate speed, must be called periodically with a fixed frequency.
  */
 void TACHO_Sample(void);
 
-/*! @brief De-initialization of the module */
+/**
+ * @brief De-initialization of the module
+ */
 void TACHO_Deinit(void);
 
-/*! @brief Initialization of the module */
+/**
+ * @brief Initialization of the module
+ */
 void TACHO_Init(void);
+
 
 
 #ifdef EXTERNAL_

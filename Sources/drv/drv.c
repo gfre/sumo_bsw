@@ -26,8 +26,7 @@
 #include "drv.h"
 #include "drv_api.h"
 #include "pid_api.h"
-#include "sh.h"
-#include "tacho.h"
+#include "tacho_api.h"
 #include "mot.h"
 
 #include "FRTOS1.h"

@@ -245,6 +245,25 @@
 
 
 /**
+ * @defgroup 	tacho Tacho
+ * @brief 		Tachometer
+ *
+ *
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	04.05.2017
+ *
+ * @copyright	@LGPL2_1
+ */
+
+
+
+/**
  * @defgroup 	task Task
  * @brief 		Task
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	05.05.2017
+ *
+ * @copyright	@LGPL2_1
  */

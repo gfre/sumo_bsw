@@ -17,8 +17,8 @@
 #define MASTER_tacho_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "Platform.h"
 #include "tacho.h"
+#include "tacho_api.h"
 #include "Q4CLeft.h"
 #include "Q4CRight.h"
 #include "CLS1.h"
