@@ -31,6 +31,7 @@
 #include "batt_clshdlr.h"
 #include "buz_clshdlr.h"
 /* Firmware components */
+#include "BT1.h"
 #include "RTT1.h"
 #include "RNET1.h"
 #include "LED1.h"
@@ -74,6 +75,7 @@ static const CLS1_ParseCommandCallback CmdParserTable[] =
   BATT_ParseCommand,
   KIN1_ParseCommand,
   RNET_ParseCommand,
+  BT1_ParseCommand,
   NULL /* Sentinel */
 };
 
