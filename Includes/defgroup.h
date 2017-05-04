@@ -248,7 +248,11 @@
  * @defgroup 	tacho Tacho
  * @brief 		Tachometer
  *
- *
+ * This module implements a tachometer component which calculates the speed based on quadrature
+ * counters for up to two speed sources. The sign of the calculated speed signal indicates the
+ * direction of movement. Furthermore, it provides a moving average filter to smoothing the speed
+ * signal using a ring buffer for data collection. The module uses the firmware components
+ * @a Q4CLeft and @a Q4CRight for the corresponding speed signals.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	04.05.2017

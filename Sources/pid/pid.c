@@ -275,7 +275,7 @@ void PID_Init(void)
 	}
 	else
 	{
-		/*TODO Error handling */
+		/* error handling */
 	}
 }
 

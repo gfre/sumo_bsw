@@ -1,17 +1,21 @@
-/***************************************************************************************************
- * @brief 	Implementation of the tachometer software component
+/***********************************************************************************************//**
+ * @file		tacho.c
+ * @ingroup		tacho
+ * @brief 		Implementation of a tachometer for speed calculation of two instances
+ *
+ * This module implements a tachometer component which calculates the speed based on quadrature
+ * counters for up to two speed sources. The sign of the calculated speed signal indicates the
+ * direction of movement. Furthermore, it provides a moving average filter to smoothing the speed
+ * signal using a ring buffer for data collection. The module uses the firmware components
+ * @a Q4C for both, left- and right-hand side, speed signals.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	30.03.2017
  *
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+* @copyright @LGPL2_1
  *
- * This module calculates the speed based on the quadrature counter. It implements an moving average
- * filter for the speed signal based on a ring buffer.
- *
- *==================================================================================================
- */
+ **************************************************************************************************/
 
 
 #define MASTER_tacho_C_
@@ -21,17 +25,20 @@
 #include "tacho_api.h"
 #include "Q4CLeft.h"
 #include "Q4CRight.h"
-#include "CLS1.h"
-#include "UTIL1.h"
 #include "FRTOS1.h"
 #include "CS1.h"
 
 
 
 /*======================================= >> #DEFINES << =========================================*/
-/*!< speed sample period in ms. Make sure that speed is sampled at the given rate. */
+/**
+ *  Speed sample period in ms. Make sure that speed is sampled at the given rate.
+ */
 #define TACHO_SAMPLE_PERIOD_MS (5)     
-/*!< number of samples for speed calculation (>0):the more, the better, but the slower. */
+
+/**
+ * Number of samples for speed calculation (>0):the more, the better, but the slower.
+ */
 #define NOF_HISTORY (16U+1U) 
 
 

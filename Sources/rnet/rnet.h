@@ -1,7 +1,7 @@
 /***********************************************************************************************//**
  * @file		rnet.h
  * @ingroup		rnet
- * @brief 		Interface of the SWC @a Drive for initialisation- and runtime-calls.
+ * @brief 		Interface of the SWC @a RNet for initialisation- and runtime-calls.
  *
  * This header file provides the internal interface between the SWC @ref rnet and the
  * SWC @ref task which runs the initialisation and periodic main function within a FreeRTOS task.
@@ -34,8 +34,10 @@
  * @{
  */
 /*======================================= >> #DEFINES << =========================================*/
-/** String identification of the SWC @ref rnet */
-#define RNET_SWC_STRING ("rnet")
+/**
+ * String identification of the SWC @ref rnet
+ */
+#define RNET_SWC_STRING ("RNet")
 
 
 

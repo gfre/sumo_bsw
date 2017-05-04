@@ -1,17 +1,20 @@
-/***************************************************************************************************
- * @brief 	Implementation of the tachometer software component
+/***********************************************************************************************//**
+ * @file		tacho.h
+ * @ingroup		tacho
+ * @brief 		Interface of the SWC @a Tacho for initialisation- and runtime-calls.
  *
- * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
- * @date 	30.03.2017
- *
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
- *
- * This module calculates the speed based on the quadrature counter. It implements an moving average
+ ** This module calculates the speed based on the quadrature counter. It implements an moving average
  * filter for the speed signal based on a ring buffer.
  *
- *==================================================================================================
- */
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	30.03.2017
+ *
+ * @note Interface for BSW-specific use only
+ *
+ * @copyright 	@LGPL2_1
+ *
+ **************************************************************************************************/
 
 #ifndef TACHO_H_
 #define TACHO_H_
@@ -26,8 +29,15 @@
 #define EXTERNAL_ extern
 #endif
 
+/**
+ * @addtogroup tacho
+ * @{
+ */
 /*======================================= >> #DEFINES << =========================================*/
-#define TACHO_SWC_STRING ("tacho")
+/**
+ * String identification of the SWC @ref tacho
+ */
+#define TACHO_SWC_STRING ("Tacho")
 
 
 
@@ -58,8 +68,11 @@ void TACHO_Init(void);
 
 
 
+/**
+ * @}
+ */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
 
-#endif /* __TACHO_H_ */
+#endif /* !TACHO_H_ */
