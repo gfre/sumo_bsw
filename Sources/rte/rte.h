@@ -481,6 +481,40 @@ StdRtn_t RTE_Release_HoldOnEnterIdle(void);
 
 
 
+/*================================================================================================*/
+/**
+ * @brief This function reads the address of a ASW data unit stored in the NVM
+ * @param pDataAddr_ reference to the start address of the ASW data unit
+ * @param unitNum_ number of the ASW data unit which shall be read
+ * @return Error code, ERR_OK if everything was fine,
+ * 					   ERR_PARAM_DATA if data was erased,
+ *                     ERR_PARAM_ADDRESS if data address is invalid,
+ *                     NVM specific ERROR code otherwise
+ */
+StdRtn_t RTE_Read_DataUnitAddrInNVM(void *pDataAddr_, uint8_t unitNum_);
+
+/**
+ * @brief This function saves a completed ASW data unit into the NVM
+ * @param pData_ reference to the ASW data unit
+ * @param unitNum_ number of the ASW data unit where the data shall be saved to
+ * @return Error code, ERR_OK if everything was fine,
+ *                     NVM specific ERROR code otherwise
+ */
+StdRtn_t RTE_Save_DataUnit2NVM(const void *pData_, uint8_t unitNum_);
+
+/**
+ * @brief This function saves a number of data bytes within a certain ASW data into the NVM
+ * @param pData_ reference to the ASW data unit
+ * @param unitNum_ number of the ASW data unit where the data shall be saved to
+ * @param byteCnt_ count of bytes which shall be saved
+ * @return Error code, ERR_OK if everything was fine,
+ * 					   ERR_PARAM_OVERFLOW if byteCnt_ exceeds ASW data unit size
+ *                     NVM specific ERROR code otherwise
+ */
+StdRtn_t RTE_Save_BytesOfDataUnit2NVM(const void *pData_, uint8_t unitNum_, uint16_t byteCnt_);
+
+
+
 /**
  * @}
  */

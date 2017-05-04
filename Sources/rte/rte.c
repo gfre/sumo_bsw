@@ -26,6 +26,7 @@
 #include "rnet_api.h"
 #include "sh_api.h"
 #include "tacho_api.h"
+#include "nvm_api.h"
 #include "KEY1.h"
 #include "RApp.h"
 
@@ -616,6 +617,36 @@ ID_Sumo_t RTE_GetSumoID(void)
 }
 
 /*================================================================================================*/
+
+
+
+/*
+ * Interface implementation for data storage into the NVM
+ */
+StdRtn_t RTE_Read_DataUnitAddrInNVM(void *pDataAddr_, uint8_t unitNum_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if( NULL != pDataAddr_)
+	{
+		retVal = NVM_Read_ASWDataUnitAddr(pDataAddr_,unitNum_);
+	}
+	return retVal;
+}
+
+StdRtn_t RTE_Save_DataUnit2NVM(const void *pData_, uint8_t unitNum_)
+{
+	return NVM_Save_ASWDataBytesInUnit(pData_, unitNum_, NVM_UNIT_SIZE_ASW);
+}
+
+StdRtn_t RTE_Save_BytesOfDataUnit2NVM(const void *pData_, uint8_t unitNum_, uint16_t byteCnt_)
+{
+	return NVM_Save_ASWDataBytesInUnit(pData_, unitNum_, byteCnt_);
+}
+
+
+
+/*================================================================================================*/
+
 
 
 #ifdef MASTER_RTE_C_

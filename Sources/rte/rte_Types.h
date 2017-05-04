@@ -41,9 +41,17 @@
 #endif
 
 #ifdef ASW_RF_MSG_TYPE_T
-#define RTE_RF_MSG_TYPE_T      ASW_RF_MSG_TYPE_T
+#define RTE_RF_MSG_TYPE_T		ASW_RF_MSG_TYPE_T
 #else
-#define RTE_RF_MSG_TYPE_T      RFMsgType_t
+#define RTE_RF_MSG_TYPE_T		RFMsgType_t
+#endif
+
+#if defined( ASW_NVM_UNIT_SIZE )
+	#if ASW_NVM_UNIT_SIZE
+	#define RTE_NVM_UNIT_SIZE_ASW		ASW_NVM_UNIT_SIZE
+	#else
+	#undef ASW_NVM_UNIT_SIZE
+	#endif
 #endif
 
 #ifndef NUM_OF_SUMOS

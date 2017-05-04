@@ -21,7 +21,7 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "Acon_Types.h"
-
+#include "rte_Types.h"
 
 #ifdef MASTER_nvm_C_
 #define EXTERNAL_
@@ -34,6 +34,16 @@
  * @{
  */
 /*======================================= >> #DEFINES << =========================================*/
+#if defined( RTE_NVM_UNIT_SIZE_ASW )
+	#if RTE_NVM_UNIT_SIZE_ASW
+	#define NVM_UNIT_SIZE_ASW		RTE_NVM_UNIT_SIZE_ASW
+	#else
+	#define NVM_UNIT_SIZE_ASW		(0x40u)
+	#undef RTE_NVM_UNIT_SIZE_ASW
+	#endif
+#else
+	#define NVM_UNIT_SIZE_ASW		(0x40u)
+#endif
 
 
 
@@ -177,11 +187,34 @@ EXTERNAL_ StdRtn_t NVM_Read_PIDSpdRiCfg(NVM_PidCfg_t *spdCfg_);
 EXTERNAL_ StdRtn_t NVM_Read_Dflt_PIDSpdRiCfg(NVM_PidCfg_t *spdCfg_);
 
 /**
+ * @brief This function saves a number of data bytes within a certain ASW data into the NVM
+ * @param pData_ reference to the ASW data unit
+ * @param unitNum_ number of the ASW data unit where the data shall be saved to
+ * @param byteCnt_ count of bytes which shall be saved
+ * @return Error code, ERR_OK if everything was fine,
+ * 					   ERR_PARAM_OVERFLOW if byteCnt_ exceeds ASW data unit size
+ *                     NVM specific ERROR code otherwise
+ */
+ EXTERNAL_ StdRtn_t NVM_Save_ASWDataBytesInUnit(const void *pData_, uint8_t unitNum_, uint16_t byteCnt_);
+
+ /**
+  * @brief This function reads the address of a ASW data unit stored in the NVM
+  * @param pDataAddr_ reference to the start address of the ASW data unit
+  * @param unitNum_ number of the ASW data unit which shall be read
+  * @return Error code, ERR_OK if everything was fine,
+  * 					ERR_PARAM_DATA if data was erased,
+  *                     ERR_PARAM_ADDRESS if data address is invalid,
+  *                     NVM specific ERROR code otherwise
+  */
+ EXTERNAL_ StdRtn_t NVM_Read_ASWDataUnitAddr(void *pDataAddr_, uint8_t unitNum_);
+
+
+
+/**
  * @}
  */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
-
 
 #endif /* !NVM_API_H_ */
