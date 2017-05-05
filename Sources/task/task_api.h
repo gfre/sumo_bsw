@@ -19,7 +19,7 @@
 #define TASK_TYPES_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "projdefs.h"
+#include "FRTOS1.h"
 #include "Platform.h"
 
 
@@ -39,21 +39,23 @@
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 /**
- * @brief
+ * @brief Data type (re-)definition of a task function handle inherited from TaskFunction_t defined
+ * in projdefs.h by FreeRTOS.
  */
 typedef TaskFunction_t TaskFctHdl_t;
 
 /**
- * @brief
+ * @brief Data type (re-)definition of a task handle inherited from TaskHandle_t defined in task.h
+ * by FreeRTOS.
  */
-typedef void * TaskHdl_t;
+typedef TaskHandle_t TaskHdl_t;
 
 /**
  * @typedef TASK_SuspType_t
- * @brief
+ * @brief Data type definition of the enumeration TASK_SuspType_e
  *
  * @enum TASK_SuspType_e
- * @brief
+ * @brief This enumeration defines the possibility of suspension of a task
  */
 typedef enum TASK_SuspType_e
 {
@@ -63,65 +65,66 @@ typedef enum TASK_SuspType_e
 
 /**
  * @typedef TASK_CfgItm_t
- * @brief
+ * @brief Data type definition of the structure TASK_CfgItm_s
  *
  * @struct TASK_CfgItm_s
- * @brief
+ * @brief This structure defines the properties of a task
  */
 typedef struct TASK_CfgItm_s
 {
-	TaskFctHdl_t taskFctHdl;		/**< */
-	const char_t * const taskName;	/**< */
-	const uint16 stackDepth;		/**< */
-	void * const pvParameters;		/**< */
-	uint32 taskPriority;			/**< */
-	TaskHdl_t taskHdl;				/**< */
-	TASK_SuspType_t suspTask;		/**< */
+	TaskFctHdl_t taskFctHdl;		/**< function handle of the task function */
+	const char_t * const taskName;	/**< reference to the string representing the task name */
+	const uint16 stackDepth;		/**< stack depth for stack memory allocation */
+	void * const pvParameters;		/**< reference to the parameters passed into the task */
+	uint32 taskPriority;			/**< task priority */
+	TaskHdl_t taskHdl;				/**< handle to the task object */
+	TASK_SuspType_t suspTask;		/**< see @ref TASK_SuspType_e */
 }TASK_CfgItm_t;
 
 /**
  * @typedef TASK_Cfg_t
- * @brief
+ * @brief Data type definition of the structure TASK_Cfg_s
  *
  * @struct TASK_Cfg_s
- * @brief
+ * @brief This structure defines a configuration table which holds all task configuration items
  */
 typedef struct TASK_Cfg_s
 {
-	TASK_CfgItm_t *tasks;			/**< */
-	const uint8 numTasks;			/**< */
+	TASK_CfgItm_t *tasks;			/**< reference to the task configuration table */
+	const uint8 numTasks;			/**< count of task configuration items */
 }TASK_Cfg_t;
 
 /**
- * @brief
+ * @brief Data type definition of a main function of a basic software component
  */
 typedef void (TASK_MainFct_t)(void);
 
 /**
- * @brief
+ * @brief Data type definition of an initialisation function of a basic software component
  */
 typedef void (TASK_InitFct_t)(void);
 
 /**
  * @typedef TASK_SwcCfg_t
- * @brief
+ * @brief Data type definition of the structure TASK_SwcCfg_s
  *
  * @struct TASK_SwcCfg_s
- * @brief
+ * @brief This structure defines the properties of a software component
  */
 typedef struct TASK_SwcCfg_s
 {
-	const char_t * const swcName;	/**< */
-	TASK_MainFct_t * const mainFct;	/**< */
-	TASK_InitFct_t * const initFct;	/**< */
+	const char_t * const swcName;	/**< reference to the string representing the name of the SWC */
+	TASK_MainFct_t * const mainFct;	/**< function handle to the main function of the SWC */
+	TASK_InitFct_t * const initFct;	/**< function handle to the init function of the SWC */
 }TASK_SwcCfg_t;
 
 /**
  * @typedef TASK_PerdTaskFctPar_t
- * @brief
+ * @brief Data type definition of the structure TASK_PerdTaskFctPar_s
  *
  * @struct TASK_PerdTaskFctPar_s
- * @brief
+ * @brief This structure holds the [pvParameters](@ref TASK_CfgItm_s) of a periodically called task
+ * which are passed into the task via its task function.
  */
 typedef struct TASK_PerdTaskFctPar_s
 {
@@ -132,10 +135,11 @@ typedef struct TASK_PerdTaskFctPar_s
 
 /**
  * @typedef TASK_NonPerdTaskFctPar_t
- * @brief
+ * @brief Data type definition of the structure TASK_NonPerdTaskFctPar_s
  *
  * @struct TASK_NonPerdTaskFctPar_s
- * @brief
+ * @brief This structure holds the [pvParameters](@ref TASK_CfgItm_s) of a non-periodically called
+ * task which are passed into the task via its task function.
  */
 typedef struct TASK_NonPerdTaskFctPar_s
 {
@@ -147,13 +151,13 @@ typedef struct TASK_NonPerdTaskFctPar_s
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 /**
- * @brief
+ * @brief This is the generic task function of periodically called task
  * @param pvParameters
  */
 EXTERNAL_ void TASK_PerdTaskFct(void *pvParameters);
 
 /**
- * @brief
+ * @brief This is the generic task function of non-periodically called task
  * @param pvParameters
  */
 EXTERNAL_ void TASK_NonPerdTaskFct(void *pvParameters);
