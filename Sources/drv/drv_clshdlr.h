@@ -1,15 +1,21 @@
-/***************************************************************************************************
- * @brief 	>>TODO This is a brief description.
+/***********************************************************************************************//**
+ * @file		drv_clshdlr.h
+ * @ingroup		drv
+ * @brief 		Interface for the command line shell handler of the SWC @a Drive
  *
- * @author 	>>TODO, gefr@tf.uni-kiel.de, University Kiel 
- * @date 	30.03.2017
- *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * This header files provides the interface of the SWC @ref drv which is adressed to the SWC @ref sh.
+ * It introduces application specific commands for requesting drive related help and status
+ * information via command line shell (@b CLS).
  *
- * >>TODO This is the detailed description of the file drv_clshdlr.h
- * 
- *==================================================================================================
- */
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	11.04.2017
+ *
+ * @note Interface for CLS-specific use only
+ *
+ * @copyright @LGPL2_1
+ *
+ ***************************************************************************************************/
 
 
 #ifndef DRV_CLSHDLR_H_
@@ -25,27 +31,33 @@
 #define EXTERNAL_ extern
 #endif
 
+/**
+ * @addtogroup drv
+ * @{
+ */
 /*======================================= >> #DEFINES << =========================================*/
-/* #define TMPL_MACRO (0xFFu) */
 
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-/* typedef unit8 TmplType_t; */
 
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-/*!
+/**
  * @brief Parses a command
- * @param cmd Command string to be parsed
- * @param handled Sets this variable to TRUE if command was handled
- * @param io I/O stream to be used for input/output
+ * @param cmd_ Command string to be parsed
+ * @param handled_ Sets this variable to TRUE if command was handled
+ * @param io_ I/O stream to be used for input/output
  * @return Error code, ERR_OK if everything was fine
  */
-uint8_t DRV_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
+uint8_t DRV_ParseCommand(const unsigned char *cmd_, bool *handled_, const CLS1_StdIOType *io_);
 
 
+
+/**
+ * @}
+ */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif

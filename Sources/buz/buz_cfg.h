@@ -3,7 +3,7 @@
  * @ingroup		buz
  * @brief 		SWC-internal configuration interface of the SWC @a Buzzer
  *
- * This header file provides an internal interface within the software component SWC @a Buzzer
+ * This header file provides an internal interface within the software component SWC @ref buz
  * for the configuration of pre-defined melodies and tunes.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
@@ -14,7 +14,7 @@
  *
  * @copyright @LGPL2_1
  *
- ***************************************************************************************************/
+ **************************************************************************************************/
 
 #ifndef BUZ_CFG_H_
 #define BUZ_CFG_H_
@@ -66,6 +66,10 @@ typedef struct {
 } MelodyDesc;
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
+/**
+ * @brief Function returns the reference to the melody descriptor array
+ * @return reference to the melody descriptor array
+ */
 EXTERNAL_ MelodyDesc *Get_BUZMelodies(void);
 
 
@@ -76,6 +80,5 @@ EXTERNAL_ MelodyDesc *Get_BUZMelodies(void);
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
-
 
 #endif /* !BUZ_CFG_H_ */

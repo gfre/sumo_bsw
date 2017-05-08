@@ -4,7 +4,7 @@
  * @brief 		Implementation of battery voltage measurement via ADC
  *
  * This module implements measurement functionality of a battery voltage by means of an ADC
- * provided by the firmware component @a AD1.
+ * provided by the firmware component @b AD1.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
@@ -14,7 +14,7 @@
  *
  ***************************************************************************************************/
 
-#define MASTER_batt_clshdlr_C_
+#define MASTER_batt_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "ACon_Types.h"
@@ -29,6 +29,7 @@
 #define SAMPLE_GROUP_SIZE 1U
 #define BAT_V_DIVIDER_UP   62 /* voltage divider pull-up */
 #define BAT_V_DIVIDER_DOWN 30 /* voltage divider pull-down */
+
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
@@ -71,6 +72,8 @@ StdRtn_t BATT_MeasureBatteryVoltage(uint16_t *cvP)
 }
 
 
+
+/*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 void BATT_Init(void)
 {
 	/* nothing to do */

@@ -3,8 +3,8 @@
  * @ingroup		appl
  * @brief 		API of the SWC @a Application
  *
- * This API provides the internal interface of the Basic Software from the SWC @a Application to the
- * all other Basic Software Components.
+ * This API provides a BSW-internal interface of the SWC @ref appl. It is supposed to be
+ * available to all other Basic Software Components.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	08.02.2017
@@ -42,11 +42,11 @@
  */
 typedef enum APPL_Cmd_e
 {
-	 Run = 0x00		/**< called in every cycle in the current state */
-    ,Enter			/**< called when entering the target state */
-    ,Exit  			/**< called when leaving the current state */
-	,CmdCnt			/**< count of valid commands */
-	,noCmd			/**< no or invalid command */
+	 APPL_Cmd_Run = 0x00		/**< called in every cycle in the current state */
+    ,APPL_Cmd_Enter				/**< called when entering the target state */
+    ,APPL_Cmd_Exit 				/**< called when leaving the current state */
+	,APPL_Cmd_Cnt				/**< count of valid commands */
+	,APPL_Cmd_None				/**< no or invalid command */
 }APPL_Cmd_t;
 
 

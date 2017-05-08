@@ -1,25 +1,51 @@
-/*******************************************************************************
- * @brief		Module to handle the unique SUMO IDs.
+/***********************************************************************************************//**
+ * @file		id.c
+ * @ingroup		id
+ * @brief 		Implementation of the identification algorithm.
+ *
+ * This module implements an identification component for a MCU by means of its *Universally
+ * Unique Identifier (@b UUID)* provided and enhanced by the firmware component @b KIN1. It
+ * maps the UUID to a custom ID according to index of the UUID in a pre-defined table.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, CAU Kiel
- * @date 		11.01.2017
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	11.01.2017
  *
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @copyright @LGPL2_1
  *
- *
- * ==============================================================================
- */
+ ***************************************************************************************************/
 
 #define MASTER_ID_C_
+
+/*======================================= >> #INCLUDES << ========================================*/
 #include "id.h"
-#include "id_Types.h"
+#include "id_api.h"
 #include "id_cfg.h"
 
+
+
+/*======================================= >> #DEFINES << =========================================*/
+
+
+
+/*=================================== >> TYPE DEFINITIONS << =====================================*/
+
+
+
+/*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
+static ID_Sumo_t IdentifySumo(void);
+
+
+
+/*=================================== >> GLOBAL VARIABLES << =====================================*/
 static ID_Sumo_t currID = ID_SUMO_NONE;
 static const ID_Cfg_t *idCfg = NULL;
 
-static ID_Sumo_t IdentifySumo(void) {
+
+
+/*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
+static ID_Sumo_t IdentifySumo(void)
+{
 	uint8_t res = 0u;
 	KIN1_UID uid = {0u};
 	uint8_t index = 0u;
@@ -37,6 +63,9 @@ static ID_Sumo_t IdentifySumo(void) {
 	return id;
 }
 
+
+
+/*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 ID_Sumo_t Get_SumoID(void) {
 	if (ID_SUMO_NONE == currID)
 	{
@@ -58,6 +87,9 @@ void ID_Init(void) {
 	idCfg = Get_IDCfg();
 }
 
+
+
+
 #ifdef MASTER_ID_C_
 #undef MASTER_ID_C_
-#endif
+#endif /* !MASTER_ID_C_ */

@@ -1,17 +1,20 @@
-/***************************************************************************************************
-  * @brief 	Command line shell handler of the software component of the DC motors.
+/***********************************************************************************************//**
+ * @file		mot_clshdlr.h
+ * @ingroup		mot
+ * @brief		Interface for the command line shell handler of the SWC @a Motor Driver
  *
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * This header files provides the interface from the SWC @ref mot to the SWC @ref sh.
+ * It introduces application specific commands for debugging or requests of status information
+ * via command line shell (@b CLS).
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	29.03.2017
  *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @note Interface for CLS-specific use only
  *
- * This module handles the interface between the software component of the DC motors
- * and the command line shell CLS.
- * 
- *==================================================================================================
- */
-
+ * @copyright @LGPL2_1
+ *
+ ***************************************************************************************************/
 
 #ifndef MOT_CLSHDLR_H_
 #define MOT_CLSHDLR_H_
@@ -20,12 +23,17 @@
 #include "CLS1.h"
 
 
+
 #ifdef MASTER_motor_clshdlr_C_
 #define EXTERNAL_
 #else
 #define EXTERNAL_ extern
 #endif
 
+/**
+ * @addtogroup mot
+ * @{
+ */
 /*======================================= >> #DEFINES << =========================================*/
 
 
@@ -44,9 +52,12 @@
 EXTERNAL_ uint8_t MOT_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
 
 
+
+/**
+ * @}
+ */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
-
 
 #endif /* !MOT_CLSHDLR_H_ */

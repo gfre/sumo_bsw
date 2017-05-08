@@ -3,8 +3,8 @@
  * @ingroup		buz
  * @brief 		Interface of the SWC @a Buzzer for initialisation- and runtime-calls
  *
- * This header file provides the internal interface between the SWC @a BUZ and the
- * SWC @a APPL which runs the initialisation within its INIT state.
+ * This header file provides the internal interface between the SWC @ref buz and the
+ * SWC @ref appl which runs the initialisation within its INIT state.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
@@ -14,7 +14,7 @@
  *
  * @copyright @LGPL2_1
  *
- ***************************************************************************************************/
+ **************************************************************************************************/
 
 #ifndef BUZ_H_
 #define BUZ_H_
@@ -52,6 +52,8 @@ EXTERNAL_ void BUZ_Init(void);
  * @brief De-initialization of the driver
  */
 EXTERNAL_ void BUZ_Deinit(void);
+
+
 
 /**
  * @}

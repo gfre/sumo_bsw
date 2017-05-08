@@ -1,21 +1,24 @@
-/***************************************************************************************************
- * @brief 	This module handles the connection to the shell software component
+/***********************************************************************************************//**
+ * @file		task_clshdlr.c
+ * @ingroup		task
+ * @brief 		Implementation of the command line shell handler for the SWC @a Task
  *
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * This module implements the interface of the SWC @ref task which is addressed to
+ * the SWC @ref sh. It introduces application specific commands for requests
+ * of status information via command line shell (@b CLS).
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	08.02.2017
  *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @copyright @LGPL2_1
  *
- * >>TODO This is the detailed description of the file task_clshdlr.c
- * 
- *==================================================================================================
- */
+ **************************************************************************************************/
 
 #define MASTER_task_clshdlr_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "task_clshdlr.h"
-#include "task_Types.h"
+#include "task_api.h"
 #include "task_cfg.h"
 #include "FRTOS1.h"
 
@@ -33,6 +36,7 @@
 static uint8 TASK_PrintHelp(const CLS1_StdIOType *io_);
 static uint8 TASK_PrintStatus(const CLS1_StdIOType *io_);
 static void TASK_PrintCalledMainFcts(const CLS1_StdIOType *io_);
+
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
@@ -112,20 +116,24 @@ static void TASK_PrintCalledMainFcts(const CLS1_StdIOType *io_)
 }
 
 
+
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-uint8_t TASK_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io) {
+uint8_t TASK_ParseCommand(const unsigned char *cmd_, bool *handled_, const CLS1_StdIOType *io_)
+{
 	uint8_t res = ERR_OK;
-	if (UTIL1_strcmp((char*)cmd, (char*)CLS1_CMD_HELP)==0 || UTIL1_strcmp((char*)cmd, (char*)"task help")==0) {
-		*handled = TRUE;
-		return TASK_PrintHelp(io);
-	} else if (UTIL1_strcmp((char*)cmd, (char*)CLS1_CMD_STATUS)==0 || UTIL1_strcmp((char*)cmd, (char*)"task status")==0) {
-		*handled = TRUE;
-		return TASK_PrintStatus(io);
+	if (UTIL1_strcmp((char*)cmd_, (char*)CLS1_CMD_HELP)==0 || UTIL1_strcmp((char*)cmd_, (char*)"task help")==0) {
+		*handled_ = TRUE;
+		return TASK_PrintHelp(io_);
+	} else if (UTIL1_strcmp((char*)cmd_, (char*)CLS1_CMD_STATUS)==0 || UTIL1_strcmp((char*)cmd_, (char*)"task status")==0) {
+		*handled_ = TRUE;
+		return TASK_PrintStatus(io_);
 	}
 	return res;
 }
 
 
+
 #ifdef MASTER_task_clshdlr_C_
 #undef MASTER_task_clshdlr_C_
+
 #endif /* !MASTER_task_clshdlr_C_ */

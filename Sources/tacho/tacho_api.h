@@ -1,35 +1,35 @@
 /***********************************************************************************************//**
- * @file		ind.h
- * @ingroup		ind
- * @brief 		Interface of the SWC @a Indication for initialisation call
+ * @file		tacho_api.h
+ * @ingroup		tacho
+ * @brief 		API of the SWC @a Tacho
  *
- * This header file provides the internal interface between the SWC @ref ind and the
- * SWC @ref appl which runs the initialisation within its STARTUP state.
+ * This API provides a BSW-internal interface of the SWC @ref tacho. It is supposed to be
+ * available to all other Basic Software Components.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
- * @date 	27.03.2017
- *  
- * @note Interface for BSW-specific use only
+ * @date 	04.05.2017
+ *
+ * @note API for BSW-internal use only
  *
  * @copyright @LGPL2_1
  *
- ***************************************************************************************************/
+ **************************************************************************************************/
 
-#ifndef IND_H_
-#define IND_H_
+#ifndef TACHO_API_H_
+#define TACHO_API_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
+#include "Platform.h"
 
 
-
-#ifdef MASTER_ind_C_
+#ifdef MASTER_tacho_api_C_
 #define EXTERNAL_
 #else
 #define EXTERNAL_ extern
 #endif
 
 /**
- * @addtogroup ind
+ * @addtogroup tacho
  * @{
  */
 /*======================================= >> #DEFINES << =========================================*/
@@ -41,10 +41,12 @@
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-/**
- * This function initialises the indication software component
+ /**
+ * @brief Returns the previously calculated speed of the motor.
+ * @param isLeft TRUE for left speed, FALSE for right speed.
+ * @return Actual speed value
  */
-EXTERNAL_ void IND_Init(void);
+EXTERNAL_ int32_t TACHO_GetSpeed(bool isLeft);
 
 
 
@@ -55,4 +57,4 @@ EXTERNAL_ void IND_Init(void);
 #undef EXTERNAL_
 #endif
 
-#endif /* !IND_H_ */
+#endif /* !TACHO_API_H_ */

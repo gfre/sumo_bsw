@@ -1,23 +1,28 @@
-/***************************************************************************************************
- * @brief 	This is an interface of the shell software component.
+/***********************************************************************************************//**
+ * @file		sh_api.h
+ * @ingroup		sh
+ * @brief 		API of the SWC @a Shell
  *
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, University Kiel
+ * This API provides a BSW-internal interface of the SWC @ref sh. It is supposed to be
+ * available to all other Basic Software Components.
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	09.02.2017
  *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @note API for BSW-internal use only
  *
- * >>TODO This is the detailed description of the file sh_Types.h
- * 
- *==================================================================================================
- */
+ * @copyright @LGPL2_1
+ *
+ ***************************************************************************************************/
 
-
-#ifndef SH_TYPES_H_
-#define SH_TYPES_H_
+#ifndef SH_APIH_
+#define SH_APIH_
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "CLS1.h"
 #include "RTT1.h"
+
+
 
 #ifdef MASTER_sh_C_
 #define EXTERNAL_
@@ -25,23 +30,36 @@
 #define EXTERNAL_ extern
 #endif
 
+/**
+ * @addtogroup sh
+ * @{
+ */
 /*======================================= >> #DEFINES << =========================================*/
-/*!
+/**
  * @brief Sends a string to the shell/console stdout
  * @param msg_ Zero terminated string to write
  */
 #define SH_SENDSTR(msg_)                   ( CLS1_SendStr(msg_, CLS1_GetStdio()->stdOut) \
 		                                   , CLS1_SendStr(msg_, RTT1_GetStdio()->stdOut) )
-/*!
- * @brief Sends a error string to the shell/console stdout
+/**
+ * @brief Sends a error string to the shell/console stderr
  * @param msg_ Zero terminated string to write
  */
 #define SH_SENDERRSTR(msg_)                ( CLS1_SendStr(msg_, CLS1_GetStdio()->stdErr) \
 		                                   , CLS1_SendStr(msg_, RTT1_GetStdio()->stdErr) )
-
+/**
+ * @brief Sends a formatted string to the a user-defined I/O stream
+ * @param stream_ user-defined I/O stream
+ * @param fmt_ formatted string to write
+ * @param args_ arguments within string
+ */
 #define SH_FPRINTF(stream_, fmt_, args_)   ( XF1_xvformat(CLS1_printfPutChar, RTT1_GetStdio()->stream_, fmt_, args_) \
 							               & XF1_xvformat(CLS1_printfPutChar, CLS1_GetStdio()->stream_, fmt_, args_) )
-
+/**
+ * @brief Sends a formatted string to the shell/console stdout
+ * @param fmt_ formatted string to write
+ * @param args_ arguments within string
+ */
 #define SH_PRINTF(fmt_, args_)             ( XF1_xvformat(CLS1_printfPutChar, RTT1_GetStdio()->stdOut, fmt_, args_) \
 							               & XF1_xvformat(CLS1_printfPutChar, CLS1_GetStdio()->stdOut, fmt_, args_) )
 
@@ -57,9 +75,11 @@
 
 
 
+/**
+ * @}
+ */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
 
-
-#endif /* !SH_TYPES_H_ */
+#endif /* !SH_APIH_ */

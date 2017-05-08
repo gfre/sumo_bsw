@@ -3,9 +3,9 @@
  * @ingroup		batt
  * @brief 		Implementation of the command line shell handler for the SWC @a Battery
  *
- * This module implements the interface from the SWC Battery (@b BATT) to the SWC Shell (@b SH).
- * It introduces application specific commands for requesting battery voltage information
- * via command line shell (@b CLS).
+ * This module implements the interface of the SWC @ref batt which is addressed to the SWC @ref sh.
+ * It introduces application specific commands for requesting battery voltage information via
+ * command line shell (@b CLS).
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel

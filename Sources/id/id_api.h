@@ -1,18 +1,22 @@
-/***************************************************************************************************
- * @brief 	>>TODO This is a brief description.
+/***********************************************************************************************//**
+ * @file		id_api.h
+ * @ingroup		id
+ * @brief 		API of the SWC @a Identification
  *
- * @author 	>>TODO, gefr@tf.uni-kiel.de, University Kiel 
+ * This API provides a BSW-internal interface of the SWC @ref id. It is supposed to be available
+ * to all other Basic Software Components.
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	22.02.2017
- *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
  *
- * >>TODO This is the detailed description of the file id_Types.h
- * 
- *==================================================================================================
- */
+ * @note API for BSW-internal use only
+ *
+ * @copyright @LGPL2_1
+ *
+ ***************************************************************************************************/
 
-#ifndef ID_TYPES_H_
-#define ID_TYPES_H_
+#ifndef ID_API_H_
+#define ID_API_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "rte_Types.h"
@@ -24,6 +28,10 @@
 #define EXTERNAL_ extern
 #endif
 
+/**
+ * @addtogroup id
+ * @{
+ */
 /*======================================= >> #DEFINES << =========================================*/
 
 
@@ -40,9 +48,12 @@
 EXTERNAL_ ID_Sumo_t Get_SumoID(void);
 
 
+
+/**
+ * @}
+ */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
 
-
-#endif /* !ID_TYPES_H_ */
+#endif /* !ID_API_H_ */

@@ -1,43 +1,37 @@
 /***********************************************************************************************//**
- * @file		rnet.h
- * @ingroup		rnet
- * @brief 		Interface of the SWC @a RNet for initialisation- and runtime-calls.
+ * @file		dapp.h
+ * @ingroup		dapp
+ * @brief 		Interface of the SWC *Demo Application* for initialisation- and runtime-calls
  *
- * This header file provides the internal interface between the SWC @ref rnet and the
- * SWC @ref task which runs the initialisation and periodic main function within a FreeRTOS task.
+ * This header file provides the internal interface between the SWC @ref dapp and the SWC @ref appl
+ * which runs the initialisation within its INIT state and the main routine within its NORMAL state.
  *
- * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
- * @date 	10.01.2017
+ * @date 	03.05.2017
  *
  * @note Interface for BSW-specific use only
  *
- * @copyright 	@LGPL2_1
+ * @copyright @LGPL2_1
  *
  **************************************************************************************************/
 
-#ifndef RNET_H_
-#define RNET_H_
+#ifndef DAPP_H_
+#define DAPP_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
+#include "rte.h"
 
-
-
-#ifdef MASTER_RNET_C_
+#ifdef MASTER_DAPP_C_
 #define EXTERNAL_
 #else
 #define EXTERNAL_ extern
 #endif
 
 /**
- * @addtogroup rnet
+ * @addtogroup dapp
  * @{
  */
 /*======================================= >> #DEFINES << =========================================*/
-/**
- * String identification of the SWC @ref rnet
- */
-#define RNET_SWC_STRING ("RNet")
 
 
 
@@ -47,19 +41,18 @@
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 /**
- * @brief Driver de-initialization
+ * @brief Init function of the software component @ref dapp
+ * Initialises demo application
  */
-EXTERNAL_ void RNET_Deinit(void);
+EXTERNAL_ void DAPP_Init(void);
+
+
 
 /**
- * @brief Driver initialization
+ * @brief Main function of the software component @ref dapp
+ * Calls main routine of demo application
  */
-EXTERNAL_ void RNET_Init(void);
-
-/**
- * @brief Driver main function
- */
-EXTERNAL_ void RNET_MainFct(void);
+EXTERNAL_ void DAPP_Main(void);
 
 
 
@@ -70,4 +63,4 @@ EXTERNAL_ void RNET_MainFct(void);
 #undef EXTERNAL_
 #endif
 
-#endif /* RNET_APPL_H_ */
+#endif /* !DAPP_H_ */

@@ -1,16 +1,21 @@
-/***************************************************************************************************
- * @brief 	Configuration of the Non-Volatile-Memory (NVM) storage.
+/***********************************************************************************************//**
+ * @file		nvm_cfg.h
+ * @ingroup		nvm
+ * @brief 		SWC-internal configuration interface of the SWC @a NVM
+ *
+ * This header file provides an internal interface within the software component SWC @ref nvm
+ * for the configuration of the data storage within the internal non-volatile memory
+ * of the MCU.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	10.01.2017
  *
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @note Interface for SWC-specific use only
  *
- * This provides the configuration to store and retrieve data from the on-chip memory.
+ * @copyright @LGPL2_1
  *
- * =================================================================================================
- */
+ ***************************************************************************************************/
 
 #ifndef NVM_CFG_H_
 #define NVM_CFG_H_
@@ -25,6 +30,10 @@
 #define EXTERNAL_ extern
 #endif
 
+/**
+ * @addtogroup nvm
+ * @{
+ */
 /*======================================= >> #DEFINES << =========================================*/
 
 
@@ -36,6 +45,9 @@
 
 
 
+/**
+ * @}
+ */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif

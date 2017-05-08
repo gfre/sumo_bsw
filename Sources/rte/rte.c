@@ -17,18 +17,20 @@
 #define MASTER_RTE_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "ind_Types.h"
-#include "KEY1.h"
-#include "buz_api.h"
 #include "rte.h"
-#include "tacho.h"
-#include "drv_Types.h"
-#include "RApp.h"
-#include "rnet_Types.h"
-#include "sh.h"
-#include "sh_Types.h"
-#include "id_Types.h"
+#include "ind_api.h"
+#include "buz_api.h"
+#include "id_api.h"
 #include "appl_api.h"
+#include "drv_api.h"
+#include "rnet_api.h"
+#include "sh_api.h"
+#include "tacho_api.h"
+#include "nvm_api.h"
+#include "KEY1.h"
+#include "RApp.h"
+
+
 
 
 
@@ -85,12 +87,32 @@ StdRtn_t RTE_Write_HoldOnEnterIdle(const uint8_t holdOn_)
 
 StdRtn_t RTE_Release_HoldOnEnterNormal(void)
 {
-	return Set_ReleaseEnter(APPL_STATE_NORMAL);
+	StdRtn_t retVal = ERR_OK;
+
+	if( ( APPL_STATE_NORMAL == APPL_Get_SmState()) && ( APPL_Cmd_Enter == APPL_Get_SmCmd() ) )
+	{
+		retVal = Set_ReleaseEnter(APPL_STATE_NORMAL);
+	}
+	else
+	{
+		retVal = ERR_PARAM_CONDITION;
+	}
+	return retVal;
 }
 
 StdRtn_t RTE_Release_HoldOnEnterIdle(void)
 {
-	return Set_ReleaseEnter(APPL_STATE_IDLE);
+	StdRtn_t retVal = ERR_OK;
+
+	if( ( APPL_STATE_IDLE == APPL_Get_SmState()) && ( APPL_Cmd_Enter == APPL_Get_SmCmd() ) )
+	{
+		retVal = Set_ReleaseEnter(APPL_STATE_IDLE);
+	}
+	else
+	{
+		retVal = ERR_PARAM_CONDITION;
+	}
+	return retVal;
 }
 
 /*================================================================================================*/
@@ -595,6 +617,36 @@ ID_Sumo_t RTE_GetSumoID(void)
 }
 
 /*================================================================================================*/
+
+
+
+/*
+ * Interface implementation for data storage into the NVM
+ */
+StdRtn_t RTE_Read_DataUnitAddrInNVM(void *pDataAddr_, uint8_t unitNum_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if( NULL != pDataAddr_)
+	{
+		retVal = NVM_Read_ASWDataUnitAddr(pDataAddr_,unitNum_);
+	}
+	return retVal;
+}
+
+StdRtn_t RTE_Save_DataUnit2NVM(const void *pData_, uint8_t unitNum_)
+{
+	return NVM_Save_ASWDataBytesInUnit(pData_, unitNum_, NVM_UNIT_SIZE_ASW);
+}
+
+StdRtn_t RTE_Save_BytesOfDataUnit2NVM(const void *pData_, uint8_t unitNum_, uint16_t byteCnt_)
+{
+	return NVM_Save_ASWDataBytesInUnit(pData_, unitNum_, byteCnt_);
+}
+
+
+
+/*================================================================================================*/
+
 
 
 #ifdef MASTER_RTE_C_

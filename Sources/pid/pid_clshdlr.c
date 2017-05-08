@@ -1,23 +1,28 @@
-/***************************************************************************************************
- * @brief 	Command line shell handler of the software component of the PID controllers.
+/***********************************************************************************************//**
+ * @file		pid_clshdlr.c
+ * @ingroup		pid
+ * @brief 		Implementation of the command line shell handler for the SWC @a PID
  *
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * This module implements the interface of the SWC @ref pid which is addressed to
+ * the SWC @ref sh. It introduces application specific commands for requests of status information,
+ * changing PID controller parameters, or restoring them from NVM via command line shell (@b CLS).
+ * The changed parameters are immediately saved to the @ref nvm.
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	28.02.2017
  *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @copyright @LGPL2_1
  *
- * This module handles the interface between the software component of the PID controllers
- * and the command line shell CLS.
- * 
- *==================================================================================================
- */
+ ***************************************************************************************************/
 
 #define MASTER_pid_clshdlr_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "pid_clshdlr.h"
-#include "pid.h"
-#include "nvm_Types.h"
+#include "pid_api.h"
+#include "nvm_api.h"
+
+
 
 /*======================================= >> #DEFINES << =========================================*/
 
@@ -26,17 +31,17 @@
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 typedef StdRtn_t ReadPIDCfg_t(NVM_PidCfg_t *);
 typedef StdRtn_t SavePIDCfg_t(const NVM_PidCfg_t *);
-typedef PID_Config *GetPIDConfig_t(void);
+typedef PID_Config_t *GetPIDConfig_t(void);
 
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 static void PID_PrintHelp(const CLS1_StdIOType *io);
 static void PID_PrintStatus(const CLS1_StdIOType *io);
-static void PrintPIDstatus(PID_Config *config, const unsigned char *kindStr, const CLS1_StdIOType *io);
-static uint8_t ParsePidParameter(PID_Config *config, const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
-static StdRtn_t PID_restoreCfg(ReadPIDCfg_t *readDfltCfg_, SavePIDCfg_t *saveCfg_, PID_Config *config_);
-static StdRtn_t PID_saveCfg(SavePIDCfg_t *saveCfg_, PID_Config *config_);
+static void PrintPIDstatus(PID_Config_t *config, const unsigned char *kindStr, const CLS1_StdIOType *io);
+static uint8_t ParsePidParameter(PID_Config_t *config, const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
+static StdRtn_t PID_restoreCfg(ReadPIDCfg_t *readDfltCfg_, SavePIDCfg_t *saveCfg_, PID_Config_t *config_);
+static StdRtn_t PID_saveCfg(SavePIDCfg_t *saveCfg_, PID_Config_t *config_);
 
 
 
@@ -57,7 +62,7 @@ static void PID_PrintHelp(const CLS1_StdIOType *io)
 	CLS1_SendHelpStr((unsigned char*)"  speed (L|R) restore", (unsigned char*)"Restores and saves default parameters for (L|R) speed control to NVM\r\n", io->stdOut);
 }
 
-static void PrintPIDstatus(PID_Config *config, const unsigned char *kindStr, const CLS1_StdIOType *io)
+static void PrintPIDstatus(PID_Config_t *config, const unsigned char *kindStr, const CLS1_StdIOType *io)
 {
 	unsigned char buf[48];
 	unsigned char kindBuf[16];
@@ -112,7 +117,7 @@ static void PID_PrintStatus(const CLS1_StdIOType *io)
 	PrintPIDstatus(PID_Get_SpdRiCfg(), (unsigned char*)"speed R", io);
 }
 
-static uint8_t ParsePidParameter(PID_Config *config, const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io) {
+static uint8_t ParsePidParameter(PID_Config_t *config, const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io) {
 	const unsigned char *p;
 	uint32_t val32u;
 	uint8_t val8u;
@@ -169,7 +174,7 @@ static uint8_t ParsePidParameter(PID_Config *config, const unsigned char *cmd, b
 
 
 
-static StdRtn_t PID_restoreCfg(ReadPIDCfg_t *readDfltCfg_, SavePIDCfg_t *saveCfg_, PID_Config *config_)
+static StdRtn_t PID_restoreCfg(ReadPIDCfg_t *readDfltCfg_, SavePIDCfg_t *saveCfg_, PID_Config_t *config_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	NVM_PidCfg_t tmp = {0u};
@@ -194,7 +199,7 @@ static StdRtn_t PID_restoreCfg(ReadPIDCfg_t *readDfltCfg_, SavePIDCfg_t *saveCfg
 }
 
 
-static StdRtn_t PID_saveCfg(SavePIDCfg_t *saveCfg_, PID_Config *config_)
+static StdRtn_t PID_saveCfg(SavePIDCfg_t *saveCfg_, PID_Config_t *config_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	NVM_PidCfg_t tmp = {0u};
@@ -255,7 +260,7 @@ uint8_t PID_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_Std
 			if( ( ERR_OK != PID_saveCfg(NVM_Save_PIDPosCfg, PID_Get_PosLeCfg()) )
 			||	( ERR_OK != PID_saveCfg(NVM_Save_PIDPosCfg, PID_Get_PosRiCfg()) ) )
 			{
-				/* TODO ERROR handling */
+				/* error handling */
 			}
 		}
 	} else if (UTIL1_strncmp((char*)cmd, (char*)"pid speed L ", sizeof("pid speed L ")-1)==0) {
@@ -263,19 +268,18 @@ uint8_t PID_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_Std
 
 		if( ERR_OK != PID_saveCfg(NVM_Save_PIDSpdLeCfg, PID_Get_SpdLeCfg()) )
 		{
-			/* TODO ERROR handling */
+			/* error handling */
 		}
 	} else if (UTIL1_strncmp((char*)cmd, (char*)"pid speed R ", sizeof("pid speed R ")-1)==0) {
 		res = ParsePidParameter(PID_Get_SpdRiCfg(), cmd+sizeof("pid speed R ")-1, handled, io);
 
 		if( ERR_OK != PID_saveCfg(NVM_Save_PIDSpdRiCfg, PID_Get_SpdRiCfg()) )
 		{
-			/* TODO ERROR handling */
+			/* error handling */
 		}
 	}
 	return res;
 }
-
 
 
 

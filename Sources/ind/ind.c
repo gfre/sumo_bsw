@@ -1,23 +1,28 @@
-/***************************************************************************************************
- * @brief 	>>TODO This is a brief description.
+/***********************************************************************************************//**
+ * @file		ind.c
+ * @ingroup		ind
+ * @brief 		Implementation of indication using User-LEDs
  *
- * @author 	>>TODO, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * This software component implements status indication using the on-board User-LEDs. The LEDs may be
+ * set to ON, OFF, can be toggled or flash with a configurable frequency. Therefor it uses the timer-
+ * functionality provided by FreeRTOS.
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	27.03.2017
  *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @copyright @LGPL2_1
  *
- * >>TODO This is the detailed description of the file ind.c
- * 
- *==================================================================================================
- */
+ ***************************************************************************************************/
 
 #define MASTER_ind_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "ind.h"
-#include "ind_Types.h"
+#include "ind_api.h"
+#include "FRTOS1.h"
 #include "LED1.h"
 #include "LED2.h"
+
 
 
 /*======================================= >> #DEFINES << =========================================*/
@@ -202,12 +207,6 @@ void IND_Init(void)
 	{
 		for(;;);
 	}
-}
-
-
-void IND_Main(void)
-{
-	/* nothing to do */
 }
 
 

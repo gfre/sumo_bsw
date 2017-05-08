@@ -1,22 +1,26 @@
-/***************************************************************************************************
- * @brief 	This module creates and runs all tasks
+/***********************************************************************************************//**
+ * @file		task.c
+ * @ingroup		task
+ * @brief 		Implementation of FreeRTOS tasks creation and handling
  *
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * This software component creates and handles the FreeRTOS tasks. It implements generic task
+ * functions for periodically and non-periodically runtime-calls of software components applied to
+ * the corresponding task. It enables to initialises the software components run by the created
+ * tasks before entering the runtime loop.
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	08.02.2017
  *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @copyright @LGPL2_1
  *
- * >>TODO This is the detailed description of the file task.c
- * 
- *==================================================================================================
- */
+ **************************************************************************************************/
 
 #define MASTER_task_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "task.h"
 #include "task_cfg.h"
-#include "task_Types.h"
+#include "task_api.h"
 #include "mot.h"
 #include "RNET1.h"
 #include "tacho.h"
@@ -37,7 +41,7 @@
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-static inline void TASK_CreateTasks(void);
+static void TASK_CreateTasks(void);
 
 
 
@@ -46,7 +50,7 @@ static inline void TASK_CreateTasks(void);
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-static inline void TASK_CreateTasks()
+static void TASK_CreateTasks()
 {
 	uint8 i = 0u;
 	const TASK_Cfg_t *taskCfg = NULL;
@@ -185,7 +189,7 @@ void TASK_NonPerdTaskFct(void *pvParameters_)
 
 
 
-
 #ifdef MASTER_task_C_
 #undef MASTER_task_C_
+
 #endif /* !MASTER_task_C_ */

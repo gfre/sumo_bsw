@@ -24,9 +24,10 @@
 /*======================================= >> #INCLUDES << ========================================*/
 #include "appl.h"
 #include "appl_api.h"
-#include "FRTOS1.h"
+#include "ind_api.h"
 #include "Platform.h"
-#include "stud.h"
+#include "FRTOS1.h"
+#include "dapp.h"
 #include "task_cfg.h"
 #include "rte.h"
 #include "sh.h"
@@ -36,7 +37,7 @@
 #include "nvm.h"
 #include "Pid.h"
 #include "ind.h"
-#include "ind_Types.h"
+
 #ifdef ASW_ENABLED
 #include "asw.h"
 #endif
@@ -100,7 +101,7 @@ static inline StdRtn_t Set_HoldOnMask(uint8_t *mask_, const APPL_State_t state_,
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 const TASK_CfgItm_t *dbgTaskCfg = NULL;
-static SmType_t sm = {APPL_STATE_NONE, noCmd};
+static SmType_t sm = {APPL_STATE_NONE, APPL_Cmd_None};
 static APPL_State_t nextState = APPL_STATE_NONE;
 static SmStFcts_t smStFctTbl[APPL_STATE_NUM] = {
 /* STARTUP */ 	{NULL, 			runSTARTUP, NULL},
@@ -124,7 +125,7 @@ static inline void Proc_States(const SmType_t sm_)
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	switch(sm_.cmd)
 	{
-		case Enter:
+		case APPL_Cmd_Enter:
 		{
 			if ( ( NULL != smStFctTbl[sm_.state].enterFct ) )
 			{
@@ -132,7 +133,7 @@ static inline void Proc_States(const SmType_t sm_)
 			}
 			break;
 		}
-		case Run:
+		case APPL_Cmd_Run:
 		{
 			if ( NULL != smStFctTbl[sm_.state].runFct )
 			{
@@ -140,7 +141,7 @@ static inline void Proc_States(const SmType_t sm_)
 			}
 			break;
 		}
-		case Exit:
+		case APPL_Cmd_Exit:
 		{
 			if ( NULL != smStFctTbl[sm_.state].exitFct )
 			{
@@ -159,29 +160,29 @@ static inline void Proc_States(const SmType_t sm_)
 
 static void Tick_StateMachine(void)
 {
-   if ( ( sm.state != APPL_STATE_NONE )  &&  ( sm.cmd != noCmd ) )
+   if ( ( sm.state != APPL_STATE_NONE )  &&  ( sm.cmd != APPL_Cmd_None ) )
    {
 	   Proc_States(sm);
 	   if ( nextState != APPL_STATE_NONE)
 	   {
-		   if( ( Exit == sm.cmd ) && ( TRUE == CHK_HOLD_ON_EXIT(sm.state) ) )
+		   if( ( APPL_Cmd_Exit == sm.cmd ) && ( TRUE == CHK_HOLD_ON_EXIT(sm.state) ) )
 		   {
 			   CLR_HOLD_ON_EXIT(sm.state);
-			   sm.cmd = Enter;
+			   sm.cmd = APPL_Cmd_Enter;
 			   sm.state = nextState;
 			   nextState = APPL_STATE_NONE;
 		   }
 		   else
 		   {
-			   sm.cmd = Exit;
+			   sm.cmd = APPL_Cmd_Exit;
 		   }
 	   }
 	   else
 	   {
-		   if( ( Enter == sm.cmd ) && ( TRUE == CHK_HOLD_ON_ENTER(sm.state) ) )
+		   if( ( APPL_Cmd_Enter == sm.cmd ) && ( TRUE == CHK_HOLD_ON_ENTER(sm.state) ) )
 		   {
 			   CLR_HOLD_ON_ENTER(sm.state);
-			   sm.cmd = Run;
+			   sm.cmd = APPL_Cmd_Run;
 		   }
 	   }
 
@@ -189,7 +190,7 @@ static void Tick_StateMachine(void)
    else
    {
 	   sm.state = APPL_STATE_ERROR;
-	   sm.cmd = Enter;
+	   sm.cmd = APPL_Cmd_Enter;
    }
    Sync_StateMachineWithISR();
 }
@@ -260,7 +261,7 @@ static StdRtn_t runINIT(void)
 {
 	BUZ_Init();
 	BATT_Init();
-	STUD_Init();
+	DAPP_Init();
 #ifdef ASW_ENABLED
 	ASW_Init();
 #endif
@@ -300,7 +301,7 @@ static StdRtn_t runNORMAL(void)
 #ifdef ASW_ENABLED
 	ASW_Main();
 #endif
-  STUD_Main();
+  DAPP_Main();
 
   return ERR_OK;
 }
@@ -428,7 +429,7 @@ StdRtn_t Set_ReleaseExit(const APPL_State_t state_)
 void APPL_Init(void)
 {
 	sm.state = APPL_STATE_STARTUP;
-	sm.cmd = Enter;
+	sm.cmd = APPL_Cmd_Enter;
 	holdOnEnter = 0x00u;
 	holdOnExit  = 0x00u;
 }

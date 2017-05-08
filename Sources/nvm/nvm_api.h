@@ -1,36 +1,60 @@
-/***************************************************************************************************
- * @brief 	Iinterface of the Non-Volatile-Memory (NVM) storage.
+/***********************************************************************************************//**
+ * @file		nvm_api.h
+ * @ingroup		nvm
+ * @brief 		API of the SWC *Non-volatile memory*
+ *
+ * This API provides a BSW-internal interface of the SWC @ref nvm. It is supposed to be
+ * available to all other Basic Software Components.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	10.01.2017
  *
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @note API for BSW-internal use only
  *
- * This provides an interface of the NVM software component to other software components
+ * @copyright @LGPL2_1
  *
- * =================================================================================================
- */
+ ***************************************************************************************************/
 
-#ifndef NVM_TYPES_H_
-#define NVM_TYPES_H_
+#ifndef NVM_API_H_
+#define NVM_API_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "Acon_Types.h"
+#include "rte_Types.h"
 
-
-#ifdef MASTER_nvm_Types_C_
+#ifdef MASTER_nvm_C_
 #define EXTERNAL_
 #else
 #define EXTERNAL_ extern
 #endif
 
+/**
+ * @addtogroup nvm
+ * @{
+ */
 /*======================================= >> #DEFINES << =========================================*/
-/* #define TMPL_MACRO (0xFFu) */
+#if defined( RTE_NVM_UNIT_SIZE_ASW )
+	#if RTE_NVM_UNIT_SIZE_ASW
+	#define NVM_UNIT_SIZE_ASW		RTE_NVM_UNIT_SIZE_ASW
+	#else
+	#define NVM_UNIT_SIZE_ASW		(0x40u)
+	#undef RTE_NVM_UNIT_SIZE_ASW
+	#endif
+#else
+	#define NVM_UNIT_SIZE_ASW		(0x40u)
+#endif
 
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
+/**
+ * @typedef NVM_PidCfg_t
+ * @brief Data type definition of the structure NVM_PidCfg_s
+ *
+ * @struct NVM_PidCfg_s
+ * @brief This structure defines the parameters of a [PID controller](@ref pid) stored in the NVM.
+ */
 typedef struct NVM_PidCfg_s
 {
 	uint16_t pGain100;			/**< proportional gain */
@@ -40,6 +64,14 @@ typedef struct NVM_PidCfg_s
 	uint32_t iAntiWindup;		/**< maximum integral value for anti windup procedure */
 } NVM_PidCfg_t; /* 12Byte */
 
+/**
+ * @typedef NVM_RomCfg_t
+ * @brief Data type definition of the structure NVM_RomCfg_s
+ *
+ * @struct NVM_RomCfg_s
+ * @brief This structure defines a data configuration which mirrors all parameters stored in the NVM.
+ * It is used to store constant default values of all parameters in a ROM-similar fashion.
+ */
 typedef struct NVM_RomCfg_s
 {
 	uint8_t nvmVer;					/**< NVM version						+ 1B mod4 1B */
@@ -154,10 +186,35 @@ EXTERNAL_ StdRtn_t NVM_Read_PIDSpdRiCfg(NVM_PidCfg_t *spdCfg_);
  */
 EXTERNAL_ StdRtn_t NVM_Read_Dflt_PIDSpdRiCfg(NVM_PidCfg_t *spdCfg_);
 
+/**
+ * @brief This function saves a number of data bytes within a certain ASW data into the NVM
+ * @param pData_ reference to the ASW data unit
+ * @param unitNum_ number of the ASW data unit where the data shall be saved to
+ * @param byteCnt_ count of bytes which shall be saved
+ * @return Error code, ERR_OK if everything was fine,
+ * 					   ERR_PARAM_OVERFLOW if byteCnt_ exceeds ASW data unit size
+ *                     NVM specific ERROR code otherwise
+ */
+ EXTERNAL_ StdRtn_t NVM_Save_ASWDataBytesInUnit(const void *pData_, uint8_t unitNum_, uint16_t byteCnt_);
 
+ /**
+  * @brief This function reads the address of a ASW data unit stored in the NVM
+  * @param pDataAddr_ reference to the start address of the ASW data unit
+  * @param unitNum_ number of the ASW data unit which shall be read
+  * @return Error code, ERR_OK if everything was fine,
+  * 					ERR_PARAM_DATA if data was erased,
+  *                     ERR_PARAM_ADDRESS if data address is invalid,
+  *                     NVM specific ERROR code otherwise
+  */
+ EXTERNAL_ StdRtn_t NVM_Read_ASWDataUnitAddr(void *pDataAddr_, uint8_t unitNum_);
+
+
+
+/**
+ * @}
+ */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
 
-
-#endif /* !NVM_TYPES_H_ */
+#endif /* !NVM_API_H_ */

@@ -1,17 +1,21 @@
-/***************************************************************************************************
- * @brief 	Command line shell handler of the software component of the PID controllers.
+/***********************************************************************************************//**
+ * @file		pid_clshdlr.h
+ * @ingroup		pid
+ * @brief		Interface for the command line shell handler of the SWC @a PID
  *
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * This header files provides the interface from the SWC @ref pid to the SWC @ref sh.
+ * It introduces application specific commands for requests of status information,
+ * changing PID controller parameters, or restoring them from NVM via command line shell (@b CLS).
+ * The changed parameters are immediately saved to the @ref nvm.
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	28.02.2017
  *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @note Interface for CLS-specific use only
  *
- * This module handles the interface between the software component of the PID controllers
- * and the command line shell CLS.
- * 
- *==================================================================================================
- */
-
+ * @copyright @LGPL2_1
+ *
+ ***************************************************************************************************/
 
 #ifndef PID_CLSHDLR_H_
 #define PID_CLSHDLR_H_
@@ -20,12 +24,17 @@
 #include "CLS1.h"
 
 
+
 #ifdef MASTER_pid_clshdlr_C_
 #define EXTERNAL_
 #else
 #define EXTERNAL_ extern
 #endif
 
+/**
+ * @addtogroup pid
+ * @{
+ */
 /*======================================= >> #DEFINES << =========================================*/
 
 
@@ -35,18 +44,21 @@
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-/*!
+/**
  * @brief Shell command line parser.
- * @param[in] cmd Pointer to command string
- * @param[out] handled If command is handled by the parser
- * @param[in] io Std I/O handler of shell
+ * @param cmd Pointer to command string
+ * @param handled If command is handled by the parser
+ * @param io Std I/O handler of shell
  */
 EXTERNAL_ uint8_t PID_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
 
 
+
+/**
+ * @}
+ */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
-
 
 #endif /* !PID_CLSHDLR_H_ */

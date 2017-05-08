@@ -1,20 +1,28 @@
-/**
- * \file
- * \brief This is main application file
- * \author (c) 2016 Erich Styger, http://mcuoneclipse.com/
- * \note MIT License (http://opensource.org/licenses/mit-license.html)
+/***********************************************************************************************//**
+ * @file		rnet.c
+ * @ingroup		rnet
+ * @brief 		Implementation of the application entry layer for the radio network
  *
- * This module implements the application part of the program.
- */
+ * This software component implements an application entry layer for the Radio Network Stack. It
+ * runs a state machine where the radio is powered up and the radio network stack gets processed.
+ * Furthermore it implements callback functions for handling received message and allows to set and
+ * get the destination addresses. The component includes the firmware component @a RApp.
+ *
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	06.01.2017
+ *
+ * @copyright @LGPL2_1
+ *
+ **************************************************************************************************/
 
 #define MASTER_RNET_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "Platform.h"
 #include "rnet.h"
-#include "rnet_Types.h"
+#include "rnet_api.h"
+#include "sh_api.h"
 #include "RNetConf.h"
-#include "sh_Types.h"
 
 
 
@@ -23,7 +31,7 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-typedef enum RNET_State_s{
+typedef enum RNET_State_s {
   RNET_NONE,
   RNET_POWERUP, /* powered up */
   RNET_TX_RX,

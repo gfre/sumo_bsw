@@ -1,19 +1,22 @@
-/***************************************************************************************************
- * @brief 	>>TODO This is a brief description.
+/***********************************************************************************************//**
+ * @file		rnet_api.h
+ * @ingroup		rnet
+ * @brief 		API of the SWC *Radio Net*
  *
- * @author 	>>TODO, gefr@tf.uni-kiel.de, University Kiel 
+ * This API provides a BSW-internal interface of the SWC @ref rnet. It is supposed to be
+ * available to all other Basic Software Components.
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	17.02.2017
  *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @note API for BSW-internal use only
  *
- * >>TODO This is the detailed description of the file rnet_Types.h
- * 
- *==================================================================================================
- */
+ * @copyright @LGPL2_1
+ *
+ ***************************************************************************************************/
 
-
-#ifndef RNET_TYPES_H_
-#define RNET_TYPES_H_
+#ifndef RNET_API_H_
+#define RNET_API_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "RApp.h"
@@ -25,6 +28,10 @@
 #define EXTERNAL_ extern
 #endif
 
+/**
+ * @addtogroup rnet
+ * @{
+ */
 /*======================================= >> #DEFINES << =========================================*/
 
 
@@ -63,10 +70,11 @@ EXTERNAL_ RAPP_RxMsg_CbFct *RNET_GetRTERxMsgCbFct(void);
 EXTERNAL_ void RNET_SetRTERxMsgCbFct(const RAPP_RxMsg_CbFct *cbFct_);
 
 
-
+/**
+ * @}
+ */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
 
-
-#endif /* !RNET_TYPES_H_ */
+#endif /* !RNET_API_H_ */

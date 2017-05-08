@@ -3,7 +3,7 @@
  * @ingroup		batt
  * @brief 		Header for the command line shell handler of the SWC @a Battery
  *
- * This header files provides the interface from the SWC Battery (@b BATT) to the SWC Shell (@b SH).
+ * This header files provides the interface from the SWC @ref batt to the SWC @ref sh.
  * It introduces application specific commands for requesting battery voltage information
  * via command line shell (@b CLS).
  *

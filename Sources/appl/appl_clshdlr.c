@@ -3,9 +3,9 @@
  * @ingroup		appl
  * @brief 		Implementation of the command line shell handler for the SWC @a Application
  *
- * This module implements the interface from the SWC @a Application (@b APPL) to the SWC
- * @a Shell (@b SH). It introduces application specific commands for debugging or requests of status
- * information via command line shell (@b CLS).
+ * This module implements the interface of the SWC @ref appl which is addressed to
+ * the SWC @ref sh. It introduces application specific commands for debugging or requests
+ * of status information via command line shell (@b CLS).
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	08.02.2017
@@ -68,9 +68,9 @@ static const uint8 * ReadStateString(APPL_State_t state_){
 
 static const uint8 * ReadCmdString(APPL_Cmd_t state_){
   switch(state_) {
-  	case Run: 		return "Run\r\n";
-    case Enter:    	return "Enter\r\n";
-    case Exit:    	return "Exit\r\n";
+  	case APPL_Cmd_Run: 		return "Run\r\n";
+    case APPL_Cmd_Enter:    return "Enter\r\n";
+    case APPL_Cmd_Exit:    	return "Exit\r\n";
     default: return ">> fatal error - invalid or unknown state machine command <<\r\n";
   }
 }

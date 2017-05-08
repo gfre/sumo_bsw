@@ -1,26 +1,29 @@
-/***************************************************************************************************
- * @brief 	Implementation of PID controllers.
+/***********************************************************************************************//**
+ * @file		pid.c
+ * @ingroup		pid
+ * @brief 		Implementation of PID controllers.
+ *
+ * This module implements PID controllers for position and speed control of the Sumo robots. An Anti-
+ * Wind-Up algorithm avoids drifting of the integral part and the maximum allowed control value can
+ * changed by parameter. Controller parameters are read from the [NVM software component](@ref nvm)
+ * during initialisation and may be changed via [command line shell](@ref sh).
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
- * @date 		06.01.2017
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	06.01.2017
  *
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @copyright 	@LGPL2_1
  *
- * This module implements PID controllers for position and speed control of the sumo robots. It uses
- * the NVM software component for storing the controller parameters.
- *
- *==================================================================================================
- */
+ ***************************************************************************************************/
 
 
 #define MASTER_pid_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "Platform.h"
-#include "Pid.h"
-#include "mot.h"
-#include "nvm_Types.h"
+#include "pid.h"
+#include "pid_api.h"
+#include "mot_api.h"
+#include "nvm_api.h"
 
 
 
@@ -34,22 +37,22 @@
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-static int32_t PID(int32_t currVal, int32_t setVal, PID_Config *config);
-static void PID_PosCfg(int32_t currPos, int32_t setPos, bool isLeft, PID_Config *config);
-static void PID_SpeedCfg(int32_t currSpeed, int32_t setSpeed, bool isLeft, PID_Config *config);
+static int32_t PID(int32_t currVal, int32_t setVal, PID_Config_t *config);
+static void PID_PosCfg(int32_t currPos, int32_t setPos, bool isLeft, PID_Config_t *config);
+static void PID_SpeedCfg(int32_t currSpeed, int32_t setSpeed, bool isLeft, PID_Config_t *config);
 
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-static PID_Config posLeftConfig = {0u};
-static PID_Config posRightConfig = {0u};
-static PID_Config speedLeftConfig = {0u};
-static PID_Config speedRightConfig = {0u};
+static PID_Config_t posLeftConfig = {0u};
+static PID_Config_t posRightConfig = {0u};
+static PID_Config_t speedLeftConfig = {0u};
+static PID_Config_t speedRightConfig = {0u};
 
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-static int32_t PID(int32_t currVal, int32_t setVal, PID_Config *config) {
+static int32_t PID(int32_t currVal, int32_t setVal, PID_Config_t *config) {
 	int32_t error;
 	int32_t pid;
 
@@ -83,10 +86,10 @@ static int32_t PID(int32_t currVal, int32_t setVal, PID_Config *config) {
 
 
 
-static void PID_PosCfg(int32_t currPos, int32_t setPos, bool isLeft, PID_Config *config) {
+static void PID_PosCfg(int32_t currPos, int32_t setPos, bool isLeft, PID_Config_t *config) {
 	int32_t speed;
-	MOT_Direction direction=MOT_DIR_FORWARD;
-	MOT_MotorDevice *motHandle;
+	MOT_Direction_t direction = MOT_DIR_FORWARD;
+	MOT_MotorDevice_t *motHandle;
 
 	int error;
 
@@ -121,10 +124,10 @@ static void PID_PosCfg(int32_t currPos, int32_t setPos, bool isLeft, PID_Config 
 }
 
 
-static void PID_SpeedCfg(int32_t currSpeed, int32_t setSpeed, bool isLeft, PID_Config *config) {
+static void PID_SpeedCfg(int32_t currSpeed, int32_t setSpeed, bool isLeft, PID_Config_t *config) {
 	int32_t speed;
-	MOT_Direction direction=MOT_DIR_FORWARD;
-	MOT_MotorDevice *motHandle;
+	MOT_Direction_t direction = MOT_DIR_FORWARD;
+	MOT_MotorDevice_t *motHandle;
 
 	if (setSpeed==0) {
 		speed = 0;
@@ -175,7 +178,8 @@ void PID_Speed(int32_t currSpeed, int32_t setSpeed, bool isLeft) {
 
 
 
-void PID_Start(void) {
+void PID_Start(void)
+{
 	posLeftConfig.lastError = 0;
 	posLeftConfig.integral = 0;
 	posRightConfig.lastError = 0;
@@ -186,7 +190,9 @@ void PID_Start(void) {
 	speedRightConfig.integral = 0;
 }
 
-void PID_Deinit(void) {
+void PID_Deinit(void)
+{
+	/* nothing to do */
 }
 
 
@@ -213,7 +219,7 @@ void PID_Init(void)
 	}
 	else
 	{
-		/*TODO Error handling */
+		/* error handling */
 	}
 	posLeftConfig.lastError = 0;
 	posLeftConfig.integral = 0;
@@ -247,7 +253,7 @@ void PID_Init(void)
 	}
 	else
 	{
-		/*TODO Error handling */
+		/* error handling */
 	}
 
 	if ( ERR_OK == NVM_Read_PIDSpdRiCfg(&pidCfg) )
@@ -269,15 +275,15 @@ void PID_Init(void)
 	}
 	else
 	{
-		/*TODO Error handling */
+		/* error handling */
 	}
 }
 
 
-PID_Config *PID_Get_PosLeCfg(void) { return &posLeftConfig; }
-PID_Config *PID_Get_PosRiCfg(void) { return &posRightConfig; }
-PID_Config *PID_Get_SpdLeCfg(void) { return &speedLeftConfig; }
-PID_Config *PID_Get_SpdRiCfg(void) { return &speedRightConfig; }
+PID_Config_t *PID_Get_PosLeCfg(void) { return &posLeftConfig; }
+PID_Config_t *PID_Get_PosRiCfg(void) { return &posRightConfig; }
+PID_Config_t *PID_Get_SpdLeCfg(void) { return &speedLeftConfig; }
+PID_Config_t *PID_Get_SpdRiCfg(void) { return &speedRightConfig; }
 
 
 

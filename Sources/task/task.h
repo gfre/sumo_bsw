@@ -1,16 +1,20 @@
-/***************************************************************************************************
- * @brief 	This module creates and runs all tasks
+/***********************************************************************************************//**
+ * @file		task.h
+ * @ingroup		task
+ * @brief 		Interface of the SWC @a Task for the initialisation call.
  *
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, University Kiel
+ * This header file provides the internal interface between the SWC @ref task and the real-time
+ * operating system FreeRTOS. The initialisation of the FreeRTOS task is called in the main()
+ * routine of the C-project.
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	08.02.2017
  *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @note Interface for BSW-specific use only
  *
- * >>TODO This is the detailed description of the file task.h
- * 
- *==================================================================================================
- */
-
+ * @copyright 	@LGPL2_1
+ *
+ **************************************************************************************************/
 
 #ifndef TASK_H_
 #define TASK_H_
@@ -25,6 +29,10 @@
 #define EXTERNAL_ extern
 #endif
 
+/**
+ * @addtogroup task
+ * @{
+ */
 /*======================================= >> #DEFINES << =========================================*/
 
 
@@ -40,9 +48,12 @@
 EXTERNAL_ void TASK_Init(void);
 
 
+
+/**
+ * @}
+ */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
-
 
 #endif /* !TASK_H_ */

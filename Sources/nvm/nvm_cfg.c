@@ -1,24 +1,25 @@
-/***************************************************************************************************
- * @brief 	Configuration of the Non-Volatile-Memory (NVM) storage.
+/***********************************************************************************************//**
+ * @file		nvm_cfg.c
+ * @ingroup		nvm
+ * @brief 		Implementation of the configuration of the SWC @a NVM
+ *
+ * This file implements the configuration of the data storage using the internal non-volatile memory
+ * of the MCU for the component SWC @ref nvm and its internal interface.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	10.01.2017
  *
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @copyright @LGPL2_1
  *
- * This provides the configuration to store and retrieve data from the on-chip memory.
- *
- * =================================================================================================
- */
+ ***************************************************************************************************/
 
 #define MASTER_NVM_CFG_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "nvm_cfg.h"
+#include "nvm_api.h"
 #include "IFsh1.h"
-#include "nvm_Types.h"
-#include "Pid.h"
 
 
 
@@ -29,7 +30,7 @@
 #define NVM_VERSION (0x01u)
 /* ========================= */
 
-#define NVM_DFLASH_START_ADDR          		(IntFlashLdd1_DFLASH_ADDRESS) 					/* 0x10000000LU DFLASH, NVRM_Config, start address of configuration data in flash */
+#define NVM_DFLASH_START_ADDR          		(IntFlashLdd1_DFLASH_ADDRESS) 					/* 0x10000000LU DFLASH, NVM_Config, start address of configuration data in flash */
 #define NVM_DFLASH_BLOCK_SIZE          		(IntFlashLdd1_DFLASH_SIZE)						/* 0x00020000LU */
 #define NVM_DFLASH_ERASABLE_UNIT_SIZE  		(IntFlashLdd1_DFLASH_ERASABLE_UNIT_SIZE)		/* 0x1000LU */
 #define NVM_DFLASH_PROT_UNIT_SIZE      		(IntFlashLdd1_DFLASH_PROT_UNIT_SIZE)			/* 0x4000LU */
@@ -41,14 +42,24 @@
 
 #define BYTE_FILLER( numOfBytes_ )					(numOfBytes_)
 
+/* define BSW and ASW memory blocks */
+#define NVM_BSW_DFLASH_START_ADDR			(NVM_DFLASH_START_ADDR)								/* 0x10000000LU */
+#define NVM_BSW_DFLASH_SIZE					(NVM_DFLASH_ERASABLE_UNIT_SIZE)						/* 0x00001000LU */
+#define NVM_BSW_DFLASH_END_ADDR				(NVM_BSW_DFLASH_START_ADDR + NVM_BSW_DFLASH_SIZE)	/* 0x10001000LU */
+
+#define NVM_ASW_DFLASH_START_ADDR			(NVM_BSW_DFLASH_END_ADDR)							/* 0x10001000LU */
+#define NVM_ASW_DFLASH_SIZE					(NVM_DFLASH_ERASABLE_UNIT_SIZE)						/* 0x00001000LU */
+#define NVM_ASW_DFLASH_END_ADDR				(NVM_ASW_DFLASH_START_ADDR + NVM_ASW_DFLASH_SIZE)   /* 0x10002000LU */
+
+
 /* Define byte counts */
-#define PID_P_GAIN_BYTE_COUNT 						(sizeof(uint16_t))
-#define PID_I_GAIN_BYTE_COUNT 						(sizeof(uint16_t))
-#define PID_D_GAIN_BYTE_COUNT 						(sizeof(uint16_t))
-#define PID_MAX_SPEED_PERC_BYTE_COUNT				(sizeof(uint16_t))
-#define PID_I_ANTIWINDUP_BYTE_COUNT					(sizeof(uint32_t))
-#define PID_CFG_BYTE_COUNT 							(PID_P_GAIN_BYTE_COUNT + PID_I_GAIN_BYTE_COUNT + PID_D_GAIN_BYTE_COUNT \
-													+ PID_MAX_SPEED_PERC_BYTE_COUNT + PID_I_ANTIWINDUP_BYTE_COUNT)
+#define PID_P_GAIN_BYTE_COUNT 				(sizeof(uint16_t))
+#define PID_I_GAIN_BYTE_COUNT 				(sizeof(uint16_t))
+#define PID_D_GAIN_BYTE_COUNT 				(sizeof(uint16_t))
+#define PID_MAX_SPEED_PERC_BYTE_COUNT		(sizeof(uint16_t))
+#define PID_I_ANTIWINDUP_BYTE_COUNT			(sizeof(uint32_t))
+#define PID_CFG_BYTE_COUNT 					(PID_P_GAIN_BYTE_COUNT + PID_I_GAIN_BYTE_COUNT + PID_D_GAIN_BYTE_COUNT \
+											+ PID_MAX_SPEED_PERC_BYTE_COUNT + PID_I_ANTIWINDUP_BYTE_COUNT)
 
 /* Define default values */
 #define PID_P_GAIN_POS_DEFAULT				(1000u)
@@ -69,8 +80,8 @@
   * =========================
   */
 
-#define NVM_VERSION_START_ADDR					(NVM_DFLASH_START_ADDR)
-#define NVM_VERSION_BYTE_COUNT					(sizeof(uint8))
+#define NVM_VERSION_START_ADDR					NVM_BSW_DFLASH_START_ADDR
+#define NVM_VERSION_BYTE_COUNT					(sizeof(uint8_t))
 #define NVM_VERSION_END_ADDR					(NVM_VERSION_START_ADDR + NVM_VERSION_BYTE_COUNT + BYTE_FILLER(3u) )
 
 #define PID_P_GAIN_POS_START_ADDR				(NVM_VERSION_END_ADDR)
@@ -90,6 +101,7 @@
 
 #define PID_POS_CFG_START_ADDR					(PID_P_GAIN_POS_START_ADDR)
 #define PID_POS_CFG_END_ADDR					(PID_POS_CFG_START_ADDR + PID_CFG_BYTE_COUNT)
+
 
 
 #define PID_P_GAIN_SPDLE_START_ADDR				(PID_I_ANTIWINDUP_POS_END_ADDR)
@@ -131,8 +143,8 @@
 #define PID_SPDRI_CFG_END_ADDR					(PID_SPDRI_CFG_START_ADDR + PID_CFG_BYTE_COUNT)
 
 
-#define NVM_DFLASH_CURRENT_END_ADDR				(PID_SPDRI_CFG_END_ADDR)
-#define NVM_DFLASH_CURRENT_BYTE_COUNT			(NVM_DFLASH_CURRENT_END_ADDR - NVM_DFLASH_START_ADDR)
+#define NVM_BSW_DFLASH_CURRENT_END_ADDR			(PID_SPDRI_CFG_END_ADDR)
+#define NVM_BSW_DFLASH_CURRENT_BYTE_COUNT		(NVM_BSW_DFLASH_CURRENT_END_ADDR - NVM_BSW_DFLASH_START_ADDR)
 
 
 
@@ -161,7 +173,6 @@ const static NVM_RomCfg_t romCfg =
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-
 static bool isErased(uint8_t *addr_, uint16_t byteCout_) {
 	while (byteCout_>0) {
 		if (*addr_!=0xFF) {
@@ -178,7 +189,7 @@ static inline StdRtn_t SaveBlock2NVM(const NVM_DataAddr_t data_, const NVM_Addr_
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 
-	if ( ( NULL != data_ ) && ( NVM_DFLASH_START_ADDR <= nvmAddr_) && (NVM_DFLASH_START_ADDR +NVM_DFLASH_BLOCK_SIZE) >= nvmAddr_)
+	if ( ( NVM_DFLASH_START_ADDR <= nvmAddr_) && (NVM_DFLASH_START_ADDR + NVM_DFLASH_BLOCK_SIZE - xptdByteCount_) >= nvmAddr_)
 	{
 		if ( byteCount_ <= xptdByteCount_)
 		{
@@ -197,7 +208,7 @@ static inline StdRtn_t ReadBlockFromNVM(NVM_DataAddr_t data_, const NVM_Addr_t n
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 
-	if ( ( NULL != data_ ) && ( NVM_DFLASH_START_ADDR <= nvmAddr_) && (NVM_DFLASH_START_ADDR +NVM_DFLASH_BLOCK_SIZE) >= nvmAddr_)
+	if ( ( NULL != data_ ) && ( NVM_DFLASH_START_ADDR <= nvmAddr_) && (NVM_DFLASH_START_ADDR + NVM_DFLASH_BLOCK_SIZE - byteCount_) >= nvmAddr_)
 	{
 		if (!isErased((uint8_t*)nvmAddr_, byteCount_))
 		{
@@ -250,7 +261,7 @@ StdRtn_t NVM_Read_AllFromROM(NVM_RomCfg_t *romCfg_)
 
 StdRtn_t NVM_Restore_AllFromROM(void)
 {
-	return SaveBlock2NVM((const NVM_DataAddr_t)&romCfg, NVM_DFLASH_START_ADDR, sizeof(NVM_RomCfg_t),  NVM_DFLASH_CURRENT_BYTE_COUNT);
+	return SaveBlock2NVM((const NVM_DataAddr_t)&romCfg, NVM_BSW_DFLASH_START_ADDR, sizeof(NVM_RomCfg_t),  NVM_BSW_DFLASH_CURRENT_BYTE_COUNT);
 }
 
 /* PID position control configuration */
@@ -339,6 +350,28 @@ StdRtn_t NVM_Read_Dflt_PIDSpdRiCfg(NVM_PidCfg_t *spdCfg_)
 	}
 	return  retVal;
 }
+
+
+
+/* Handle ASW storage data with NVM */
+StdRtn_t NVM_Save_ASWDataBytesInUnit(const void *pData_, uint8_t unitNum_, uint16_t byteCnt_)
+{
+	return SaveBlock2NVM((const NVM_DataAddr_t)pData_, (NVM_ASW_DFLASH_START_ADDR + unitNum_*NVM_UNIT_SIZE_ASW) , byteCnt_,  NVM_UNIT_SIZE_ASW);
+}
+
+StdRtn_t NVM_Read_ASWDataUnitAddr(void *pDataAddr_, uint8_t unitNum_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+
+	if (NULL != pDataAddr_)
+	{
+		retVal = ReadBlockFromNVM((NVM_DataAddr_t)pDataAddr_, (NVM_ASW_DFLASH_START_ADDR + unitNum_*NVM_UNIT_SIZE_ASW), NVM_UNIT_SIZE_ASW);
+	}
+	return retVal;
+}
+
+
+
 
 #ifdef MASTER_NVM_CFG_C_
 #undef MASTER_NVM_CFG_C_

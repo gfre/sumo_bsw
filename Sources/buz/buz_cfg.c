@@ -1,10 +1,10 @@
 /***********************************************************************************************//**
- * @file		buz_clshdlr.c
+ * @file		buz_cfg.c
  * @ingroup		buz
  * @brief 		Implementation of the configuration of the SWC @a Buzzer
  *
  * This file implements the configuration of pre-defined melodies and tunes of the software
- * component SWC @a Buzzer and its internal interface.
+ * component SWC @ref buz and its internal interface.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel

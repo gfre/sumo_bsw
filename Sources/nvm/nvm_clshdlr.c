@@ -1,23 +1,26 @@
-/***************************************************************************************************
- * @brief 	Command line shell handler of the Non-Volatile-Memory (NVM) storage.
+/***********************************************************************************************//**
+ * @file		nvm_clshdlr.c
+ * @ingroup		nvm
+ * @brief 		Implementation of the command line shell handler for the SWC @a NVM
+ *
+ * This module implements the interface of the SWC @ref nvm which is addressed to
+ * the SWC @ref sh. It introduces application specific commands for requests
+ * of status information or restoring the NVM from ROM via command line shell (@b CLS).
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	23.02.2017
  *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @copyright @LGPL2_1
  *
- * This module handles the interface between the NVM software component and
- * the command line shell CLS.
- * 
- *==================================================================================================
- */
+ ***************************************************************************************************/
 
 #define MASTER_nvm_clshdlr_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "nvm_clshdlr.h"
-#include "nvm_Types.h"
+#include "nvm_api.h"
+
 
 
 /*======================================= >> #DEFINES << =========================================*/
@@ -33,6 +36,8 @@ static uint8_t NVM_PrintHelp(const CLS1_StdIOType *io);
 static uint8_t NVM_PrintStatus(const CLS1_StdIOType *io);
 static uint8_t NVM_PrintVersion(const CLS1_StdIOType *io_);
 static void NVM_PrintRestoreStatus(const CLS1_StdIOType *io_);
+
+
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 

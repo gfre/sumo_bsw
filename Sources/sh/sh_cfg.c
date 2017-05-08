@@ -1,19 +1,24 @@
-/***************************************************************************************************
- * @brief 	>>TODO This is a brief description.
+/***********************************************************************************************//**
+ * @file		sh_cfg.c
+ * @ingroup		sh
+ * @brief 		Implementation of the configuration of the SWC @a Shell
  *
- * @author 	>>TODO, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * This file implements the configuration of callback functions, which parse CLS commands, for the
+ * component SWC @ref sh and its internal interface.
+ *
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	03.02.2017
  *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @copyright @LGPL2_1
  *
- * >>TODO This is the detailed description of the file sh_cfg.c
- * 
- *==================================================================================================
- */
+ **************************************************************************************************/
 
 #define MASTER_sh_cfg_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
+#include "sh_cfg.h"
+/* BSW components */
 #include "task_clshdlr.h"
 #include "appl_clshdlr.h"
 #include "sh_clshdlr.h"
@@ -25,17 +30,14 @@
 #include "drv_clshdlr.h"
 #include "batt_clshdlr.h"
 #include "buz_clshdlr.h"
-
-#include "sh_cfg.h"
+/* Firmware components */
 #include "RTT1.h"
-
 #include "RNET1.h"
 #include "LED1.h"
 #include "LED2.h"
 #include "Q4CLeft.h"
 #include "Q4CRight.h"
 #include "KIN1.h"
-#include "id.h"
 #include "FRTOS1.h"
 
 
@@ -96,7 +98,7 @@ const SH_IOCfg_t *Get_ShIOCfg() { return &ioCfg; }
 
 
 
-
 #ifdef MASTER_sh_cfg_C_
 #undef MASTER_sh_cfg_C_
+
 #endif /* !MASTER_sh_cfg_C_ */

@@ -1,23 +1,27 @@
-/***************************************************************************************************
- * @brief 	Implementation of the tachometer software component
+/***********************************************************************************************//**
+ * @file		tacho.h
+ * @ingroup		tacho
+ * @brief 		Interface of the SWC @a Tacho for initialisation- and runtime-calls.
+ *
+ * This header file provides the internal interface between the SWC @ref tacho and the
+ * SWC @ref task which runs the initialisation and periodic main function within a FreeRTOS task.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	30.03.2017
  *
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @note Interface for BSW-specific use only
  *
- * This module calculates the speed based on the quadrature counter. It implements an moving average
- * filter for the speed signal based on a ring buffer.
+ * @copyright 	@LGPL2_1
  *
- *==================================================================================================
- */
+ **************************************************************************************************/
 
 #ifndef TACHO_H_
 #define TACHO_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "Platform.h"
+
+
 
 #ifdef MASTER_tacho_C_
 #define EXTERNAL_
@@ -25,8 +29,15 @@
 #define EXTERNAL_ extern
 #endif
 
+/**
+ * @addtogroup tacho
+ * @{
+ */
 /*======================================= >> #DEFINES << =========================================*/
-#define TACHO_SWC_STRING ("tacho")
+/**
+ * String identification of the SWC @ref tacho
+ */
+#define TACHO_SWC_STRING ("Tacho")
 
 
 
@@ -35,32 +46,33 @@
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-/*!
- * @brief Returns the previously calculated speed of the motor.
- * @param isLeft TRUE for left speed, FALSE for right speed.
- * @return Actual speed value
- */
-int32_t TACHO_GetSpeed(bool isLeft);
-
-/*!
+/**
  * @brief Calculates the speed based on the position information from the encoder.
  */
 void TACHO_CalcSpeed(void);
 
-/*!
+/**
  * @brief Sampling routine to calculate speed, must be called periodically with a fixed frequency.
  */
 void TACHO_Sample(void);
 
-/*! @brief De-initialization of the module */
+/**
+ * @brief De-initialization of the module
+ */
 void TACHO_Deinit(void);
 
-/*! @brief Initialization of the module */
+/**
+ * @brief Initialization of the module
+ */
 void TACHO_Init(void);
 
 
+
+/**
+ * @}
+ */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
 
-#endif /* __TACHO_H_ */
+#endif /* !TACHO_H_ */

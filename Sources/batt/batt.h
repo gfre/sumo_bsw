@@ -3,8 +3,8 @@
  * @ingroup		batt
  * @brief 		Header of the SWC @a Battery for initialisation- and runtime-calls
  *
- * This header file provides the internal interface between the SWC @a BATT and the
- * SWC @a APPL which runs the initialisation within its INIT state.
+ * This header file provides the internal interface between the SWC @ref batt and the
+ * SWC @ref appl which runs the initialisation within its INIT state.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel

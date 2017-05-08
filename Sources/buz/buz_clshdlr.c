@@ -3,7 +3,7 @@
  * @ingroup		buz
  * @brief 		Implementation of the command line shell handler for the SWC @a Buzzer
  *
- * This module implements the interface from the SWC @a Buzzer (@b BUZ) to the SWC Shell (@b SH).
+ * This module implements the interface of the SWC @ref buz which is addressed to the SWC @ref sh.
  * It introduces application specific commands for requesting buzzer help and status information
  * via command line shell (@b CLS).
  *

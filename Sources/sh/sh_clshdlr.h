@@ -1,16 +1,21 @@
-/***************************************************************************************************
- * @brief 	This module handles the interface to the command line shell CLS
+/***********************************************************************************************//**
+ * @file		sh_clshdlr.h
+ * @ingroup		sh
+ * @brief 		Interface for the command line shell handler of the SWC @a Shell
  *
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, University Kiel
+ * This header files provides the internal interface of the SWC @ref sh  which allows to debug the
+ * overlaying @a shell component by itself. It introduces application specific commands for requests
+ * of status information via command line shell (@b CLS).
+ *
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	09.02.2017
- *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
  *
- * >>TODO This is the detailed description of the file sh_clshdlr.h
- * 
- *==================================================================================================
- */
-
+ * @note Interface for CLS-specific use only
+ *
+ * @copyright @LGPL2_1
+ *
+ **************************************************************************************************/
 
 #ifndef SH_CLSHDLR_H_
 #define SH_CLSHDLR_H_
@@ -19,12 +24,17 @@
 #include "CLS1.h"
 
 
+
 #ifdef MASTER_sh_clshdlr_C_
 #define EXTERNAL_
 #else
 #define EXTERNAL_ extern
 #endif
 
+/**
+ * @addtogroup sh
+ * @{
+ */
 /*======================================= >> #DEFINES << =========================================*/
 
 
@@ -34,7 +44,7 @@
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-/*!
+/**
  * @brief Sends a error string to the shell/console stdout
  * @param *cmd_ pointer to command
  * @param *handled_ pointer to flag which returns TRUE if cmd_ was handled_, otherwise FALSE (CBR).
@@ -45,6 +55,9 @@ EXTERNAL_ uint8_t SH_ParseCommand(const unsigned char *cmd_, bool *handled_, con
 
 
 
+/**
+ * @}
+ */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
