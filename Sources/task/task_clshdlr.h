@@ -61,5 +61,4 @@ EXTERNAL_ uint8 TASK_ParseCommand(const unsigned char *cmd_, bool *handled_, con
 #undef EXTERNAL_
 #endif
 
-
 #endif /* !TASK_CLSHDLR_H_ */

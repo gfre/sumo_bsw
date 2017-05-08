@@ -24,11 +24,11 @@
 /*======================================= >> #INCLUDES << ========================================*/
 #include "appl.h"
 #include "appl_api.h"
+#include "task_api.h"
 #include "ind_api.h"
 #include "Platform.h"
 #include "FRTOS1.h"
 #include "dapp.h"
-#include "task_cfg.h"
 #include "rte.h"
 #include "sh.h"
 #include "buz.h"
@@ -100,7 +100,7 @@ static inline StdRtn_t Sync_StateMachineWithISR();
 static inline StdRtn_t Set_HoldOnMask(uint8_t *mask_, const APPL_State_t state_, const uint8_t holdOn_);
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-const TASK_CfgItm_t *dbgTaskCfg = NULL;
+TASK_Hdl_t dbgTaskHdl = NULL;
 static SmType_t sm = {APPL_STATE_NONE, APPL_Cmd_None};
 static APPL_State_t nextState = APPL_STATE_NONE;
 static SmStFcts_t smStFctTbl[APPL_STATE_NUM] = {
@@ -251,9 +251,10 @@ static StdRtn_t runSTARTUP(void)
 	ID_Init();
 	IND_Init();
 	RTE_Init();
-	dbgTaskCfg = TASK_Get_DbgTaskCfg();
-	nextState = APPL_STATE_INIT;
-
+	if( ERR_OK == TASK_Read_DbgTaskHdl(&dbgTaskHdl) )
+	{
+		nextState = APPL_STATE_INIT;
+	}
 	return ERR_OK;
 }
 
@@ -317,7 +318,7 @@ static StdRtn_t enterDEBUG(void)
 	StdRtn_t retVal = ERR_OK;
 
 	SH_Init();
-	FRTOS1_vTaskResume(dbgTaskCfg->taskHdl);
+	FRTOS1_vTaskResume((TaskHandle_t)dbgTaskHdl);
 	retVal |= RTE_Write_BuzPlayTune(BUZ_TUNE_ACCEPT);
 	retVal |= IND_Flash_LED1WithPerMS(DEBUG_IND_FLASH_PERIOD);
 
@@ -334,7 +335,7 @@ static StdRtn_t exitDEBUG(void)
 	StdRtn_t retVal = ERR_OK;
 
 	SH_Deinit();
-	FRTOS1_vTaskSuspend(dbgTaskCfg->taskHdl);
+	FRTOS1_vTaskSuspend((TaskHandle_t)dbgTaskHdl);
 	retVal |= RTE_Write_BuzPlayTune(BUZ_TUNE_DECLINE);
 	retVal |= IND_Set_LED1Off();
 

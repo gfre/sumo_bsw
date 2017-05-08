@@ -37,7 +37,8 @@ extern "C" {
 /* User includes (#include below this line is not maintained by Processor Expert) */
 #include "Tacho.h"
 #include "rte.h"
-#include "task_cfg.h"
+#include "task_api.h"
+#include "Platform.h"
 #include "portmacro.h"
 
 
@@ -218,7 +219,7 @@ void KEY1_OnKeyReleased(uint8_t keys)
 {
 	/* Write your code here. A bit in 'keys' indicates key released ... */
 	EvntCbFct_t *cbFct = NULL;
-	const TASK_CfgItm_t *applTaskCfg = NULL;
+	TASK_Hdl_t applTaskHdl = NULL;
 	BaseType_t higherPriorityTaskWoken = pdFALSE;
 
 	cbFct = RTE_Get_BtnOnRlsdCbFct();
@@ -227,10 +228,9 @@ void KEY1_OnKeyReleased(uint8_t keys)
 		cbFct(keys);
 	}
 
-	applTaskCfg = TASK_Get_ApplTaskCfg();
-	if( (NULL != applTaskCfg ) && ( applTaskCfg->taskHdl ) )
+	if( ERR_OK == TASK_Read_ApplTaskHdl(&applTaskHdl) )
 	{
-		FRTOS1_xTaskNotifyFromISR( applTaskCfg->taskHdl,
+		FRTOS1_xTaskNotifyFromISR( applTaskHdl,
 				KEY_RELEASED_NOTIFICATION_VALUE,
 				eSetBits,
 				&higherPriorityTaskWoken );
@@ -257,7 +257,7 @@ void KEY1_OnKeyPressedLong(uint8_t keys)
 {
 	/* Write your code here ... */
 	EvntCbFct_t *cbFct = NULL;
-	const TASK_CfgItm_t *applTaskCfg = NULL;
+	TASK_Hdl_t applTaskHdl = NULL;
 	BaseType_t higherPriorityTaskWoken = pdFALSE;
 
 	cbFct = RTE_Get_BtnOnLngPrsdCbFct();
@@ -266,10 +266,9 @@ void KEY1_OnKeyPressedLong(uint8_t keys)
 		cbFct(keys);
 	}
 
-	applTaskCfg = TASK_Get_ApplTaskCfg();
-	if ((NULL != applTaskCfg) && (applTaskCfg->taskHdl))
+	if( ERR_OK == TASK_Read_ApplTaskHdl(&applTaskHdl) )
 	{
-		FRTOS1_xTaskNotifyFromISR( applTaskCfg->taskHdl,
+		FRTOS1_xTaskNotifyFromISR( applTaskHdl,
 				KEY_PRESSED_LONG_NOTIFICATION_VALUE,
 				eSetBits,
 				&higherPriorityTaskWoken );
