@@ -80,7 +80,7 @@ static void ExitDbgTask(void)
 	BaseType_t higherPriorityTaskWoken = pdFALSE;
 
 
-	if ( ERR_OK != TASK_Read_ApplTaskHdl(&applTaskHdl) )
+	if ( ERR_OK == TASK_Read_ApplTaskHdl(&applTaskHdl) )
 	{
 		FRTOS1_xTaskNotifyFromISR( applTaskHdl,
 				KEY_PRESSED_LONG_NOTIFICATION_VALUE,
