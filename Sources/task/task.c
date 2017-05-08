@@ -1,15 +1,19 @@
-/***************************************************************************************************
- * @brief 	This module creates and runs all tasks
+/***********************************************************************************************//**
+ * @file		task.c
+ * @ingroup		task
+ * @brief 		Implementation of FreeRTOS tasks creation and handling
+ *
+ * This software component creates and handles the FreeRTOS tasks. It implements generic task
+ * functions for periodically and non-periodically runtime-calls of software components applied to
+ * the corresponding task. It enables to initialises the software components run by the created
+ * tasks before entering the runtime loop.
  *
  * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	08.02.2017
  *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @copyright @LGPL2_1
  *
- * >>TODO This is the detailed description of the file task.c
- * 
- *==================================================================================================
- */
+ **************************************************************************************************/
 
 #define MASTER_task_C_
 

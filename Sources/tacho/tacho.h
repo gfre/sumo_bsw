@@ -3,8 +3,8 @@
  * @ingroup		tacho
  * @brief 		Interface of the SWC @a Tacho for initialisation- and runtime-calls.
  *
- * This module calculates the speed based on the quadrature counter. It implements an moving average
- * filter for the speed signal based on a ring buffer.
+ * This header file provides the internal interface between the SWC @ref tacho and the
+ * SWC @ref task which runs the initialisation and periodic main function within a FreeRTOS task.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
