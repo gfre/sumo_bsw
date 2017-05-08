@@ -89,6 +89,30 @@ static void TASK_CreateTasks()
 	} /* NULL */
 }
 
+StdRtn_t ReadTaskHdl(TASK_Hdl_t *hdl_, const char_t * const pName_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	uint8_t i = 0u;
+	if( NULL != hdl_)
+	{
+		if( NULL != taskCfg )
+		{
+			for( i = 0u; i < taskCfg->numTasks; i++)
+			{
+				if( ( ERR_OK == UTIL1_strcmp(pName_,	taskCfg->tasks[i].taskName) ) && ( NULL != taskCfg->tasks[i].taskHdl ) )
+				{
+					*hdl_ = taskCfg->tasks[i].taskHdl;
+					retVal = ERR_OK;
+				}
+			}
+		}
+		else
+		{
+			retVal = ERR_PARAM_DATA;
+		}
+	}
+	return retVal;
+}
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
@@ -206,39 +230,13 @@ StdRtn_t TASK_Read_TaskCfgTbl(TASK_Cfg_t *tbl_)
 
 StdRtn_t TASK_Read_ApplTaskHdl(TASK_Hdl_t *hdl_)
 {
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if( NULL != hdl_)
-	{
-		if( NULL != taskCfg->tasks[0].taskHdl)
-		{
-			*hdl_ = taskCfg->tasks[0].taskHdl;
-			retVal = ERR_OK;
-		}
-		else
-		{
-			retVal = ERR_PARAM_DATA;
-		}
-	}
-	return retVal;
+	return ReadTaskHdl(hdl_, APPL_TASK_STRING);
 }
 
 
 StdRtn_t TASK_Read_DbgTaskHdl(TASK_Hdl_t *hdl_)
 {
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if( NULL != hdl_)
-	{
-		if( NULL != taskCfg->tasks[1].taskHdl)
-		{
-			*hdl_ = taskCfg->tasks[1].taskHdl;
-			retVal = ERR_OK;
-		}
-		else
-		{
-			retVal = ERR_PARAM_DATA;
-		}
-	}
-	return retVal;
+	return ReadTaskHdl(hdl_, DBG_TASK_STRING);
 }
 
 
