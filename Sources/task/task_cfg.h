@@ -37,22 +37,22 @@
  */
 /*======================================= >> #DEFINES << =========================================*/
 /**
- * String identification of the task  @ref APPLICATION
+ * String identification of the task  @a APPLICATION
  */
 #define APPL_TASK_STRING  ("APPL")
 
 /**
- * String identification of the task  @ref COMMUNICATION
+ * String identification of the task  @a COMMUNICATION
  */
 #define COMM_TASK_STRING  ("COMM")
 
 /**
- * String identification of the task  @ref DEBUG
+ * String identification of the task  @a DEBUG
  */
 #define DBG_TASK_STRING   ("DEBUG")
 
 /**
- * String identification of the task  @ref DRIVE
+ * String identification of the task  @a DRIVE
  */
 #define DRV_TASK_STRING   ("DRIVE")
 
