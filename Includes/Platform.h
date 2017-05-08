@@ -18,8 +18,8 @@
 #include <stddef.h> /* for size_t */
 
 #define SW_API_VERSION      '1'
-#define SW_MAJOR_VERSION    '3'
-#define SW_MINOR_VERSION    '8'
+#define SW_MAJOR_VERSION    '4'
+#define SW_MINOR_VERSION    '0'
 #define SW_YEAR             "2017"
 
 #define SW_VERSION_CHAR_ARRAY   SW_API_VERSION, '.', SW_MAJOR_VERSION, '.', SW_MINOR_VERSION,'-'
