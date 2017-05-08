@@ -3,7 +3,7 @@
  * @ingroup		tacho
  * @brief 		Interface of the SWC @a Tacho for initialisation- and runtime-calls.
  *
- ** This module calculates the speed based on the quadrature counter. It implements an moving average
+ * This module calculates the speed based on the quadrature counter. It implements an moving average
  * filter for the speed signal based on a ring buffer.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern

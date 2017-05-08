@@ -1,15 +1,18 @@
-/***************************************************************************************************
- * @brief 	This module configures all tasks
+/***********************************************************************************************//**
+ * @file		task_cfg.c
+ * @ingroup		task
+ * @brief 		Implementation of the configuration of the SWC @a Task
  *
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * This file implements the configuration of FreeRTOS tasks, which run periodically or non-
+ * periodically task functions and internal interface for the entire task configuration.
+ *
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	08.02.2017
  *  
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @copyright @LGPL2_1
  *
- * >>TODO This is the detailed description of the file task_cfg.h
- * 
- *==================================================================================================
- */
+ **************************************************************************************************/
 
 #define MASTER_task_cfg_C_
 
