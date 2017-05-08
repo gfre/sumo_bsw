@@ -8,7 +8,7 @@
  * the corresponding task. It enables to initialises the software components run by the created
  * tasks before entering the runtime loop.
  *
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	08.02.2017
  *  
  * @copyright @LGPL2_1
@@ -189,7 +189,7 @@ void TASK_NonPerdTaskFct(void *pvParameters_)
 
 
 
-
 #ifdef MASTER_task_C_
 #undef MASTER_task_C_
+
 #endif /* !MASTER_task_C_ */
