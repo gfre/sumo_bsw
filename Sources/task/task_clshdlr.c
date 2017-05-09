@@ -18,7 +18,6 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "task_clshdlr.h"
-#include "task_api.h"
 #include "task_cfg.h"
 #include "FRTOS1.h"
 
@@ -68,7 +67,7 @@ static void TASK_PrintCalledMainFcts(const CLS1_StdIOType *io_)
 	const char_t *mainFctName = NULL;
 	uint8 taskName[12] = {""};
 
-	taskCfg = TASK_Get_TasksCfg();
+	taskCfg = Get_pTaskCfgTbl();
 
 	if(NULL != taskCfg)
 	{
@@ -76,7 +75,7 @@ static void TASK_PrintCalledMainFcts(const CLS1_StdIOType *io_)
 		{
 			if(NULL != taskCfg->tasks)
 			{
-				taskFctPar = (const TASK_PerdTaskFctPar_t*)taskCfg->tasks[i].pvParameters;
+				taskFctPar = (const TASK_PerdTaskFctPar_t *)taskCfg->tasks[i].pvParameters;
 				UTIL1_strcat(taskName, sizeof(taskName), "  ");
 				if(NULL != (taskCfg->tasks[i].taskHdl))
 				{
@@ -90,7 +89,7 @@ static void TASK_PrintCalledMainFcts(const CLS1_StdIOType *io_)
 				}
 				UTIL1_strcpy(taskName, sizeof(taskName), "");
 
-				taskFctPar = (const TASK_PerdTaskFctPar_t*)taskCfg->tasks[i].pvParameters;
+				taskFctPar = (const TASK_PerdTaskFctPar_t *)taskCfg->tasks[i].pvParameters;
 				if(NULL != taskFctPar)
 				{
 					UTIL1_strcat(buf, sizeof(buf), ">> " );

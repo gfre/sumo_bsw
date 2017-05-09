@@ -18,7 +18,6 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "task_cfg.h"
-#include "FRTOS1.h"
 #include "tacho.h"
 #include "appl.h"
 #include "sh.h"
@@ -37,18 +36,20 @@
 #define DRV_TASK_PERIOD 	(TASK_TIMING_5MS)
 #define DBG_TASK_DELAY 		(TASK_TIMING_10MS)
 
+/* Task functions for periodic tasks */
+#define APPL_TASKFCT		(TASK_PerdTaskFct)
+#define COMM_TASKFCT		(TASK_PerdTaskFct)
+#define DRV_TASKFCT			(TASK_PerdTaskFct)
+
+/* Task functions for non-periodic tasks */
+#define  DBG_TASKFCT		(TASK_NonPerdTaskFct)
+
+
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 
 
-
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-/* Task functions for periodic tasks */
-static void ApplTaskFct(void *pvParameters_) {return TASK_PerdTaskFct(pvParameters_);}
-static void CommTaskFct(void *pvParameters_) {return TASK_PerdTaskFct(pvParameters_);}
-static void DrvTaskFct(void *pvParameters_)  {return TASK_PerdTaskFct(pvParameters_);}
 
-/* Task functions for non-periodic tasks */
-static void DbgTaskFct(void *pvParameters_)   {return TASK_NonPerdTaskFct(pvParameters_);}
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
@@ -126,10 +127,10 @@ static const TASK_PerdTaskFctPar_t drvTaskFctPar = {
  * Configuration of each task in an array
  */
 static TASK_CfgItm_t taskCfgItems[]= {
-		{ApplTaskFct, APPL_TASK_STRING, configMINIMAL_STACK_SIZE,     (void * const)&applTaskFctPar, tskIDLE_PRIORITY+1, (xTaskHandle*)NULL, TASK_SUSP_NEVER},
-		{DbgTaskFct,  DBG_TASK_STRING,  configMINIMAL_STACK_SIZE+50,  (void * const)&dbgTaskFctPar,  tskIDLE_PRIORITY+1, (xTaskHandle*)NULL, TASK_SUSP_DEFAULT},
-		{CommTaskFct, COMM_TASK_STRING, configMINIMAL_STACK_SIZE+100, (void * const)&commTaskFctPar, tskIDLE_PRIORITY+3, (xTaskHandle*)NULL, TASK_SUSP_NEVER},
-		{DrvTaskFct,  DRV_TASK_STRING,  configMINIMAL_STACK_SIZE,     (void * const)&drvTaskFctPar,  tskIDLE_PRIORITY+3, (xTaskHandle*)NULL, TASK_SUSP_NEVER},
+		{APPL_TASKFCT, APPL_TASK_STRING, configMINIMAL_STACK_SIZE,     (void * const)&applTaskFctPar, tskIDLE_PRIORITY+2, (xTaskHandle*)NULL, TASK_SUSP_NEVER},
+		{DBG_TASKFCT,  DBG_TASK_STRING,  configMINIMAL_STACK_SIZE+50,  (void * const)&dbgTaskFctPar,  tskIDLE_PRIORITY+1, (xTaskHandle*)NULL, TASK_SUSP_DEFAULT},
+		{COMM_TASKFCT, COMM_TASK_STRING, configMINIMAL_STACK_SIZE+100, (void * const)&commTaskFctPar, tskIDLE_PRIORITY+3, (xTaskHandle*)NULL, TASK_SUSP_NEVER},
+		{DRV_TASKFCT,  DRV_TASK_STRING,  configMINIMAL_STACK_SIZE,     (void * const)&drvTaskFctPar,  tskIDLE_PRIORITY+3, (xTaskHandle*)NULL, TASK_SUSP_NEVER},
 };
 /*------------------------------------------------------------------------------------------------*/
 
@@ -147,10 +148,9 @@ static const TASK_Cfg_t taskCfg = {
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-const TASK_Cfg_t *TASK_Get_TasksCfg(void) { return &taskCfg;}
+const TASK_Cfg_t *Get_pTaskCfgTbl(void) { return &taskCfg;}
 
-const TASK_CfgItm_t *TASK_Get_ApplTaskCfg(void) { return &(taskCfg.tasks[0]);}
-const TASK_CfgItm_t *TASK_Get_DbgTaskCfg(void)  { return &(taskCfg.tasks[1]);}
+
 
 
 

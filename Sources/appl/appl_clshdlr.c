@@ -21,10 +21,13 @@
 #include "appl_api.h"
 
 
+
 /*======================================= >> #DEFINES << =========================================*/
 
 
+
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
+
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
@@ -33,7 +36,10 @@ static uint8 PrintStatus(const CLS1_StdIOType *io_);
 static const uint8 * ReadStateString(APPL_State_t state_);
 static const uint8 * ReadCmdString(APPL_Cmd_t state_);
 
+
+
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
+
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
@@ -74,6 +80,8 @@ static const uint8 * ReadCmdString(APPL_Cmd_t state_){
     default: return ">> fatal error - invalid or unknown state machine command <<\r\n";
   }
 }
+
+
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 uint8 APPL_ParseCommand(const unsigned char *cmd_, bool *handled, const CLS1_StdIOType *io_) {

@@ -21,7 +21,7 @@
 #include "sh_clshdlr.h"
 #include "Platform.h"
 #include "Acon_Types.h"
-#include "task_cfg.h"
+#include "task_api.h"
 #include "FRTOS1.h"
 
 
@@ -76,18 +76,18 @@ static StdRtn_t PrintStatus(const CLS1_StdIOType *io_)
 
 static void ExitDbgTask(void)
 {
-  const TASK_CfgItm_t *applTaskCfg = NULL;
-  BaseType_t higherPriorityTaskWoken = pdFALSE;
+	TASK_Hdl_t applTaskHdl = NULL;
+	BaseType_t higherPriorityTaskWoken = pdFALSE;
 
-  applTaskCfg = TASK_Get_ApplTaskCfg();
-  if ((NULL != applTaskCfg) && (applTaskCfg->taskHdl))
-  {
-      FRTOS1_xTaskNotifyFromISR( applTaskCfg->taskHdl,
-				 KEY_PRESSED_LONG_NOTIFICATION_VALUE,
-				 eSetBits,
-				 &higherPriorityTaskWoken );
-      portYIELD_FROM_ISR( higherPriorityTaskWoken );
-  }
+
+	if ( ERR_OK == TASK_Read_ApplTaskHdl(&applTaskHdl) )
+	{
+		FRTOS1_xTaskNotifyFromISR( applTaskHdl,
+				KEY_PRESSED_LONG_NOTIFICATION_VALUE,
+				eSetBits,
+				&higherPriorityTaskWoken );
+		portYIELD_FROM_ISR( higherPriorityTaskWoken );
+	}
 }
 
 
@@ -127,4 +127,5 @@ uint8_t SH_ParseCommand(const unsigned char *cmd_, bool *handled_, const CLS1_St
 
 #ifdef MASTER_sh_clshdlr_C_
 #undef MASTER_sh_clshdlr_C_
+
 #endif /* !MASTER_sh_clshdlr_C_ */

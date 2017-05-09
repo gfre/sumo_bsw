@@ -46,15 +46,13 @@ static void TASK_CreateTasks(void);
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-
+const TASK_Cfg_t *taskCfg = NULL;
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 static void TASK_CreateTasks()
 {
 	uint8 i = 0u;
-	const TASK_Cfg_t *taskCfg = NULL;
-	taskCfg = TASK_Get_TasksCfg();
 
 	if(NULL != taskCfg)
 	{
@@ -91,10 +89,35 @@ static void TASK_CreateTasks()
 	} /* NULL */
 }
 
+StdRtn_t ReadTaskHdl(TASK_Hdl_t *hdl_, const char_t * const pName_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	uint8_t i = 0u;
+	if( NULL != hdl_)
+	{
+		if( NULL != taskCfg )
+		{
+			for( i = 0u; i < taskCfg->numTasks; i++)
+			{
+				if( ( ERR_OK == UTIL1_strcmp(pName_,	taskCfg->tasks[i].taskName) ) && ( NULL != taskCfg->tasks[i].taskHdl ) )
+				{
+					*hdl_ = taskCfg->tasks[i].taskHdl;
+					retVal = ERR_OK;
+				}
+			}
+		}
+		else
+		{
+			retVal = ERR_PARAM_DATA;
+		}
+	}
+	return retVal;
+}
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 void TASK_Init(void) {
+	taskCfg = Get_pTaskCfgTbl();
 	TASK_CreateTasks();
 }
 
@@ -185,6 +208,35 @@ void TASK_NonPerdTaskFct(void *pvParameters_)
 		}
 		FRTOS1_vTaskDelay( pdMS_TO_TICKS( pvPar->taskDelay) );
 	}
+}
+
+StdRtn_t TASK_Read_TaskCfgTbl(TASK_Cfg_t *tbl_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if( NULL != tbl_)
+	{
+		if( NULL != taskCfg)
+		{
+			*tbl_ = *taskCfg;
+			retVal = ERR_OK;
+		}
+		else
+		{
+			retVal = ERR_PARAM_DATA;
+		}
+	}
+	return retVal;
+}
+
+StdRtn_t TASK_Read_ApplTaskHdl(TASK_Hdl_t *hdl_)
+{
+	return ReadTaskHdl(hdl_, APPL_TASK_STRING);
+}
+
+
+StdRtn_t TASK_Read_DbgTaskHdl(TASK_Hdl_t *hdl_)
+{
+	return ReadTaskHdl(hdl_, DBG_TASK_STRING);
 }
 
 
