@@ -28,6 +28,7 @@
 #include "ind_api.h"
 #include "Platform.h"
 #include "FRTOS1.h"
+#include "CS1.h"
 #include "dapp.h"
 #include "rte.h"
 #include "sh.h"
@@ -160,14 +161,17 @@ static inline void Proc_States(const SmType_t sm_)
 
 static void Tick_StateMachine(void)
 {
+	CS1_CriticalVariable();
+
    if ( ( sm.state != APPL_STATE_NONE )  &&  ( sm.cmd != APPL_Cmd_None ) )
    {
 	   Proc_States(sm);
+
+	   CS1_EnterCritical();
 	   if ( nextState != APPL_STATE_NONE)
 	   {
 		   if( ( APPL_Cmd_Exit == sm.cmd ) && ( TRUE == CHK_HOLD_ON_EXIT(sm.state) ) )
 		   {
-			   CLR_HOLD_ON_EXIT(sm.state);
 			   sm.cmd = APPL_Cmd_Enter;
 			   sm.state = nextState;
 			   nextState = APPL_STATE_NONE;
@@ -185,12 +189,14 @@ static void Tick_StateMachine(void)
 			   sm.cmd = APPL_Cmd_Run;
 		   }
 	   }
-
+	   CS1_ExitCritical();
    }
    else
    {
+	   CS1_EnterCritical();
 	   sm.state = APPL_STATE_ERROR;
 	   sm.cmd = APPL_Cmd_Enter;
+	   CS1_ExitCritical();
    }
    Sync_StateMachineWithISR();
 }
@@ -200,7 +206,9 @@ static inline StdRtn_t Sync_StateMachineWithISR()
 {
   BaseType_t notfRes = pdFAIL;
   uint32_t notfVal = 0u;
+  CS1_CriticalVariable();
 
+  CS1_EnterCritical();
   notfRes = FRTOS1_xTaskNotifyWait( pdFALSE,
 				    UINT32_MAX,
 				    (uint32_t *)&notfVal,
@@ -242,6 +250,7 @@ static inline StdRtn_t Sync_StateMachineWithISR()
   {
 	  /* do nothing */
   }
+  CS1_ExitCritical();
 }
 
 static StdRtn_t runSTARTUP(void)
