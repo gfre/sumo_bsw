@@ -18,8 +18,6 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "nvm_cfg.h"
-#include "nvm_api.h"
-#include "IFsh1.h"
 
 
 
@@ -143,21 +141,16 @@
 #define PID_SPDRI_CFG_END_ADDR					(PID_SPDRI_CFG_START_ADDR + PID_CFG_BYTE_COUNT)
 
 
-#define NVM_BSW_DFLASH_CURRENT_END_ADDR			(PID_SPDRI_CFG_END_ADDR)
-#define NVM_BSW_DFLASH_CURRENT_BYTE_COUNT		(NVM_BSW_DFLASH_CURRENT_END_ADDR - NVM_BSW_DFLASH_START_ADDR)
+#define NVM_BSW_DFLASH_CFGRD_END_ADDR			(PID_SPDRI_CFG_END_ADDR)
+#define NVM_BSW_DFLASH_CFGRD_BYTE_COUNT			(NVM_BSW_DFLASH_CFGRD_END_ADDR - NVM_BSW_DFLASH_START_ADDR)
 
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-typedef IFsh1_TDataAddress NVM_DataAddr_t;
-typedef IFsh1_TAddress NVM_Addr_t;
 
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-static bool isErased(uint8_t *addr_, uint16_t byteCount_);
-static inline StdRtn_t SaveBlock2NVM(const NVM_DataAddr_t data_, const NVM_Addr_t nvmAddr_, const uint16 byteCount_, const uint16 xptdByteCount_);
-static inline StdRtn_t ReadBlockFromNVM(NVM_DataAddr_t data_, const NVM_Addr_t nvmAddr_, const uint16_t byteCount_);
 
 
 
@@ -173,202 +166,28 @@ const static NVM_RomCfg_t romCfg =
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-static bool isErased(uint8_t *addr_, uint16_t byteCout_) {
-	while (byteCout_>0) {
-		if (*addr_!=0xFF) {
-			return FALSE; /* byte not erased */
-		}
-		addr_++;
-		byteCout_--;
-	}
-	return TRUE;
-}
-
-
-static inline StdRtn_t SaveBlock2NVM(const NVM_DataAddr_t data_, const NVM_Addr_t nvmAddr_, const uint16 byteCount_, const uint16 xptdByteCount_)
-{
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-
-	if ( ( NVM_DFLASH_START_ADDR <= nvmAddr_) && (NVM_DFLASH_START_ADDR + NVM_DFLASH_BLOCK_SIZE - xptdByteCount_) >= nvmAddr_)
-	{
-		if ( byteCount_ <= xptdByteCount_)
-		{
-			retVal = (StdRtn_t)IFsh1_SetBlockFlash((IFsh1_TDataAddress)data_, (IFsh1_TAddress)nvmAddr_, (word)byteCount_);
-		}
-		else
-		{
-			retVal = ERR_OVERFLOW;
-		}
-	}
-	return retVal;
-}
-
-
-static inline StdRtn_t ReadBlockFromNVM(NVM_DataAddr_t data_, const NVM_Addr_t nvmAddr_, const uint16_t byteCount_)
-{
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-
-	if ( ( NULL != data_ ) && ( NVM_DFLASH_START_ADDR <= nvmAddr_) && (NVM_DFLASH_START_ADDR + NVM_DFLASH_BLOCK_SIZE - byteCount_) >= nvmAddr_)
-	{
-		if (!isErased((uint8_t*)nvmAddr_, byteCount_))
-		{
-			retVal = IFsh1_GetBlockFlash((IFsh1_TAddress)nvmAddr_, (IFsh1_TDataAddress)data_, (word)byteCount_);
-		}
-		else
-		{
-			retVal = ERR_PARAM_DATA;
-		}
-	}
-	return retVal;
-}
 
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-StdRtn_t NVM_Read_NvmVerFromNVM(uint8_t *nvmVer_)
-{
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+const NVM_Addr_t Get_NvmDFlashStrtAddr(void)		{return NVM_DFLASH_START_ADDR;}
+const NVM_Addr_t Get_NvmDFlashEndAddr(void)			{return (NVM_DFLASH_START_ADDR + NVM_DFLASH_BLOCK_SIZE);}
 
-	if (NULL != nvmVer_)
-	{
-		retVal = ReadBlockFromNVM((NVM_DataAddr_t)nvmVer_, NVM_VERSION_START_ADDR, sizeof(uint8_t));
-	}
-	return retVal;
-}
+const NVM_Addr_t Get_BswDFlashStrtAddr(void)		{return NVM_BSW_DFLASH_START_ADDR;}
+const uint8_t Get_BswDFlashCfgrdByteCnt(void)		{return NVM_BSW_DFLASH_CFGRD_BYTE_COUNT;}
 
-StdRtn_t NVM_Read_NvmVerFromROM(uint8_t *nvmVer_)
-{
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if (NULL != nvmVer_)
-	{
-		*nvmVer_ = (uint8)romCfg.nvmVer;
-		retVal = ERR_OK;
-	}
-	return  retVal;
-}
+const NVM_Addr_t Get_AswDFlashStrtAddr(void)		{return NVM_ASW_DFLASH_START_ADDR;}
 
-StdRtn_t NVM_Read_AllFromROM(NVM_RomCfg_t *romCfg_)
-{
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if (NULL != romCfg_)
-	{
-		*romCfg_ = romCfg;
-		retVal = ERR_OK;
-	}
-	return  retVal;
-}
+const NVM_Addr_t Get_NvmVerStrtAddr(void)			{return NVM_VERSION_START_ADDR;}
+
+const NVM_Addr_t Get_PidPosCfgStrtAddr(void)		{return PID_POS_CFG_START_ADDR;}
+const NVM_Addr_t Get_PidSpdLeCfgStrtAddr(void)		{return PID_SPDLE_CFG_START_ADDR;}
+const NVM_Addr_t Get_PidSpdRiCfgStrtAddr(void)		{return PID_SPDRI_CFG_START_ADDR;}
+const uint8_t Get_PidCfgByteCnt(void)				{return PID_CFG_BYTE_COUNT;}
+
+const NVM_RomCfg_t *Get_pRomCfg(void)				{return &romCfg;}
 
 
-StdRtn_t NVM_Restore_AllFromROM(void)
-{
-	return SaveBlock2NVM((const NVM_DataAddr_t)&romCfg, NVM_BSW_DFLASH_START_ADDR, sizeof(NVM_RomCfg_t),  NVM_BSW_DFLASH_CURRENT_BYTE_COUNT);
-}
-
-/* PID position control configuration */
-StdRtn_t NVM_Save_PIDPosCfg(const NVM_PidCfg_t *posCfg_)
-{
-	return SaveBlock2NVM((const NVM_DataAddr_t)posCfg_,PID_POS_CFG_START_ADDR, sizeof(NVM_PidCfg_t),  PID_CFG_BYTE_COUNT);
-}
-
-StdRtn_t NVM_Read_PIDPosCfg(NVM_PidCfg_t *posCfg_)
-{
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if (NULL != posCfg_)
-	{
-		retVal = ReadBlockFromNVM((NVM_DataAddr_t)posCfg_,PID_POS_CFG_START_ADDR, sizeof(NVM_PidCfg_t));
-	}
-	return retVal;
-}
-
-StdRtn_t NVM_Read_Dflt_PIDPosCfg(NVM_PidCfg_t *posCfg_)
-{
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if (NULL != posCfg_)
-	{
-		*posCfg_ = (NVM_PidCfg_t)romCfg.pidCfgPos;
-		retVal = ERR_OK;
-	}
-	return  retVal;
-}
-
-
-
-
-/* PID speed control configuration for the LEFT WHEEL */
-StdRtn_t NVM_Save_PIDSpdLeCfg(const NVM_PidCfg_t *spdCfg_)
-{
-	return SaveBlock2NVM((const NVM_DataAddr_t)spdCfg_,PID_SPDLE_CFG_START_ADDR, sizeof(NVM_PidCfg_t),  PID_CFG_BYTE_COUNT);
-}
-
-StdRtn_t NVM_Read_PIDSpdLeCfg(NVM_PidCfg_t *spdCfg_)
-{
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-
-	if (NULL != spdCfg_)
-	{
-		retVal = ReadBlockFromNVM((NVM_DataAddr_t)spdCfg_,PID_SPDLE_CFG_START_ADDR, sizeof(NVM_PidCfg_t));
-	}
-	return retVal;
-}
-
-StdRtn_t NVM_Read_Dflt_PIDSpdLeCfg(NVM_PidCfg_t *spdCfg_)
-{
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if (NULL != spdCfg_)
-	{
-		*spdCfg_ = (NVM_PidCfg_t)romCfg.pidCfgSpdLe;
-		retVal = ERR_OK;
-	}
-	return  retVal;
-}
-
-
-/* PID speed control configuration for the RIGHT WHEEL */
-StdRtn_t NVM_Save_PIDSpdRiCfg(const NVM_PidCfg_t *spdCfg_)
-{
-	return SaveBlock2NVM((const NVM_DataAddr_t)spdCfg_,PID_SPDRI_CFG_START_ADDR, sizeof(NVM_PidCfg_t),  PID_CFG_BYTE_COUNT);
-}
-
-StdRtn_t NVM_Read_PIDSpdRiCfg(NVM_PidCfg_t *spdCfg_)
-{
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-
-	if (NULL != spdCfg_)
-	{
-		retVal = ReadBlockFromNVM((NVM_DataAddr_t)spdCfg_,PID_SPDRI_CFG_START_ADDR, sizeof(NVM_PidCfg_t));
-	}
-	return retVal;
-}
-
-StdRtn_t NVM_Read_Dflt_PIDSpdRiCfg(NVM_PidCfg_t *spdCfg_)
-{
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if (NULL != spdCfg_)
-	{
-		*spdCfg_ = (NVM_PidCfg_t)romCfg.pidCfgSpdRi;
-		retVal = ERR_OK;
-	}
-	return  retVal;
-}
-
-
-
-/* Handle ASW storage data with NVM */
-StdRtn_t NVM_Save_ASWDataBytesInUnit(const void *pData_, uint8_t unitNum_, uint16_t byteCnt_)
-{
-	return SaveBlock2NVM((const NVM_DataAddr_t)pData_, (NVM_ASW_DFLASH_START_ADDR + unitNum_*NVM_UNIT_SIZE_ASW) , byteCnt_,  NVM_UNIT_SIZE_ASW);
-}
-
-StdRtn_t NVM_Read_ASWDataUnitAddr(void *pDataAddr_, uint8_t unitNum_)
-{
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-
-	if (NULL != pDataAddr_)
-	{
-		retVal = ReadBlockFromNVM((NVM_DataAddr_t)pDataAddr_, (NVM_ASW_DFLASH_START_ADDR + unitNum_*NVM_UNIT_SIZE_ASW), NVM_UNIT_SIZE_ASW);
-	}
-	return retVal;
-}
 
 
 
