@@ -127,7 +127,7 @@ static const TASK_PerdTaskFctPar_t drvTaskFctPar = {
  * Configuration of each task in an array
  */
 static TASK_CfgItm_t taskCfgItems[]= {
-		{APPL_TASKFCT, APPL_TASK_STRING, configMINIMAL_STACK_SIZE,     (void * const)&applTaskFctPar, tskIDLE_PRIORITY+1, (xTaskHandle*)NULL, TASK_SUSP_NEVER},
+		{APPL_TASKFCT, APPL_TASK_STRING, configMINIMAL_STACK_SIZE,     (void * const)&applTaskFctPar, tskIDLE_PRIORITY+2, (xTaskHandle*)NULL, TASK_SUSP_NEVER},
 		{DBG_TASKFCT,  DBG_TASK_STRING,  configMINIMAL_STACK_SIZE+50,  (void * const)&dbgTaskFctPar,  tskIDLE_PRIORITY+1, (xTaskHandle*)NULL, TASK_SUSP_DEFAULT},
 		{COMM_TASKFCT, COMM_TASK_STRING, configMINIMAL_STACK_SIZE+100, (void * const)&commTaskFctPar, tskIDLE_PRIORITY+3, (xTaskHandle*)NULL, TASK_SUSP_NEVER},
 		{DRV_TASKFCT,  DRV_TASK_STRING,  configMINIMAL_STACK_SIZE,     (void * const)&drvTaskFctPar,  tskIDLE_PRIORITY+3, (xTaskHandle*)NULL, TASK_SUSP_NEVER},
