@@ -40,7 +40,7 @@ extern "C" {
 #include "task_api.h"
 #include "Platform.h"
 #include "portmacro.h"
-
+#include "freemaster.h"
 
 
 /*
@@ -121,10 +121,21 @@ void FRTOS1_vApplicationStackOverflowHook(TaskHandle_t pxTask, char *pcTaskName)
 */
 void FRTOS1_vApplicationTickHook(void)
 {
-  /* Called for every RTOS tick. */
-  /* Write your code here ... */
-  TACHO_Sample();
-  TRG1_AddTick();
+	/* Called for every RTOS tick. */
+	/* Write your code here ... */
+	TACHO_Sample();
+	TRG1_AddTick();
+#if !FMSTR_DISABLE
+
+#if FMSTR_SHORT_INTR || FMSTR_POLL_DRIVEN
+	FMSTR_Poll();
+#endif
+
+#if FMSTR_USE_RECORDER
+	FMSTR_Recorder();
+#endif
+
+#endif
 }
 
 /*
