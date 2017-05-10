@@ -31,7 +31,6 @@
 #include "batt_clshdlr.h"
 #include "buz_clshdlr.h"
 /* Firmware components */
-#include "BT1.h"
 #include "RTT1.h"
 #include "RNET1.h"
 #include "LED1.h"
@@ -40,7 +39,11 @@
 #include "Q4CRight.h"
 #include "KIN1.h"
 #include "FRTOS1.h"
-
+/* include Bluetooth PEx component if FreeMaster is not present */
+#include "freemaster_cfg.h"
+#if FMSTR_DISABLE
+#include "BT1.h"
+#endif
 
 
 /*======================================= >> #DEFINES << =========================================*/
