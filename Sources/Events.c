@@ -125,16 +125,15 @@ void FRTOS1_vApplicationTickHook(void)
 	/* Write your code here ... */
 	TACHO_Sample();
 	TRG1_AddTick();
-#if FMSTR_USE_SCI
 
+#if FMSTR_USE_SCI
 #if FMSTR_SHORT_INTR || FMSTR_POLL_DRIVEN
 	FMSTR_Poll();
 #endif
 
-#if FMSTR_USE_RECORDER
+	#if FMSTR_USE_RECORDER
 	FMSTR_Recorder();
 #endif
-
 #endif
 }
 
