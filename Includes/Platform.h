@@ -1,12 +1,13 @@
 /***********************************************************************************************//**
  * @file		Platform.h
  * @ingroup		incl
- * @brief 	 	Basic configuration macros of the BSW software for the ACon Sumo Project
+ * @brief 	 	Basic configuration macros of the Sumo BSW software
  *
- *
+ * This header file provides basic configuration macros for the preprocessor within the Sumo BSW
+ * software. They define the features and supported hardware components of the Sumo robot.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
- * @date 		03.01.2017
+ * @date 	03.01.2017
  *
  * @copyright @LGPL2_1
  *

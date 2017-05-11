@@ -1,9 +1,10 @@
 /***********************************************************************************************//**
  * @file		ACon_Types.h
  * @ingroup		incl
- * @brief 		This provides basic macros and typedef for C-programming projects
+ * @brief 		Basic macros and data type definitions for C-programming projects
  *
- *
+ * This header file collects and provides common preprocessor macros and data type definitions for
+ * C-programming projects within the department 'Chair of Automatic Control' at University Kiel
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	09.01.2017

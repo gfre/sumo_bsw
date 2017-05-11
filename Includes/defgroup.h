@@ -283,7 +283,8 @@
  * @defgroup	incl Includes
  * @brief		Custom includes
  *
- *
+ * This group collects all included user-defined header files which provide basic configuration data
+ * for the Sumo Basic Software or common data type definitions.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	11.05.2017
