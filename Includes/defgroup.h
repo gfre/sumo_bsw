@@ -276,3 +276,17 @@
  *
  * @copyright	@LGPL2_1
  */
+
+
+
+/**
+ * @defgroup	incl Includes
+ * @brief		Custom includes
+ *
+ *
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	11.05.2017
+ *
+ * @copyright	@LGPL2_1
+ */

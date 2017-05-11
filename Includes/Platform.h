@@ -1,22 +1,26 @@
-/*******************************************************************************
- * @brief 	This provides basic includes and constants/macros for CAUsumo.
+/***********************************************************************************************//**
+ * @file		Platform.h
+ * @ingroup		incl
+ * @brief 	 	Basic configuration macros of the BSW software for the ACon Sumo Project
  *
- * @author 	Henning Weisbarth, hewe@tf.uni-kiel.de, CAU Kiel
- * @author 	Gerhard Freudenthaler, gefr@tf.uni-kiel.de, CAU Kiel
+ *
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 		03.01.2017
  *
- * @copyright 	LGPL-2.1, https://opensource.org/licenses/LGPL-2.1
+ * @copyright @LGPL2_1
  *
- *
- * ==============================================================================
- */
+ **************************************************************************************************/
 
 #ifndef PLATFORM_H_
 #define PLATFORM_H_
 
-#include "Cpu.h" /* for PEcfg_FreeMASTER */
-#include <stddef.h> /* for size_t */
+/*======================================= >> #INCLUDES << ========================================*/
+#include "Cpu.h" 		/* for PEcfg_FreeMASTER */
+#include <stddef.h> 	/* for size_t */
 
+
+/*======================================= >> #DEFINES << =========================================*/
 #define SW_API_VERSION      '1'
 #define SW_MAJOR_VERSION    '4'
 #define SW_MINOR_VERSION    '1'
@@ -34,4 +38,4 @@
 #define CAU_SUMO_PLT_MOTOR_LEFT_INVERTED 		(TRUE)
 #define CAU_SUMO_PLT_MOTOR_RIGHT_INVERTED 		(TRUE)
 
-#endif /* PLATFORM_H_ */
+#endif /* !PLATFORM_H_ */
