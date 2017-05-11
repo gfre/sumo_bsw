@@ -41,7 +41,7 @@
 #include "FRTOS1.h"
 /* include Bluetooth PEx component if FreeMaster is not present */
 #include "freemaster_cfg.h"
-#if FMSTR_DISABLE
+#if !FMSTR_USE_SCI
 #include "BT1.h"
 #endif
 
@@ -78,7 +78,9 @@ static const CLS1_ParseCommandCallback CmdParserTable[] =
   BATT_ParseCommand,
   KIN1_ParseCommand,
   RNET_ParseCommand,
+#if !FMSTR_USE_SCI
   BT1_ParseCommand,
+#endif
   NULL /* Sentinel */
 };
 
