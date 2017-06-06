@@ -188,6 +188,20 @@
  * @copyright	@LGPL2_1
  */
 
+/**
+ * @defgroup	refl Reflectance
+ * @brief		Reflectance Sensor Array Software Component
+ *
+ * This software component provides access to the reflectance sensor array.
+ * It can be used to drive the robot on a black line. More description to come...
+ *
+ *
+ * @author 	S. Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	01.06.2017
+ *
+ * @copyright	@LGPL2_1
+ */
+
 
 
 
