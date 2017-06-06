@@ -9,6 +9,11 @@
 #ifndef REFLECTANCE_H_
 #define REFLECTANCE_H_
 
+#ifdef MASTER_refl_C_
+#define EXTERNAL_
+#else
+#define EXTERNAL_ extern
+#endif
 
 #define REF_NOF_SENSORS 6
 #define REF_MIDDLE_LINE_VALUE  ((REF_NOF_SENSORS+1)*1000/2)
@@ -49,5 +54,8 @@ void REF_Deinit(void);
  */
 void REF_Init(void);
 
+#ifdef EXTERNAL_
+#undef EXTERNAL_
+#endif
 
 #endif /* REFLECTANCE_H_ */

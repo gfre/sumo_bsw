@@ -72,7 +72,6 @@ typedef struct SensorCalibT_ {
 } SensorCalibT;
 
 
-
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 /* Functions as wrapper around macro. Number S1 is on the right side */
 static void S1_SetOutput(void);
@@ -685,3 +684,9 @@ void REF_Init(void) {
     for(;;){} /* error */
   }
 }
+
+
+
+#ifdef MASTER_refl_C_
+#undef MASTER_refl_C_
+#endif /* !MASTER_refl_C_ */

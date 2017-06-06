@@ -1,9 +1,23 @@
+#define MASTER_refl_clshdlr_C_
 
+
+/*======================================= >> #INCLUDES << ========================================*/
 #include "refl_clshdlr.h"
 #include "refl_api.h"
 
-#define MASTER_refl_clshdlr_C_
+/*======================================= >> #DEFINES << =========================================*/
 
+/*=================================== >> TYPE DEFINITIONS << =====================================*/
+
+/*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
+static uint8_t PrintHelp(const CLS1_StdIOType *io);
+static unsigned char*REF_GetStateString(void);
+static uint8_t PrintStatus(const CLS1_StdIOType *io);
+byte REF_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
+
+/*=================================== >> GLOBAL VARIABLES << =====================================*/
+
+/*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 static uint8_t PrintHelp(const CLS1_StdIOType *io) {
   CLS1_SendHelpStr((unsigned char*)"ref", (unsigned char*)"Group of Reflectance commands\r\n", io->stdOut);
   CLS1_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
@@ -192,3 +206,7 @@ byte REF_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOT
   }
   return ERR_OK;
 }
+
+#ifdef MASTER_refl_clshdlr_C_
+#undef MASTER_refl_clshdlr_C_
+#endif /* !MASTER_refl_clshdlr_C_ */
