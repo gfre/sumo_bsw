@@ -8,3 +8,5 @@ ProjectInfo.xml
 core
 *.g_c*
 *.g_x*
+*.project
+*.cproject
