@@ -5,7 +5,10 @@
  *
  * This software component provides an implementation to store and retrieve data and parameter values
  * from the on-chip memory of the micro-controller MK22FX512VLK12. In this project the enitre 128KB
- * FlexNVM is used as NVM and no EEPROM is emulated.
+ * FlexNVM is used as NVM and no EEPROM is emulated. The components stores default values of all
+ * parameters in a (pseudo) ROM as well. The ROM is emulated in the RAM, i.e., the memory is
+ * statically allocated with const qualifier in programm flash and initialised with the default
+ * parameter values.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
@@ -178,7 +181,7 @@ StdRtn_t NVM_Read_Dflt_PIDPosCfg(NVM_PidCfg_t *posCfg_)
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if (NULL != posCfg_)
 	{
-		*posCfg_ = (NVM_PidCfg_t)romCfg->pidCfgPos;
+		*posCfg_ = romCfg->pidCfgPos;
 		retVal = ERR_OK;
 	}
 	return  retVal;
@@ -209,7 +212,7 @@ StdRtn_t NVM_Read_Dflt_PIDSpdLeCfg(NVM_PidCfg_t *spdCfg_)
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if (NULL != spdCfg_)
 	{
-		*spdCfg_ = (NVM_PidCfg_t)romCfg->pidCfgSpdLe;
+		*spdCfg_ = romCfg->pidCfgSpdLe;
 		retVal = ERR_OK;
 	}
 	return  retVal;
@@ -238,12 +241,40 @@ StdRtn_t NVM_Read_Dflt_PIDSpdRiCfg(NVM_PidCfg_t *spdCfg_)
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if (NULL != spdCfg_)
 	{
-		*spdCfg_ = (NVM_PidCfg_t)romCfg->pidCfgSpdRi;
+		*spdCfg_ = romCfg->pidCfgSpdRi;
 		retVal = ERR_OK;
 	}
 	return  retVal;
 }
 
+
+/* Reflectance sensors */
+StdRtn_t NVM_Save_REFLCalibData(const NVM_ReflCalibData_t *calibData_)
+{
+	return SaveBlock2NVM((const NVM_DataAddr_t)calibData_,Get_ReflCalibDataStrtAddr(), sizeof(NVM_ReflCalibData_t),  Get_ReflCalibDataByteCnt());
+}
+
+StdRtn_t NVM_Read_REFLCalibData(NVM_ReflCalibData_t *calibData_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+
+	if (NULL != calibData_)
+	{
+		retVal = ReadBlockFromNVM((NVM_DataAddr_t)calibData_,Get_ReflCalibDataStrtAddr(), sizeof(NVM_ReflCalibData_t));
+	}
+	return retVal;
+}
+
+StdRtn_t NVM_Read_Dflt_REFLCalibData(NVM_ReflCalibData_t *calibData_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if (NULL != calibData_)
+	{
+		*calibData_ = romCfg->reflCalibData;
+		retVal = ERR_OK;
+	}
+	return  retVal;
+}
 
 
 /* Handle ASW storage data with NVM */

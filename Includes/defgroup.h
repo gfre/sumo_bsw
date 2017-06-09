@@ -161,7 +161,9 @@
  * This software component provides an implementation to store and retrieve data and parameter
  * values from the on-chip memory of the micro-controller MK22FX512VLK12. The MCU provides 128KB
  * FlexNVM which is entirely used as non-volatile Data Flash Memory in this project. No EEPROM is
- * emulated in this project.
+ * emulated in this project. The components stores default values of all  parameters in a (pseudo)
+ * ROM as well. The ROM is emulated in the RAM, i.e., the memory is statically allocated with
+ * *const* qualifier in programm flash and initialised with the default parameter values.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	26.04.2017
@@ -302,6 +304,19 @@
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	11.05.2017
+ *
+ * @copyright	@LGPL2_1
+ */
+
+
+
+/**
+ * @defgroup	refl Reflactance sensors
+ * @brief		Reflactance sensors
+ *
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	01.06.2017
  *
  * @copyright	@LGPL2_1
  */
