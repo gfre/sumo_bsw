@@ -30,6 +30,7 @@
 #include "drv_clshdlr.h"
 #include "batt_clshdlr.h"
 #include "buz_clshdlr.h"
+#include "refl.h"
 /* Firmware components */
 #include "RTT1.h"
 #include "RNET1.h"
@@ -81,6 +82,7 @@ static const CLS1_ParseCommandCallback CmdParserTable[] =
 #if !FMSTR_USE_SCI
   BT1_ParseCommand,
 #endif
+  REF_ParseCommand,
   NULL /* Sentinel */
 };
 

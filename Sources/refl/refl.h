@@ -5,15 +5,15 @@
  *
  * <This is a detailed description.>
  *
- * @author 	<I>. <Surname>, Simon Helling@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	Simon Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	08.06.2017
  *
- * @copyright @<LGPLx_x>
+ * @copyright @<LGPL2_1>
  *
  ***************************************************************************************************/
 
-#ifndef SOURCES_REFL_REFL_H_
-#define SOURCES_REFL_REFL_H_
+#ifndef SOURCES_REFL_H_
+#define SOURCES_REFL_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "CLS1.h"
@@ -34,7 +34,6 @@
  * @brief
  *
  */
-#define REF_SENSOR1_IS_LEFT       1   /* if sensor 1 is on the left side */
 #define REF_MIN_LINE_VAL      0x120   /* minimum value indicating a line */
 //#define REF_MIN_NOISE_VAL      0x40   /* values below this are not added to the weighted sum */
 #define REF_MIN_NOISE_VAL      0x80   /* values below this are not added to the weighted sum */
@@ -55,8 +54,6 @@ typedef enum REF_LineKind_e {
   REF_NOF_LINES        /* Sentinel */
 } REF_LineKind;
 	
-
-
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 /**
@@ -109,4 +106,4 @@ void REF_Init(void);
 #undef EXTERNAL_
 #endif
 
-#endif /* !SOURCES_REFL_REFL_H_ */
+#endif /* !SOURCES_REFL_H_ */
