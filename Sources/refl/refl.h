@@ -16,7 +16,8 @@
 #define SOURCES_REFL_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "CLS1.h"
+#include "PE_Types.h"
+#include "RefCnt.h"
 
 
 #ifdef MASTER_refl_C_
@@ -41,6 +42,8 @@
 #define REF_NOF_SENSORS 6
 #define REF_MIDDLE_LINE_VALUE  ((REF_NOF_SENSORS+1)*1000/2)
 #define REF_MAX_LINE_VALUE     ((REF_NOF_SENSORS+1)*1000) /* maximum value for REF_GetLine() */
+#define REF_TIMEOUT_TICKS       	((RefCnt_CNT_INP_FREQ_U_0/1000)*REF_SENSOR_TIMEOUT_US)/1000 /* REF_SENSOR_TIMEOUT_US translated into timeout ticks */
+
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
@@ -53,17 +56,35 @@ typedef enum REF_LineKind_e {
   REF_LINE_AIR=5,      /* all sensors have a timeout value. Robot is not on ground at all? */
   REF_NOF_LINES        /* Sentinel */
 } REF_LineKind;
-	
+
+
+typedef enum {
+  REF_STATE_INIT,
+  REF_STATE_NOT_CALIBRATED,
+  REF_STATE_START_CALIBRATION,
+  REF_STATE_CALIBRATING,
+  REF_STATE_STOP_CALIBRATION,
+  REF_STATE_SAVE_CALIBRATION,
+  REF_STATE_READY
+} RefStateType;
+
+typedef struct SensorFctType_ {
+  void (*SetOutput)(void);
+  void (*SetInput)(void);
+  void (*SetVal)(void);
+  bool (*GetVal)(void);
+} SensorFctType;
+
+typedef uint16_t SensorTimeType;
+
+/* type of NVM Configuration data (in FLASH) */
+typedef struct SensorCalibT_ {
+  SensorTimeType minVal[REF_NOF_SENSORS];
+  SensorTimeType maxVal[REF_NOF_SENSORS];
+} SensorCalibT;
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-/**
- * \brief Shell parser routine.
- * \param cmd Pointer to command line string.
- * \param handled Pointer to status if command has been handled. Set to TRUE if command was understood.
- * \param io Pointer to stdio handle
- * \return Error code, ERR_OK if everything was ok.
- */
-EXTERNAL_ uint8_t REF_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
+EXTERNAL_ RefStateType REF_GetRefState(void);
 
 EXTERNAL_ REF_LineKind REF_GetLineKind(void);
 
@@ -71,32 +92,50 @@ EXTERNAL_ void REF_DumpCalibrated(void);
 
 EXTERNAL_ unsigned char *REF_LineKindStr(REF_LineKind line);
 
+EXTERNAL_ void REF_GetSensorValues(uint16_t *values, int nofValues);
+
+EXTERNAL_ SensorTimeType REF_GetRawSensorValue(const uint8 i);
+
+EXTERNAL_ SensorTimeType REF_GetCalibratedSensorValue(const uint8 i);
+
+EXTERNAL_ int16_t REF_GetRefLineValue(void);
+
+EXTERNAL_ REF_LineKind REF_GetRefLineKind(void);
+
+EXTERNAL_ SensorCalibT* REF_GetCalibMinMaxPtr(void);
+
+EXTERNAL_ int16_t REF_GetRefLineWidth(void);
+
 EXTERNAL_ uint16_t REF_GetLineValue(bool *onLine);
 
-EXTERNAL_ uint16_t REF_LineWidth(void);
+EXTERNAL_ bool REF_IsRefEnabled(void);
 
-void REF_GetSensorValues(uint16_t *values, int nofValues);
+EXTERNAL_ void REF_SetRefEnabled(bool isEnabled);
+
+EXTERNAL_ bool REF_IsLedOn(void);
+
+EXTERNAL_ void REF_SetLedOn(bool isOn);
 
 /*!
  * \brief Starts or stops the calibration.
  */
-void REF_CalibrateStartStop(void);
+EXTERNAL_ void REF_CalibrateStartStop(void);
 
 /*!
  * \brief Function to find out if we can use the sensor (means: it is calibrated and not currently calibrating)
  * \return TRUE if the sensor is ready.
  */
-bool REF_CanUseSensor(void);
+EXTERNAL_ bool REF_CanUseSensor(void);
 
 /*!
  * \brief Driver Deinitialization.
  */
-void REF_Deinit(void);
+EXTERNAL_ void REF_Deinit(void);
 
 /*!
  * \brief Driver Initialization.
  */
-void REF_Init(void);
+EXTERNAL_ void REF_Init(void);
 
 
 /**

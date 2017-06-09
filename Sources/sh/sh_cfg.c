@@ -30,7 +30,7 @@
 #include "drv_clshdlr.h"
 #include "batt_clshdlr.h"
 #include "buz_clshdlr.h"
-#include "refl.h"
+#include "refl_clshdlr.h"
 /* Firmware components */
 #include "RTT1.h"
 #include "RNET1.h"
