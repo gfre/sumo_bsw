@@ -249,28 +249,28 @@ StdRtn_t NVM_Read_Dflt_PIDSpdRiCfg(NVM_PidCfg_t *spdCfg_)
 
 
 /* Reflectance sensors */
-StdRtn_t NVM_Save_REFLCalibData(const NVM_ReflCalibData_t *calibData_)
+StdRtn_t NVM_Save_ReflCalibData(const NVM_ReflCalibData_t *pCalibData_)
 {
-	return SaveBlock2NVM((const NVM_DataAddr_t)calibData_,Get_ReflCalibDataStrtAddr(), sizeof(NVM_ReflCalibData_t),  Get_ReflCalibDataByteCnt());
+	return SaveBlock2NVM((const NVM_DataAddr_t)pCalibData_,Get_ReflCalibDataStrtAddr(), sizeof(NVM_ReflCalibData_t),  Get_ReflCalibDataByteCnt());
 }
 
-StdRtn_t NVM_Read_REFLCalibData(NVM_ReflCalibData_t *calibData_)
+StdRtn_t NVM_Read_ReflCalibData(NVM_ReflCalibData_t *pCalibData_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 
-	if (NULL != calibData_)
+	if (NULL != pCalibData_)
 	{
-		retVal = ReadBlockFromNVM((NVM_DataAddr_t)calibData_,Get_ReflCalibDataStrtAddr(), sizeof(NVM_ReflCalibData_t));
+		retVal = ReadBlockFromNVM((NVM_DataAddr_t)pCalibData_,Get_ReflCalibDataStrtAddr(), sizeof(NVM_ReflCalibData_t));
 	}
 	return retVal;
 }
 
-StdRtn_t NVM_Read_Dflt_REFLCalibData(NVM_ReflCalibData_t *calibData_)
+StdRtn_t NVM_Read_Dflt_ReflCalibData(NVM_ReflCalibData_t *pCalibData_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if (NULL != calibData_)
+	if (NULL != pCalibData_)
 	{
-		*calibData_ = romCfg->reflCalibData;
+		*pCalibData_ = romCfg->reflCalibData;
 		retVal = ERR_OK;
 	}
 	return  retVal;
