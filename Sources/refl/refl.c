@@ -228,7 +228,7 @@ static bool REF_MeasureRaw(SensorTimeType raw[REF_NOF_SENSORS], RefCnt_TValueTyp
   if (isTimeout) {
     for(i=0;i<REF_NOF_SENSORS;i++) {
       if (raw[i]==MAX_SENSOR_VALUE) { /* not measured yet? */
-        if (SensorCalibMinMax.maxVal[0] != 0) { //TODO
+        if (SensorCalibMinMax.maxVal[i] != 0) { //TODO
           raw[i] = SensorCalibMinMax.maxVal[i]; /* use calibrated max value */
         } else {
           raw[i] = timeoutCntVal; /* set to timeout value */
