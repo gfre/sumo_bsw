@@ -23,18 +23,20 @@
 #include "sh.h"
 #include "rnet.h"
 #include "drv.h"
+#include "refl.h"
 
 
 /*======================================= >> #DEFINES << =========================================*/
 #define NUM_OF_TASKS        (sizeof(taskCfgItems)/sizeof(taskCfgItems[0]))
 #define TASK_TIMING_5MS     (5u)
 #define TASK_TIMING_10MS    (10u)
-
+#define TASK_TIMING_20MS	(20u)
 
 #define APPL_TASK_PERIOD 	(TASK_TIMING_10MS)
 #define COMM_TASK_PERIOD 	(TASK_TIMING_5MS)
 #define DRV_TASK_PERIOD 	(TASK_TIMING_5MS)
 #define DBG_TASK_DELAY 		(TASK_TIMING_10MS)
+#define REFL_TASK_DELAY		(TASK_TIMING_20MS)
 
 /* Task functions for periodic tasks */
 #define APPL_TASKFCT		(TASK_PerdTaskFct)
@@ -43,6 +45,7 @@
 
 /* Task functions for non-periodic tasks */
 #define  DBG_TASKFCT		(TASK_NonPerdTaskFct)
+#define	 REFL_TASKFCT		(TASK_NonPerdTaskFct)
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
@@ -82,6 +85,13 @@ static const TASK_SwcCfg_t drvTaskSwcCfg[] = {
 		{DRV_SWC_STRING, DRV_MainFct, DRV_Init},
 		{TACHO_SWC_STRING, TACHO_CalcSpeed, TACHO_Init},
 };
+
+/*
+ * Configuration of the software component(s) run by the DRIVE task
+ */
+static const TASK_SwcCfg_t reflTaskSwcCfg[] = {
+		{REFL_SWC_STRING, REFL_MainFct, REFL_Init},
+};
 /*------------------------------------------------------------------------------------------------*/
 
 
@@ -120,6 +130,15 @@ static const TASK_PerdTaskFctPar_t drvTaskFctPar = {
 		drvTaskSwcCfg,
 		sizeof(drvTaskSwcCfg)/sizeof(drvTaskSwcCfg[0])
 };
+
+/*
+ * REFL task parameters
+ */
+static const TASK_PerdTaskFctPar_t reflTaskFctPar = {
+		REFL_TASK_DELAY,
+		reflTaskSwcCfg,
+		sizeof(reflTaskSwcCfg)/sizeof(reflTaskSwcCfg[0])
+};
 /*------------------------------------------------------------------------------------------------*/
 
 
@@ -131,6 +150,7 @@ static TASK_CfgItm_t taskCfgItems[]= {
 		{DBG_TASKFCT,  DBG_TASK_STRING,  configMINIMAL_STACK_SIZE+50,  (void * const)&dbgTaskFctPar,  tskIDLE_PRIORITY+1, (xTaskHandle*)NULL, TASK_SUSP_DEFAULT},
 		{COMM_TASKFCT, COMM_TASK_STRING, configMINIMAL_STACK_SIZE+100, (void * const)&commTaskFctPar, tskIDLE_PRIORITY+3, (xTaskHandle*)NULL, TASK_SUSP_NEVER},
 		{DRV_TASKFCT,  DRV_TASK_STRING,  configMINIMAL_STACK_SIZE,     (void * const)&drvTaskFctPar,  tskIDLE_PRIORITY+3, (xTaskHandle*)NULL, TASK_SUSP_NEVER},
+		{REFL_TASKFCT, REFL_TASK_STRING, configMINIMAL_STACK_SIZE+50,  (void * const)&reflTaskFctPar, tskIDLE_PRIORITY+4, (xTaskHandle*)NULL, TASK_SUSP_NEVER},
 };
 /*------------------------------------------------------------------------------------------------*/
 

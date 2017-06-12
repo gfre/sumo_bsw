@@ -82,7 +82,7 @@ static const CLS1_ParseCommandCallback CmdParserTable[] =
 #if !FMSTR_USE_SCI
   BT1_ParseCommand,
 #endif
-  REF_ParseCommand,
+  REFL_ParseCommand,
   NULL /* Sentinel */
 };
 

@@ -33,23 +33,18 @@
  * @brief
  *
  */
+#define REFL_SWC_STRING ("refl")
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-
-
-/*!
- * \brief Driver Deinitialization.
- */
-EXTERNAL_ void REF_Deinit(void);
-
 /*!
  * \brief Driver Initialization.
  */
-EXTERNAL_ void REF_Init(void);
+EXTERNAL_ void REFL_Init(void);
 
+EXTERNAL_ void REFL_MainFct(void);
 
 /**
  * @}

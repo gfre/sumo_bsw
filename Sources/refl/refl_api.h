@@ -31,36 +31,36 @@
  * @{
  */
 /*======================================= >> #DEFINES << =========================================*/
-#define REF_MIN_LINE_VAL      0x120   /* minimum value indicating a line */
-//#define REF_MIN_NOISE_VAL      0x40   /* values below this are not added to the weighted sum */
-#define REF_MIN_NOISE_VAL      0x80   /* values below this are not added to the weighted sum */
-#define REF_SENSOR_TIMEOUT_US  3500   /* after this time, consider no reflection (black). Must be smaller than the timeout period of the RefCnt timer! */
-#define REF_NOF_SENSORS 6
-#define REF_MIDDLE_LINE_VALUE  ((REF_NOF_SENSORS+1)*1000/2)
-#define REF_MAX_LINE_VALUE     ((REF_NOF_SENSORS+1)*1000) /* maximum value for REF_GetLine() */
-#define REF_TIMEOUT_TICKS       	((RefCnt_CNT_INP_FREQ_U_0/1000)*REF_SENSOR_TIMEOUT_US)/1000 /* REF_SENSOR_TIMEOUT_US translated into timeout ticks */
+#define REFL_MIN_LINE_VAL      0x120   /* minimum value indicating a line */
+//#define REFL_MIN_NOISE_VAL      0x40   /* values below this are not added to the weighted sum */
+#define REFL_MIN_NOISE_VAL      0x80   /* values below this are not added to the weighted sum */
+#define REFL_SENSOR_TIMEOUT_US  3500   /* after this time, consider no REFLlection (black). Must be smaller than the timeout period of the RefCnt timer! */
+#define REFL_NOF_SENSORS 6
+#define REFL_MIDDLE_LINE_VALUE  ((REFL_NOF_SENSORS+1)*1000/2)
+#define REFL_MAX_LINE_VALUE     ((REFL_NOF_SENSORS+1)*1000) /* maximum value for REFL_GetLine() */
+#define REFL_TIMEOUT_TICKS       	((RefCnt_CNT_INP_FREQ_U_0/1000)*REFL_SENSOR_TIMEOUT_US)/1000 /* REF_SENSOR_TIMEOUT_US translated into timeout ticks */
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-typedef enum REF_LineKind_e {
-  REF_LINE_NONE=0,     /* no line, sensors do not see a line */
-  REF_LINE_STRAIGHT=1, /* forward line |, sensors see a line underneath */
-  REF_LINE_LEFT=2,     /* left half of sensors see line */
-  REF_LINE_RIGHT=3,    /* right half of sensors see line */
-  REF_LINE_FULL=4,     /* all sensors see a line */
-  REF_LINE_AIR=5,      /* all sensors have a timeout value. Robot is not on ground at all? */
-  REF_NOF_LINES        /* Sentinel */
-} REF_LineKind;
+typedef enum REFL_LineKind_e {
+  REFL_LINE_NONE=0,     /* no line, sensors do not see a line */
+  REFL_LINE_STRAIGHT=1, /* forward line |, sensors see a line underneath */
+  REFL_LINE_LEFT=2,     /* left half of sensors see line */
+  REFL_LINE_RIGHT=3,    /* right half of sensors see line */
+  REFL_LINE_FULL=4,     /* all sensors see a line */
+  REFL_LINE_AIR=5,      /* all sensors have a timeout value. Robot is not on ground at all? */
+  REFL_NOF_LINES        /* Sentinel */
+} REFL_LineKind;
 
 typedef enum {
-  REF_STATE_INIT,
-  REF_STATE_NOT_CALIBRATED,
-  REF_STATE_START_CALIBRATION,
-  REF_STATE_CALIBRATING,
-  REF_STATE_STOP_CALIBRATION,
-  REF_STATE_SAVE_CALIBRATION,
-  REF_STATE_READY
-} RefStateType;
+  REFL_STATE_INIT,
+  REFL_STATE_NOT_CALIBRATED,
+  REFL_STATE_START_CALIBRATION,
+  REFL_STATE_CALIBRATING,
+  REFL_STATE_STOP_CALIBRATION,
+  REFL_STATE_SAVE_CALIBRATION,
+  REFL_STATE_READY
+} ReflStateType;
 
 typedef struct SensorFctType_ {
   void (*SetOutput)(void);
@@ -73,23 +73,21 @@ typedef uint16_t SensorTimeType;
 
 
 /*============================= >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-EXTERNAL_ void REF_GetSensorValues(uint16_t *values, int nofValues);
+EXTERNAL_ void REFL_GetSensorValues(uint16_t *values, int nofValues);
 
-EXTERNAL_ REF_LineKind REF_GetRefLineKind(void);
+EXTERNAL_ REFL_LineKind REFL_GetReflLineKind(void);
 
-EXTERNAL_ int16_t REF_GetRefLineWidth(void);
+EXTERNAL_ int16_t REFL_GetReflLineWidth(void);
 
-EXTERNAL_ uint16_t REF_GetLineValue(bool *onLine);
+EXTERNAL_ uint16_t REFL_GetLineValue(bool *onLine);
 
-EXTERNAL_ bool REF_IsRefEnabled(void);
-
-EXTERNAL_ bool REF_IsLedOn(void);
+EXTERNAL_ bool REFL_IsLedOn(void);
 
 /*!
  * \brief Function to find out if we can use the sensor (means: it is calibrated and not currently calibrating)
  * \return TRUE if the sensor is ready.
  */
-EXTERNAL_ bool REF_CanUseSensor(void);
+EXTERNAL_ bool REFL_CanUseSensor(void);
 
 #ifdef EXTERNAL_
 #undef EXTERNAL_

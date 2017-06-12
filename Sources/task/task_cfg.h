@@ -56,6 +56,12 @@
  */
 #define DRV_TASK_STRING   ("DRIVE")
 
+/**
+ * String identification of the task  @a REFL
+ */
+#define REFL_TASK_STRING   ("REFL")
+
+
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
