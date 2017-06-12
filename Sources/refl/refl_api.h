@@ -18,6 +18,7 @@
 /*======================================= >> #INCLUDES << ========================================*/
 #include "PE_Types.h"
 #include "RefCnt.h"
+#include "nvm_api.h"
 
 #ifdef MASTER_refl_C_
 #define EXTERNAL_
@@ -40,8 +41,6 @@
 #define REF_TIMEOUT_TICKS       	((RefCnt_CNT_INP_FREQ_U_0/1000)*REF_SENSOR_TIMEOUT_US)/1000 /* REF_SENSOR_TIMEOUT_US translated into timeout ticks */
 
 
-
-
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 typedef enum REF_LineKind_e {
   REF_LINE_NONE=0,     /* no line, sensors do not see a line */
@@ -52,7 +51,6 @@ typedef enum REF_LineKind_e {
   REF_LINE_AIR=5,      /* all sensors have a timeout value. Robot is not on ground at all? */
   REF_NOF_LINES        /* Sentinel */
 } REF_LineKind;
-
 
 typedef enum {
   REF_STATE_INIT,
@@ -73,34 +71,11 @@ typedef struct SensorFctType_ {
 
 typedef uint16_t SensorTimeType;
 
-/* type of NVM Configuration data (in FLASH) */
-typedef struct SensorCalibT_ {
-  SensorTimeType minVal[REF_NOF_SENSORS];
-  SensorTimeType maxVal[REF_NOF_SENSORS];
-} SensorCalibT;
-
-
 
 /*============================= >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-EXTERNAL_ RefStateType REF_GetRefState(void);
-
-EXTERNAL_ REF_LineKind REF_GetLineKind(void);
-
-EXTERNAL_ void REF_DumpCalibrated(void);
-
-EXTERNAL_ unsigned char *REF_LineKindStr(REF_LineKind line);
-
 EXTERNAL_ void REF_GetSensorValues(uint16_t *values, int nofValues);
 
-EXTERNAL_ SensorTimeType REF_GetRawSensorValue(const uint8 i);
-
-EXTERNAL_ SensorTimeType REF_GetCalibratedSensorValue(const uint8 i);
-
-EXTERNAL_ int16_t REF_GetRefLineValue(void);
-
 EXTERNAL_ REF_LineKind REF_GetRefLineKind(void);
-
-EXTERNAL_ SensorCalibT* REF_GetCalibMinMaxPtr(void);
 
 EXTERNAL_ int16_t REF_GetRefLineWidth(void);
 
@@ -108,16 +83,7 @@ EXTERNAL_ uint16_t REF_GetLineValue(bool *onLine);
 
 EXTERNAL_ bool REF_IsRefEnabled(void);
 
-EXTERNAL_ void REF_SetRefEnabled(bool isEnabled);
-
 EXTERNAL_ bool REF_IsLedOn(void);
-
-EXTERNAL_ void REF_SetLedOn(bool isOn);
-
-/*!
- * \brief Starts or stops the calibration.
- */
-EXTERNAL_ void REF_CalibrateStartStop(void);
 
 /*!
  * \brief Function to find out if we can use the sensor (means: it is calibrated and not currently calibrating)

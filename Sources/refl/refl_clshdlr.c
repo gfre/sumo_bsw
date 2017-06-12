@@ -29,6 +29,7 @@
 static uint8_t PrintHelp(const CLS1_StdIOType *io);
 static unsigned char*REF_GetStateString(void);
 static uint8_t PrintStatus(const CLS1_StdIOType *io) ;
+static unsigned char *REF_LineKindStr(REF_LineKind line);
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 
@@ -176,8 +177,7 @@ static unsigned char*REF_GetStateString(void) {
   return (unsigned char*)"UNKNOWN";
 }
 
-/*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-unsigned char *REF_LineKindStr(REF_LineKind line) {
+static unsigned char *REF_LineKindStr(REF_LineKind line) {
   switch(line)
   {
   case REF_LINE_NONE:
@@ -197,7 +197,7 @@ unsigned char *REF_LineKindStr(REF_LineKind line) {
   } /* switch */
 }
 
-
+/*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 byte REF_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io) {
   if (UTIL1_strcmp((char*)cmd, CLS1_CMD_HELP)==0 || UTIL1_strcmp((char*)cmd, "ref help")==0)
   {

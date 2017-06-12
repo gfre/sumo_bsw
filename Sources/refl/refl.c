@@ -17,9 +17,11 @@
 /*======================================= >> #INCLUDES << ========================================*/
 #include "refl.h"
 #include "refl_api.h"
+#include "refl_clshdlr.h"
 #include "sh_api.h"
 #include "buz_api.h"
 #include "nvm_api.h"
+
 
 #include "LED_IR.h"  /*Infrared LED's ON/OFF*/
 #include "WAIT1.h"
@@ -37,7 +39,7 @@
 /*======================================= >> #DEFINES << =========================================*/
 #define REF_USE_WHITE_LINE  		0  /* if set to 1, then the robot is using a white (on black) line, otherwise a black (on white) line */
 #define REF_START_STOP_CALIB      	1 /* start/stop calibration commands */
-#define MAX_SENSOR_VALUE  			((SensorTimeType)-1)
+#define MAX_SENSOR_VALUE  			((SensorTimeType)-1) //0xFFFF
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 
@@ -108,9 +110,8 @@ static bool REF_IsEnabled = TRUE;
   static xSemaphoreHandle REF_StartStopSem = NULL;
 #endif
 
-static SensorCalibT *SensorCalibMinMaxPtr; /* pointer to calibrated data in FLASH, NULL if not calibrated */
-static SensorCalibT *SensorCalibMinMaxTmpPtr=NULL; /* temporary calibration data */
-static SensorCalibT calibData = {0};
+static NVM_ReflCalibData_t *SensorCalibMinMaxTmpPtr = NULL; /* pointer to temprory calibrated data */
+static NVM_ReflCalibData_t SensorCalibMinMax={0}; /* calibration data */
 
 static SensorTimeType SensorRaw[REF_NOF_SENSORS]; /* raw sensor values */
 static SensorTimeType SensorCalibrated[REF_NOF_SENSORS]; /* 0 means white/min value, 1000 means black/max value */
@@ -227,8 +228,8 @@ static bool REF_MeasureRaw(SensorTimeType raw[REF_NOF_SENSORS], RefCnt_TValueTyp
   if (isTimeout) {
     for(i=0;i<REF_NOF_SENSORS;i++) {
       if (raw[i]==MAX_SENSOR_VALUE) { /* not measured yet? */
-        if (SensorCalibMinMaxPtr!=NULL) {
-          raw[i] = SensorCalibMinMaxPtr->maxVal[i]; /* use calibrated max value */
+        if (SensorCalibMinMax.maxVal[0] != 0) { //TODO
+          raw[i] = SensorCalibMinMax.maxVal[i]; /* use calibrated max value */
         } else {
           raw[i] = timeoutCntVal; /* set to timeout value */
         }
@@ -262,22 +263,22 @@ static void ReadCalibrated(SensorTimeType calib[REF_NOF_SENSORS], SensorTimeType
 
   max = 0; /* determine maximum timeout value */
   for(i=0;i<REF_NOF_SENSORS;i++) {
-    if (SensorCalibMinMaxPtr->maxVal[i]>max) {
-      max = SensorCalibMinMaxPtr->maxVal[i];
+    if (SensorCalibMinMax.maxVal[i]>max) {
+      max = SensorCalibMinMax.maxVal[i];
     }
   }
   if (max > REF_TIMEOUT_TICKS) { /* limit to timeout value */
     max = REF_TIMEOUT_TICKS;
   }
   (void)REF_MeasureRaw(raw, max);
-  if (SensorCalibMinMaxPtr==NULL) { /* no calibration data? */
+  if (SensorCalibMinMax.maxVal[0] == 0) { /* no calibration data? */
     return;
   }
   for(i=0;i<REF_NOF_SENSORS;i++) {
     x = 0;
-    denominator = SensorCalibMinMaxPtr->maxVal[i]-SensorCalibMinMaxPtr->minVal[i];
+    denominator = SensorCalibMinMax.maxVal[i]-SensorCalibMinMax.minVal[i];
     if (denominator!=0) {
-      x = (((int32_t)raw[i]-SensorCalibMinMaxPtr->minVal[i])*1000)/denominator;
+      x = (((int32_t)raw[i]-SensorCalibMinMax.minVal[i])*1000)/denominator;
     }
     if (x<0) {
       x = 0;
@@ -386,7 +387,7 @@ static REF_LineKind ReadLineKind(SensorTimeType val[REF_NOF_SENSORS]) {
   if (SensorsSaturated()) {
     return REF_LINE_AIR;
   }
-  for(i=0;i<REF_NOF_SENSORS;i++) {
+  for(i = 0; i < REF_NOF_SENSORS; i++) {
     if (val[i]<REF_MIN_LINE_VAL) { /* smaller value? White seen! */
       break;
     }
@@ -478,8 +479,8 @@ REF_LineKind REF_GetRefLineKind(void){
 int16_t REF_GetRefLineWidth(void){
 	return refLineWidth;
 }
-SensorCalibT* REF_GetCalibMinMaxPtr(void){
-	return SensorCalibMinMaxPtr;
+NVM_ReflCalibData_t* REF_GetCalibMinMaxPtr(void){
+	return &SensorCalibMinMax;
 }
 
 void REF_SetRefEnabled(bool isEnabled){
@@ -487,10 +488,6 @@ void REF_SetRefEnabled(bool isEnabled){
 	{
 	REF_IsEnabled = isEnabled;
 	}
-}
-
-REF_LineKind REF_GetLineKind(void) {
-  return refLineKind;
 }
 
 bool REF_CanUseSensor(void) {
@@ -517,33 +514,6 @@ void REF_SetLedOn(bool isOn){
 	}
 }
 
-SensorCalibT *NVMC_GetReflectanceData(void)
-{
-	uint8_t i = 0u;
-    for(i = 0; i < REF_NOF_SENSORS; i++)
-    {
-    	if(calibData.maxVal[i] == 0)
-    	{
-    		return NULL;
-    	}
-    }
-	return &calibData;
-}
-
-
-void NVMC_SaveReflectanceData(const SensorCalibT *SensorCalibMinMaxTmpPtr, uint32_t size)
-{
-	if(SensorCalibMinMaxTmpPtr != NULL)
-	{
-		uint8_t i = 0u;
-	    for(i = 0; i < REF_NOF_SENSORS; i++)
-	    {
-	    	calibData.minVal[i] = SensorCalibMinMaxTmpPtr->minVal[i];
-	    	calibData.maxVal[i] = SensorCalibMinMaxTmpPtr->maxVal[i];
-	    }
-	}
-	return;
-}
 
 #if REF_START_STOP_CALIB
 void REF_CalibrateStartStop(void) {
@@ -570,8 +540,8 @@ static void REF_StateMachine(void) {
   switch (refState)
   {
     case REF_STATE_INIT:
-      SensorCalibMinMaxPtr = NVMC_GetReflectanceData();
-      if (SensorCalibMinMaxPtr!=NULL)
+//      SensorCalibMinMaxPtr = NVMC_GetReflectanceData();
+      if (NVM_Read_ReflCalibData(&SensorCalibMinMax) == ERR_OK)
       { /* use calibration data from FLASH */
         refState = REF_STATE_READY;
       } else
@@ -595,13 +565,13 @@ static void REF_StateMachine(void) {
     case REF_STATE_START_CALIBRATION:
       SH_SENDSTR((unsigned char*)"start calibration...\r\n");
 
-      if (SensorCalibMinMaxTmpPtr!=NULL)
+      if (SensorCalibMinMaxTmpPtr != NULL)
       {
         refState = REF_STATE_INIT; /* error case */
         break;
       }
-      SensorCalibMinMaxTmpPtr = FRTOS1_pvPortMalloc(sizeof(SensorCalibT));
-      if (SensorCalibMinMaxTmpPtr!=NULL)  /* success */
+      SensorCalibMinMaxTmpPtr = FRTOS1_pvPortMalloc(sizeof(NVM_ReflCalibData_t));
+      if (SensorCalibMinMaxTmpPtr != NULL)  /* success */
       {
         for(i=0;i<REF_NOF_SENSORS;i++)
         {
@@ -618,7 +588,7 @@ static void REF_StateMachine(void) {
 
     case REF_STATE_CALIBRATING:
       FRTOS1_vTaskDelay(80/portTICK_PERIOD_MS); /* no need to sample that fast: this gives 80+20=100 ms */
-      if (SensorCalibMinMaxTmpPtr!=NULL) /* safety check */
+      if (SensorCalibMinMaxTmpPtr != NULL) /* safety check */
       {
         REF_CalibrateMinMax(SensorCalibMinMaxTmpPtr->minVal, SensorCalibMinMaxTmpPtr->maxVal, SensorRaw);
       } else
@@ -627,7 +597,7 @@ static void REF_StateMachine(void) {
         break;
       }
 
-      (void)BUZ_Beep(100, 25);
+      (void)BUZ_Beep(100, 50);
 
 
 #if REF_START_STOP_CALIB
@@ -646,22 +616,24 @@ static void REF_StateMachine(void) {
       break;
 
     case REF_STATE_SAVE_CALIBRATION:
-      NVMC_SaveReflectanceData(SensorCalibMinMaxTmpPtr, sizeof(SensorCalibT));
+      if(NVM_Save_ReflCalibData(SensorCalibMinMaxTmpPtr) != ERR_OK)
+      {
+    	  SH_SENDSTR((unsigned char*)"failed to save calib data");
+      }
       /* free memory */
       FRTOS1_vPortFree(SensorCalibMinMaxTmpPtr);
       SensorCalibMinMaxTmpPtr = NULL;
-      SensorCalibMinMaxPtr = NVMC_GetReflectanceData();
-      if (SensorCalibMinMaxPtr!=NULL) /* use calibration data from FLASH */
+      if(NVM_Read_ReflCalibData(&SensorCalibMinMax) == ERR_OK)
       {
-        SH_SENDSTR((unsigned char*)"calibration data saved.\r\n");
+    	  SH_SENDSTR((unsigned char*)"calibration data saved");
 
-        refState = REF_STATE_READY;
-        break;
-      } else
+    	  refState = REF_STATE_READY;
+      }else
       {
-        refState = REF_STATE_INIT; /* error case */
+    	  refState = REF_STATE_INIT;
       }
       break;
+
 
     case REF_STATE_READY:
       REF_Measure();
