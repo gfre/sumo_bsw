@@ -43,7 +43,7 @@
  * @brief This function returns the reference to the configuration of the reflectance sensor array
  * @return reference to the configuration
  */
-EXTERNAL_ const Refl_Cfg_t *Get_pReflCfg(void);
+EXTERNAL_ const REFL_Cfg_t *Get_pReflCfg(void);
 
 
 

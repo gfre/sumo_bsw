@@ -46,7 +46,7 @@
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-static Refl_Cfg_t reflCfg = {
+static REFL_Cfg_t reflCfg = {
 		REFL_MIN_NOISE_VAL, REFL_MIN_LINE_VAL, REFL_LINE_BLACK, REFL_SENSOR_TIMEOUT_US,
 };
 
@@ -57,7 +57,7 @@ static Refl_Cfg_t reflCfg = {
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-const Refl_Cfg_t *Get_pReflCfg(void)	{return &reflCfg;}
+const REFL_Cfg_t *Get_pReflCfg(void)	{return &reflCfg;}
 
 
 

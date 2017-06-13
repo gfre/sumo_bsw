@@ -8,7 +8,7 @@
  * @author 	Simon Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	09.06.2017
  *
- * @copyright @<LGPL2_1>
+ * @copyright @LGPL2_1
  *
  ***************************************************************************************************/
 
@@ -35,40 +35,40 @@
 /**
  * REF_SENSOR_TIMEOUT_US translated into timeout ticks
  */
-#define REFL_TIMEOUT_US_TO_TICKS(timOutUS_)      ((RefCnt_CNT_INP_FREQ_U_0/1000)*timOutUS_)/1000 /* REF_SENSOR_TIMEOUT_US translated into timeout ticks */
+#define REFL_TIMEOUT_US_TO_TICKS(timOutUS_)      ((RefCnt_CNT_INP_FREQ_U_0/1000)*timOutUS_)/1000
 
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 /**
- * @typedef Refl_LineBW_t
- * @brief Data type definition of the enumeration Refl_LineBW_e
+ * @typedef REFL_LineBW_t
+ * @brief Data type definition of the enumeration REFL_LineBW_e
  *
- * @enum Refl_LineBW_e
+ * @enum REFL_LineBW_e
  * @brief
  */
-typedef enum Refl_LineBW_e {
+typedef enum REFL_LineBW_e {
 	 REFL_LINE_WHITE = 0x00 /**< REFL_LINE_WHITE */
 	,REFL_LINE_BLACK        /**< REFL_LINE_BLACK */
 	,REFL_LINE_BW_CNT
-} Refl_LineBW_t;
+} REFL_LineBW_t;
 
 /**
- * @typedef Refl_Cfg_t
- * @brief Data type definition of the structure Refl_Cfg_s
+ * @typedef REFL_Cfg_t
+ * @brief Data type definition of the structure REFL_Cfg_s
  *
- * @struct Refl_Cfg_s
+ * @struct REFL_Cfg_s
  * @brief
  */
-typedef struct Refl_Cfg_s {
+typedef struct REFL_Cfg_s {
 	 uint16_t minNoiseVal;
 	 uint16_t minLineVal;
-	 Refl_LineBW_t lineBW;
+	 REFL_LineBW_t lineBW;
 	 uint16_t measTimeOutUS;
- } Refl_Cfg_t;
+ } REFL_Cfg_t;
 
 /**
- * @typedef REFL_LineKind
+ * @typedef REFL_LineKind_t
  * @brief Data type definition of the enumeration REFL_LineKind_e
  *
  * @enum
@@ -82,16 +82,16 @@ typedef enum REFL_LineKind_e {
   REFL_LINE_FULL=4,     /**< all sensors see a line */
   REFL_LINE_AIR=5,      /**< all sensors have a timeout value. Robot is not on ground at all? */
   REFL_NOF_LINES        /**< Sentinel */
-} REFL_LineKind;
+} REFL_LineKind_t;
 
 /**
- * @typedef ReflStateType
- * @brief Data type definition of the enumeration Refl_StateType_e
+ * @typedef REFL_State_t
+ * @brief Data type definition of the enumeration REFL_State_e
  *
- * @enum Refl_StateType_e
+ * @enum REFL_State_e
  * @brief
  */
-typedef enum Refl_StateType_e {
+typedef enum REFL_State_e {
   REFL_STATE_INIT,             //!< REFL_STATE_INIT
   REFL_STATE_NOT_CALIBRATED,   //!< REFL_STATE_NOT_CALIBRATED
   REFL_STATE_START_CALIBRATION,//!< REFL_STATE_START_CALIBRATION
@@ -99,7 +99,7 @@ typedef enum Refl_StateType_e {
   REFL_STATE_STOP_CALIBRATION, //!< REFL_STATE_STOP_CALIBRATION
   REFL_STATE_SAVE_CALIBRATION, //!< REFL_STATE_SAVE_CALIBRATION
   REFL_STATE_READY             //!< REFL_STATE_READY
-} ReflStateType;
+} REFL_State_t;
 
 /**
  * @typedef SensorFctType
@@ -124,11 +124,11 @@ typedef uint16_t SensorTimeType;
 
 
 /*============================= >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-EXTERNAL_ StdRtn_t REFL_Read_ReflCfg(Refl_Cfg_t *pCfg_);
+EXTERNAL_ StdRtn_t REFL_Read_ReflCfg(REFL_Cfg_t *pCfg_);
 
 EXTERNAL_ uint8_t REFL_Get_NumOfSensors(void);
 
-EXTERNAL_ ReflStateType REFL_GetReflState(void);
+EXTERNAL_ REFL_State_t REFL_GetReflState(void);
 
 EXTERNAL_ bool REFL_IsReflEnabled(void);
 
@@ -150,7 +150,7 @@ EXTERNAL_ void REFL_CalibrateStartStop(void);
 
 EXTERNAL_ void REFL_GetSensorValues(uint16_t *values, int nofValues);
 
-EXTERNAL_ REFL_LineKind REFL_GetReflLineKind(void);
+EXTERNAL_ REFL_LineKind_t REFL_GetReflLineKind(void);
 
 EXTERNAL_ int16_t REFL_GetReflLineWidth(void);
 

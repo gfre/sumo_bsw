@@ -88,7 +88,6 @@
 
 
 
-
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 static void S1_SetOutput(void);
 static void S1_SetInput(void);
@@ -128,11 +127,11 @@ static void REFL_CalibrateMinMax(SensorTimeType min[NUM_OF_REFL_SENSORS], Sensor
 
 static void ReadCalibrated(SensorTimeType calib[NUM_OF_REFL_SENSORS], SensorTimeType raw[NUM_OF_REFL_SENSORS]);
 
-static int ReadLine(SensorTimeType calib[NUM_OF_REFL_SENSORS], SensorTimeType raw[NUM_OF_REFL_SENSORS], Refl_LineBW_t lineBW_);
+static int ReadLine(SensorTimeType calib[NUM_OF_REFL_SENSORS], SensorTimeType raw[NUM_OF_REFL_SENSORS], REFL_LineBW_t lineBW_);
 
 static bool SensorsSaturated(void);
 
-static REFL_LineKind ReadLineKind(SensorTimeType val[NUM_OF_REFL_SENSORS]);
+static REFL_LineKind_t ReadLineKind(SensorTimeType val[NUM_OF_REFL_SENSORS]);
 
 static uint16_t CalculateReflLineWidth(SensorTimeType calib[NUM_OF_REFL_SENSORS]);
 
@@ -143,8 +142,8 @@ static void REFL_StateMachine(void);
 static void ReflTask(void* pvParameters);
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-static const Refl_Cfg_t *pReflCfg = NULL;
-static volatile ReflStateType reflState = REFL_STATE_INIT;
+static const REFL_Cfg_t *pReflCfg = NULL;
+static volatile REFL_State_t reflState = REFL_STATE_INIT;
 
 static LDD_TDeviceData *timerHandle;
 static xSemaphoreHandle mutexHandle;
@@ -162,7 +161,7 @@ static SensorTimeType SensorCalibrated[NUM_OF_REFL_SENSORS]; /* 0 means white/mi
 
 static bool REFL_LedOn = TRUE;
 static int16_t reflCenterLineVal=0; /* 0 means no line, >0 means line is below sensor 0, 1000 below sensor 1 and so on */
-static REFL_LineKind reflLineKind = REFL_LINE_NONE;
+static REFL_LineKind_t reflLineKind = REFL_LINE_NONE;
 static uint16_t reflLineWidth = 0;
 
 static const SensorFctType SensorFctArray[NUM_OF_REFL_SENSORS] = {
@@ -355,7 +354,7 @@ static void ReadCalibrated(SensorTimeType calib[NUM_OF_REFL_SENSORS], SensorTime
  * before the averaging.
  */
 
-static int ReadLine(SensorTimeType calib[NUM_OF_REFL_SENSORS], SensorTimeType raw[NUM_OF_REFL_SENSORS], Refl_LineBW_t lineBW_) {
+static int ReadLine(SensorTimeType calib[NUM_OF_REFL_SENSORS], SensorTimeType raw[NUM_OF_REFL_SENSORS], REFL_LineBW_t lineBW_) {
   int i;
   unsigned long avg; /* this is for the weighted total, which is long */
   /* before division */
@@ -423,7 +422,7 @@ static bool SensorsSaturated(void) {
 #endif
 }
 
-static REFL_LineKind ReadLineKind(SensorTimeType val[NUM_OF_REFL_SENSORS]) {
+static REFL_LineKind_t ReadLineKind(SensorTimeType val[NUM_OF_REFL_SENSORS]) {
   uint32_t sum, sumLeft, sumRight, outerLeft, outerRight;
   int i;
 
@@ -621,7 +620,7 @@ static void REFL_StateMachine(void) {
 }
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-ReflStateType REFL_GetReflState(void){
+REFL_State_t REFL_GetReflState(void){
 	return reflState;
 }
 
@@ -636,7 +635,7 @@ int16_t REFL_GetReflLineValue(void){
 	return reflCenterLineVal;
 }
 
-REFL_LineKind REFL_GetReflLineKind(void){
+REFL_LineKind_t REFL_GetReflLineKind(void){
 	return reflLineKind;
 }
 
@@ -702,7 +701,7 @@ void REFL_GetSensorValues(uint16_t *values, int nofValues) {
   }
 }
 
-StdRtn_t REFL_Read_ReflCfg(Refl_Cfg_t *pCfg_)
+StdRtn_t REFL_Read_ReflCfg(REFL_Cfg_t *pCfg_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if( NULL != pCfg_)

@@ -32,7 +32,7 @@
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 static unsigned char*REFL_GetStateString(void);
-static unsigned char *REFL_LineKindStr(REFL_LineKind line);
+static unsigned char *REFL_LineKindStr(REFL_LineKind_t line);
 static uint8_t PrintHelp(const CLS1_StdIOType *io);
 static uint8_t PrintStatus(const CLS1_StdIOType *io) ;
 
@@ -59,7 +59,7 @@ static unsigned char*REFL_GetStateString(void) {
   return (unsigned char*)"UNKNOWN";
 }
 
-static unsigned char *REFL_LineKindStr(REFL_LineKind line) {
+static unsigned char *REFL_LineKindStr(REFL_LineKind_t line) {
   switch(line)
   {
   case REFL_LINE_NONE:
@@ -93,7 +93,7 @@ static uint8_t PrintHelp(const CLS1_StdIOType *io) {
 static uint8_t PrintStatus(const CLS1_StdIOType *io) {
   unsigned char buf[32];
   uint8_t i = 0u;
-  Refl_Cfg_t reflCfg = {0};
+  REFL_Cfg_t reflCfg = {0};
   uint8_t numOfSensors = 0u;
 
   numOfSensors = REFL_Get_NumOfSensors();
