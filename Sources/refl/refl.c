@@ -85,6 +85,32 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
+/**
+ * @typedef
+ * @brief
+ *
+ * @struct
+ * @brief
+ */
+typedef struct REFL_Line_s {
+	int16_t center;
+	REFL_LineKind_t kind;
+	uint16_t width;
+} REFL_Line_t;
+
+typedef uint16_t REFL_SnsrTime_t;
+
+/**
+ * @typedef
+ * @brief
+ *
+ * @struct
+ * @brief
+ */
+typedef struct REFL_SnsrData_s {
+	REFL_SnsrTime_t raw;
+	REFL_SnsrTime_t normlsd;
+} REFL_SnsrData_t;
 
 
 
