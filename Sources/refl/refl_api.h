@@ -16,7 +16,6 @@
 #define REFL_API_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "PE_Types.h"
 #include "RefCnt.h"
 #include "nvm_api.h"
 
@@ -31,37 +30,67 @@
  * @{
  */
 /*======================================= >> #DEFINES << =========================================*/
-#define REFL_MIN_LINE_VAL      0x120   /* minimum value indicating a line */
-//#define REFL_MIN_NOISE_VAL      0x40   /* values below this are not added to the weighted sum */
-#define REFL_MIN_NOISE_VAL      0x80   /* values below this are not added to the weighted sum */
-#define REFL_SENSOR_TIMEOUT_US  3500   /* after this time, consider no REFLlection (black). Must be smaller than the timeout period of the RefCnt timer! */
-#define REFL_NOF_SENSORS 6
-#define REFL_MIDDLE_LINE_VALUE  ((REFL_NOF_SENSORS+1)*1000/2)
-#define REFL_MAX_LINE_VALUE     ((REFL_NOF_SENSORS+1)*1000) /* maximum value for REFL_GetLine() */
-#define REFL_TIMEOUT_TICKS       	((RefCnt_CNT_INP_FREQ_U_0/1000)*REFL_SENSOR_TIMEOUT_US)/1000 /* REF_SENSOR_TIMEOUT_US translated into timeout ticks */
+/**
+ * REF_SENSOR_TIMEOUT_US translated into timeout ticks
+ */
+#define REFL_TIMEOUT_US_TO_TICKS(timOutUS_)      ((RefCnt_CNT_INP_FREQ_U_0/1000)*timOutUS_)/1000 /* REF_SENSOR_TIMEOUT_US translated into timeout ticks */
+
+
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
+/**
+ * @typedef
+ *
+ * @enum
+ */
+typedef enum Refl_LineBW_e {
+	 REFL_LINE_WHITE = 0x00 /**< REFL_LINE_WHITE */
+	,REFL_LINE_BLACK        /**< REFL_LINE_BLACK */
+	,REFL_LINE_BW_CNT
+} Refl_LineBW_t;
+
+/**
+ * @typedef
+ *
+ * @struct
+ */
+typedef struct Refl_Cfg_s {
+	 uint16_t minNoiseVal;
+	 uint16_t minLineVal;
+	 Refl_LineBW_t lineBW;
+	 uint16_t measTimeOutUS;
+ } Refl_Cfg_t;
+
+ /**
+  *
+  */
 typedef enum REFL_LineKind_e {
-  REFL_LINE_NONE=0,     /* no line, sensors do not see a line */
-  REFL_LINE_STRAIGHT=1, /* forward line |, sensors see a line underneath */
-  REFL_LINE_LEFT=2,     /* left half of sensors see line */
-  REFL_LINE_RIGHT=3,    /* right half of sensors see line */
-  REFL_LINE_FULL=4,     /* all sensors see a line */
-  REFL_LINE_AIR=5,      /* all sensors have a timeout value. Robot is not on ground at all? */
-  REFL_NOF_LINES        /* Sentinel */
+  REFL_LINE_NONE=0,     /**< no line, sensors do not see a line */
+  REFL_LINE_STRAIGHT=1, /**< forward line |, sensors see a line underneath */
+  REFL_LINE_LEFT=2,     /**< left half of sensors see line */
+  REFL_LINE_RIGHT=3,    /**< right half of sensors see line */
+  REFL_LINE_FULL=4,     /**< all sensors see a line */
+  REFL_LINE_AIR=5,      /**< all sensors have a timeout value. Robot is not on ground at all? */
+  REFL_NOF_LINES        /**< Sentinel */
 } REFL_LineKind;
 
+/**
+ *
+ */
 typedef enum {
-  REFL_STATE_INIT,
-  REFL_STATE_NOT_CALIBRATED,
-  REFL_STATE_START_CALIBRATION,
-  REFL_STATE_CALIBRATING,
-  REFL_STATE_STOP_CALIBRATION,
-  REFL_STATE_SAVE_CALIBRATION,
-  REFL_STATE_READY
+  REFL_STATE_INIT,             //!< REFL_STATE_INIT
+  REFL_STATE_NOT_CALIBRATED,   //!< REFL_STATE_NOT_CALIBRATED
+  REFL_STATE_START_CALIBRATION,//!< REFL_STATE_START_CALIBRATION
+  REFL_STATE_CALIBRATING,      //!< REFL_STATE_CALIBRATING
+  REFL_STATE_STOP_CALIBRATION, //!< REFL_STATE_STOP_CALIBRATION
+  REFL_STATE_SAVE_CALIBRATION, //!< REFL_STATE_SAVE_CALIBRATION
+  REFL_STATE_READY             //!< REFL_STATE_READY
 } ReflStateType;
 
+/**
+ *
+ */
 typedef struct SensorFctType_ {
   void (*SetOutput)(void);
   void (*SetInput)(void);
@@ -69,10 +98,38 @@ typedef struct SensorFctType_ {
   bool (*GetVal)(void);
 } SensorFctType;
 
+/**
+ *
+ */
 typedef uint16_t SensorTimeType;
 
 
+
 /*============================= >> GLOBAL FUNCTION DECLARATIONS << ================================*/
+EXTERNAL_ StdRtn_t REFL_Read_ReflCfg(Refl_Cfg_t *pCfg_);
+
+EXTERNAL_ uint8_t REFL_Get_NumOfSensors(void);
+
+EXTERNAL_ ReflStateType REFL_GetReflState(void);
+
+EXTERNAL_ bool REFL_IsReflEnabled(void);
+
+EXTERNAL_ void REFL_SetReflEnabled(bool isEnabled);
+
+EXTERNAL_ NVM_ReflCalibData_t* REFL_GetCalibMinMaxPtr(void);
+
+EXTERNAL_ void REFL_SetLedOn(bool isOn);
+
+EXTERNAL_ int16_t REFL_GetReflLineWidth(void);
+
+EXTERNAL_ int16_t REFL_GetReflLineValue(void);
+
+EXTERNAL_ SensorTimeType REFL_GetCalibratedSensorValue(const uint8 i);
+
+EXTERNAL_ SensorTimeType REFL_GetRawSensorValue(const uint8 i);
+
+EXTERNAL_ void REFL_CalibrateStartStop(void);
+
 EXTERNAL_ void REFL_GetSensorValues(uint16_t *values, int nofValues);
 
 EXTERNAL_ REFL_LineKind REFL_GetReflLineKind(void);

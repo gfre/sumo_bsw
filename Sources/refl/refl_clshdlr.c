@@ -26,141 +26,17 @@
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-static uint8_t PrintHelp(const CLS1_StdIOType *io);
 static unsigned char*REFL_GetStateString(void);
-static uint8_t PrintStatus(const CLS1_StdIOType *io) ;
 static unsigned char *REFL_LineKindStr(REFL_LineKind line);
+static uint8_t PrintHelp(const CLS1_StdIOType *io);
+static uint8_t PrintStatus(const CLS1_StdIOType *io) ;
+
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 
+
+
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-static uint8_t PrintHelp(const CLS1_StdIOType *io) {
-  CLS1_SendHelpStr((unsigned char*)"refl", (unsigned char*)"Group of Reflectance commands\r\n", io->stdOut);
-  CLS1_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
-  CLS1_SendHelpStr((unsigned char*)"  (on|off)", (unsigned char*)"Enables or disables the reflectance measurement\r\n", io->stdOut);
-  CLS1_SendHelpStr((unsigned char*)"  calib (start|stop)", (unsigned char*)"Start/Stop calibrating while moving sensor over line\r\n", io->stdOut);
-  CLS1_SendHelpStr((unsigned char*)"  led (on|off)", (unsigned char*)"Uses LED or not\r\n", io->stdOut);
-  return ERR_OK;
-}
-
-
-static uint8_t PrintStatus(const CLS1_StdIOType *io) {
-  unsigned char buf[32];
-  uint8 i = 0u;
-
-  CLS1_SendStatusStr((unsigned char*)"reflectance", (unsigned char*)"\r\n", io->stdOut);
-
-  CLS1_SendStatusStr((unsigned char*)"  enabled", (REFL_IsReflEnabled())?(unsigned char*)"yes\r\n":(unsigned char*)"no\r\n", io->stdOut);
-#if REFL_USE_WHITE_LINE
-  CLS1_SendStatusStr((unsigned char*)"  line", (unsigned char*)"white\r\n", io->stdOut);
-#else
-  CLS1_SendStatusStr((unsigned char*)"  line", (unsigned char*)"black\r\n", io->stdOut);
-#endif
-  CLS1_SendStatusStr((unsigned char*)"  state", REFL_GetStateString(), io->stdOut);
-  CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
-  CLS1_SendStatusStr((unsigned char*)"  IR led on", (REFL_IsLedOn())?(unsigned char*)"yes\r\n":(unsigned char*)"no\r\n", io->stdOut);
-
-  UTIL1_strcpy(buf, sizeof(buf), (unsigned char*)"0x");
-  UTIL1_strcatNum16Hex(buf, sizeof(buf), REFL_MIN_NOISE_VAL);
-  UTIL1_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
-  CLS1_SendStatusStr((unsigned char*)"  min noise", buf, io->stdOut);
-
-  UTIL1_strcpy(buf, sizeof(buf), (unsigned char*)"0x");
-  UTIL1_strcatNum16Hex(buf, sizeof(buf), REFL_MIN_LINE_VAL);
-  UTIL1_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
-  CLS1_SendStatusStr((unsigned char*)"  min line", buf, io->stdOut);
-
-  UTIL1_Num16uToStr(buf, sizeof(buf), REFL_SENSOR_TIMEOUT_US);
-  UTIL1_strcat(buf, sizeof(buf), (unsigned char*)" us, 0x");
-  UTIL1_strcatNum16Hex(buf, sizeof(buf), REFL_TIMEOUT_TICKS);
-  UTIL1_strcat(buf, sizeof(buf), (unsigned char*)" ticks\r\n");
-  CLS1_SendStatusStr((unsigned char*)"  timeout", buf, io->stdOut);
-
-  CLS1_SendStatusStr((unsigned char*)"  raw val", (unsigned char*)"", io->stdOut);
-  for (i=0;i<REFL_NOF_SENSORS;i++)
-  {
-    if (i==0)
-    {
-      CLS1_SendStr((unsigned char*)"0x", io->stdOut);
-    } else
-      {
-         CLS1_SendStr((unsigned char*)" 0x", io->stdOut);
-      }
-    buf[0] = '\0'; UTIL1_strcatNum16Hex(buf, sizeof(buf), REFL_GetRawSensorValue(i));
-    CLS1_SendStr(buf, io->stdOut);
-  }
-  CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
-
-  if (REFL_GetCalibMinMaxPtr()!=NULL) /* have calibration data */
-  {
-    CLS1_SendStatusStr((unsigned char*)"  min val", (unsigned char*)"", io->stdOut);
-
-    for (i=0;i<REFL_NOF_SENSORS;i++)
-    {
-      if (i==0)
-      {
-        CLS1_SendStr((unsigned char*)"0x", io->stdOut);
-      } else
-      {
-        CLS1_SendStr((unsigned char*)" 0x", io->stdOut);
-      }
-      buf[0] = '\0'; UTIL1_strcatNum16Hex(buf, sizeof(buf), (REFL_GetCalibMinMaxPtr())->minVal[i]);
-      CLS1_SendStr(buf, io->stdOut);
-    }
-    CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
-  }
-  if ((REFL_GetCalibMinMaxPtr())!=NULL)
-  {
-    CLS1_SendStatusStr((unsigned char*)"  max val", (unsigned char*)"", io->stdOut);
-    for (i=0;i<REFL_NOF_SENSORS;i++)
-    {
-      if (i==0)
-      {
-        CLS1_SendStr((unsigned char*)"0x", io->stdOut);
-      } else
-      {
-        CLS1_SendStr((unsigned char*)" 0x", io->stdOut);
-      }
-      buf[0] = '\0'; UTIL1_strcatNum16Hex(buf, sizeof(buf), (REFL_GetCalibMinMaxPtr())->maxVal[i]);
-      CLS1_SendStr(buf, io->stdOut);
-    }
-    CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
-  }
-
-  if ((REFL_GetCalibMinMaxPtr())!=NULL) /* have calibration data */
-  {
-    CLS1_SendStatusStr((unsigned char*)"  calib val", (unsigned char*)"", io->stdOut);
-
-    for (i=0;i<REFL_NOF_SENSORS;i++)
-    {
-      if (i==0)
-      {
-        CLS1_SendStr((unsigned char*)"0x", io->stdOut);
-      } else
-      {
-        CLS1_SendStr((unsigned char*)" 0x", io->stdOut);
-      }
-      buf[0] = '\0'; UTIL1_strcatNum16Hex(buf, sizeof(buf), REFL_GetCalibratedSensorValue(i));
-      CLS1_SendStr(buf, io->stdOut);
-    }
-    CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
-  }
-
-  CLS1_SendStatusStr((unsigned char*)"  line pos", (unsigned char*)"", io->stdOut);
-  buf[0] = '\0'; UTIL1_strcatNum16s(buf, sizeof(buf), REFL_GetReflLineValue());
-  CLS1_SendStr(buf, io->stdOut);
-  CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
-
-  CLS1_SendStatusStr((unsigned char*)"  line width", (unsigned char*)"", io->stdOut);
-  buf[0] = '\0'; UTIL1_strcatNum16s(buf, sizeof(buf), REFL_GetReflLineWidth());
-  CLS1_SendStr(buf, io->stdOut);
-  CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
-
-  CLS1_SendStatusStr((unsigned char*)"  line kind", REFL_LineKindStr(REFL_GetReflLineKind()), io->stdOut);
-  CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
-  return ERR_OK;
-}
-
 static unsigned char*REFL_GetStateString(void) {
   switch (REFL_GetReflState())
   {
@@ -197,58 +73,194 @@ static unsigned char *REFL_LineKindStr(REFL_LineKind line) {
   } /* switch */
 }
 
+
+static uint8_t PrintHelp(const CLS1_StdIOType *io) {
+  CLS1_SendHelpStr((unsigned char*)"refl", (unsigned char*)"Group of Reflectance commands\r\n", io->stdOut);
+  CLS1_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
+  CLS1_SendHelpStr((unsigned char*)"  (on|off)", (unsigned char*)"Enables or disables the reflectance measurement\r\n", io->stdOut);
+  CLS1_SendHelpStr((unsigned char*)"  calib (start|stop)", (unsigned char*)"Start/Stop calibrating while moving sensor over line\r\n", io->stdOut);
+  CLS1_SendHelpStr((unsigned char*)"  led (on|off)", (unsigned char*)"Uses LED or not\r\n", io->stdOut);
+  return ERR_OK;
+}
+
+
+static uint8_t PrintStatus(const CLS1_StdIOType *io) {
+  unsigned char buf[32];
+  uint8_t i = 0u;
+  Refl_Cfg_t reflCfg = {0};
+  uint8_t numOfSensors = 0u;
+
+  numOfSensors = REFL_Get_NumOfSensors();
+  REFL_Read_ReflCfg(&reflCfg);
+
+  CLS1_SendStatusStr((unsigned char*)"reflectance", (unsigned char*)"\r\n", io->stdOut);
+
+  CLS1_SendStatusStr((unsigned char*)"  enabled", (REFL_IsReflEnabled())?(unsigned char*)"yes\r\n":(unsigned char*)"no\r\n", io->stdOut);
+#if REFL_USE_WHITE_LINE
+  CLS1_SendStatusStr((unsigned char*)"  line", (unsigned char*)"white\r\n", io->stdOut);
+#else
+  CLS1_SendStatusStr((unsigned char*)"  line", (unsigned char*)"black\r\n", io->stdOut);
+#endif
+  CLS1_SendStatusStr((unsigned char*)"  state", REFL_GetStateString(), io->stdOut);
+  CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
+  CLS1_SendStatusStr((unsigned char*)"  IR led on", (REFL_IsLedOn())?(unsigned char*)"yes\r\n":(unsigned char*)"no\r\n", io->stdOut);
+
+  UTIL1_strcpy(buf, sizeof(buf), (unsigned char*)"0x");
+  UTIL1_strcatNum16Hex(buf, sizeof(buf), reflCfg.minNoiseVal);
+  UTIL1_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
+  CLS1_SendStatusStr((unsigned char*)"  min noise", buf, io->stdOut);
+
+  UTIL1_strcpy(buf, sizeof(buf), (unsigned char*)"0x");
+  UTIL1_strcatNum16Hex(buf, sizeof(buf), reflCfg.minLineVal);
+  UTIL1_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
+  CLS1_SendStatusStr((unsigned char*)"  min line", buf, io->stdOut);
+
+  UTIL1_Num16uToStr(buf, sizeof(buf), reflCfg.measTimeOutUS);
+  UTIL1_strcat(buf, sizeof(buf), (unsigned char*)" us, 0x");
+  UTIL1_strcatNum16Hex(buf, sizeof(buf), REFL_TIMEOUT_US_TO_TICKS(reflCfg.measTimeOutUS));
+  UTIL1_strcat(buf, sizeof(buf), (unsigned char*)" ticks\r\n");
+  CLS1_SendStatusStr((unsigned char*)"  timeout", buf, io->stdOut);
+
+  CLS1_SendStatusStr((unsigned char*)"  raw val", (unsigned char*)"", io->stdOut);
+  for (i = 0u; i < numOfSensors; i++)
+  {
+    if (0u == i)
+    {
+      CLS1_SendStr((unsigned char*)"0x", io->stdOut);
+    } else
+      {
+         CLS1_SendStr((unsigned char*)" 0x", io->stdOut);
+      }
+    buf[0] = '\0'; UTIL1_strcatNum16Hex(buf, sizeof(buf), REFL_GetRawSensorValue(i));
+    CLS1_SendStr(buf, io->stdOut);
+  }
+  CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
+
+  if (REFL_GetCalibMinMaxPtr()!=NULL) /* have calibration data */
+  {
+    CLS1_SendStatusStr((unsigned char*)"  min val", (unsigned char*)"", io->stdOut);
+
+    for (i = 0u; i < numOfSensors; i++)
+    {
+      if (i == 0u)
+      {
+        CLS1_SendStr((unsigned char*)"0x", io->stdOut);
+      } else
+      {
+        CLS1_SendStr((unsigned char*)" 0x", io->stdOut);
+      }
+      buf[0] = '\0'; UTIL1_strcatNum16Hex(buf, sizeof(buf), (REFL_GetCalibMinMaxPtr())->minVal[i]);
+      CLS1_SendStr(buf, io->stdOut);
+    }
+    CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
+  }
+  if ((REFL_GetCalibMinMaxPtr())!=NULL)
+  {
+    CLS1_SendStatusStr((unsigned char*)"  max val", (unsigned char*)"", io->stdOut);
+    for (i = 0u; i < numOfSensors; i++)
+    {
+      if (0u == i)
+      {
+        CLS1_SendStr((unsigned char*)"0x", io->stdOut);
+      } else
+      {
+        CLS1_SendStr((unsigned char*)" 0x", io->stdOut);
+      }
+      buf[0] = '\0'; UTIL1_strcatNum16Hex(buf, sizeof(buf), (REFL_GetCalibMinMaxPtr())->maxVal[i]);
+      CLS1_SendStr(buf, io->stdOut);
+    }
+    CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
+  }
+
+  if ((REFL_GetCalibMinMaxPtr())!=NULL) /* have calibration data */
+  {
+    CLS1_SendStatusStr((unsigned char*)"  calib val", (unsigned char*)"", io->stdOut);
+
+    for (i = 0u; i < numOfSensors; i++)
+    {
+      if (0u == i)
+      {
+        CLS1_SendStr((unsigned char*)"0x", io->stdOut);
+      } else
+      {
+        CLS1_SendStr((unsigned char*)" 0x", io->stdOut);
+      }
+      buf[0] = '\0'; UTIL1_strcatNum16Hex(buf, sizeof(buf), REFL_GetCalibratedSensorValue(i));
+      CLS1_SendStr(buf, io->stdOut);
+    }
+    CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
+  }
+
+  CLS1_SendStatusStr((unsigned char*)"  line pos", (unsigned char*)"", io->stdOut);
+  buf[0] = '\0'; UTIL1_strcatNum16s(buf, sizeof(buf), REFL_GetReflLineValue());
+  CLS1_SendStr(buf, io->stdOut);
+  CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
+
+  CLS1_SendStatusStr((unsigned char*)"  line width", (unsigned char*)"", io->stdOut);
+  buf[0] = '\0'; UTIL1_strcatNum16s(buf, sizeof(buf), REFL_GetReflLineWidth());
+  CLS1_SendStr(buf, io->stdOut);
+  CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
+
+  CLS1_SendStatusStr((unsigned char*)"  line kind", REFL_LineKindStr(REFL_GetReflLineKind()), io->stdOut);
+  CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
+  return ERR_OK;
+}
+
+
+
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-byte REFL_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io) {
-  if (UTIL1_strcmp((char*)cmd, CLS1_CMD_HELP)==0 || UTIL1_strcmp((char*)cmd, "refl help")==0)
+uint8_t REFL_ParseCommand(const unsigned char *cmd_, bool *handled_, const CLS1_StdIOType *io_)
+{
+  if (UTIL1_strcmp((char*)cmd_, CLS1_CMD_HELP)==0 || UTIL1_strcmp((char*)cmd_, "refl help")==0)
   {
-    *handled = TRUE;
-    return PrintHelp(io);
-  } else if ((UTIL1_strcmp((char*)cmd, CLS1_CMD_STATUS)==0) || (UTIL1_strcmp((char*)cmd, "refl status")==0))
+    *handled_ = TRUE;
+    return PrintHelp(io_);
+  } else if ((UTIL1_strcmp((char*)cmd_, CLS1_CMD_STATUS)==0) || (UTIL1_strcmp((char*)cmd_, "refl status")==0))
   {
-    *handled = TRUE;
-    return PrintStatus(io);
-  } else if (UTIL1_strcmp((char*)cmd, "refl on")==0)
+    *handled_ = TRUE;
+    return PrintStatus(io_);
+  } else if (UTIL1_strcmp((char*)cmd_, "refl on")==0)
   {
     REFL_SetReflEnabled(TRUE);
-    *handled = TRUE;
+    *handled_ = TRUE;
     return ERR_OK;
-  } else if (UTIL1_strcmp((char*)cmd, "refl off")==0)
+  } else if (UTIL1_strcmp((char*)cmd_, "refl off")==0)
   {
     REFL_SetReflEnabled(FALSE);
-    *handled = TRUE;
+    *handled_ = TRUE;
     return ERR_OK;
-  } else if (UTIL1_strcmp((char*)cmd, "refl calib start")==0)
+  } else if (UTIL1_strcmp((char*)cmd_, "refl calib start")==0)
   {
     if (REFL_GetReflState()==REFL_STATE_NOT_CALIBRATED || REFL_GetReflState()==REFL_STATE_READY)
     {
     	REFL_CalibrateStartStop();
     } else {
-      CLS1_SendStr((unsigned char*)"ERROR: cannot start calibration, must not be calibrating or be ready.\r\n", io->stdErr);
+      CLS1_SendStr((unsigned char*)"ERROR: cannot start calibration, must not be calibrating or be ready.\r\n", io_->stdErr);
       return ERR_FAILED;
     }
-    *handled = TRUE;
+    *handled_ = TRUE;
     return ERR_OK;
-  } else if (UTIL1_strcmp((char*)cmd, "refl calib stop")==0)
+  } else if (UTIL1_strcmp((char*)cmd_, "refl calib stop")==0)
   {
     if (REFL_GetReflState()==REFL_STATE_CALIBRATING)
     {
     	REFL_CalibrateStartStop();
     } else
     {
-      CLS1_SendStr((unsigned char*)"ERROR: can only stop if calibrating.\r\n", io->stdErr);
+      CLS1_SendStr((unsigned char*)"ERROR: can only stop if calibrating.\r\n", io_->stdErr);
       return ERR_FAILED;
     }
-    *handled = TRUE;
+    *handled_ = TRUE;
     return ERR_OK;
-  } else if (UTIL1_strcmp((char*)cmd, "refl led on")==0)
+  } else if (UTIL1_strcmp((char*)cmd_, "refl led on")==0)
   {
     REFL_SetLedOn(TRUE);
-    *handled = TRUE;
+    *handled_ = TRUE;
     return ERR_OK;
-  } else if (UTIL1_strcmp((char*)cmd, "refl led off")==0)
+  } else if (UTIL1_strcmp((char*)cmd_, "refl led off")==0)
   {
     REFL_SetLedOn(FALSE);
-    *handled = TRUE;
+    *handled_ = TRUE;
     return ERR_OK;
   }
   return ERR_OK;
