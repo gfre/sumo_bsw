@@ -35,7 +35,9 @@
 /*======================================= >> #DEFINES << =========================================*/
 
 
+
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
+
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
@@ -49,6 +51,7 @@
 EXTERNAL_ uint8_t REFL_ParseCommand(const unsigned char *cmd_, bool *handled_, const CLS1_StdIOType *io_);
 
 
+
 /**
  * @}
  */
@@ -56,4 +59,4 @@ EXTERNAL_ uint8_t REFL_ParseCommand(const unsigned char *cmd_, bool *handled_, c
 #undef EXTERNAL_
 #endif
 
-#endif /* !SOURCES_REFL_REFL_CLSHDLR_H_ */
+#endif /* !REFL_CLSHDLR_H_ */

@@ -17,7 +17,6 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 
-
 #ifdef MASTER_refl_C_
 #define EXTERNAL_
 #else
@@ -29,22 +28,29 @@
  * @{
  */
 /*======================================= >> #DEFINES << =========================================*/
-/*/**
- * @brief
- *
+/**
+ * String identification of the SWC @ref refl
  */
 #define REFL_SWC_STRING ("refl")
 
 
+
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 
+
+
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-/*!
- * \brief Driver Initialization.
+/**
+ * @brief Driver initialisation
  */
 EXTERNAL_ void REFL_Init(void);
 
+/**
+ * @brief Main function of the SWC @ref refl
+ */
 EXTERNAL_ void REFL_MainFct(void);
+
+
 
 /**
  * @}

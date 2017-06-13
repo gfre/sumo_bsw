@@ -19,10 +19,15 @@
 /*======================================= >> #INCLUDES << ========================================*/
 #include "refl_clshdlr.h"
 #include "refl_api.h"
+
+
+
 /*======================================= >> #DEFINES << =========================================*/
 
 
+
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
+
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
@@ -30,6 +35,7 @@ static unsigned char*REFL_GetStateString(void);
 static unsigned char *REFL_LineKindStr(REFL_LineKind line);
 static uint8_t PrintHelp(const CLS1_StdIOType *io);
 static uint8_t PrintStatus(const CLS1_StdIOType *io) ;
+
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
@@ -94,13 +100,21 @@ static uint8_t PrintStatus(const CLS1_StdIOType *io) {
   REFL_Read_ReflCfg(&reflCfg);
 
   CLS1_SendStatusStr((unsigned char*)"reflectance", (unsigned char*)"\r\n", io->stdOut);
-
   CLS1_SendStatusStr((unsigned char*)"  enabled", (REFL_IsReflEnabled())?(unsigned char*)"yes\r\n":(unsigned char*)"no\r\n", io->stdOut);
-#if REFL_USE_WHITE_LINE
-  CLS1_SendStatusStr((unsigned char*)"  line", (unsigned char*)"white\r\n", io->stdOut);
-#else
-  CLS1_SendStatusStr((unsigned char*)"  line", (unsigned char*)"black\r\n", io->stdOut);
-#endif
+
+  if(REFL_LINE_WHITE == reflCfg.lineBW)
+  {
+	  CLS1_SendStatusStr((unsigned char*)"  line", (unsigned char*)"white\r\n", io->stdOut);
+  }
+  else if((REFL_LINE_BLACK == reflCfg.lineBW))
+  {
+	  CLS1_SendStatusStr((unsigned char*)"  line", (unsigned char*)"black\r\n", io->stdOut);
+  }
+  else
+  {
+	  CLS1_SendStatusStr((unsigned char*)"  line", (unsigned char*)"ERROR: invalid line configured\r\n", io->stdOut);
+  }
+
   CLS1_SendStatusStr((unsigned char*)"  state", REFL_GetStateString(), io->stdOut);
   CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
   CLS1_SendStatusStr((unsigned char*)"  IR led on", (REFL_IsLedOn())?(unsigned char*)"yes\r\n":(unsigned char*)"no\r\n", io->stdOut);
@@ -265,6 +279,8 @@ uint8_t REFL_ParseCommand(const unsigned char *cmd_, bool *handled_, const CLS1_
   }
   return ERR_OK;
 }
+
+
 
 #ifdef MASTER_refl_clshdlr_C_
 #undef MASTER_refl_clshdlr_C_

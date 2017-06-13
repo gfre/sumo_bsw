@@ -19,6 +19,8 @@
 #include "RefCnt.h"
 #include "nvm_api.h"
 
+
+
 #ifdef MASTER_refl_C_
 #define EXTERNAL_
 #else
@@ -37,12 +39,13 @@
 
 
 
-
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 /**
- * @typedef
+ * @typedef Refl_LineBW_t
+ * @brief Data type definition of the enumeration Refl_LineBW_e
  *
- * @enum
+ * @enum Refl_LineBW_e
+ * @brief
  */
 typedef enum Refl_LineBW_e {
 	 REFL_LINE_WHITE = 0x00 /**< REFL_LINE_WHITE */
@@ -51,9 +54,11 @@ typedef enum Refl_LineBW_e {
 } Refl_LineBW_t;
 
 /**
- * @typedef
+ * @typedef Refl_Cfg_t
+ * @brief Data type definition of the structure Refl_Cfg_s
  *
- * @struct
+ * @struct Refl_Cfg_s
+ * @brief
  */
 typedef struct Refl_Cfg_s {
 	 uint16_t minNoiseVal;
@@ -62,9 +67,13 @@ typedef struct Refl_Cfg_s {
 	 uint16_t measTimeOutUS;
  } Refl_Cfg_t;
 
- /**
-  *
-  */
+/**
+ * @typedef REFL_LineKind
+ * @brief Data type definition of the enumeration REFL_LineKind_e
+ *
+ * @enum
+ * @brief
+ */
 typedef enum REFL_LineKind_e {
   REFL_LINE_NONE=0,     /**< no line, sensors do not see a line */
   REFL_LINE_STRAIGHT=1, /**< forward line |, sensors see a line underneath */
@@ -76,9 +85,13 @@ typedef enum REFL_LineKind_e {
 } REFL_LineKind;
 
 /**
+ * @typedef ReflStateType
+ * @brief Data type definition of the enumeration Refl_StateType_e
  *
+ * @enum Refl_StateType_e
+ * @brief
  */
-typedef enum {
+typedef enum Refl_StateType_e {
   REFL_STATE_INIT,             //!< REFL_STATE_INIT
   REFL_STATE_NOT_CALIBRATED,   //!< REFL_STATE_NOT_CALIBRATED
   REFL_STATE_START_CALIBRATION,//!< REFL_STATE_START_CALIBRATION
@@ -89,9 +102,13 @@ typedef enum {
 } ReflStateType;
 
 /**
+ * @typedef SensorFctType
+ * @brief Data type definition of the structure SensorFctType_s
  *
+ * @enum SensorFctType_s
+ * @brief
  */
-typedef struct SensorFctType_ {
+typedef struct SensorFctType_s {
   void (*SetOutput)(void);
   void (*SetInput)(void);
   void (*SetVal)(void);
@@ -99,7 +116,8 @@ typedef struct SensorFctType_ {
 } SensorFctType;
 
 /**
- *
+ * @typedef SensorFctType
+ * @brief Data type definition of the sensor timing
  */
 typedef uint16_t SensorTimeType;
 
@@ -145,6 +163,8 @@ EXTERNAL_ bool REFL_IsLedOn(void);
  * \return TRUE if the sensor is ready.
  */
 EXTERNAL_ bool REFL_CanUseSensor(void);
+
+
 
 #ifdef EXTERNAL_
 #undef EXTERNAL_
