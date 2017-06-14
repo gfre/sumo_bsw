@@ -164,7 +164,7 @@ static REFL_Line_t dctdLine = {0, REFL_LINE_NONE, 0u};
 
 static bool REFL_IsEnabled = TRUE;
 
-
+static REFL_SnsrData_t snsrData ={0};
 static NVM_ReflCalibData_t *SensorCalibMinMaxTmpPtr = NULL; /* pointer to temprory calibrated data */
 static NVM_ReflCalibData_t SensorCalibMinMax={0}; /* calibration data */
 
@@ -508,27 +508,27 @@ static REFL_LineKind_t ReadLineKind(REFL_SnsrTime_t val[NUM_OF_REFL_SENSORS]) {
 }
 
 
-static uint16_t CalculateReflLineWidth(REFL_SnsrTime_t calib[NUM_OF_REFL_SENSORS])
+static uint16_t CalcLineWidth(REFL_SnsrTime_t *nomrlsdVal_, uint8_t cntOfSnsrs_)
 {
-	uint32_t val = 0u;
+	uint32_t lineWidth = 0u;
 	uint8_t i = 0u;
 
-	val = 0u;
-	for(i = 0u; i < NUM_OF_REFL_SENSORS; i++)
+	lineWidth = 0u;
+	for(i = 0u; i < cntOfSnsrs_; i++)
 	{
-	  if (calib[i] >= pReflCfg->minNoiseVal) /* sensor not seeing anything? */
+	  if (nomrlsdVal_[i] >= pReflCfg->minNoiseVal) /* sensor not seeing anything? */
 	  {
-		  val += calib[i];
+		  lineWidth += nomrlsdVal_[i];
 	  }
 	}
-	return (uint16_t)val;
+	return (uint16_t)lineWidth;
 }
 
 static void RunLineDetection(void)
 {
 	ReadCalibrated(SensorCalibrated, SensorRaw);
 	dctdLine.center = ReadLine(SensorCalibrated, SensorRaw, pReflCfg->lineBW);
-	dctdLine.width = CalculateReflLineWidth(SensorCalibrated);
+	dctdLine.width = CalcLineWidth(SensorCalibrated, NUM_OF_REFL_SENSORS);
 	if (reflState==REFL_STATE_READY)
 	{
 		dctdLine.kind = ReadLineKind(SensorCalibrated);
