@@ -20,7 +20,7 @@
 #define NVM_API_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "platform.h"
+#include "Platform.h"
 #include "rte_Types.h"
 
 #ifdef MASTER_nvm_C_
