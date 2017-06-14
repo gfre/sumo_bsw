@@ -204,7 +204,7 @@ static uint8_t PrintStatus(const CLS1_StdIOType *io) {
     CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
   }
 
-  (void)REFL_Read_DctdLine(&dctdLine);
+
   /* print properties of detected line */
   (void)REFL_Read_DctdLine(&dctdLine);
   CLS1_SendStatusStr((unsigned char*)"  line pos", (unsigned char*)"", io->stdOut);
@@ -217,10 +217,7 @@ static uint8_t PrintStatus(const CLS1_StdIOType *io) {
   CLS1_SendStr(buf, io->stdOut);
   CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
 
-  CLS1_SendStatusStr((unsigned char*)"  line kind", REFL_LineKindStr(dctdLine.kind), io->stdOut);
-  CLS1_SendStatusStr((unsigned char*)"  line kind", REFL_LineKindStr(REFL_GetReflLineKind()), io->stdOut);
   CLS1_SendStatusStr((unsigned char*)"  line kind", Get_StrLineKind(dctdLine.kind), io->stdOut);
-
   CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
 
   return ERR_OK;
