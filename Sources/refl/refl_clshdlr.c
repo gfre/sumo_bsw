@@ -31,8 +31,8 @@
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-static unsigned char*REFL_GetStateString(void);
-static unsigned char *REFL_LineKindStr(REFL_LineKind_t line);
+static uchar_t *Get_StrState(void);
+static uchar_t *Get_StrLineKind(REFL_LineKind_t line);
 static uint8_t PrintHelp(const CLS1_StdIOType *io);
 static uint8_t PrintStatus(const CLS1_StdIOType *io) ;
 
@@ -43,7 +43,7 @@ static uint8_t PrintStatus(const CLS1_StdIOType *io) ;
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-static unsigned char*REFL_GetStateString(void) {
+static uchar_t *Get_StrState(void) {
   switch (REFL_GetReflState())
   {
     case REFL_STATE_INIT:                return (unsigned char*)"INIT";
@@ -59,7 +59,7 @@ static unsigned char*REFL_GetStateString(void) {
   return (unsigned char*)"UNKNOWN";
 }
 
-static unsigned char *REFL_LineKindStr(REFL_LineKind_t line) {
+static uchar_t *Get_StrLineKind(REFL_LineKind_t line) {
   switch(line)
   {
   case REFL_LINE_NONE:
@@ -116,7 +116,7 @@ static uint8_t PrintStatus(const CLS1_StdIOType *io) {
 	  CLS1_SendStatusStr((unsigned char*)"  line", (unsigned char*)"ERROR: invalid line configured\r\n", io->stdOut);
   }
 
-  CLS1_SendStatusStr((unsigned char*)"  state", REFL_GetStateString(), io->stdOut);
+  CLS1_SendStatusStr((unsigned char*)"  state", Get_StrState(), io->stdOut);
   CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
   CLS1_SendStatusStr((unsigned char*)"  IR led on", (REFL_IsLedOn())?(unsigned char*)"yes\r\n":(unsigned char*)"no\r\n", io->stdOut);
 
@@ -187,24 +187,25 @@ static uint8_t PrintStatus(const CLS1_StdIOType *io) {
     CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
   }
 
+  /* print normalised sensor data */
   if ((REFL_GetCalibMinMaxPtr())!=NULL) /* have calibration data */
   {
-    CLS1_SendStatusStr((unsigned char*)"  calib val", (unsigned char*)"", io->stdOut);
+    CLS1_SendStatusStr((unsigned char*)"  norm val", (unsigned char*)"", io->stdOut);
 
     for (i = 0u; i < numOfSensors; i++)
     {
-      if (0u == i)
-      {
-        CLS1_SendStr((unsigned char*)"0x", io->stdOut);
-      } else
-      {
-        CLS1_SendStr((unsigned char*)" 0x", io->stdOut);
-      }
-      buf[0] = '\0'; UTIL1_strcatNum16Hex(buf, sizeof(buf), REFL_GetCalibratedSensorValue(i));
-      CLS1_SendStr(buf, io->stdOut);
+    	buf[0] = '\0';
+    	UTIL1_strcatNum16uFormatted(buf, sizeof(buf), REFL_GetCalibratedSensorValue(i)/10U,' ',(i?4u:3u));
+    	UTIL1_chcat(buf, sizeof(buf), '.');
+    	UTIL1_strcatNum16u(buf, sizeof(buf), (uint16_t)((unsigned)REFL_GetCalibratedSensorValue(i)%10U));
+    	UTIL1_chcat(buf, sizeof(buf), '%');
+    	CLS1_SendStr(buf, io->stdOut);
     }
     CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
   }
+
+  (void)REFL_Read_DctdLine(&dctdLine);
+  /* print properties of detected line */
   (void)REFL_Read_DctdLine(&dctdLine);
   CLS1_SendStatusStr((unsigned char*)"  line pos", (unsigned char*)"", io->stdOut);
   buf[0] = '\0'; UTIL1_strcatNum16s(buf, sizeof(buf), dctdLine.center);
@@ -217,7 +218,11 @@ static uint8_t PrintStatus(const CLS1_StdIOType *io) {
   CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
 
   CLS1_SendStatusStr((unsigned char*)"  line kind", REFL_LineKindStr(dctdLine.kind), io->stdOut);
+  CLS1_SendStatusStr((unsigned char*)"  line kind", REFL_LineKindStr(REFL_GetReflLineKind()), io->stdOut);
+  CLS1_SendStatusStr((unsigned char*)"  line kind", Get_StrLineKind(dctdLine.kind), io->stdOut);
+
   CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
+
   return ERR_OK;
 }
 
