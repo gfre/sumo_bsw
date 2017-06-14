@@ -35,11 +35,18 @@
 /**
  * REF_SENSOR_TIMEOUT_US translated into timeout ticks
  */
-#define REFL_TIMEOUT_US_TO_TICKS(timOutUS_)      ((RefCnt_CNT_INP_FREQ_U_0/1000)*timOutUS_)/1000
+#define REFL_TIMEOUT_US_TO_TICKS(timOutUS_)		( (RefCnt_CNT_INP_FREQ_U_0 / 1000u) * timOutUS_ ) / 1000u
 
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
+/**
+ * @typedef SnsrTmr_t
+ * @brief Data type definition of the sensor timing
+ */
+typedef uint16_t SnsrTime_t;
+
+
 /**
  * @typedef REFL_LineBW_t
  * @brief Data type definition of the enumeration REFL_LineBW_e
@@ -61,10 +68,10 @@ typedef enum REFL_LineBW_e {
  * @brief
  */
 typedef struct REFL_Cfg_s {
-	 uint16_t minNoiseVal;
-	 uint16_t minLineVal;
-	 REFL_LineBW_t lineBW;
-	 uint16_t measTimeOutUS;
+	SnsrTime_t minNoiseVal;
+	SnsrTime_t minLineVal;
+	REFL_LineBW_t lineBW;
+	SnsrTime_t measTimeOutUS;
  } REFL_Cfg_t;
 
 /**
@@ -115,12 +122,6 @@ typedef struct SensorFctType_s {
   bool (*GetVal)(void);
 } SensorFctType;
 
-/**
- * @typedef SensorFctType
- * @brief Data type definition of the sensor timing
- */
-typedef uint16_t SensorTimeType;
-
 
 
 /*============================= >> GLOBAL FUNCTION DECLARATIONS << ================================*/
@@ -142,9 +143,9 @@ EXTERNAL_ int16_t REFL_GetReflLineWidth(void);
 
 EXTERNAL_ int16_t REFL_GetReflLineValue(void);
 
-EXTERNAL_ SensorTimeType REFL_GetCalibratedSensorValue(const uint8 i);
+EXTERNAL_ SnsrTime_t REFL_GetCalibratedSensorValue(const uint8 i);
 
-EXTERNAL_ SensorTimeType REFL_GetRawSensorValue(const uint8 i);
+EXTERNAL_ SnsrTime_t REFL_GetRawSensorValue(const uint8 i);
 
 EXTERNAL_ void REFL_CalibrateStartStop(void);
 

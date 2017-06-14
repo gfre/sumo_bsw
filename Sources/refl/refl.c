@@ -76,7 +76,7 @@
 /**
  *
  */
-#define MAX_SENSOR_VALUE  			((SensorTimeType)-1)
+#define MAX_SENSOR_VALUE  			((SnsrTime_t)-1)
 
 /**
  *
@@ -121,19 +121,19 @@ static bool S6_GetVal(void);
 
 static void IR_on(bool on);
 
-static bool REFL_MeasureRaw(SensorTimeType raw[NUM_OF_REFL_SENSORS], RefCnt_TValueType timeoutCntVal);
+static bool REFL_MeasureRaw(SnsrTime_t raw[NUM_OF_REFL_SENSORS], RefCnt_TValueType timeoutCntVal);
 
-static void REFL_CalibrateMinMax(SensorTimeType min[NUM_OF_REFL_SENSORS], SensorTimeType max[NUM_OF_REFL_SENSORS], SensorTimeType raw[NUM_OF_REFL_SENSORS]);
+static void REFL_CalibrateMinMax(SnsrTime_t min[NUM_OF_REFL_SENSORS], SnsrTime_t max[NUM_OF_REFL_SENSORS], SnsrTime_t raw[NUM_OF_REFL_SENSORS]);
 
-static void ReadCalibrated(SensorTimeType calib[NUM_OF_REFL_SENSORS], SensorTimeType raw[NUM_OF_REFL_SENSORS]);
+static void ReadCalibrated(SnsrTime_t calib[NUM_OF_REFL_SENSORS], SnsrTime_t raw[NUM_OF_REFL_SENSORS]);
 
-static int ReadLine(SensorTimeType calib[NUM_OF_REFL_SENSORS], SensorTimeType raw[NUM_OF_REFL_SENSORS], REFL_LineBW_t lineBW_);
+static int ReadLine(SnsrTime_t calib[NUM_OF_REFL_SENSORS], SnsrTime_t raw[NUM_OF_REFL_SENSORS], REFL_LineBW_t lineBW_);
 
 static bool SensorsSaturated(void);
 
-static REFL_LineKind_t ReadLineKind(SensorTimeType val[NUM_OF_REFL_SENSORS]);
+static REFL_LineKind_t ReadLineKind(SnsrTime_t val[NUM_OF_REFL_SENSORS]);
 
-static uint16_t CalculateReflLineWidth(SensorTimeType calib[NUM_OF_REFL_SENSORS]);
+static uint16_t CalculateReflLineWidth(SnsrTime_t calib[NUM_OF_REFL_SENSORS]);
 
 static void REFL_Measure(void);
 
@@ -145,22 +145,23 @@ static void ReflTask(void* pvParameters);
 static const REFL_Cfg_t *pReflCfg = NULL;
 static volatile REFL_State_t reflState = REFL_STATE_INIT;
 
-static LDD_TDeviceData *timerHandle;
-static xSemaphoreHandle mutexHandle;
+static xSemaphoreHandle pMutexSemphrHdl;
+static LDD_TDeviceData *pTmrHdl;
+#if REFL_START_STOP_CALIB
+  static xSemaphoreHandle pBinSemphrHdl = NULL;
+#endif
+
 static bool REFL_IsEnabled = TRUE;
 
-#if REFL_START_STOP_CALIB
-  static xSemaphoreHandle REFL_StartStopSem = NULL;
-#endif
 
 static NVM_ReflCalibData_t *SensorCalibMinMaxTmpPtr = NULL; /* pointer to temprory calibrated data */
 static NVM_ReflCalibData_t SensorCalibMinMax={0}; /* calibration data */
 
-static SensorTimeType SensorRaw[NUM_OF_REFL_SENSORS]; /* raw sensor values */
-static SensorTimeType SensorCalibrated[NUM_OF_REFL_SENSORS]; /* 0 means white/min value, 1000 means black/max value */
+static SnsrTime_t SensorRaw[NUM_OF_REFL_SENSORS]; /* raw sensor values */
+static SnsrTime_t SensorCalibrated[NUM_OF_REFL_SENSORS]; /* 0 means white/min value, 1000 means black/max value */
 
 static bool REFL_LedOn = TRUE;
-static int16_t reflCenterLineVal=0; /* 0 means no line, >0 means line is below sensor 0, 1000 below sensor 1 and so on */
+static int16_t reflCenterLineVal = 0; /* 0 means no line, >0 means line is below sensor 0, 1000 below sensor 1 and so on */
 static REFL_LineKind_t reflLineKind = REFL_LINE_NONE;
 static uint16_t reflLineWidth = 0;
 
@@ -217,7 +218,7 @@ static void IR_on(bool on) {
  * \param raw Array to store the raw values.
  * \return ERR_OVERFLOW if there is a timeout, ERR_OK otherwise
  */
-static bool REFL_MeasureRaw(SensorTimeType raw[NUM_OF_REFL_SENSORS], RefCnt_TValueType timeoutCntVal) {
+static bool REFL_MeasureRaw(SnsrTime_t raw[NUM_OF_REFL_SENSORS], RefCnt_TValueType timeoutCntVal) {
   uint8_t cnt; /* number of sensor */
   uint8_t i;
   bool isTimeout = FALSE;
@@ -226,7 +227,7 @@ static bool REFL_MeasureRaw(SensorTimeType raw[NUM_OF_REFL_SENSORS], RefCnt_TVal
   if (!REFL_IsEnabled) {
     return ERR_DISABLED;
   }
-  (void)FRTOS1_xSemaphoreTake(mutexHandle, portMAX_DELAY);
+  (void)FRTOS1_xSemaphoreTake(pMutexSemphrHdl, portMAX_DELAY);
 
   if (REFL_LedOn) {
     IR_on(TRUE); /* IR LED's on */
@@ -243,10 +244,10 @@ static bool REFL_MeasureRaw(SensorTimeType raw[NUM_OF_REFL_SENSORS], RefCnt_TVal
   for(i=0;i<NUM_OF_REFL_SENSORS;i++) {
     SensorFctArray[i].SetInput(); /* turn I/O line as input */
   }
-  (void)RefCnt_ResetCounter(timerHandle); /* reset timer counter */
+  (void)RefCnt_ResetCounter(pTmrHdl); /* reset timer counter */
   do {
     cnt = 0;
-    timerVal = RefCnt_GetCounterValue(timerHandle);
+    timerVal = RefCnt_GetCounterValue(pTmrHdl);
     if (timerVal>timeoutCntVal) {
       isTimeout = TRUE;
       break; /* get out of while loop */
@@ -267,7 +268,7 @@ static bool REFL_MeasureRaw(SensorTimeType raw[NUM_OF_REFL_SENSORS], RefCnt_TVal
     IR_on(FALSE); /* IR LED's off */
   }
 
-  (void)FRTOS1_xSemaphoreGive(mutexHandle);
+  (void)FRTOS1_xSemaphoreGive(pMutexSemphrHdl);
   if (isTimeout) {
     for(i=0;i<NUM_OF_REFL_SENSORS;i++) {
       if (raw[i]==MAX_SENSOR_VALUE) { /* not measured yet? */
@@ -284,7 +285,7 @@ static bool REFL_MeasureRaw(SensorTimeType raw[NUM_OF_REFL_SENSORS], RefCnt_TVal
   }
 }
 
-static void REFL_CalibrateMinMax(SensorTimeType min[NUM_OF_REFL_SENSORS], SensorTimeType max[NUM_OF_REFL_SENSORS], SensorTimeType raw[NUM_OF_REFL_SENSORS]) {
+static void REFL_CalibrateMinMax(SnsrTime_t min[NUM_OF_REFL_SENSORS], SnsrTime_t max[NUM_OF_REFL_SENSORS], SnsrTime_t raw[NUM_OF_REFL_SENSORS]) {
   int i;
 
   if (REFL_MeasureRaw(raw, REFL_TIMEOUT_US_TO_TICKS(pReflCfg->measTimeOutUS))==ERR_OK) { /* if timeout, do not count values */
@@ -299,37 +300,54 @@ static void REFL_CalibrateMinMax(SensorTimeType min[NUM_OF_REFL_SENSORS], Sensor
   }
 }
 
-static void ReadCalibrated(SensorTimeType calib[NUM_OF_REFL_SENSORS], SensorTimeType raw[NUM_OF_REFL_SENSORS]) {
-  int i;
-  int32_t x, denominator;
-  RefCnt_TValueType max;
+static void ReadCalibrated(SnsrTime_t calib[NUM_OF_REFL_SENSORS], SnsrTime_t raw[NUM_OF_REFL_SENSORS])
+{
+	uint8_t i = 0u;
+	int32_t x = 0, denominator = 0;
+	RefCnt_TValueType max = 0u;
 
-  max = 0; /* determine maximum timeout value */
-  for(i=0;i<NUM_OF_REFL_SENSORS;i++) {
-    if (SensorCalibMinMax.maxVal[i]>max) {
-      max = SensorCalibMinMax.maxVal[i];
-    }
-  }
-  if (max > REFL_TIMEOUT_US_TO_TICKS(pReflCfg->measTimeOutUS)) { /* limit to timeout value */
-    max = REFL_TIMEOUT_US_TO_TICKS(pReflCfg->measTimeOutUS);
-  }
-  (void)REFL_MeasureRaw(raw, max);
-  if (SensorCalibMinMax.maxVal[0] == 0) { /* no calibration data? */
-    return;
-  }
-  for(i=0;i<NUM_OF_REFL_SENSORS;i++) {
-    x = 0;
-    denominator = SensorCalibMinMax.maxVal[i]-SensorCalibMinMax.minVal[i];
-    if (denominator!=0) {
-      x = (((int32_t)raw[i]-SensorCalibMinMax.minVal[i])*1000)/denominator;
-    }
-    if (x<0) {
-      x = 0;
-    } else if (x>1000) {
-      x = 1000;
-    }
-    calib[i] = x;
-  }
+	max = 0u; /* determine maximum timeout value */
+
+	for(i = 0u; i < NUM_OF_REFL_SENSORS; i++)
+	{
+		if (SensorCalibMinMax.maxVal[i] > max)
+		{
+			max = SensorCalibMinMax.maxVal[i];
+		}
+	}
+
+	/* limit to timeout value */
+	if (max > REFL_TIMEOUT_US_TO_TICKS(pReflCfg->measTimeOutUS))
+	{
+		max = REFL_TIMEOUT_US_TO_TICKS(pReflCfg->measTimeOutUS);
+	}
+
+	(void)REFL_MeasureRaw(raw, max);
+	/* no calibration data? */
+	if (SensorCalibMinMax.maxVal[0] == 0)
+	{
+		return;
+	}
+
+	for(i = 0u; i < NUM_OF_REFL_SENSORS; i++)
+	{
+		x = 0;
+		denominator = SensorCalibMinMax.maxVal[i]-SensorCalibMinMax.minVal[i];
+		if (0 != denominator)
+		{
+		  x = ( ( (int32_t)raw[i] - SensorCalibMinMax.minVal[i] ) * 1000 ) / denominator;
+		}
+
+		if (x < 0)
+		{
+		  x = 0;
+		}
+		else if (x > 1000)
+		{
+		  x = 1000;
+		}
+		calib[i] = x;
+	}
 }
 
 /*
@@ -354,7 +372,7 @@ static void ReadCalibrated(SensorTimeType calib[NUM_OF_REFL_SENSORS], SensorTime
  * before the averaging.
  */
 
-static int ReadLine(SensorTimeType calib[NUM_OF_REFL_SENSORS], SensorTimeType raw[NUM_OF_REFL_SENSORS], REFL_LineBW_t lineBW_) {
+static int ReadLine(SnsrTime_t calib[NUM_OF_REFL_SENSORS], SnsrTime_t raw[NUM_OF_REFL_SENSORS], REFL_LineBW_t lineBW_) {
   int i;
   unsigned long avg; /* this is for the weighted total, which is long */
   /* before division */
@@ -422,7 +440,7 @@ static bool SensorsSaturated(void) {
 #endif
 }
 
-static REFL_LineKind_t ReadLineKind(SensorTimeType val[NUM_OF_REFL_SENSORS]) {
+static REFL_LineKind_t ReadLineKind(SnsrTime_t val[NUM_OF_REFL_SENSORS]) {
   uint32_t sum, sumLeft, sumRight, outerLeft, outerRight;
   int i;
 
@@ -480,19 +498,20 @@ static REFL_LineKind_t ReadLineKind(SensorTimeType val[NUM_OF_REFL_SENSORS]) {
 }
 
 
-static uint16_t CalculateReflLineWidth(SensorTimeType calib[NUM_OF_REFL_SENSORS]) {
-  int32_t val;
-  int i;
+static uint16_t CalculateReflLineWidth(SnsrTime_t calib[NUM_OF_REFL_SENSORS])
+{
+	uint32_t val = 0u;
+	uint8_t i = 0u;
 
-  val = 0;
-  for(i=0;i<NUM_OF_REFL_SENSORS;i++)
-  {
-    if (calib[i] >= pReflCfg->minNoiseVal) /* sensor not seeing anything? */
-    {
-      val += calib[i];
-    }
-  }
-  return (uint16_t)val;
+	val = 0u;
+	for(i = 0u; i < NUM_OF_REFL_SENSORS; i++)
+	{
+	  if (calib[i] >= pReflCfg->minNoiseVal) /* sensor not seeing anything? */
+	  {
+		  val += calib[i];
+	  }
+	}
+	return (uint16_t)val;
 }
 
 static void REFL_Measure(void) {
@@ -507,7 +526,7 @@ static void REFL_Measure(void) {
 
 
 static void REFL_StateMachine(void) {
-  int i;
+  uint8_t i;
 
   switch (reflState)
   {
@@ -515,7 +534,8 @@ static void REFL_StateMachine(void) {
       if (NVM_Read_ReflCalibData(&SensorCalibMinMax) == ERR_OK)  /* use calibration data from FLASH */
       {
         reflState = REFL_STATE_READY;
-      } else
+      }
+      else
       {
     	SH_SENDSTR((unsigned char*)"no calibration data present.\r\n");
         reflState = REFL_STATE_NOT_CALIBRATED;
@@ -526,7 +546,7 @@ static void REFL_StateMachine(void) {
       FRTOS1_vTaskDelay(80/portTICK_PERIOD_MS); /* no need to sample that fast: this gives 80+20=100 ms */
       (void)REFL_MeasureRaw(SensorRaw, REFL_TIMEOUT_US_TO_TICKS(pReflCfg->measTimeOutUS));
 #if REFL_START_STOP_CALIB
-      if (FRTOS1_xSemaphoreTake(REFL_StartStopSem, 0)==pdTRUE)
+      if (FRTOS1_xSemaphoreTake(pBinSemphrHdl, 0)==pdTRUE)
       {
         reflState = REFL_STATE_START_CALIBRATION;
       }
@@ -544,16 +564,17 @@ static void REFL_StateMachine(void) {
       SensorCalibMinMaxTmpPtr = FRTOS1_pvPortMalloc(sizeof(NVM_ReflCalibData_t));
       if (SensorCalibMinMaxTmpPtr != NULL)  /* success */
       {
-        for(i=0;i<NUM_OF_REFL_SENSORS;i++)
-        {
-          SensorCalibMinMaxTmpPtr->minVal[i] = MAX_SENSOR_VALUE;
-          SensorCalibMinMaxTmpPtr->maxVal[i] = 0;
-          SensorCalibrated[i] = 0;
-        }
-        reflState = REFL_STATE_CALIBRATING;
-      } else
+    	  for(i = 0u; i < NUM_OF_REFL_SENSORS; i++)
+    	  {
+    		  SensorCalibMinMaxTmpPtr->minVal[i] = MAX_SENSOR_VALUE;
+    		  SensorCalibMinMaxTmpPtr->maxVal[i] = 0;
+    		  SensorCalibrated[i] = 0;
+    	  }
+    	  reflState = REFL_STATE_CALIBRATING;
+      }
+      else
       {
-        reflState = REFL_STATE_INIT; /* error case */
+    	  reflState = REFL_STATE_INIT; /* error case */
       }
       break;
 
@@ -561,18 +582,19 @@ static void REFL_StateMachine(void) {
       FRTOS1_vTaskDelay(80/portTICK_PERIOD_MS); /* no need to sample that fast: this gives 80+20=100 ms */
       if (SensorCalibMinMaxTmpPtr != NULL) /* safety check */
       {
-        REFL_CalibrateMinMax(SensorCalibMinMaxTmpPtr->minVal, SensorCalibMinMaxTmpPtr->maxVal, SensorRaw);
-      } else
+    	  REFL_CalibrateMinMax(SensorCalibMinMaxTmpPtr->minVal, SensorCalibMinMaxTmpPtr->maxVal, SensorRaw);
+      }
+      else
       {
-        reflState = REFL_STATE_INIT; /* error case */
-        break;
+    	  reflState = REFL_STATE_INIT; /* error case */
+    	  break;
       }
 
       (void)BUZ_Beep(100, 50);
 
 
 #if REFL_START_STOP_CALIB
-      if (FRTOS1_xSemaphoreTake(REFL_StartStopSem, 0)==pdTRUE)
+      if (FRTOS1_xSemaphoreTake(pBinSemphrHdl, 0)==pdTRUE)
       {
         reflState = REFL_STATE_STOP_CALIBRATION;
       }
@@ -610,7 +632,7 @@ static void REFL_StateMachine(void) {
       REFL_Measure();
 
 #if REFL_START_STOP_CALIB
-      if (FRTOS1_xSemaphoreTake(REFL_StartStopSem, 0)==pdTRUE)
+      if (FRTOS1_xSemaphoreTake(pBinSemphrHdl, 0)==pdTRUE)
       {
         reflState = REFL_STATE_START_CALIBRATION;
       }
@@ -624,11 +646,11 @@ REFL_State_t REFL_GetReflState(void){
 	return reflState;
 }
 
-SensorTimeType REFL_GetRawSensorValue(const uint8 i){
+SnsrTime_t REFL_GetRawSensorValue(const uint8 i){
 	return SensorRaw[i];
 }
 
-SensorTimeType REFL_GetCalibratedSensorValue(const uint8 i){
+SnsrTime_t REFL_GetCalibratedSensorValue(const uint8 i){
 	return SensorCalibrated[i];
 }
 int16_t REFL_GetReflLineValue(void){
@@ -687,7 +709,7 @@ void REFL_CalibrateStartStop(void) {
   REFL_IsEnabled = TRUE;
   if (reflState==REFL_STATE_NOT_CALIBRATED || reflState==REFL_STATE_CALIBRATING || reflState==REFL_STATE_READY)
   {
-    (void)xSemaphoreGive(REFL_StartStopSem);
+    (void)xSemaphoreGive(pBinSemphrHdl);
   }
 }
 #endif
@@ -724,42 +746,38 @@ uint8_t REFL_Get_NumOfSensors(void)
 	return NUM_OF_REFL_SENSORS;
 }
 
-void REFL_Init(void) {
+void REFL_Init(void)
+{
 	pReflCfg = Get_pReflCfg();
+	pMutexSemphrHdl = FRTOS1_xSemaphoreCreateMutex();
 
-	// TODO ab hier
-	if(pReflCfg == NULL)
+	if( (pReflCfg != NULL) && (pMutexSemphrHdl != NULL) )
 	{
-	    for(;;){} /* error */
-	}
+		FRTOS1_vQueueAddToRegistry(pMutexSemphrHdl, "REFL_MutexSemphr_Measure");
+		pTmrHdl = RefCnt_Init(NULL);
+
+		reflState = REFL_STATE_INIT;
+		reflLineKind = REFL_LINE_NONE;
+		reflCenterLineVal = 0;
+
+		IR_on(TRUE);
+		REFL_LedOn = TRUE; /* IR LED's on */
+		REFL_IsEnabled = TRUE;
 
 #if REFL_START_STOP_CALIB
-  FRTOS1_vSemaphoreCreateBinary(REFL_StartStopSem);
-  if (REFL_StartStopSem==NULL) /* semaphore creation failed */
-  {
-    for(;;){} /* error */
-  }
-  (void)FRTOS1_xSemaphoreTake(REFL_StartStopSem, 0); /* empty token */
-  FRTOS1_vQueueAddToRegistry(REFL_StartStopSem, "ReflStartStopSem");
+		FRTOS1_vSemaphoreCreateBinary(pBinSemphrHdl);
+		if (pBinSemphrHdl == NULL) /* semaphore creation failed */
+		{
+			for(;;){} /* error */
+		}
+		(void)FRTOS1_xSemaphoreTake(pBinSemphrHdl, 0); /* empty token */
+		FRTOS1_vQueueAddToRegistry(pBinSemphrHdl, "REFL_BinSemphr_StartStop");
 #endif
-
-  reflState = REFL_STATE_INIT;
-
-  reflLineKind = REFL_LINE_NONE;
-
-  reflCenterLineVal = 0;
-  IR_on(TRUE);
-  REFL_LedOn = TRUE; /* IR LED's on */
-  //TODO
-  REFL_IsEnabled = TRUE;
-
-  mutexHandle = FRTOS1_xSemaphoreCreateMutex();
-  if (mutexHandle==NULL)
-  {
-    for(;;);
-  }
-  FRTOS1_vQueueAddToRegistry(mutexHandle, "ReflSem");
-  timerHandle = RefCnt_Init(NULL);
+	}
+	else
+	{
+	    for(;;); /* error case */
+	}
 }
 
 void REFL_MainFct(void) {
