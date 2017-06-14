@@ -41,10 +41,10 @@
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 /**
- * @typedef SnsrTmr_t
+ * @typedef REFL_SnsrTime_t
  * @brief Data type definition of the sensor timing
  */
-typedef uint16_t SnsrTime_t;
+typedef uint16_t REFL_SnsrTime_t;
 
 
 /**
@@ -68,28 +68,42 @@ typedef enum REFL_LineBW_e {
  * @brief
  */
 typedef struct REFL_Cfg_s {
-	SnsrTime_t minNoiseVal;
-	SnsrTime_t minLineVal;
+	REFL_SnsrTime_t minNoiseVal;
+	REFL_SnsrTime_t minLineVal;
 	REFL_LineBW_t lineBW;
-	SnsrTime_t measTimeOutUS;
+	REFL_SnsrTime_t measTimeOutUS;
  } REFL_Cfg_t;
 
-/**
- * @typedef REFL_LineKind_t
- * @brief Data type definition of the enumeration REFL_LineKind_e
- *
- * @enum
- * @brief
- */
-typedef enum REFL_LineKind_e {
-  REFL_LINE_NONE=0,     /**< no line, sensors do not see a line */
-  REFL_LINE_STRAIGHT=1, /**< forward line |, sensors see a line underneath */
-  REFL_LINE_LEFT=2,     /**< left half of sensors see line */
-  REFL_LINE_RIGHT=3,    /**< right half of sensors see line */
-  REFL_LINE_FULL=4,     /**< all sensors see a line */
-  REFL_LINE_AIR=5,      /**< all sensors have a timeout value. Robot is not on ground at all? */
-  REFL_NOF_LINES        /**< Sentinel */
-} REFL_LineKind_t;
+ /**
+  * @typedef REFL_LineKind_t
+  * @brief Data type definition of the enumeration REFL_LineKind_e
+  *
+  * @enum
+  * @brief
+  */
+ typedef enum REFL_LineKind_e {
+   REFL_LINE_STRAIGHT = 0, 	/**< forward line |, sensors see a line underneath */
+   REFL_LINE_LEFT,     		/**< left half of sensors see line */
+   REFL_LINE_RIGHT,    		/**< right half of sensors see line */
+   REFL_LINE_FULL,     		/**< all sensors see a line */
+   REFL_LINE_AIR,      		/**< all sensors have a timeout value. Robot is not on ground at all? */
+   REFL_LINE_CNT,      		/**< number of lines */
+   REFL_LINE_NONE,     		/**< no line, sensors do not see a line */
+ } REFL_LineKind_t;
+
+ /**
+  * @typedef REFL_Line_t
+  * @brief
+  *
+  * @struct REFL_Line_s
+  * @brief
+  */
+ typedef struct REFL_Line_s {
+ 	uint16_t center;
+ 	REFL_LineKind_t kind;
+ 	uint16_t width;
+ } REFL_Line_t;
+
 
 /**
  * @typedef REFL_State_t
@@ -125,9 +139,47 @@ typedef struct SensorFctType_s {
 
 
 /*============================= >> GLOBAL FUNCTION DECLARATIONS << ================================*/
+/**
+ *
+ * @param dctdLine_
+ * @return
+ */
+EXTERNAL_ StdRtn_t REFL_Read_DctdLine(REFL_Line_t *dctdLine_);
+
+/**
+ *
+ * @param onLine_
+ * @return
+ */
+EXTERNAL_ uint16_t REFL_Get_DctdLineCenter(bool *onLine_);
+
+/**
+ *
+ * @return
+ */
+EXTERNAL_ REFL_LineKind_t REFL_Get_DctdLineKind(void);
+
+/**
+ *
+ * @return
+ */
+EXTERNAL_ uint16_t REFL_Get_DctdLineWidth(void);
+
+/**
+ *
+ * @param pCfg_
+ * @return
+ */
 EXTERNAL_ StdRtn_t REFL_Read_ReflCfg(REFL_Cfg_t *pCfg_);
 
+/**
+ *
+ * @return
+ */
 EXTERNAL_ uint8_t REFL_Get_NumOfSensors(void);
+
+
+
 
 EXTERNAL_ REFL_State_t REFL_GetReflState(void);
 
@@ -143,19 +195,13 @@ EXTERNAL_ int16_t REFL_GetReflLineWidth(void);
 
 EXTERNAL_ int16_t REFL_GetReflLineValue(void);
 
-EXTERNAL_ SnsrTime_t REFL_GetCalibratedSensorValue(const uint8 i);
+EXTERNAL_ REFL_SnsrTime_t REFL_GetCalibratedSensorValue(const uint8 i);
 
-EXTERNAL_ SnsrTime_t REFL_GetRawSensorValue(const uint8 i);
+EXTERNAL_ REFL_SnsrTime_t REFL_GetRawSensorValue(const uint8 i);
 
 EXTERNAL_ void REFL_CalibrateStartStop(void);
 
 EXTERNAL_ void REFL_GetSensorValues(uint16_t *values, int nofValues);
-
-EXTERNAL_ REFL_LineKind_t REFL_GetReflLineKind(void);
-
-EXTERNAL_ int16_t REFL_GetReflLineWidth(void);
-
-EXTERNAL_ uint16_t REFL_GetLineValue(bool *onLine);
 
 EXTERNAL_ bool REFL_IsLedOn(void);
 

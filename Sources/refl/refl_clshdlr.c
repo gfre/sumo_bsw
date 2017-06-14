@@ -94,6 +94,7 @@ static uint8_t PrintStatus(const CLS1_StdIOType *io) {
   unsigned char buf[32];
   uint8_t i = 0u;
   REFL_Cfg_t reflCfg = {0};
+  REFL_Line_t dctdLine = {0};
   uint8_t numOfSensors = 0u;
 
   numOfSensors = REFL_Get_NumOfSensors();
@@ -204,18 +205,18 @@ static uint8_t PrintStatus(const CLS1_StdIOType *io) {
     }
     CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
   }
-
+  (void)REFL_Read_DctdLine(&dctdLine);
   CLS1_SendStatusStr((unsigned char*)"  line pos", (unsigned char*)"", io->stdOut);
-  buf[0] = '\0'; UTIL1_strcatNum16s(buf, sizeof(buf), REFL_GetReflLineValue());
+  buf[0] = '\0'; UTIL1_strcatNum16s(buf, sizeof(buf), dctdLine.center);
   CLS1_SendStr(buf, io->stdOut);
   CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
 
   CLS1_SendStatusStr((unsigned char*)"  line width", (unsigned char*)"", io->stdOut);
-  buf[0] = '\0'; UTIL1_strcatNum16s(buf, sizeof(buf), REFL_GetReflLineWidth());
+  buf[0] = '\0'; UTIL1_strcatNum16s(buf, sizeof(buf), dctdLine.width);
   CLS1_SendStr(buf, io->stdOut);
   CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
 
-  CLS1_SendStatusStr((unsigned char*)"  line kind", REFL_LineKindStr(REFL_GetReflLineKind()), io->stdOut);
+  CLS1_SendStatusStr((unsigned char*)"  line kind", REFL_LineKindStr(dctdLine.kind), io->stdOut);
   CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
   return ERR_OK;
 }
