@@ -42,6 +42,14 @@ typedef uint8_t StdRtn_t;
 #define BTN_NPRESSED (0u)
 
 /**
+ * @typedef uchar_t
+ * @brief Type definition of an unsigned character, e.g. for string representations
+ */
+#ifndef uchar_t
+typedef unsigned char uchar_t;
+#endif
+
+/**
  * @typedef SigStatus_t
  * @brief
  *
