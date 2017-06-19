@@ -97,7 +97,14 @@ typedef struct REFL_SnsrData_s {
 	REFL_SnsrTime_t norm[NUM_OF_REFL_SENSORS];
 } REFL_SnsrData_t;
 
-
+typedef struct REFL_CfgData_s
+{
+	bool swcEnabled;
+	bool irLedEnabled;
+	const REFL_Cfg_t *pCfg;
+	NVM_ReflCalibData_t calibData;
+	REFL_SnsrTime_t maxValidRawVal;
+}REFL_CfgData_t;
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 static void S1_SetOutput(void);
@@ -132,26 +139,25 @@ static bool S6_GetVal(void);
 
 static void IR_on(bool on);
 
-static bool REFL_MeasureRaw(REFL_SnsrTime_t raw[NUM_OF_REFL_SENSORS], RefCnt_TValueType timeoutCntVal);
+static StdRtn_t MeasureSnsrRawData(REFL_SnsrTime_t *aRawData_, uint8_t cntOfSnsrs_, RefCnt_TValueType timeoutCntVal);
 
 static void REFL_CalibrateMinMax(REFL_SnsrTime_t min[NUM_OF_REFL_SENSORS], REFL_SnsrTime_t max[NUM_OF_REFL_SENSORS], REFL_SnsrTime_t raw[NUM_OF_REFL_SENSORS]);
 
-static void ReadCalibrated(REFL_SnsrTime_t calib[NUM_OF_REFL_SENSORS], REFL_SnsrTime_t raw[NUM_OF_REFL_SENSORS]);
+static StdRtn_t CalcNormData(REFL_SnsrTime_t *normData_, REFL_SnsrTime_t *rawData_);
 
 static bool SensorsSaturated(void);
 
-static REFL_LineKind_t ReadLineKind(REFL_SnsrTime_t val[NUM_OF_REFL_SENSORS]);
+static REFL_LineKind_t CalcLineKind(REFL_SnsrTime_t *normData_, uint8_t cntOfSnsrs_);
 
-static uint16_t CalcLineCenter(const REFL_SnsrTime_t *normData_, uint8_t cntOfSnsrs_, REFL_LineBW_t lineBW_);
+static uint16_t CalcLineCenter(const REFL_SnsrTime_t *aNormData_, uint8_t cntOfSnsrs_, REFL_LineBW_t lineBW_);
 
-static uint16_t CalcLineWidth(const REFL_SnsrTime_t *normData_, uint8_t cntOfSnsrs_);
+static uint16_t CalcLineWidth(const REFL_SnsrTime_t *aNormData_, uint8_t cntOfSnsrs_);
 
 static void RunLineDetection(void);
 
 static void ProcStateMachine(void);
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-static const REFL_Cfg_t *pReflCfg = NULL;
 static volatile REFL_State_t reflState = REFL_STATE_INIT;
 
 static LDD_TDeviceData *pTmrHdl;
@@ -161,18 +167,9 @@ static xSemaphoreHandle pBinSemphrHdl = NULL;
 
 static REFL_Line_t dctdLine = {0, REFL_LINE_NONE, 0u};
 
-static bool REFL_IsEnabled = TRUE;
-
 static REFL_SnsrData_t snsrData ={0};
 static NVM_ReflCalibData_t *SensorCalibMinMaxTmpPtr = NULL; /* pointer to temprory calibrated data */
-static NVM_ReflCalibData_t SensorCalibMinMax={0}; /* calibration data */
-
-static REFL_SnsrTime_t SensorRaw[NUM_OF_REFL_SENSORS]; /* raw sensor values */
-static REFL_SnsrTime_t SensorCalibrated[NUM_OF_REFL_SENSORS]; /* 0 means white/min value, 1000 means black/max value */
-
-static bool REFL_LedOn = TRUE;
-
-
+static REFL_CfgData_t cfgData = {0};
 
 static const SensorFctType SensorFctArray[NUM_OF_REFL_SENSORS] = {
   {S1_SetOutput, S1_SetInput, S1_SetVal, S1_GetVal},
@@ -227,77 +224,94 @@ static void IR_on(bool on) {
  * \param raw Array to store the raw values.
  * \return ERR_OVERFLOW if there is a timeout, ERR_OK otherwise
  */
-static bool REFL_MeasureRaw(REFL_SnsrTime_t raw[NUM_OF_REFL_SENSORS], RefCnt_TValueType timeoutCntVal) {
-  uint8_t cnt; /* number of sensor */
-  uint8_t i;
-  bool isTimeout = FALSE;
-  RefCnt_TValueType timerVal;
+static StdRtn_t MeasureSnsrRawData(REFL_SnsrTime_t *aRawData_, uint8_t cntOfSnsrs_, RefCnt_TValueType timeoutTmrVal_)
+{
+	StdRtn_t retVal = ERR_OK;
+	uint8_t i = 0u;
+	uint8_t chkSum = 0u;
+	bool aMeasured[cntOfSnsrs_];
+	RefCnt_TValueType tmrVal = 0u;
 
-  if (!REFL_IsEnabled) {
-    return ERR_DISABLED;
-  }
+	if (TRUE == cfgData.swcEnabled)
+	{
+		if ( ( NULL != aRawData_ ) && (NUM_OF_REFL_SENSORS >= cntOfSnsrs_) )
+		{
+			if (TRUE == cfgData.irLedEnabled)
+			{
+				/* IR LED's on */
+				LED_IR_On();
+				WAIT1_Waitus(200);
+			}
 
+			for(i = 0u; i < cntOfSnsrs_; i++)
+			{
+			  /* set I/O array as output */
+			  SensorFctArray[i].SetOutput();
+			  /* put high */
+			  SensorFctArray[i].SetVal();
+			  /* reset measured flag */
+			  aMeasured[i] = FALSE;
+			}
+			/* give at least 10 us to charge the capacitor */
+			WAIT1_Waitus(50);
 
-  if (REFL_LedOn) {
-    IR_on(TRUE); /* IR LED's on */
-    WAIT1_Waitus(200);
-  }
+			taskENTER_CRITICAL();
+			for(i = 0u; i < cntOfSnsrs_; i++)
+			{
+			  /* set I/O array as input */
+			  SensorFctArray[i].SetInput();
+			}
+			/* reset timer counter */
+			(void)RefCnt_ResetCounter(pTmrHdl);
 
-  for(i=0;i<NUM_OF_REFL_SENSORS;i++) {
-    SensorFctArray[i].SetOutput(); /* turn I/O dctdLine as output */
-    SensorFctArray[i].SetVal(); /* put high */
-    raw[i] = MAX_SENSOR_VALUE;
-  }
-  WAIT1_Waitus(50); /* give at least 10 us to charge the capacitor */
-  taskENTER_CRITICAL();
-  for(i=0;i<NUM_OF_REFL_SENSORS;i++) {
-    SensorFctArray[i].SetInput(); /* turn I/O dctdLine as input */
-  }
-  (void)RefCnt_ResetCounter(pTmrHdl); /* reset timer counter */
-  do {
-    cnt = 0;
-    timerVal = RefCnt_GetCounterValue(pTmrHdl);
-    if (timerVal>timeoutCntVal) {
-      isTimeout = TRUE;
-      break; /* get out of while loop */
-    }
-    for(i=0;i < NUM_OF_REFL_SENSORS;i++) {
-      if (raw[i]==MAX_SENSOR_VALUE) { /* not measured yet? */
-        if (SensorFctArray[i].GetVal()==0) {
-          raw[i] = timerVal;
-        }
-      } else { /* have value */
-        cnt++;
-      }
-    }
-  } while(cnt!=NUM_OF_REFL_SENSORS);
-  taskEXIT_CRITICAL();
+			/* do measurement */
+			while ( (chkSum != NUM_OF_REFL_SENSORS) && (tmrVal <= timeoutTmrVal_) )
+			{
+				chkSum = 0u;
+				for (i = 0u; i < cntOfSnsrs_; i++)
+				{
+					/* not measured yet? */
+					if (FALSE == aMeasured[i] && SensorFctArray[i].GetVal() == FALSE)
+					{
+						aRawData_[i] = tmrVal;
+						aMeasured[i] = TRUE;
+					}
+					chkSum += aMeasured[i];
+				}
+				tmrVal = RefCnt_GetCounterValue(pTmrHdl);
 
-  if (REFL_LedOn) {
-    IR_on(FALSE); /* IR LED's off */
-  }
+			}
 
-  if (isTimeout) {
-    for(i=0;i<NUM_OF_REFL_SENSORS;i++) {
-      if (raw[i]==MAX_SENSOR_VALUE) { /* not measured yet? */
-        if (SensorCalibMinMax.maxVal[i] != 0) { //TODO
-          raw[i] = SensorCalibMinMax.maxVal[i]; /* use calibrated max value */
-        } else {
-          raw[i] = timeoutCntVal; /* set to timeout value */
-        }
-      }
-    } /* for */
-    return ERR_OVERFLOW;
-  } else {
-    return ERR_OK;
-  }
+			taskEXIT_CRITICAL();
+
+			LED_IR_Off();
+
+			/* not all sensors received measurement --> timeout detected ? */
+			if (chkSum != NUM_OF_REFL_SENSORS)
+			{
+				for( i = 0u; (i < cntOfSnsrs_) && (FALSE == aMeasured[i]); i++ )
+				{
+					aRawData_[i] = (cfgData.calibData.maxVal[i] != 0) ? (cfgData.calibData.maxVal[i]) : (timeoutTmrVal_);
+				}
+			}
+		}
+		else
+		{
+			retVal = ERR_PARAM_ADDRESS;
+		}
+	}
+	else
+	{
+		retVal = ERR_DISABLED;
+	}
+	return retVal;
 }
 
 static void REFL_CalibrateMinMax(REFL_SnsrTime_t min[NUM_OF_REFL_SENSORS], REFL_SnsrTime_t max[NUM_OF_REFL_SENSORS], REFL_SnsrTime_t raw[NUM_OF_REFL_SENSORS]) {
-  int i;
+  uint8_t i = 0u;
 
-  if (REFL_MeasureRaw(raw, REFL_TIMEOUT_US_TO_TICKS(pReflCfg->measTimeOutUS))==ERR_OK) { /* if timeout, do not count values */
-    for(i=0;i<NUM_OF_REFL_SENSORS;i++) {
+  if (MeasureSnsrRawData(raw, NUM_OF_REFL_SENSORS, REFL_TIMEOUT_US_TO_TICKS(cfgData.pCfg->measTimeOutUS))==ERR_OK) { /* if timeout, do not count values */
+    for( i = 0u; i < NUM_OF_REFL_SENSORS; i++) {
       if (raw[i] < min[i]) {
         min[i] = raw[i];
       }
@@ -308,42 +322,26 @@ static void REFL_CalibrateMinMax(REFL_SnsrTime_t min[NUM_OF_REFL_SENSORS], REFL_
   }
 }
 
-static void CalcNormData(REFL_SnsrTime_t *normData_, REFL_SnsrTime_t *rawData_)
+static StdRtn_t CalcNormData(REFL_SnsrTime_t *normData_, REFL_SnsrTime_t *rawData_)
 {
+	StdRtn_t retVal = ERR_OK;
 	uint8_t i = 0u;
 	int32_t x = 0, denominator = 0;
-	RefCnt_TValueType max = 0u;
 
-	max = 0u; /* determine maximum timeout value */
 
-	for(i = 0u; i < NUM_OF_REFL_SENSORS; i++)
-	{
-		if (SensorCalibMinMax.maxVal[i] > max)
-		{
-			max = SensorCalibMinMax.maxVal[i];
-		}
-	}
-
-	/* limit to timeout value */
-	if (max > REFL_TIMEOUT_US_TO_TICKS(pReflCfg->measTimeOutUS))
-	{
-		max = REFL_TIMEOUT_US_TO_TICKS(pReflCfg->measTimeOutUS);
-	}
-
-	(void)REFL_MeasureRaw(rawData_, max);
 	/* no calibration data? */
-	if (SensorCalibMinMax.maxVal[0] == 0)
+	if (cfgData.calibData.maxVal[0] == 0)
 	{
-		return;
+		return ERR_PARAM_DATA;
 	}
 
 	for(i = 0u; i < NUM_OF_REFL_SENSORS; i++)
 	{
 		x = 0;
-		denominator = SensorCalibMinMax.maxVal[i]-SensorCalibMinMax.minVal[i];
+		denominator = cfgData.calibData.maxVal[i] - cfgData.calibData.minVal[i];
 		if (0 != denominator)
 		{
-		  x = ( ( (int32_t)rawData_[i] - SensorCalibMinMax.minVal[i] ) * 1000 ) / denominator;
+		  x = ( ( (int32_t)rawData_[i] - cfgData.calibData.minVal[i] ) * 1000 ) / denominator;
 		}
 
 		if (x < 0)
@@ -356,6 +354,8 @@ static void CalcNormData(REFL_SnsrTime_t *normData_, REFL_SnsrTime_t *rawData_)
 		}
 		normData_[i] = x;
 	}
+
+	return retVal;
 }
 
 /*
@@ -377,7 +377,7 @@ static void CalcNormData(REFL_SnsrTime_t *normData_, REFL_SnsrTime_t *rawData_)
  * surrounded by white (low values) and a bright dctdLine surrounded by black.
  */
 
-static uint16_t CalcLineCenter(const REFL_SnsrTime_t *normData_, uint8_t cntOfSnsrs_, REFL_LineBW_t lineBW_)
+static uint16_t CalcLineCenter(const REFL_SnsrTime_t *aNormData_, uint8_t cntOfSnsrs_, REFL_LineBW_t lineBW_)
 {
   uint8_t i = 0u;
   uint32_t avg = 0u; /* this is for the weighted total, which is long */
@@ -385,17 +385,16 @@ static uint16_t CalcLineCenter(const REFL_SnsrTime_t *normData_, uint8_t cntOfSn
   uint16_t mul = 0u; /* multiplication factor, 0, 1000, 2000, 3000 ... */
   uint16_t normVal = 0;
 
-
   avg = 0u;
   sum = 0u;
   mul = 1000u;
   for(i = 0u; i < cntOfSnsrs_; i++)
   {
-	  //TODO normVal = MIN(1000u, normData_[i]);
+	  normVal = MIN(1000u, aNormData_[i]);
 	  normVal = (REFL_LINE_WHITE == lineBW_) ? (1000u - normVal) : (normVal);
 
 	  /* only average in values that are above a noise threshold */
-	  if(normVal > pReflCfg->minNoiseVal)
+	  if(normVal > cfgData.pCfg->minNoiseVal)
 	  {
 		  avg += (uint32_t)( (uint32_t)normVal * (uint32_t)mul);
 		  sum += normVal;
@@ -428,63 +427,74 @@ static bool SensorsSaturated(void) {
 #endif
 }
 
-static REFL_LineKind_t ReadLineKind(REFL_SnsrTime_t val[NUM_OF_REFL_SENSORS]) {
-  uint32_t sum, sumLeft, sumRight, outerLeft, outerRight;
-  int i;
+static REFL_LineKind_t CalcLineKind(REFL_SnsrTime_t *normData_, uint8_t cntOfSnsrs_)
+{
+	uint32_t sum = 0u, sumLeft = 0u, sumRight = 0u, outerLeft = 0u, outerRight = 0u;
+	uint8_t i = 0u;
+	REFL_LineKind_t lineKind = REFL_LINE_NONE;
+	bool fullLine = TRUE;
 
-  /* check if robot is in the air or does see something */
-  if (SensorsSaturated()) {
-    return REFL_LINE_AIR;
-  }
-  for(i = 0; i < NUM_OF_REFL_SENSORS; i++) {
-    if (val[i] < pReflCfg->minLineVal) { /* smaller value? White seen! */
-      break;
-    }
-  }
-  if (i==NUM_OF_REFL_SENSORS) { /* all sensors see 'black' */
-    return REFL_LINE_FULL;
-  }
-  /* check the dctdLine type */
-  sum = 0; sumLeft = 0; sumRight = 0;
-  for(i=0;i<NUM_OF_REFL_SENSORS;i++) {
-    if (val[i] > pReflCfg->minLineVal) { /* count only dctdLine values */
-      sum += val[i];
-      if ( i < NUM_OF_REFL_SENSORS / 2 ) {
+	if( ( NULL !=  normData_) && ( NUM_OF_REFL_SENSORS >= cntOfSnsrs_) )
+	{
+		/* check if robot is in the air or does see something */
+		if (SensorsSaturated())
+		{
+		  lineKind = REFL_LINE_AIR;
+		}
+		else
+		{
+			/* check the dctdLine type */
+			sum = 0u;
+			sumLeft  = 0u;
+			sumRight = 0u;
+			outerLeft = normData_[0];
+			outerRight = normData_[cntOfSnsrs_-1];
+			for( i = 0u ; i < cntOfSnsrs_; i++ )
+			{
+				if (normData_[i] >= cfgData.pCfg->minLineVal)
+				{ /* count only dctdLine values */
+				  sum += normData_[i];
+				  if ( i <  cntOfSnsrs_ / 2u )
+				  {
+					  sumLeft += normData_[i];
+				  }
+				  else
+				  {
+					  sumRight += normData_[i];
+				  }
+				}
+				else
+				{
+					fullLine = FALSE;
+				}
+			}
 
-        sumLeft += val[i];
-
-      } else {
-
-        sumRight += val[i];
-
-      }
-    }
-  }
-
-  outerLeft = val[0];
-  outerRight = val[NUM_OF_REFL_SENSORS-1];
-
-
-
-  if ( outerLeft >= pReflCfg->minLineVal && outerRight < pReflCfg->minLineVal && sumLeft>MIN_LEFT_RIGHT_SUM && sumRight<MIN_LEFT_RIGHT_SUM)
-  {
-    return REFL_LINE_LEFT; /* dctdLine going to the left side */
-  }
-  else if (outerLeft < pReflCfg->minLineVal && outerRight >= pReflCfg->minLineVal && sumRight>MIN_LEFT_RIGHT_SUM && sumLeft<MIN_LEFT_RIGHT_SUM)
-  {
-    return REFL_LINE_RIGHT; /* dctdLine going to the right side */
-  }
-  else if (outerLeft >= pReflCfg->minLineVal && outerRight >= pReflCfg->minLineVal && sumRight>MIN_LEFT_RIGHT_SUM && sumLeft>MIN_LEFT_RIGHT_SUM)
-  {
-    return REFL_LINE_FULL; /* full dctdLine */
-  }
-  else if (sumRight==0 && sumLeft==0 && sum == 0) {
-    return REFL_LINE_NONE; /* no dctdLine */
-  } else {
-    return REFL_LINE_STRAIGHT; /* straight dctdLine forward */
-  }
+			if (TRUE == fullLine)
+			{
+				lineKind = REFL_LINE_FULL;
+			}
+			else if ( outerLeft >= cfgData.pCfg->minLineVal && outerRight < cfgData.pCfg->minLineVal && sumLeft>MIN_LEFT_RIGHT_SUM && sumRight<MIN_LEFT_RIGHT_SUM)
+			{
+				lineKind = REFL_LINE_LEFT; /* dctdLine going to the left side */
+			}
+			else if (outerLeft < cfgData.pCfg->minLineVal && outerRight >= cfgData.pCfg->minLineVal && sumRight>MIN_LEFT_RIGHT_SUM && sumLeft<MIN_LEFT_RIGHT_SUM)
+			{
+				lineKind = REFL_LINE_RIGHT; /* dctdLine going to the right side */
+			}
+			else if (outerLeft >= cfgData.pCfg->minLineVal && outerRight >= cfgData.pCfg->minLineVal && sumRight>MIN_LEFT_RIGHT_SUM && sumLeft>MIN_LEFT_RIGHT_SUM)
+			{
+				lineKind = REFL_LINE_FULL; /* full dctdLine */
+			}
+			else if (sumRight==0 && sumLeft==0 && sum == 0) {
+				lineKind = REFL_LINE_NONE; /* no dctdLine */
+			}
+			else
+			{
+				lineKind = REFL_LINE_STRAIGHT; /* straight dctdLine forward */
+			}
+		}
+	}	return lineKind;
 }
-
 
 static uint16_t CalcLineWidth(const REFL_SnsrTime_t *normData_, uint8_t cntOfSnsrs_)
 {
@@ -493,7 +503,7 @@ static uint16_t CalcLineWidth(const REFL_SnsrTime_t *normData_, uint8_t cntOfSns
 
 	for(i = 0u; i < cntOfSnsrs_; i++)
 	{
-	  if (normData_[i] >= pReflCfg->minNoiseVal) /* sensor not seeing anything? */
+	  if (normData_[i] >= cfgData.pCfg->minNoiseVal) /* sensor not seeing anything? */
 	  {
 		  lineWidth += (uint32_t)normData_[i];
 	  }
@@ -504,19 +514,18 @@ static uint16_t CalcLineWidth(const REFL_SnsrTime_t *normData_, uint8_t cntOfSns
 
 static void RunLineDetection(void)
 {
-	StdRtn_t retVal = ERR_OK;
-	CalcNormData(SensorCalibrated, SensorRaw);
+	dctdLine.center = 0xFFFFu;
+	dctdLine.width = 0xFFFFu;
+	dctdLine.kind = REFL_LINE_NONE;
 
-	dctdLine.center = CalcLineCenter(SensorCalibrated, NUM_OF_REFL_SENSORS, pReflCfg->lineBW);
-	dctdLine.width  = CalcLineWidth(SensorCalibrated, NUM_OF_REFL_SENSORS);
-
-	if (reflState==REFL_STATE_READY)
+	if(ERR_OK == MeasureSnsrRawData(snsrData.raw, NUM_OF_REFL_SENSORS, cfgData.maxValidRawVal))
 	{
-		dctdLine.kind = ReadLineKind(SensorCalibrated);
-	}
-	else
-	{
-		dctdLine.kind = REFL_LINE_NONE;
+		if( ERR_OK == CalcNormData(snsrData.norm, snsrData.raw) )
+		{
+			dctdLine.center = CalcLineCenter(snsrData.norm, NUM_OF_REFL_SENSORS, cfgData.pCfg->lineBW);
+			dctdLine.width  = CalcLineWidth(snsrData.norm, NUM_OF_REFL_SENSORS);
+			dctdLine.kind   = CalcLineKind(snsrData.norm, NUM_OF_REFL_SENSORS);
+		}
 	}
 }
 
@@ -529,8 +538,22 @@ static void ProcStateMachine(void)
   {
   default:
   case REFL_STATE_INIT:
-	  if (NVM_Read_ReflCalibData(&SensorCalibMinMax) == ERR_OK)  /* use calibration data from FLASH */
+	  if (NVM_Read_ReflCalibData(&cfgData.calibData) == ERR_OK)  /* use calibration data from FLASH */
       {
+		  for(i = 0u; i < NUM_OF_REFL_SENSORS; i++)
+		  {
+			  if (cfgData.calibData.maxVal[i] > cfgData.maxValidRawVal)
+			  {
+				  cfgData.maxValidRawVal = cfgData.calibData.maxVal[i];
+			  }
+		  }
+
+		  /* limit to timeout value */
+		  if (cfgData.maxValidRawVal > REFL_TIMEOUT_US_TO_TICKS(cfgData.pCfg->measTimeOutUS))
+		  {
+			  cfgData.maxValidRawVal = REFL_TIMEOUT_US_TO_TICKS(cfgData.pCfg->measTimeOutUS);
+		  }
+
 		  reflState = REFL_STATE_READY;
       }
       else
@@ -553,7 +576,7 @@ static void ProcStateMachine(void)
 
     case REFL_STATE_NOT_CALIBRATED:
       FRTOS1_vTaskDelay(80/portTICK_PERIOD_MS); /* no need to sample that fast: this gives 80+20=100 ms */
-      (void)REFL_MeasureRaw(SensorRaw, REFL_TIMEOUT_US_TO_TICKS(pReflCfg->measTimeOutUS));
+      (void)MeasureSnsrRawData(snsrData.raw, NUM_OF_REFL_SENSORS, REFL_TIMEOUT_US_TO_TICKS(cfgData.pCfg->measTimeOutUS));
 #if REFL_START_STOP_CALIB
       if (FRTOS1_xSemaphoreTake(pBinSemphrHdl, 0)==pdTRUE)
       {
@@ -577,7 +600,7 @@ static void ProcStateMachine(void)
     	  {
     		  SensorCalibMinMaxTmpPtr->minVal[i] = MAX_SENSOR_VALUE;
     		  SensorCalibMinMaxTmpPtr->maxVal[i] = 0;
-    		  SensorCalibrated[i] = 0;
+    		  snsrData.norm[i] = 0;
     	  }
     	  reflState = REFL_STATE_CALIBRATING;
       }
@@ -591,7 +614,7 @@ static void ProcStateMachine(void)
       FRTOS1_vTaskDelay(80/portTICK_PERIOD_MS); /* no need to sample that fast: this gives 80+20=100 ms */
       if (SensorCalibMinMaxTmpPtr != NULL) /* safety check */
       {
-    	  REFL_CalibrateMinMax(SensorCalibMinMaxTmpPtr->minVal, SensorCalibMinMaxTmpPtr->maxVal, SensorRaw);
+    	  REFL_CalibrateMinMax(SensorCalibMinMaxTmpPtr->minVal, SensorCalibMinMaxTmpPtr->maxVal, snsrData.raw);
       }
       else
       {
@@ -625,7 +648,7 @@ static void ProcStateMachine(void)
       /* free memory */
       FRTOS1_vPortFree(SensorCalibMinMaxTmpPtr);
       SensorCalibMinMaxTmpPtr = NULL;
-      if(NVM_Read_ReflCalibData(&SensorCalibMinMax) == ERR_OK)
+      if(NVM_Read_ReflCalibData(&cfgData.calibData) == ERR_OK)
       {
     	  SH_SENDSTR((unsigned char*)"calibration data saved");
 
@@ -644,53 +667,42 @@ REFL_State_t REFL_GetReflState(void){
 }
 
 REFL_SnsrTime_t REFL_GetRawSensorValue(const uint8 i){
-	return SensorRaw[i];
+	return snsrData.raw[i];
 }
 
 REFL_SnsrTime_t REFL_GetCalibratedSensorValue(const uint8 i){
-	return SensorCalibrated[i];
+	return snsrData.norm[i];
 }
 
 
 NVM_ReflCalibData_t* REFL_GetCalibMinMaxPtr(void){
-	return &SensorCalibMinMax;
+	return &cfgData.calibData;
 }
 
 bool REFL_IsReflEnabled(void){
-	return REFL_IsEnabled;
+	return cfgData.swcEnabled;
 }
 
-void REFL_SetReflEnabled(bool isEnabled){
-	if(REFL_IsEnabled != isEnabled)
-	{
-	REFL_IsEnabled = isEnabled;
-	}
+void REFL_SetReflEnabled(bool enable){
+	cfgData.swcEnabled = (enable & TRUE);
 }
 
 bool REFL_CanUseSensor(void) {
   return reflState==REFL_STATE_READY;
 }
 
-
-bool REFL_IsRefEnabled(void){
-	return REFL_IsEnabled;
-}
-
 bool REFL_IsLedOn(void){
-	return REFL_LedOn;
+	return cfgData.irLedEnabled;
 }
 
-void REFL_SetLedOn(bool isOn){
-	if(REFL_LedOn != isOn)
-	{
-	REFL_LedOn = isOn;
-	}
+void REFL_SetLedOn(bool enable){
+	cfgData.irLedEnabled = (enable & TRUE);
 }
 
 
 #if REFL_START_STOP_CALIB
 void REFL_CalibrateStartStop(void) {
-  REFL_IsEnabled = TRUE;
+	cfgData.swcEnabled = TRUE;
   if (reflState==REFL_STATE_NOT_CALIBRATED || reflState==REFL_STATE_CALIBRATING || reflState==REFL_STATE_READY)
   {
     (void)xSemaphoreGive(pBinSemphrHdl);
@@ -703,7 +715,7 @@ void REFL_GetSensorValues(uint16_t *values, int nofValues) {
 
   for(i = 0u; i < nofValues && i < NUM_OF_REFL_SENSORS; i++)
   {
-    values[i] = SensorCalibrated[i];
+    values[i] = snsrData.norm[i];
   }
 }
 
@@ -734,9 +746,9 @@ StdRtn_t REFL_Read_ReflCfg(REFL_Cfg_t *pCfg_)
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if( NULL != pCfg_)
 	{
-		if( NULL != pReflCfg)
+		if( NULL != cfgData.pCfg)
 		{
-			*pCfg_ = *pReflCfg;
+			*pCfg_ = *(cfgData.pCfg);
 			retVal = ERR_OK;
 		}
 		else
@@ -754,9 +766,9 @@ uint8_t REFL_Get_NumOfSensors(void)
 
 void REFL_Init(void)
 {
-	pReflCfg = Get_pReflCfg();
+	cfgData.pCfg = Get_pReflCfg();
 
-	if( pReflCfg != NULL )
+	if (cfgData.pCfg != NULL )
 	{
 		pTmrHdl = RefCnt_Init(NULL);
 
@@ -767,9 +779,8 @@ void REFL_Init(void)
 		dctdLine.center = 0;
 		dctdLine.width = 0u;
 
-		IR_on(TRUE);
-		REFL_LedOn = TRUE; /* IR LED's on */
-		REFL_IsEnabled = TRUE;
+		cfgData.irLedEnabled = TRUE; /* IR LED's on */
+		cfgData.swcEnabled = TRUE;
 
 #if REFL_START_STOP_CALIB
 		FRTOS1_vSemaphoreCreateBinary(pBinSemphrHdl);

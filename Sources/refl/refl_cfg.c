@@ -34,7 +34,7 @@
  * Timeout period when no reflection is considered.
  * @warning Has to be smaller than the timeout period of the corresponding LDD TimerUnit.
  */
-#define REFL_SENSOR_TIMEOUT_US  (3500u)
+#define REFL_SENSOR_TIMEOUT_US  (4000u)
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
