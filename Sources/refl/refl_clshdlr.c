@@ -255,10 +255,11 @@ uint8_t REFL_ParseCommand(const unsigned char *cmd_, bool *handled_, const CLS1_
 		if (REFL_Get_State()==REFL_STATE_NOT_CALIBRATED || REFL_Get_State()==REFL_STATE_READY)
 		{
 			REFL_Give_Smphr4CalibStartStop();
+			CLS1_SendStr((uchar_t*)"start calibration...\r\n", io_->stdOut);
 		}
 		else
 		{
-			CLS1_SendStr((unsigned char*)"ERROR: cannot start calibration, must not be calibrating or be ready.\r\n", io_->stdErr);
+			CLS1_SendStr((uchar_t*)"ERROR: cannot start calibration, must not be calibrating or be ready.\r\n", io_->stdErr);
 			return ERR_FAILED;
 		}
 		*handled_ = TRUE;
@@ -269,11 +270,12 @@ uint8_t REFL_ParseCommand(const unsigned char *cmd_, bool *handled_, const CLS1_
 		if (REFL_Get_State()==REFL_STATE_CALIBRATING)
 		{
 			REFL_Give_Smphr4CalibStartStop();
+			CLS1_SendStr((uchar_t*)"...stopping calibration.\r\n", io_->stdErr);
 		}
 		else
 		{
-		  CLS1_SendStr((unsigned char*)"ERROR: can only stop if calibrating.\r\n", io_->stdErr);
-		  return ERR_FAILED;
+			CLS1_SendStr((uchar_t*)"ERROR: can only stop if calibrating.\r\n", io_->stdErr);
+			return ERR_FAILED;
 		}
 		*handled_ = TRUE;
 		return ERR_OK;

@@ -569,9 +569,7 @@ static void ProcStateMachine(void)
 		break;
 
     case REFL_STATE_START_CALIBRATION:
-    	SH_SENDSTR((unsigned char*)"start calibration...\r\n");
-
-		if (pCalibMinMaxDataTmp != NULL)
+    	if (pCalibMinMaxDataTmp != NULL)
 		{
 		reflState = REFL_STATE_INIT; /* error case */
 		break;
@@ -614,23 +612,20 @@ static void ProcStateMachine(void)
       break;
 
     case REFL_STATE_STOP_CALIBRATION:
-
-      SH_SENDSTR((unsigned char*)"...stopping calibration.\r\n");
-
       reflState = REFL_STATE_SAVE_CALIBRATION;
       break;
 
     case REFL_STATE_SAVE_CALIBRATION:
       if(NVM_Save_ReflCalibData(pCalibMinMaxDataTmp) != ERR_OK)
       {
-    	  SH_SENDSTR((unsigned char*)"failed to save calib data");
+    	  SH_SENDSTR((unsigned char*)"Failed to save calib data.\r\n");
       }
       /* free memory */
       FRTOS1_vPortFree(pCalibMinMaxDataTmp);
       pCalibMinMaxDataTmp = NULL;
       if(NVM_Read_ReflCalibData(&cfgData.calibData) == ERR_OK)
       {
-    	  SH_SENDSTR((unsigned char*)"calibration data saved");
+    	  SH_SENDSTR((unsigned char*)"Calibration data saved.\r\n");
 
     	  reflState = REFL_STATE_READY;
       }else
