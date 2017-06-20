@@ -123,24 +123,31 @@ typedef enum REFL_State_e {
 } REFL_State_t;
 
 /**
- * @typedef SensorFctType
- * @brief Data type definition of the structure SensorFctType_s
+ * @typedef SnsrIOFcts_t
+ * @brief Data type definition of the structure SnsrIOFcts_s
  *
- * @enum SensorFctType_s
+ * @struct SnsrIOFcts_s
  * @brief
  */
-typedef struct SensorFctType_s {
+typedef struct SnsrIOFcts_s {
   void (*SetOutput)(void);
   void (*SetInput)(void);
   void (*SetVal)(void);
   bool (*GetVal)(void);
-} SensorFctType;
+} SnsrIOFcts_t;
 
 
 
 /*============================= >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 /**
- *
+ * @brief
+ * @param pCfg_
+ * @return
+ */
+EXTERNAL_ StdRtn_t REFL_Read_ReflCfg(REFL_Cfg_t *pCfg_);
+
+/**
+ * @brief
  * @param dctdLine_
  * @return
  */
@@ -154,7 +161,7 @@ EXTERNAL_ StdRtn_t REFL_Read_DctdLine(REFL_Line_t *dctdLine_);
 EXTERNAL_ uint16_t REFL_Get_DctdLineCenter(bool *onLine_);
 
 /**
- *
+ * @brief
  * @return
  */
 EXTERNAL_ REFL_LineKind_t REFL_Get_DctdLineKind(void);
@@ -165,51 +172,73 @@ EXTERNAL_ REFL_LineKind_t REFL_Get_DctdLineKind(void);
  */
 EXTERNAL_ uint16_t REFL_Get_DctdLineWidth(void);
 
-/**
- *
- * @param pCfg_
- * @return
- */
-EXTERNAL_ StdRtn_t REFL_Read_ReflCfg(REFL_Cfg_t *pCfg_);
 
 /**
- *
+ * @brief
  * @return
  */
-EXTERNAL_ uint8_t REFL_Get_NumOfSensors(void);
+EXTERNAL_ uint8_t REFL_Get_NumOfSnsrs(void);
 
+/**
+ * @brief
+ * @return
+ */
+EXTERNAL_ REFL_State_t REFL_Get_State(void);
 
+/**
+ * @brief
+ * @return
+ */
+EXTERNAL_ NVM_ReflCalibData_t* REFL_Get_pCalibData(void);
 
+/**
+ * @brief
+ * @return
+ */
+EXTERNAL_ bool REFL_Get_SwcEnbldSt(void);
 
-EXTERNAL_ REFL_State_t REFL_GetReflState(void);
+/**
+ *
+ * @param flag_
+ */
+EXTERNAL_ void REFL_Set_SwcEnbldSt(bool state_);
 
-EXTERNAL_ bool REFL_IsReflEnabled(void);
+/**
+ * @brief
+ * @return
+ */
+EXTERNAL_ bool REFL_Get_IrLedSt(void);
 
-EXTERNAL_ void REFL_SetReflEnabled(bool isEnabled);
+/**
+ * @brief
+ * @param state_
+ */
+EXTERNAL_ void REFL_Set_IrLedSt(bool state_);
 
-EXTERNAL_ NVM_ReflCalibData_t* REFL_GetCalibMinMaxPtr(void);
+/**
+ * @brief
+ * @param idx_
+ * @return
+ */
+EXTERNAL_ REFL_SnsrTime_t REFL_Get_RawSnsrVal(uint8_t idx_);
 
-EXTERNAL_ void REFL_SetLedOn(bool isOn);
+/**
+ * @brief
+ * @param idx_
+ * @return
+ */
+EXTERNAL_ REFL_SnsrTime_t REFL_Get_NormSnsrVal(uint8_t idx_);
 
-EXTERNAL_ int16_t REFL_GetReflLineWidth(void);
-
-EXTERNAL_ int16_t REFL_GetReflLineValue(void);
-
-EXTERNAL_ REFL_SnsrTime_t REFL_GetCalibratedSensorValue(const uint8 i);
-
-EXTERNAL_ REFL_SnsrTime_t REFL_GetRawSensorValue(const uint8 i);
-
-EXTERNAL_ void REFL_CalibrateStartStop(void);
-
-EXTERNAL_ void REFL_GetSensorValues(uint16_t *values, int nofValues);
-
-EXTERNAL_ bool REFL_IsLedOn(void);
-
-/*!
- * \brief Function to find out if we can use the sensor (means: it is calibrated and not currently calibrating)
- * \return TRUE if the sensor is ready.
+/**
+ * @brief Function to find out if we can use the sensor (means: it is calibrated and not currently calibrating)
+ * @return TRUE if the sensor is ready.
  */
 EXTERNAL_ bool REFL_CanUseSensor(void);
+
+/**
+ * @brief
+ */
+EXTERNAL_ void REFL_Give_Smphr4CalibStartStop(void);
 
 
 
