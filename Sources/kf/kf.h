@@ -12,7 +12,7 @@
  *
  ***************************************************************************************************/
 
-#define MASTER_kf_C_
+#define MASTER_KF_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "PE_Types.h"
@@ -56,6 +56,6 @@ typedef struct {
 void KF_Init(void);
 
 
-#ifdef MASTER_kf_C_
-#undef MASTER_kf_C_
-#endif /* !MASTER_kf_C_ */
+#ifdef MASTER_KF_C_
+#undef MASTER_KF_C_
+#endif /* !MASTER_KF_C_ */
