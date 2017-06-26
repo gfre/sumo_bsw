@@ -12,7 +12,7 @@
  *
  ***************************************************************************************************/
 
-#define MASTER_kf_C_
+#define MASTER_KF_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "kf.h"
@@ -28,39 +28,42 @@
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-Matrix KF_A_Transposed[] = {
+static const KF_Cfg_t *kfCfg = NULL;
+
+
+static Matrix KF_A_Transposed[] = {
 		{0, 0},
 		{0, 0},
 };
 
-Matrix KF_K_k[] = { // Kalman Gain
+static Matrix KF_K_k[] = { // Kalman Gain
 		{0,	0},
 		{0,	0},
 };
 
-Matrix KF_P_k[] = { //error covariance matrix
+static Matrix KF_P_k[] = { //error covariance matrix
 		{0,	0},
 		{0, 0},
 };
 
-Vector KF_x_k_est[] =  {
+static Vector KF_x_k_est[] =  {
 		{0}, //position
 		{0}, //velocity
  };
 
 
-Vector KF_x_k_prev_est[] =  {
+static Vector KF_x_k_prev_est[] =  {
 		{0}, //position
 		{0}, //velocity
  };
 
-Vector KF_z_k[] = //measured data
+static Vector KF_z_k[] = //measured data
 {
 		{0},
 		{0},
 };
 
-int32_t KF_currSpeed, KF_currDelta;
+static int32_t KF_currSpeed, KF_currDelta;
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 
@@ -135,8 +138,12 @@ static void KF_InvertMatrix(const Matrix* m, Matrix* result)
 }
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
+void KF_Init()
+{
+	kfCfg = GetKFCfg();
+}
 
 
-#ifdef MASTER_kf_C_
-#undef MASTER_kf_C_
-#endif /* !MASTER_kf_C_ */
+#ifdef MASTER_KF_C_
+#undef MASTER_KF_C_
+#endif /* !MASTER_KF_C_ */
