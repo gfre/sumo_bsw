@@ -12,23 +12,37 @@
  *
  ***************************************************************************************************/
 
-#define MASTER_kf_cfg_C_
+#ifndef KF_CFG_H
+#define KF_CFG_H
 
 /*======================================= >> #INCLUDES << ========================================*/
 
+#ifdef MASTER_KF_CFG_C_
+#define EXTERNAL_
+#else
+#define EXTERNAL_ extern
+#endif
+
 /*======================================= >> #DEFINES << =========================================*/
 
+
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
+typedef struct{
+	Matrix* SystemMatrix;
+	Matrix* MeasurementMatrix;
+	Matrix* IdentityMatrix;
+	Matrix* KalmanGainMatrix;
+	Matrix* MeasurementNoiseCovarianceMatrix;
+	Matrix* InitialErrorCovarianceMatrix;
+	Vector* InitialValues;
+	Vector* InitialEstimate;
+}KF_Cfg_t;
 
-/*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
+/*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
+EXTERNAL_ const KF_Config_t* GetKFCfg(void);
 
-/*=================================== >> GLOBAL VARIABLES << =====================================*/
+#ifdef EXTERNAL_
+#undef EXTERNAL_
+#endif
 
-/*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-
-/*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-
-
-#ifdef MASTER_kf_cfg_C_
-#undef MASTER_kf_cfg_C_
-#endif /* !MASTER_kf_cfg_C_ */
+#endif /* KF_CFG_H */

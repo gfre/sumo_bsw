@@ -12,7 +12,7 @@
  *
  ***************************************************************************************************/
 
-#define MASTER_kf_cfg_C_
+#define MASTER_KF_CFG_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "kf.h"
@@ -64,10 +64,25 @@ static const Vector KF_x_Initial_Estimate[] =  { //initial estimate first time
 		{900}, //velocity
  };
 
+static const KF_Cfg_t kfCfg =
+{
+		&KF_A,
+		&KF_H,
+		&KF_IdentityMatrix,
+		&KF_K_k,
+		&KF_R,
+		&KF_P_Initial_Error,
+		&KF_InitialValues,
+		&KF_x_Initial_Estimate,
+};
+
+
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-
-#ifdef MASTER_kf_cfg_C_
-#undef MASTER_kf_cfg_C_
-#endif /* !MASTER_kf_cfg_C_ */
+KF_Cfg_t GetKFCfg(void){
+	return &kfCfg;
+}
+#ifdef MASTER_KF_CFG_C_
+#undef MASTER_KF_CFG_C_
+#endif /* !MASTER_KF_CFG_C_ */
