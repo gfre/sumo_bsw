@@ -75,6 +75,21 @@ int32_t TACHO_GetSpeed(bool isLeft) {
 	}
 }
 
+int32_t TACHO_GetPositionDelta(bool isLeft){
+	int32_t oldLeft, newLeft, delta;
+	if(isLeft)
+	{
+		oldLeft = (int32_t)TACHO_LeftPosHistory[TACHO_PosHistory_Index]; /* oldest left entry */
+		if (TACHO_PosHistory_Index==0) { /* get newest entry */
+			newLeft = (int32_t)TACHO_LeftPosHistory[NOF_HISTORY-1];
+		} else {
+			newLeft = (int32_t)TACHO_LeftPosHistory[TACHO_PosHistory_Index-1];
+		}
+		delta = oldLeft - newLeft;
+	}
+	return delta;
+}
+
 void TACHO_CalcSpeed(void) {
 	/* we calculate the speed as follow:
                               1000         

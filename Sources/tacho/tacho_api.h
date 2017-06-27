@@ -48,6 +48,7 @@
  * @return Actual speed value
  */
 EXTERNAL_ int32_t TACHO_GetSpeed(bool isLeft);
+EXTERNAL_ int32_t TACHO_GetPositionDelta(bool isLeft);
 
 
 
