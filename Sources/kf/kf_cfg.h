@@ -28,18 +28,18 @@
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 typedef struct{
-	Matrix* SystemMatrix;
-	Matrix* MeasurementMatrix;
-	Matrix* IdentityMatrix;
-	Matrix* KalmanGainMatrix;
-	Matrix* MeasurementNoiseCovarianceMatrix;
-	Matrix* InitialErrorCovarianceMatrix;
-	Vector* InitialValues;
-	Vector* InitialEstimate;
+	KF_Matrix_t* SystemMatrix;
+	KF_Matrix_t* MeasurementMatrix;
+	KF_Matrix_t* IdentityMatrix;
+	KF_Matrix_t* MeasurementNoiseCovarianceMatrix;
+	KF_Matrix_t* ProcessNoiseCovarianceMatrix;
+	KF_Matrix_t* InitialErrorCovarianceMatrix;
+	KF_Vector_t* InitialValues;
+	KF_Vector_t* InitialEstimate;
 }KF_Cfg_t;
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-EXTERNAL_ const KF_Config_t* GetKFCfg(void);
+EXTERNAL_ const KF_Cfg_t *GetKFCfg(void);
 
 #ifdef EXTERNAL_
 #undef EXTERNAL_
