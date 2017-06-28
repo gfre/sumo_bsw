@@ -15,56 +15,49 @@
 #define MASTER_KF_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "PE_Types.h"
+#include "Platform.h"
+#include "Acon_Types.h"
 
 /*======================================= >> #DEFINES << =========================================*/
-#define DIMENSION	(0x02u)
-#define INIT_MATRIX_DIM_2 {{0, 0}, {0, 0},}
-#define INIT_MATRIX_DIM_3 {{0, 0, 0}, {0, 0, 0}, {0, 0, 0},}
-#define INIT_VECTOR_DIM_2 {{0}, {0},}
-#define INIT_VECTOR_DIM_3 {{0}, {0}, {0},}
+#define KF_SYS_DIMENSION	(0x02u)
+#define INIT_MATRIX_DIM_2 	{{{0, 0}, {0, 0},}}
+#define INIT_MATRIX_DIM_3 	{{{0, 0, 0}, {0, 0, 0}, {0, 0, 0},},}
+
 
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-//typedef struct {
-//	double column[1];
-//}Vector;
+//typedef struct KF_I16Vec_s {
+//	int16_t aRow[KF_SYS_DIMENSION];
+//}KF_I16Vec_t;
 //
-//typedef struct {
-//	double column[2];
-//}Matrix;
+//typedef struct KF_I16VecCol_s {
+//	int16_t aCol[KF_SYS_DIMENSION];
+//}KF_I16VecCol_t;
+//
+//typedef struct KF_I16Matrix_s {
+//	KF_I16VecCol_t aRow[KF_SYS_DIMENSION];
+////	uint8_t dim;
+//}KF_I16Mat_t;
 
-typedef struct KF_Vector_s {
-	int16_t aCol[1];
-}KF_Vector_t;
+typedef struct KF_I32ColVec_s {
+	int32_t aRow[KF_SYS_DIMENSION];
+}KF_I32ColVec_t;
 
-typedef struct KF_Matrix_s {
-	int16_t aRow[DIMENSION];
+typedef struct KF_I32RowVec_s {
+	int32_t aCol[KF_SYS_DIMENSION];
+}KF_I32RowVec_t;
+
+typedef struct KF_I32Matrix_s {
+	KF_I32RowVec_t aRow[KF_SYS_DIMENSION];
 //	uint8_t dim;
-}KF_Matrix_t;
+}KF_I32Mat_t;
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-/* static StdRtn_t TMPL_CustomFct(const TmplType_t *input_, TmplType_t *output_); */
-
-
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-// static KF_Vector_t columns[] = {
-//		 {1000},
-//		 {100},
-// };
-//
-//static KF_Matrix_t matrix[] = INIT_MATRIX_DIM_2;
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-/* static StdRtn_t TMPL_CustomFct(const TmplType_t *input_, TmplType_t *output_)
-   { 
-  	  // Write your code here!
-   }
- */
-
-
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 void KF_Init(void);

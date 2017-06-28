@@ -28,14 +28,14 @@
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 typedef struct{
-	KF_Matrix_t* SystemMatrix;
-	KF_Matrix_t* MeasurementMatrix;
-	KF_Matrix_t* IdentityMatrix;
-	KF_Matrix_t* MeasurementNoiseCovarianceMatrix;
-	KF_Matrix_t* ProcessNoiseCovarianceMatrix;
-	KF_Matrix_t* InitialErrorCovarianceMatrix;
-	KF_Vector_t* InitialValues;
-	KF_Vector_t* InitialEstimate;
+	KF_I32Mat_t* 	SystemMatrix;
+	KF_I32RowVec_t* MeasurementVector;
+	KF_I32Mat_t* 	IdentityMatrix;
+	int32_t* 	 	MeasurementNoiseCovariance;
+	KF_I32Mat_t* 	ProcessNoiseCovarianceMatrix;
+	KF_I32Mat_t* 	InitialErrorCovarianceMatrix;
+	KF_I32ColVec_t* InitialValues;
+	KF_I32ColVec_t* InitialEstimate;
 }KF_Cfg_t;
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/

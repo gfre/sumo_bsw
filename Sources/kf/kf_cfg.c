@@ -25,60 +25,66 @@
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-static KF_Matrix_t KF_A[] = //system matrix
+static KF_I32Mat_t KF_A = //system matrix
 {
-		{1, 80}, 		// s_hat_k = s_hat_k-1 [steps] + 80 ms * v_hat_k-1 [steps/s] -> [steps] + [milli steps] <- this value divided by 1000 gives steps
-		{0, 1},
+		{
+				{1000, 80}, 		// s_hat_k = s_hat_k-1 [steps] + 80 ms * v_hat_k-1 [steps/s] -> [steps] + [milli steps] <- this value divided by 1000 gives steps
+				{0, 1000},
+		},
 };
 
-static KF_Matrix_t KF_Identity_Matrix[] =
+static KF_I32Mat_t KF_Identity_Matrix =
 {
-		{1, 0},
-		{0, 1},
+		{
+				{1, 0},
+				{0, 1},
+		},
 };
 
-static KF_Matrix_t KF_H[] = //measurement Matrix
+static KF_I32RowVec_t KF_c_Transposed = //measurement Vector
 {
-		{1, 0},
-		{0, 1},
+				{1, 0},
 };
 
-static KF_Matrix_t KF_R[] = { // measurement noise covariance matrix for v = 1000 (from matlab)
-		{0.880407771722165,	-3.69223227144139},
-		{-3.69223227144139,	132.090106368499},
-};
+static int32_t KF_r = 1;// measurement noise covariance for s
 
-static KF_Matrix_t KF_Q[] = { // process noise covariance matrix for v = 1000 (from matlab)
-		{1, 0},
-		{0, 1},
-};
 
-static KF_Matrix_t KF_P_Initial_Error[] = { // initial error in estimate covariance matrix
-		{10, 0},		//{2500,	-5000},
-		{0,	10},		// -5000 10000
-};
-
-static KF_Vector_t KF_x_Initial_Values[] = // s = 0 steps, v = 1000 steps/s
+static KF_I32Mat_t KF_Q = // process noise covariance matrix for v = 1000 (from matlab)
 {
-		{0},
-		{0}, //steps/sec
+		{
+				{1, 0},
+				{0, 1},
+		},
 };
 
-static KF_Vector_t KF_x_Initial_Estimate[] =  { //initial estimate first time
-		{10},  //position in steps
-		{20}, //velocity in steps/s
- };
+static KF_I32Mat_t KF_P_Initial_Error = // initial error in estimate covariance matrix
+{
+		{
+			{1000, 0},		//{2500,	-5000},
+			{0,	1000},		// -5000 10000
+		},
+};
+
+static KF_I32ColVec_t KF_x_Initial_Values = // s = 0 steps, v = 1000 steps/s
+{
+		{0,0}, //steps/sec
+};
+
+static KF_I32ColVec_t KF_x_Initial_Estimate =  //initial estimate first time
+{
+		{10, 20},
+};
 
 static KF_Cfg_t kfCfg =
 {
-		KF_A,
-		KF_H,
-		KF_Identity_Matrix,
-		KF_R,
-		KF_Q,
-		KF_P_Initial_Error,
-		KF_x_Initial_Values,
-		KF_x_Initial_Estimate,
+		&KF_A,
+		&KF_c_Transposed,
+		&KF_Identity_Matrix,
+		&KF_r,
+		&KF_Q,
+		&KF_P_Initial_Error,
+		&KF_x_Initial_Values,
+		&KF_x_Initial_Estimate,
 };
 
 
