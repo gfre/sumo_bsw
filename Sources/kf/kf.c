@@ -1,14 +1,18 @@
 /*************************************************************************************************
- * @file		kf_cgf.c
- * @ingroup		<group label>
- * @brief 		<This is a brief description.>
+ * @file		kf.c
+ * @ingroup		kf Kalman FIlter
+ * @brief 		This Module implements a Kalman Filter for the velocity given the current position.
  *
- * <This is a detailed description.>
+ *		This file contains all the logic for the kalman filtering. It contains functions to deal with matrix operations,
+ *		matrix vector operations, and vector operations such as multiplying, transposing, etc. The init function
+ *		transposes the A (system) matrix and c (measurement) vector and stores it in a global variable. It also
+ *		receives the configuration from kf_cfg.c.
+ *		The main function implements a recursive kalman filter algorithm and is currently called as part of the "drive" module.
  *
- * @author 	<I>. <Surname>, Simon Helling@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	S. Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	23.06.2017
  *
- * @copyright @<LGPLx_x>
+ * @copyright @<LGPL2_1>
  *
  ***************************************************************************************************/
 
@@ -27,12 +31,12 @@
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 //Matrix operations
 static StdRtn_t KF_AddMatrices(const KF_I32Mat_t* m_, const KF_I32Mat_t* n_, KF_I32Mat_t* result_, bool subtract_);
-static StdRtn_t KF_MultMatrices(const KF_I32Mat_t* m_, const KF_I32Mat_t* v_, KF_I32Mat_t* result_, uint16_t divider_);
+static StdRtn_t KF_MultMatrices(const KF_I32Mat_t* m_, const KF_I32Mat_t* v_, KF_I32Mat_t* result_, int16_t divider_);
 static StdRtn_t KF_TransposeMat(const KF_I32Mat_t* m_, KF_I32Mat_t* result_);
 
 //Matrix-Vector operations
 static StdRtn_t KF_MultRowVecMat(const KF_I32RowVec_t* v_, const KF_I32Mat_t* M_, KF_I32RowVec_t* result_);
-static StdRtn_t KF_MultMatColVec(const KF_I32Mat_t* m_, const KF_I32ColVec_t* n_, KF_I32ColVec_t* result_, uint16_t divider_);
+static StdRtn_t KF_MultMatColVec(const KF_I32Mat_t* m_, const KF_I32ColVec_t* n_, KF_I32ColVec_t* result_, int16_t divider_);
 
 //Vector operations
 static StdRtn_t KF_MultRowVecColVec(const KF_I32RowVec_t* v_, const KF_I32ColVec_t* w_, int32_t* result_);
@@ -50,19 +54,19 @@ static const KF_Cfg_t* kfCfg = NULL;
 
 static KF_I32Mat_t KF_ATransposed = {0}; 	//Transposed system matrix
 static KF_I32ColVec_t KF_KalmanGain = {0}; 	//Kalman Gain vector
-static KF_I32Mat_t KF_P_k = {0};; 			//Error in estimate covariance matrix
+static KF_I32Mat_t KF_P_k = {0};			//A posteriori Error in estimate covariance matrix
 static KF_I32Mat_t KF_P_k_m = {0}; 			//A priori error in estimate covariance matrix
-static KF_I32ColVec_t KF_x_k_hat = {0}; 	//State estimate vector
+static KF_I32ColVec_t KF_x_k_hat = {0}; 	//A posteriori state estimate vector
 static KF_I32ColVec_t KF_x_k_hat_m = {0};	// A priori state estimate vector
-static KF_I32ColVec_t KF_c = {0};			// System easurement vector
+static KF_I32ColVec_t KF_c = {0};			// System measurement vector
 
-static int32_t KF_currSpeed = 0, KF_currDelta = 0 , KF_ResidualTerm = 0, KF_z_k = 0;
+static int32_t KF_currDelta = 0 , KF_ResidualTerm = 0, KF_z_k = 0;
 
 static bool doFirstIteration = TRUE;
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 
-static StdRtn_t KF_MultMatColVec(const KF_I32Mat_t* M_, const KF_I32ColVec_t* v_, KF_I32ColVec_t* result_, uint16_t divider_) //2x2
+static StdRtn_t KF_MultMatColVec(const KF_I32Mat_t* M_, const KF_I32ColVec_t* v_, KF_I32ColVec_t* result_, int16_t divider_) //2x2
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	uint8_t i = 0u;
@@ -80,7 +84,7 @@ static StdRtn_t KF_MultMatColVec(const KF_I32Mat_t* M_, const KF_I32ColVec_t* v_
 		{
 			for(j = 0u; j < KF_SYS_DIMENSION; j++)
 			{
-				result_->aRow[i] += (M_->aRow[i].aCol[j] * v_->aRow[j])/((uint32_t)divider_);
+				result_->aRow[i] += (M_->aRow[i].aCol[j] * v_->aRow[j])/((int32_t)divider_);
 			}
 		}
 
@@ -90,7 +94,7 @@ static StdRtn_t KF_MultMatColVec(const KF_I32Mat_t* M_, const KF_I32ColVec_t* v_
 }
 
 
-static StdRtn_t KF_MultMatrices(const KF_I32Mat_t* M_, const KF_I32Mat_t* N_, KF_I32Mat_t* result_, uint16_t divider_)
+static StdRtn_t KF_MultMatrices(const KF_I32Mat_t* M_, const KF_I32Mat_t* N_, KF_I32Mat_t* result_, int16_t divider_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	uint8_t i = 0u;
@@ -114,7 +118,7 @@ static StdRtn_t KF_MultMatrices(const KF_I32Mat_t* M_, const KF_I32Mat_t* N_, KF
 			{
 				for(k = 0u; k < KF_SYS_DIMENSION; k++)
 				{
-					result_->aRow[i].aCol[j] += (M_->aRow[i].aCol[k] * N_->aRow[k].aCol[j])/((uint32_t)divider_);
+					result_->aRow[i].aCol[j] += (M_->aRow[i].aCol[k] * N_->aRow[k].aCol[j])/((int32_t)divider_);
 				}
 			}
 		}
@@ -301,7 +305,7 @@ static StdRtn_t KF_MultColVecRowVec(const KF_I32ColVec_t* v_, const KF_I32RowVec
 
 static void KF_UpdateMeasurement()
 {
-	KF_z_k = Q4CLeft_GetPos();//TACHO_GetPositionDelta(TRUE);
+	KF_z_k = Q4CLeft_GetPos();
 }
 
 static void KF_SetInitialValues()
@@ -319,7 +323,6 @@ static void KF_SetInitialValues()
 			KF_P_k.aRow[i].aCol[j] = kfCfg->InitialErrorCovarianceMatrix->aRow[i].aCol[j];
 		}
 	}
-	doFirstIteration = FALSE;
 }
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
@@ -346,8 +349,8 @@ void KF_Main()
 	if(TRUE == doFirstIteration)
 	{
 		KF_SetInitialValues();
+		doFirstIteration = FALSE;
 	}
-
 	KF_I32Mat_t tempMat= {0};
 	KF_I32Mat_t tempMat2 = {0};
 	KF_I32Mat_t tempMat3 = {0};
@@ -357,23 +360,23 @@ void KF_Main()
 	KF_I32ColVec_t tempColVec3 = {0};
 	KF_I32RowVec_t tempRowVec = {0};
 	int32_t tempResult = 0;
-
 	KF_ResidualTerm = 0;
+
 	/* Time Update, "predictor" */
 		//x_k_hat
-		uint16_t divider = 1000u;
+		int16_t divider = DIVIDER;
 		retVal |= KF_MultMatColVec(kfCfg->SystemMatrix, &KF_x_k_hat, &KF_x_k_hat_m, divider);	//x_hat_k_m = A*x_k-1_hat_m  -> 2x1
 
 		//P_k
 		retVal |= KF_MultMatrices(kfCfg->SystemMatrix, &KF_P_k, &tempMat, divider);	/* P_k_m = A*P_Initial_Error ... tempMat -> 2x2*/
-		retVal |= KF_MultMatrices(&tempMat, &KF_ATransposed, &KF_P_k_m, divider);										/* ... *ATransposed  P_k_m -> 2x2*/
+		retVal |= KF_MultMatrices(&tempMat, &KF_ATransposed, &tempMat2, divider);	/* ... *ATransposed  P_k_m -> 2x2*/
+		retVal |= KF_AddMatrices(&tempMat2, kfCfg->ProcessNoiseCovarianceMatrix, &KF_P_k_m, FALSE);
 
 	/* Measurement Update / "corrector" */
 		//KalmanGain
 		retVal |= KF_MultMatColVec(&KF_P_k_m, &KF_c, &tempColVec, 1u); 					// tempColVec = P_k_m * c -> 2x1
-		retVal |= KF_MultRowVecMat(kfCfg->MeasurementVector, &KF_P_k_m, &tempRowVec);	// c^T * P_k_m ...   -> 1x2
-		retVal |= KF_MultRowVecColVec(&tempRowVec, &KF_c, &tempResult);					//  ... * c  = tempResult -> 1x1
-		retVal |= KF_MultColVecFactor(&tempColVec, 1000u, &tempColVec2,FALSE); 			//scale up!
+		retVal |= KF_MultRowVecColVec(kfCfg->MeasurementVector, &tempColVec, &tempResult);	// tempResult = c^T * tempColVec -> 1x1
+		retVal |= KF_MultColVecFactor(&tempColVec, 1000u, &tempColVec2, FALSE); 			//scale up!
 		retVal |= KF_MultColVecFactor(&tempColVec2, (tempResult + *kfCfg->MeasurementNoiseCovariance), &KF_KalmanGain, TRUE);
 
 	KF_UpdateMeasurement();

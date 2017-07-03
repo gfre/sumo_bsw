@@ -1,14 +1,14 @@
 /***********************************************************************************************//**
  * @file		kf_cfg.h
- * @ingroup		<group label>
+ * @ingroup		kf Kalman Filter
  * @brief 		<This is a brief description.>
  *
  * <This is a detailed description.>
  *
- * @author 	<I>. <Surname>, Simon Helling@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	S. Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	26.06.2017
  *
- * @copyright @<LGPLx_x>
+ * @copyright @<LGPL2_1>
  *
  ***************************************************************************************************/
 
