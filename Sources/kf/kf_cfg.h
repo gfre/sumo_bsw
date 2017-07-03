@@ -24,7 +24,7 @@
 #endif
 
 /*======================================= >> #DEFINES << =========================================*/
-
+#define DIVIDER (1000)
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 typedef struct{
@@ -34,7 +34,6 @@ typedef struct{
 	int32_t* 	 	MeasurementNoiseCovariance;
 	KF_I32Mat_t* 	ProcessNoiseCovarianceMatrix;
 	KF_I32Mat_t* 	InitialErrorCovarianceMatrix;
-	KF_I32ColVec_t* InitialValues;
 	KF_I32ColVec_t* InitialEstimate;
 }KF_Cfg_t;
 
