@@ -24,7 +24,7 @@
 #include "rnet.h"
 #include "drv.h"
 #include "refl.h"
-
+#include "kf.h"
 
 /*======================================= >> #DEFINES << =========================================*/
 #define NUM_OF_TASKS        (sizeof(taskCfgItems)/sizeof(taskCfgItems[0]))
@@ -84,6 +84,7 @@ static const TASK_SwcCfg_t dbgTaskSwcCfg[] = {
 static const TASK_SwcCfg_t drvTaskSwcCfg[] = {
 		{DRV_SWC_STRING, DRV_MainFct, DRV_Init},
 		{TACHO_SWC_STRING, TACHO_CalcSpeed, TACHO_Init},
+		{KF_SWC_STRING, KF_Main, KF_Init},
 };
 
 /*
