@@ -135,6 +135,20 @@
  * @copyright	@LGPL2_1
  */
 
+/**
+ * @defgroup	kf Kalman Filter
+ * @brief		Implements Kalman Filter for velocity using position measurement
+ *
+ * This software component implements a kalman filter using the measured delta in position sampled every 5 ms
+ * to estimate the current velocity. The config contains the initial estimates and covariances for the process
+ * and the measurement noise as well as the system matrix describing the movement of the wheels.
+ *
+ * @author 	S. Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	23.06.2017
+ *
+ * @copyright	@LGPL2_1
+ */
+
 
 
 /**
