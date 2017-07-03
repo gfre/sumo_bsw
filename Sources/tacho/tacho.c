@@ -31,10 +31,7 @@
 
 
 /*======================================= >> #DEFINES << =========================================*/
-/**
- *  Speed sample period in ms. Make sure that speed is sampled at the given rate.
- */
-#define TACHO_SAMPLE_PERIOD_MS (5)     
+
 
 /**
  * Number of samples for speed calculation (>0):the more, the better, but the slower.
