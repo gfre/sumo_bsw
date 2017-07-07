@@ -1,7 +1,7 @@
 /***********************************************************************************************//**
  * @file		kf_cfg.h
  * @ingroup		kf Kalman Filter
- * @brief 		<This is a brief description.>
+ * @brief 		This header file contains the type definitions for matrices and column and row vectors
  *
  * <This is a detailed description.>
  *
@@ -16,6 +16,9 @@
 #define KF_CFG_H
 
 /*======================================= >> #INCLUDES << ========================================*/
+#include "Platform.h"
+#include "Acon_Types.h"
+
 
 #ifdef MASTER_KF_CFG_C_
 #define EXTERNAL_
@@ -24,9 +27,25 @@
 #endif
 
 /*======================================= >> #DEFINES << =========================================*/
-#define DIVIDER (1000)
+#define KF_SYS_DIMENSION (0x02u)
+#define KF_SCALE_KALMANGAIN (1000)
+#define KF_SCALE_ERROR (10)
+#define KF_SCALE_A (1000)
+#define KF_SCALE_X (10)
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
+typedef struct KF_I32ColVec_s {
+	int32_t aRow[KF_SYS_DIMENSION];
+}KF_I32ColVec_t;
+
+typedef struct KF_I32RowVec_s {
+	int32_t aCol[KF_SYS_DIMENSION];
+}KF_I32RowVec_t;
+
+typedef struct KF_I32Matrix_s {
+	KF_I32RowVec_t aRow[KF_SYS_DIMENSION];
+}KF_I32Mat_t;
+
 typedef struct{
 	KF_I32Mat_t* 	SystemMatrix;
 	KF_I32RowVec_t* MeasurementVectorTransposed;

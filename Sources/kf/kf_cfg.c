@@ -15,7 +15,6 @@
 #define MASTER_KF_CFG_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "kf.h"
 #include "kf_cfg.h"
 #include "tacho.h"
 
