@@ -26,39 +26,39 @@
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-static KF_I32Mat_t KF_A =
+static KF_I32Mat_t KF_SystemMatrix =
 {
 		{
-				{1*DIVIDER,((TACHO_SAMPLE_PERIOD_MS*DIVIDER)/1000)}, 		// s_k_hat = s_k-1_hat [steps] + 5 ms * v_k-1_hat [steps/s] -> [steps] + [milli steps] <- this value divided by 1000 gives steps
-				{0, 1*DIVIDER},
+				{1*KF_SCALE_A,((TACHO_SAMPLE_PERIOD_MS*KF_SCALE_A)/1000)}, 		// s_k_hat = s_k-1_hat [steps] + 5 ms * v_k-1_hat [steps/s] -> [steps] + [milli steps] <- this value divided by 1000 gives steps
+				{0, 1*KF_SCALE_A},
 		},
 };
 
-static KF_I32Mat_t KF_Identity_Matrix =
+static KF_I32Mat_t KF_IdentityMatrix =
 {
 		{
-				{10000, 0},
-				{0, 10000},
+				{KF_SCALE_KALMANGAIN, 0},
+				{0, KF_SCALE_KALMANGAIN},
 		},
 };
 
-static KF_I32RowVec_t KF_c_Transposed = //measurement Vector
+static KF_I32RowVec_t KF_MeasurementVectorTransposed = //measurement Vector
 {
 				{1, 0},
 };
 
-static int32_t KF_r = 20;// measurement noise covariance for s
+static int32_t KF_MeasurementNoiseCov = 20*KF_SCALE_ERROR;// measurement noise covariance for s
 
 
-static KF_I32Mat_t KF_Q  = // process noise covariance matrix
+static KF_I32Mat_t KF_ProcessNoiseCov = // process noise covariance matrix
 {
 		{
-				{16, 0},
-				{0, 1600},
+				{16*KF_SCALE_ERROR, 0},
+				{0, 1600*KF_SCALE_ERROR},
 		},
 };
 
-static KF_I32Mat_t KF_P_Initial_Error = // initial error in estimate covariance matrix
+static KF_I32Mat_t KF_InitialErrorInEstimate = // initial error in estimate covariance matrix
 {
 		{
 			{100, 0},
@@ -66,20 +66,20 @@ static KF_I32Mat_t KF_P_Initial_Error = // initial error in estimate covariance 
 		},
 };
 
-static KF_I32ColVec_t KF_x_Initial_Estimate =  //initial estimate
+static KF_I32ColVec_t KF_StateInitialEstimate =  //initial estimate
 {
-		{930, 120},
+		{0, 0},
 };
 
 static KF_Cfg_t kfCfg =
 {
-		&KF_A,
-		&KF_c_Transposed,
-		&KF_Identity_Matrix,
-		&KF_r,
-		&KF_Q,
-		&KF_P_Initial_Error,
-		&KF_x_Initial_Estimate,
+		&KF_SystemMatrix,
+		&KF_MeasurementVectorTransposed,
+		&KF_IdentityMatrix,
+		&KF_MeasurementNoiseCov,
+		&KF_ProcessNoiseCov,
+		&KF_InitialErrorInEstimate,
+		&KF_StateInitialEstimate,
 };
 
 

@@ -29,12 +29,12 @@
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 typedef struct{
 	KF_I32Mat_t* 	SystemMatrix;
-	KF_I32RowVec_t* MeasurementVector;
+	KF_I32RowVec_t* MeasurementVectorTransposed;
 	KF_I32Mat_t* 	IdentityMatrix;
-	int32_t* 	 	MeasurementNoiseCovariance;
-	KF_I32Mat_t* 	ProcessNoiseCovarianceMatrix;
-	KF_I32Mat_t* 	InitialErrorCovarianceMatrix;
-	KF_I32ColVec_t* InitialEstimate;
+	int32_t* 	 	MeasurementNoiseCov;
+	KF_I32Mat_t* 	ProcessNoiseCov;
+	KF_I32Mat_t* 	InitialErrorInEstimate;
+	KF_I32ColVec_t* StateInitialEstimate;
 }KF_Cfg_t;
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
