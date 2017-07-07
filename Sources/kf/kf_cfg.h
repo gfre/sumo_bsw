@@ -26,12 +26,14 @@
 #define EXTERNAL_ extern
 #endif
 
+
 /*======================================= >> #DEFINES << =========================================*/
 #define KF_SYS_DIMENSION (0x02u)
 #define KF_SCALE_KALMANGAIN (1000)
 #define KF_SCALE_ERROR (10)
 #define KF_SCALE_A (1000)
-#define KF_SCALE_X (10)
+#define KF_SCALE_X (100)
+
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 typedef struct KF_I32ColVec_s {
@@ -55,6 +57,7 @@ typedef struct{
 	KF_I32Mat_t* 	InitialErrorInEstimate;
 	KF_I32ColVec_t* StateInitialEstimate;
 }KF_Cfg_t;
+
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 EXTERNAL_ const KF_Cfg_t *GetKFCfg(void);

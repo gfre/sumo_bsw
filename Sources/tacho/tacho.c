@@ -55,7 +55,7 @@ static volatile Q4CLeft_QuadCntrType TACHO_LeftPosHistory[NOF_HISTORY], TACHO_Ri
 static volatile uint8_t TACHO_PosHistory_Index = 0;
 
 static int32_t TACHO_currLeftSpeed = 0, TACHO_currRightSpeed = 0;
-
+static int32_t TACHO_delta5Ms;
 
 
 
@@ -72,19 +72,8 @@ int32_t TACHO_GetSpeed(bool isLeft) {
 	}
 }
 
-int32_t TACHO_GetPositionDelta(bool isLeft){
-	int32_t oldLeft, newLeft, delta;
-	if(isLeft)
-	{
-		oldLeft = (int32_t)TACHO_LeftPosHistory[TACHO_PosHistory_Index]; /* oldest left entry */
-		if (TACHO_PosHistory_Index==0) { /* get newest entry */
-			newLeft = (int32_t)TACHO_LeftPosHistory[NOF_HISTORY-1];
-		} else {
-			newLeft = (int32_t)TACHO_LeftPosHistory[TACHO_PosHistory_Index-1];
-		}
-		delta = oldLeft - newLeft;
-	}
-	return delta;
+int32_t TACHO_GetPositionDelta(){
+	return TACHO_delta5Ms;
 }
 
 void TACHO_CalcSpeed(void) {
@@ -94,7 +83,7 @@ void TACHO_CalcSpeed(void) {
                        samplePeriod (ms) 
   As this function may be called very frequently, it is important to make it as efficient as possible!
 	 */
-	int32_t deltaLeft, deltaRight, newLeft, newRight, oldLeft, oldRight;
+	int32_t deltaLeft, deltaRight, delta5Ms, secondNewestLeft, newLeft, newRight, oldLeft, oldRight;
 	int32_t speedLeft, speedRight;
 	bool negLeft, negRight;
 	CS1_CriticalVariable()
@@ -105,9 +94,17 @@ void TACHO_CalcSpeed(void) {
 	if (TACHO_PosHistory_Index==0) { /* get newest entry */
 		newLeft = (int32_t)TACHO_LeftPosHistory[NOF_HISTORY-1];
 		newRight = (int32_t)TACHO_RightPosHistory[NOF_HISTORY-1];
-	} else {
+		secondNewestLeft = (int32_t)TACHO_LeftPosHistory[NOF_HISTORY-2];
+	} else{
 		newLeft = (int32_t)TACHO_LeftPosHistory[TACHO_PosHistory_Index-1];
 		newRight = (int32_t)TACHO_RightPosHistory[TACHO_PosHistory_Index-1];
+		if(TACHO_PosHistory_Index == 1)
+		{
+			secondNewestLeft = (int32_t)TACHO_LeftPosHistory[NOF_HISTORY-1];
+		}else
+		{
+			secondNewestLeft = (int32_t)TACHO_LeftPosHistory[TACHO_PosHistory_Index-2];
+		}
 	}
 	CS1_ExitCritical();
 	deltaLeft = oldLeft-newLeft; /* delta of oldest position and most recent one */
@@ -126,6 +123,11 @@ void TACHO_CalcSpeed(void) {
 	} else {
 		negRight = FALSE;
 	}
+	delta5Ms = newLeft-secondNewestLeft;
+//	if(delta5Ms < 0)
+//	{
+//		delta5Ms = -delta5Ms;
+//	}
 	/* calculate speed. this is based on the delta and the time (number of samples or entries in the history table) */
 	speedLeft = (int32_t)(deltaLeft*1000U/(TACHO_SAMPLE_PERIOD_MS*(NOF_HISTORY-1)));
 	if (negLeft) {
@@ -135,6 +137,7 @@ void TACHO_CalcSpeed(void) {
 	if (negRight) {
 		speedRight = -speedRight;
 	}
+	TACHO_delta5Ms = delta5Ms;
 	TACHO_currLeftSpeed = -speedLeft; /* store current speed in global variable */
 	TACHO_currRightSpeed = -speedRight; /* store current speed in global variable */
 }
