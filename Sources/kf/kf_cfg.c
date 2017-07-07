@@ -37,8 +37,8 @@ static KF_I32Mat_t KF_A =
 static KF_I32Mat_t KF_Identity_Matrix =
 {
 		{
-				{1*DIVIDER, 0},
-				{0, 1*DIVIDER},
+				{10000, 0},
+				{0, 10000},
 		},
 };
 
@@ -47,28 +47,28 @@ static KF_I32RowVec_t KF_c_Transposed = //measurement Vector
 				{1, 0},
 };
 
-static int32_t KF_r = 32;// measurement noise covariance for s
+static int32_t KF_r = 20;// measurement noise covariance for s
 
 
-static KF_I32Mat_t KF_Q = // process noise covariance matrix for v = 1000 (from matlab)
+static KF_I32Mat_t KF_Q  = // process noise covariance matrix
 {
 		{
-				{8, 0},
-				{0, 8},
+				{16, 0},
+				{0, 1600},
 		},
 };
 
 static KF_I32Mat_t KF_P_Initial_Error = // initial error in estimate covariance matrix
 {
 		{
-			{100000, 0},
-			{0, 100000},
+			{100, 0},
+			{0, 100},
 		},
 };
 
-static KF_I32ColVec_t KF_x_Initial_Estimate =  //initial estimate first time
+static KF_I32ColVec_t KF_x_Initial_Estimate =  //initial estimate
 {
-		{0,0},
+		{930, 120},
 };
 
 static KF_Cfg_t kfCfg =
