@@ -65,10 +65,9 @@ static int32_t KF_UnscaledEstimatedVel = 0;
 static int32_t KF_AccumulatedDeltaS = 0;
 
 static int32_t KF_Residuum 			  	   = 0; //can be local?
-static int32_t KF_DeltaPositionMeasurement = 0;
+static int32_t KF_PositionMeasurement	   = 0;
 static int32_t KF_Denominator 		  	   = 0; //can be local?
 
-static bool doFirstIteration = TRUE;
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 static StdRtn_t KF_MultMatColVec(const KF_I32Mat_t* M_, const KF_I32ColVec_t* v_, KF_I32ColVec_t* result_, int32_t divider_) //2x2
@@ -313,7 +312,7 @@ static StdRtn_t KF_MultColVecRowVec(const KF_I32ColVec_t* v_, const KF_I32RowVec
 
 static void KF_UpdateMeasurement()
 {
-	KF_DeltaPositionMeasurement = TACHO_GetPositionDelta();
+	KF_PositionMeasurement = Q4CLeft_GetPos();
 }
 
 static void KF_SetInitialValues()
@@ -350,6 +349,7 @@ void KF_Init()
 	{
 		for(;;){}
 	}
+	KF_SetInitialValues();
 }
 
 void KF_Main()
@@ -366,12 +366,6 @@ void KF_Main()
 	KF_I32Mat_t tempMat3 = {0};
 
 	int32_t tempResult = 0;
-
-	if(TRUE == doFirstIteration)
-	{
-		KF_SetInitialValues();
-		doFirstIteration = FALSE;
-	}
 
 	/* Time Update / "predictor" */
 		//x_k_hat
@@ -394,7 +388,7 @@ void KF_Main()
 		retVal |= KF_MultColVecFactor(&P_times_c, KF_Denominator, &KF_KalmanGain, TRUE);  //KALMAN GAIN
 
 		//x_k_hat
-		KF_Residuum = (KF_SCALE_X*KF_DeltaPositionMeasurement) - KF_CorrectedStateEst.aRow[0];
+		KF_Residuum = (KF_SCALE_X*KF_PositionMeasurement) - KF_CorrectedStateEst.aRow[0];
 		retVal |= KF_MultColVecFactor(&KF_KalmanGain, KF_Residuum, &K_times_Residuum, FALSE);
 		retVal |= KF_MultColVecFactor(&K_times_Residuum, KF_SCALE_KALMANGAIN, &tempColVec, TRUE);
 		retVal |= KF_AddColVecs(&KF_PredictedStateEst, &tempColVec, &KF_CorrectedStateEst, FALSE);
@@ -412,7 +406,6 @@ void KF_Main()
 	}
 
 	KF_UnscaledEstimatedVel = KF_CorrectedStateEst.aRow[1]/KF_SCALE_X;
-	KF_AccumulatedDeltaS += KF_CorrectedStateEst.aRow[0]/KF_SCALE_X;
 }
 
 #ifdef MASTER_KF_C_

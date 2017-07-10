@@ -28,7 +28,7 @@
 static KF_I32Mat_t KF_SystemMatrix =
 {
 		{
-				{0, ((TACHO_SAMPLE_PERIOD_MS*KF_SCALE_A)/1000)}, 		// s_k_hat = s_k-1_hat [steps] + 5 ms * v_k-1_hat [steps/s] -> [steps] + [milli steps] <- this value divided by 1000 gives steps
+				{1*KF_SCALE_A, ((TACHO_SAMPLE_PERIOD_MS*KF_SCALE_A)/1000)}, 		// s_k_hat = s_k-1_hat [steps] + 5 ms * v_k-1_hat [steps/s] -> [steps] + [milli steps] <- this value divided by 1000 gives steps
 				{0, 1*KF_SCALE_A},
 		},
 };
