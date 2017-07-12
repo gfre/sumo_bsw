@@ -54,7 +54,7 @@ static volatile Q4CLeft_QuadCntrType TACHO_LeftPosHistory[NOF_HISTORY], TACHO_Ri
 /*!< position index in history */
 static volatile uint8_t TACHO_PosHistory_Index = 0;
 
-static int32_t TACHO_currLeftSpeed = 0, TACHO_currRightSpeed = 0;
+static int32_t TACHO_currLeftSpeed = 0, TACHO_currRightSpeed = 0, TACHO_actual5MsSpeed = 0;
 static int32_t TACHO_delta5Ms;
 
 
@@ -84,8 +84,8 @@ void TACHO_CalcSpeed(void) {
   As this function may be called very frequently, it is important to make it as efficient as possible!
 	 */
 	int32_t deltaLeft, deltaRight, delta5Ms, secondNewestLeft, newLeft, newRight, oldLeft, oldRight;
-	int32_t speedLeft, speedRight;
-	bool negLeft, negRight;
+	int32_t speedLeft, speedRight, actual5MsSpeed;
+	bool negLeft, negRight, negActual;
 	CS1_CriticalVariable()
 
 	CS1_EnterCritical();
@@ -123,11 +123,18 @@ void TACHO_CalcSpeed(void) {
 	} else {
 		negRight = FALSE;
 	}
-	delta5Ms = newLeft-secondNewestLeft;
-//	if(delta5Ms < 0)
-//	{
-//		delta5Ms = -delta5Ms;
-//	}
+	delta5Ms = secondNewestLeft-newLeft;
+	TACHO_delta5Ms = newLeft-secondNewestLeft;
+	if (delta5Ms < 0) {
+		delta5Ms = -delta5Ms;
+		negActual = TRUE;
+	} else {
+		negActual = FALSE;
+	}
+	actual5MsSpeed = (int32_t)(delta5Ms*1000U/(TACHO_SAMPLE_PERIOD_MS));
+	if (negActual) {
+		actual5MsSpeed = -actual5MsSpeed;
+	}
 	/* calculate speed. this is based on the delta and the time (number of samples or entries in the history table) */
 	speedLeft = (int32_t)(deltaLeft*1000U/(TACHO_SAMPLE_PERIOD_MS*(NOF_HISTORY-1)));
 	if (negLeft) {
@@ -137,7 +144,7 @@ void TACHO_CalcSpeed(void) {
 	if (negRight) {
 		speedRight = -speedRight;
 	}
-	TACHO_delta5Ms = delta5Ms;
+	TACHO_actual5MsSpeed = -actual5MsSpeed;
 	TACHO_currLeftSpeed = -speedLeft; /* store current speed in global variable */
 	TACHO_currRightSpeed = -speedRight; /* store current speed in global variable */
 }
