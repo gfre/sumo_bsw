@@ -31,6 +31,9 @@
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 static void KF_SetInitialValues(void);
+static void KF_UpdateUnscaledVals(void);
+static void KF_UpdateModuloCounter(void);
+
 
 //Matrix operations
 static StdRtn_t KF_AddMatrices(const KF_I32Mat_t* m_, const KF_I32Mat_t* n_, KF_I32Mat_t* result_, bool subtract_);
@@ -62,11 +65,12 @@ static KF_I32ColVec_t KF_CorrectedStateEst 	 = {0};
 static KF_I32ColVec_t KF_PredictedStateEst 	 = {0};
 
 static int32_t KF_UnscaledEstimatedVel = 0;
-static int32_t KF_AccumulatedDeltaS = 0;
+static int32_t KF_UnscaledEstimatedPos = 0;
 
-static int32_t KF_Residuum 			  	   = 0; //can be local?
-static int32_t KF_DeltaPositionMeasurement = 0;
-static int32_t KF_Denominator 		  	   = 0; //can be local?
+static int32_t KF_Residuum 			  = 0; //can be local?
+static int32_t KF_PositionMeasurement = 0;
+static int32_t KF_Denominator 		  = 0; //can be local?
+static int16_t KF_Counter 			  = 0;
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
@@ -312,7 +316,28 @@ static StdRtn_t KF_MultColVecRowVec(const KF_I32ColVec_t* v_, const KF_I32RowVec
 
 static void KF_UpdateMeasurement()
 {
-	KF_DeltaPositionMeasurement = TACHO_GetPositionDelta();
+	KF_PositionMeasurement = Q4CLeft_GetPos();
+}
+
+static void KF_UpdateUnscaledVals()
+{
+	KF_UnscaledEstimatedVel = KF_CorrectedStateEst.aRow[1]/(int32_t)KF_SCALE_X;
+	KF_UnscaledEstimatedPos = (KF_Counter*(KF_MAX_POS_VAL/KF_SCALE_A) + KF_CorrectedStateEst.aRow[0])/(int32_t)KF_SCALE_X;
+}
+
+static void KF_UpdateModuloCounter()
+{
+	if((KF_CorrectedStateEst.aRow[0] >= KF_MAX_POS_VAL/KF_SCALE_A) && ((KF_SCALE_X*KF_PositionMeasurement) >=  KF_MAX_POS_VAL/KF_SCALE_A))
+	{
+		KF_CorrectedStateEst.aRow[0] = (KF_CorrectedStateEst.aRow[0] % (KF_MAX_POS_VAL/KF_SCALE_A));
+		KF_PredictedStateEst.aRow[0] = (KF_PredictedStateEst.aRow[0] % (KF_MAX_POS_VAL/KF_SCALE_A));
+		KF_Counter++;
+	}else if((KF_CorrectedStateEst.aRow[0] <= -(int32_t)KF_MAX_POS_VAL/(int32_t)KF_SCALE_A) && ((KF_SCALE_X*KF_PositionMeasurement) <= -(int32_t)KF_MAX_POS_VAL/(int32_t)KF_SCALE_A))
+	{
+		KF_CorrectedStateEst.aRow[0] = (KF_CorrectedStateEst.aRow[0] % ((int32_t)KF_MAX_POS_VAL/(int32_t)KF_SCALE_A));
+		KF_PredictedStateEst.aRow[0] = (KF_PredictedStateEst.aRow[0] % ((int32_t)KF_MAX_POS_VAL/(int32_t)KF_SCALE_A));
+		KF_Counter--;
+	}
 }
 
 static void KF_SetInitialValues()
@@ -359,17 +384,17 @@ void KF_Main()
 	KF_I32ColVec_t P_times_c	    = {0};
 	KF_I32ColVec_t K_times_Residuum = {0};
 	KF_I32ColVec_t tempColVec 		= {0};
-
 	KF_I32Mat_t Ident_minus_K_times_cT = {0};
 	KF_I32Mat_t tempMat  = {0};
 	KF_I32Mat_t tempMat2 = {0};
 	KF_I32Mat_t tempMat3 = {0};
-
 	int32_t tempResult = 0;
+
+	KF_UpdateModuloCounter();
 
 	/* Time Update / "predictor" */
 		//x_k_hat
-		retVal |= KF_MultMatColVec(kfCfg->SystemMatrix, &KF_CorrectedStateEst, &KF_PredictedStateEst, KF_SCALE_A);
+		retVal |= KF_MultMatColVec(kfCfg->SystemMatrix, &KF_CorrectedStateEst, &KF_PredictedStateEst, KF_SCALE_A); //scale x
 
 		//P_k
 		retVal |= KF_MultMatrices(kfCfg->SystemMatrix, &KF_CorrectedErrorInEst, &tempMat, KF_SCALE_A);
@@ -382,13 +407,13 @@ void KF_Main()
 		retVal |= KF_MultRowVecColVec(kfCfg->MeasurementVectorTransposed, &P_times_c, &tempResult);	//denominator
 		KF_Denominator = (tempResult + (*kfCfg->MeasurementNoiseCov));  								//denominator
 
-		P_times_c.aRow[0]*=KF_SCALE_KALMANGAIN; //scale numerator
-		P_times_c.aRow[1]*=KF_SCALE_KALMANGAIN;
+		P_times_c.aRow[0] *= KF_SCALE_KALMANGAIN; //scale numerator
+		P_times_c.aRow[1] *= KF_SCALE_KALMANGAIN;
 
 		retVal |= KF_MultColVecFactor(&P_times_c, KF_Denominator, &KF_KalmanGain, TRUE);  //KALMAN GAIN
 
 		//x_k_hat
-		KF_Residuum = (KF_SCALE_X*KF_DeltaPositionMeasurement) - KF_CorrectedStateEst.aRow[0];
+		KF_Residuum = ((KF_SCALE_X*KF_PositionMeasurement)%(KF_MAX_POS_VAL/KF_SCALE_A)) - KF_CorrectedStateEst.aRow[0];
 		retVal |= KF_MultColVecFactor(&KF_KalmanGain, KF_Residuum, &K_times_Residuum, FALSE);
 		retVal |= KF_MultColVecFactor(&K_times_Residuum, KF_SCALE_KALMANGAIN, &tempColVec, TRUE);
 		retVal |= KF_AddColVecs(&KF_PredictedStateEst, &tempColVec, &KF_CorrectedStateEst, FALSE);
@@ -405,8 +430,8 @@ void KF_Main()
 		for(;;){} //error case
 	}
 
-	KF_UnscaledEstimatedVel = KF_CorrectedStateEst.aRow[1]/KF_SCALE_X;
-	KF_AccumulatedDeltaS   += KF_CorrectedStateEst.aRow[0];  //TODO unscaled! losing accuracy when scaling down!
+	KF_UpdateUnscaledVals();
+
 }
 
 #ifdef MASTER_KF_C_
