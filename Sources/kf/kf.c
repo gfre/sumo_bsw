@@ -30,10 +30,10 @@
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-static void KF_SetInitialValues(void);
+static void KF_UpdateMeasurement(void);
 static void KF_UpdateUnscaledVals(void);
 static void KF_UpdateModuloCounter(void);
-
+static void KF_SetInitialValues(void);
 
 //Matrix operations
 static StdRtn_t KF_AddMatrices(const KF_I32Mat_t* m_, const KF_I32Mat_t* n_, KF_I32Mat_t* result_, bool subtract_);
@@ -50,7 +50,6 @@ static StdRtn_t KF_TransposeRowVec(const KF_I32RowVec_t* v_, KF_I32ColVec_t* res
 static StdRtn_t KF_MultColVecFactor(const KF_I32ColVec_t* v_, const int32_t factor_, KF_I32ColVec_t* result_, bool divide_);
 static StdRtn_t KF_AddColVecs(const KF_I32ColVec_t* v_,const KF_I32ColVec_t* w_, KF_I32ColVec_t* result_, bool subtract_);
 static StdRtn_t KF_MultColVecRowVec(const KF_I32ColVec_t* v_, const KF_I32RowVec_t* w_, KF_I32Mat_t* result_);
-
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 static const KF_Cfg_t* kfCfg = NULL;
@@ -70,34 +69,122 @@ static int32_t KF_UnscaledEstimatedPos = 0;
 static int32_t KF_Residuum 			  = 0; //can be local?
 static int32_t KF_PositionMeasurement = 0;
 static int32_t KF_Denominator 		  = 0; //can be local?
-static int16_t KF_Counter 			  = 0;
+static int16_t KF_ModuloCntr 		  = 0;
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-static StdRtn_t KF_MultMatColVec(const KF_I32Mat_t* M_, const KF_I32ColVec_t* v_, KF_I32ColVec_t* result_, int32_t divider_) //2x2
+static void KF_UpdateMeasurement()
+{
+	KF_PositionMeasurement = Q4CLeft_GetPos();
+}
+
+static void KF_UpdateUnscaledVals()
+{
+	KF_UnscaledEstimatedPos = (KF_ModuloCntr*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) + KF_CorrectedStateEst.aRow[0])/((int32_t)KF_SCALE_X);
+	KF_UnscaledEstimatedVel = KF_CorrectedStateEst.aRow[1]/(int32_t)KF_SCALE_X;
+}
+
+static void KF_UpdateModuloCounter()
+{
+	if(KF_ModuloCntr > 0)
+	{
+		if((KF_CorrectedStateEst.aRow[0] >= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) && ((((int32_t)KF_SCALE_X)*KF_PositionMeasurement) >=  KF_ModuloCntr*(int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)))
+		{
+			KF_CorrectedStateEst.aRow[0] %= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A);
+			KF_ModuloCntr++;
+		}
+		else if((KF_CorrectedStateEst.aRow[0] <= 0) && (((int32_t)KF_SCALE_X)*KF_PositionMeasurement) <= KF_ModuloCntr*(int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))
+		{
+			KF_CorrectedStateEst.aRow[0] = ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))-1;
+			KF_ModuloCntr--;
+		}
+	}
+	else if(KF_ModuloCntr == 0)
+	{
+		if((KF_CorrectedStateEst.aRow[0] >= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) && ((((int32_t)KF_SCALE_X)*KF_PositionMeasurement) >=  (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)))
+		{
+			KF_CorrectedStateEst.aRow[0] %= ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A));
+			KF_ModuloCntr++;
+		}
+		else if((KF_CorrectedStateEst.aRow[0] <= -((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))) && (((int32_t)KF_SCALE_X*KF_PositionMeasurement) <= -((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))))
+		{
+			KF_CorrectedStateEst.aRow[0] *= (-1);
+			KF_CorrectedStateEst.aRow[0] %= ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A));
+			KF_CorrectedStateEst.aRow[0] *= (-1);
+			KF_ModuloCntr--;
+		}
+	}
+	else if(KF_ModuloCntr < 0)
+	{
+		if((KF_CorrectedStateEst.aRow[0] <= -((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))) && ((((int32_t)KF_SCALE_X)*KF_PositionMeasurement) <=  KF_ModuloCntr*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))))
+		{
+			KF_CorrectedStateEst.aRow[0] *= (-1);
+			KF_CorrectedStateEst.aRow[0] %= ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A));
+			KF_CorrectedStateEst.aRow[0] *= (-1);
+			KF_ModuloCntr--;
+		}
+		else if((KF_CorrectedStateEst.aRow[0] >= 0) && (((int32_t)KF_SCALE_X)*KF_PositionMeasurement) >= KF_ModuloCntr*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)))
+		{
+			KF_CorrectedStateEst.aRow[0] = (-((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)))+1;
+			KF_ModuloCntr++;
+		}
+	}
+}
+
+static void KF_SetInitialValues()
+
+{
+	uint8_t i = 0u;
+	uint8_t j = 0u;
+	for(i = 0u; i < KF_SYS_DIMENSION; i++)
+	{
+		KF_CorrectedStateEst.aRow[i] = kfCfg->StateInitialEstimate->aRow[i];
+	}
+	for(i = 0u; i < KF_SYS_DIMENSION; i++)
+	{
+		for(j = 0u; j < KF_SYS_DIMENSION; j++)
+		{
+			KF_CorrectedErrorInEst.aRow[i].aCol[j] = kfCfg->InitialErrorInEstimate->aRow[i].aCol[j];
+		}
+	}
+}
+
+
+static StdRtn_t KF_AddMatrices(const KF_I32Mat_t* M_, const KF_I32Mat_t* N_, KF_I32Mat_t* result_, bool subtract_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	uint8_t i = 0u;
 	uint8_t j = 0u;
-
-	if( NULL != result_ )
+	if(NULL != result_)
 	{
 		retVal = ERR_OK;
-		for(i = 0u; i < KF_SYS_DIMENSION; i++) //Make sure every element in result is 0;
-		{
-			result_->aRow[i] = 0;
-		}
-
-		for(i = 0u; i < KF_SYS_DIMENSION; i++)
+		for(i = 0u; i < KF_SYS_DIMENSION; i++) //make sure every element in Result is 0!
 		{
 			for(j = 0u; j < KF_SYS_DIMENSION; j++)
 			{
-				result_->aRow[i] += (M_->aRow[i].aCol[j] * v_->aRow[j])/(divider_);
+					result_->aRow[i].aCol[j] = 0;
 			}
 		}
-
+		if(TRUE == subtract_)
+		{
+			for(i = 0u; i < KF_SYS_DIMENSION; i++)
+			{
+				for(j = 0u; j < KF_SYS_DIMENSION; j++)
+				{
+					result_->aRow[i].aCol[j] = M_->aRow[i].aCol[j] - N_->aRow[i].aCol[j];
+				}
+			}
+		}else //add in any other case
+		{
+			for(i = 0u; i < KF_SYS_DIMENSION; i++)
+			{
+				for(j = 0u; j < KF_SYS_DIMENSION; j++)
+				{
+					result_->aRow[i].aCol[j] = M_->aRow[i].aCol[j] + N_->aRow[i].aCol[j];
+				}
+			}
+		}
 	}
-
 	return retVal;
 }
 
@@ -153,7 +240,8 @@ static StdRtn_t KF_TransposeMat(const KF_I32Mat_t* M_, KF_I32Mat_t* result_)
 	return retVal;
 }
 
-static StdRtn_t KF_AddMatrices(const KF_I32Mat_t* M_, const KF_I32Mat_t* N_, KF_I32Mat_t* result_, bool subtract_)
+
+static StdRtn_t KF_MultRowVecMat(const KF_I32RowVec_t* v_, const KF_I32Mat_t* M_, KF_I32RowVec_t* result_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	uint8_t i = 0u;
@@ -161,35 +249,49 @@ static StdRtn_t KF_AddMatrices(const KF_I32Mat_t* M_, const KF_I32Mat_t* N_, KF_
 	if(NULL != result_)
 	{
 		retVal = ERR_OK;
-		for(i = 0u; i < KF_SYS_DIMENSION; i++) //make sure every element in Result is 0!
+		for (i = 0u; i < KF_SYS_DIMENSION; i++) // make sure every element in result is 0!
 		{
-			for(j = 0u; j < KF_SYS_DIMENSION; j++)
-			{
-					result_->aRow[i].aCol[j] = 0;
-			}
+			result_->aCol[i] = 0;
 		}
-		if(TRUE == subtract_)
+
+		for(i = 0u; i < KF_SYS_DIMENSION; i++)
 		{
-			for(i = 0u; i < KF_SYS_DIMENSION; i++)
+			for (j = 0u; j < KF_SYS_DIMENSION; j++)
 			{
-				for(j = 0u; j < KF_SYS_DIMENSION; j++)
-				{
-					result_->aRow[i].aCol[j] = M_->aRow[i].aCol[j] - N_->aRow[i].aCol[j];
-				}
-			}
-		}else //add in any other case
-		{
-			for(i = 0u; i < KF_SYS_DIMENSION; i++)
-			{
-				for(j = 0u; j < KF_SYS_DIMENSION; j++)
-				{
-					result_->aRow[i].aCol[j] = M_->aRow[i].aCol[j] + N_->aRow[i].aCol[j];
-				}
+				result_->aCol[i] += v_->aCol[j] * M_->aRow[j].aCol[i];
 			}
 		}
 	}
 	return retVal;
 }
+
+static StdRtn_t KF_MultMatColVec(const KF_I32Mat_t* M_, const KF_I32ColVec_t* v_, KF_I32ColVec_t* result_, int32_t divider_) //2x2
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	uint8_t i = 0u;
+	uint8_t j = 0u;
+
+	if( NULL != result_ )
+	{
+		retVal = ERR_OK;
+		for(i = 0u; i < KF_SYS_DIMENSION; i++) //Make sure every element in result is 0;
+		{
+			result_->aRow[i] = 0;
+		}
+
+		for(i = 0u; i < KF_SYS_DIMENSION; i++)
+		{
+			for(j = 0u; j < KF_SYS_DIMENSION; j++)
+			{
+				result_->aRow[i] += (M_->aRow[i].aCol[j] * v_->aRow[j])/(divider_);
+			}
+		}
+
+	}
+
+	return retVal;
+}
+
 
 static StdRtn_t KF_MultRowVecColVec(const KF_I32RowVec_t* v_, const KF_I32ColVec_t* w_, int32_t* result_)
 {
@@ -218,30 +320,6 @@ static StdRtn_t KF_TransposeRowVec(const KF_I32RowVec_t* v_, KF_I32ColVec_t* res
 		for(i = 0u; i < KF_SYS_DIMENSION; i++)
 		{
 			result_->aRow[i] = v_->aCol[i];
-		}
-	}
-	return retVal;
-}
-
-static StdRtn_t KF_MultRowVecMat(const KF_I32RowVec_t* v_, const KF_I32Mat_t* M_, KF_I32RowVec_t* result_)
-{
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	uint8_t i = 0u;
-	uint8_t j = 0u;
-	if(NULL != result_)
-	{
-		retVal = ERR_OK;
-		for (i = 0u; i < KF_SYS_DIMENSION; i++) // make sure every element in result is 0!
-		{
-			result_->aCol[i] = 0;
-		}
-
-		for(i = 0u; i < KF_SYS_DIMENSION; i++)
-		{
-			for (j = 0u; j < KF_SYS_DIMENSION; j++)
-			{
-				result_->aCol[i] += v_->aCol[j] * M_->aRow[j].aCol[i];
-			}
 		}
 	}
 	return retVal;
@@ -312,87 +390,6 @@ static StdRtn_t KF_MultColVecRowVec(const KF_I32ColVec_t* v_, const KF_I32RowVec
 		}
 	}
 	return retVal;
-}
-
-static void KF_UpdateMeasurement()
-{
-	KF_PositionMeasurement = Q4CLeft_GetPos();
-}
-
-static void KF_UpdateUnscaledVals()
-{
-	KF_UnscaledEstimatedVel = KF_CorrectedStateEst.aRow[1]/(int32_t)KF_SCALE_X;
-	KF_UnscaledEstimatedPos = (KF_Counter*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) + KF_CorrectedStateEst.aRow[0])/(int32_t)KF_SCALE_X;
-}
-
-static void KF_UpdateModuloCounter()
-{
-	if(KF_Counter > 0)
-	{
-		if((KF_CorrectedStateEst.aRow[0] >= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) && ((((int32_t)KF_SCALE_X)*KF_PositionMeasurement) >=  (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)))
-		{
-			KF_CorrectedStateEst.aRow[0] %= (int32_t)KF_MAX_POS_VAL/(int32_t)KF_SCALE_A;
-			KF_Counter++;
-		}else if((KF_CorrectedStateEst.aRow[0] <= 0) && (((int32_t)KF_SCALE_X)*KF_PositionMeasurement) <= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))
-		{
-			KF_CorrectedStateEst.aRow[0] = ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))-1;
-			KF_Counter--;
-		}
-	}else if(KF_Counter == 0)
-	{
-		if((KF_CorrectedStateEst.aRow[0] >= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) && ((((int32_t)KF_SCALE_X)*KF_PositionMeasurement) >=  (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)))
-		{
-			KF_CorrectedStateEst.aRow[0] %= ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A));
-			KF_Counter++;
-		}else if((KF_CorrectedStateEst.aRow[0] <= -((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))) && (((int32_t)KF_SCALE_X*KF_PositionMeasurement) <= -((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))))
-		{
-			KF_CorrectedStateEst.aRow[0] *= (-1);
-			KF_CorrectedStateEst.aRow[0] %= ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A));
-			KF_CorrectedStateEst.aRow[0] *= (-1);
-			KF_Counter--;
-		}
-	}else if(KF_Counter < 0)
-	{
-		if((KF_CorrectedStateEst.aRow[0] <= -((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))) && ((((int32_t)KF_SCALE_X)*KF_PositionMeasurement) <=  -((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))))
-		{
-			KF_CorrectedStateEst.aRow[0] *= (-1);
-			KF_CorrectedStateEst.aRow[0] %= ((int32_t)KF_MAX_POS_VAL/(int32_t)KF_SCALE_A);
-			KF_CorrectedStateEst.aRow[0] *= (-1);
-			KF_Counter--;
-		}else if((KF_CorrectedStateEst.aRow[0] >= 0) && (((int32_t)KF_SCALE_X)*KF_PositionMeasurement) >= -((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)))
-		{
-			KF_CorrectedStateEst.aRow[0] = (-((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)))+1;
-			KF_Counter++;
-		}
-	}
-
-//	if((KF_CorrectedStateEst.aRow[0] >= (int32_t)KF_MAX_POS_VAL/(int32_t)KF_SCALE_A) && ((((int32_t)KF_SCALE_X)*KF_PositionMeasurement) >=  (int32_t)KF_MAX_POS_VAL/(int32_t)KF_SCALE_A))
-//	{
-//		KF_CorrectedStateEst.aRow[0] %= (int32_t)KF_MAX_POS_VAL/(int32_t)KF_SCALE_A;
-//		KF_Counter++;
-//	}else if((KF_CorrectedStateEst.aRow[0] <= -(int32_t)KF_MAX_POS_VAL/(int32_t)KF_SCALE_A) && (((int32_t)KF_SCALE_X*KF_PositionMeasurement) <= -(int32_t)KF_MAX_POS_VAL/(int32_t)KF_SCALE_A))
-//	{
-//		KF_CorrectedStateEst.aRow[0] = -KF_CorrectedStateEst.aRow[0];
-//		KF_CorrectedStateEst.aRow[0] = -(KF_CorrectedStateEst.aRow[0] % ((int32_t)KF_MAX_POS_VAL/(int32_t)KF_SCALE_A));
-//		KF_Counter--;
-//	}
-}
-
-static void KF_SetInitialValues()
-{
-	uint8_t i = 0u;
-	uint8_t j = 0u;
-	for(i = 0u; i < KF_SYS_DIMENSION; i++)
-	{
-		KF_CorrectedStateEst.aRow[i] = kfCfg->StateInitialEstimate->aRow[i];
-	}
-	for(i = 0u; i < KF_SYS_DIMENSION; i++)
-	{
-		for(j = 0u; j < KF_SYS_DIMENSION; j++)
-		{
-			KF_CorrectedErrorInEst.aRow[i].aCol[j] = kfCfg->InitialErrorInEstimate->aRow[i].aCol[j];
-		}
-	}
 }
 
 
