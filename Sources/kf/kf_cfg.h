@@ -29,10 +29,10 @@
 
 /*======================================= >> #DEFINES << =========================================*/
 #define KF_SYS_DIMENSION (0x02u)
-#define KF_SCALE_KALMANGAIN (50u)
-#define KF_SCALE_ERROR (1u)
+#define KF_SCALE_KALMANGAIN (100u)
+#define KF_SCALE_ERROR (50u)
 #define KF_SCALE_A (1000u)
-#define KF_SCALE_X (50u)
+#define KF_SCALE_X (100u)
 #define KF_MAX_POS_VAL (2000000000u)
 
 
