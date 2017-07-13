@@ -55,7 +55,6 @@ static volatile Q4CLeft_QuadCntrType TACHO_LeftPosHistory[NOF_HISTORY], TACHO_Ri
 static volatile uint8_t TACHO_PosHistory_Index = 0;
 
 static int32_t TACHO_currLeftSpeed = 0, TACHO_currRightSpeed = 0, TACHO_actual5MsSpeed = 0;
-static int32_t TACHO_delta5Ms;
 
 
 
@@ -70,10 +69,6 @@ int32_t TACHO_GetSpeed(bool isLeft) {
 	} else {
 		return TACHO_currRightSpeed;
 	}
-}
-
-int32_t TACHO_GetPositionDelta(){
-	return TACHO_delta5Ms;
 }
 
 void TACHO_CalcSpeed(void) {
@@ -124,16 +119,11 @@ void TACHO_CalcSpeed(void) {
 		negRight = FALSE;
 	}
 	delta5Ms = secondNewestLeft-newLeft;
-	TACHO_delta5Ms = newLeft-secondNewestLeft;
 	if (delta5Ms < 0) {
 		delta5Ms = -delta5Ms;
 		negActual = TRUE;
 	} else {
 		negActual = FALSE;
-	}
-	actual5MsSpeed = (int32_t)(delta5Ms*1000U/(TACHO_SAMPLE_PERIOD_MS));
-	if (negActual) {
-		actual5MsSpeed = -actual5MsSpeed;
 	}
 	/* calculate speed. this is based on the delta and the time (number of samples or entries in the history table) */
 	speedLeft = (int32_t)(deltaLeft*1000U/(TACHO_SAMPLE_PERIOD_MS*(NOF_HISTORY-1)));
@@ -144,9 +134,13 @@ void TACHO_CalcSpeed(void) {
 	if (negRight) {
 		speedRight = -speedRight;
 	}
-	TACHO_actual5MsSpeed = -actual5MsSpeed;
+	actual5MsSpeed = (int32_t)(delta5Ms*1000U/(TACHO_SAMPLE_PERIOD_MS));
+	if (negActual) {
+		actual5MsSpeed = -actual5MsSpeed;
+	}
 	TACHO_currLeftSpeed = -speedLeft; /* store current speed in global variable */
 	TACHO_currRightSpeed = -speedRight; /* store current speed in global variable */
+	TACHO_actual5MsSpeed = -actual5MsSpeed;
 }
 
 void TACHO_Sample(void) {
