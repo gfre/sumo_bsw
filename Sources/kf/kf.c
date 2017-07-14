@@ -21,9 +21,11 @@
 /*======================================= >> #INCLUDES << ========================================*/
 #include "kf.h"
 #include "kf_cfg.h"
+#include "kf_api.h"
 #include "Q4CLeft.h"
 #include "Q4CRight.h"
 #include "tacho_api.h"
+
 
 
 /*======================================= >> #DEFINES << =========================================*/
@@ -106,7 +108,7 @@ static void KF_UpdateModuloCounter()
 {
 	if(KF_LeftModuloCntr > 0)
 	{
-		if((KF_LeftCorrStateEst.aRow[0] >= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) && ((((int32_t)KF_SCALE_X)*KF_LeftPosMeasurement) >=  KF_LeftModuloCntr*(int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)))
+		if((KF_LeftCorrStateEst.aRow[0] >= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) && ((((int32_t)KF_SCALE_X)*KF_LeftPosMeasurement) >=  KF_LeftModuloCntr*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))))
 		{
 			KF_LeftCorrStateEst.aRow[0] %= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A);
 			KF_LeftModuloCntr++;
@@ -126,9 +128,9 @@ static void KF_UpdateModuloCounter()
 		}
 		else if((KF_LeftCorrStateEst.aRow[0] <= -((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))) && (((int32_t)KF_SCALE_X*KF_LeftPosMeasurement) <= -((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))))
 		{
-			KF_LeftCorrStateEst.aRow[0] *= (-1);
+			KF_LeftCorrStateEst.aRow[0] = -KF_LeftCorrStateEst.aRow[0];
 			KF_LeftCorrStateEst.aRow[0] %= ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A));
-			KF_LeftCorrStateEst.aRow[0] *= (-1);
+			KF_LeftCorrStateEst.aRow[0] = -KF_LeftCorrStateEst.aRow[0];
 			KF_LeftModuloCntr--;
 		}
 	}
@@ -136,9 +138,9 @@ static void KF_UpdateModuloCounter()
 	{
 		if((KF_LeftCorrStateEst.aRow[0] <= -((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))) && ((((int32_t)KF_SCALE_X)*KF_LeftPosMeasurement) <=  KF_LeftModuloCntr*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))))
 		{
-			KF_LeftCorrStateEst.aRow[0] *= (-1);
+			KF_LeftCorrStateEst.aRow[0] = -KF_LeftCorrStateEst.aRow[0];
 			KF_LeftCorrStateEst.aRow[0] %= ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A));
-			KF_LeftCorrStateEst.aRow[0] *= (-1);
+			KF_LeftCorrStateEst.aRow[0] = -KF_LeftCorrStateEst.aRow[0];
 			KF_LeftModuloCntr--;
 		}
 		else if((KF_LeftCorrStateEst.aRow[0] >= 0) && (((int32_t)KF_SCALE_X)*KF_LeftPosMeasurement) >= KF_LeftModuloCntr*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)))
@@ -171,9 +173,9 @@ static void KF_UpdateModuloCounter()
 		}
 		else if((KF_RightCorrStateEst.aRow[0] <= -((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))) && (((int32_t)KF_SCALE_X*KF_RightPosMeasurement) <= -((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))))
 		{
-			KF_RightCorrStateEst.aRow[0] *= (-1);
+			KF_RightCorrStateEst.aRow[0] = -KF_RightCorrStateEst.aRow[0];
 			KF_RightCorrStateEst.aRow[0] %= ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A));
-			KF_RightCorrStateEst.aRow[0] *= (-1);
+			KF_RightCorrStateEst.aRow[0] = -KF_RightCorrStateEst.aRow[0];
 			KF_RightModuloCntr--;
 		}
 	}
@@ -181,9 +183,9 @@ static void KF_UpdateModuloCounter()
 	{
 		if((KF_RightCorrStateEst.aRow[0] <= -((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))) && ((((int32_t)KF_SCALE_X)*KF_RightPosMeasurement) <=  KF_RightModuloCntr*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))))
 		{
-			KF_RightCorrStateEst.aRow[0] *= (-1);
+			KF_RightCorrStateEst.aRow[0] = -KF_RightCorrStateEst.aRow[0];
 			KF_RightCorrStateEst.aRow[0] %= ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A));
-			KF_RightCorrStateEst.aRow[0] *= (-1);
+			KF_RightCorrStateEst.aRow[0] = -KF_RightCorrStateEst.aRow[0];
 			KF_RightModuloCntr--;
 		}
 		else if((KF_RightCorrStateEst.aRow[0] >= 0) && (((int32_t)KF_SCALE_X)*KF_RightPosMeasurement) >= KF_RightModuloCntr*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)))
@@ -460,6 +462,33 @@ static StdRtn_t KF_MultColVecRowVec(const KF_I32ColVec_t* v_, const KF_I32RowVec
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
+int32_t KF_GetSpeed(bool isLeft_)
+{
+	int32_t speed = 0;
+	if(TRUE == isLeft_)
+	{
+		speed = KF_LeftUnscaledEstVel;
+	}
+	else
+	{
+		speed = KF_RightUnscaledEstVel;
+	}
+	return speed;
+}
+
+int32_t KF_GetPosition(bool isLeft_)
+{
+	int32_t position = 0;
+	if(TRUE == isLeft_)
+	{
+		position = KF_LeftUnscaledEstPos;
+	}else
+	{
+		position = KF_RightUnscaledEstPos;
+	}
+	return position;
+}
+
 void KF_Init()
 {
 	StdRtn_t retVal = ERR_OK;
