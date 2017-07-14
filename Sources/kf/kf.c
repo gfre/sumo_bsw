@@ -22,6 +22,7 @@
 #include "kf.h"
 #include "kf_cfg.h"
 #include "Q4CLeft.h"
+#include "Q4CRight.h"
 #include "tacho_api.h"
 
 
@@ -57,76 +58,138 @@ static const KF_Cfg_t* kfCfg = NULL;
 static KF_I32Mat_t 	  KF_SystemMatrixTransposed = {0};
 static KF_I32ColVec_t KF_MeasurementVector 		= {0};
 
-static KF_I32ColVec_t KF_KalmanGain 		 = {0};
-static KF_I32Mat_t 	  KF_CorrectedErrorInEst = {0};
-static KF_I32Mat_t	  KF_PredictedErrorInEst = {0};
-static KF_I32ColVec_t KF_CorrectedStateEst 	 = {0};
-static KF_I32ColVec_t KF_PredictedStateEst 	 = {0};
+static KF_I32ColVec_t KF_LeftKalmanGain 	 = {0};
+static KF_I32Mat_t 	  KF_LeftCorrErrorInEst  = {0};
+static KF_I32Mat_t	  KF_LeftPredErrorInEst  = {0};
+static KF_I32ColVec_t KF_LeftCorrStateEst 	 = {0};
+static KF_I32ColVec_t KF_LeftPredStateEst 	 = {0};
+static int32_t 		  KF_LeftUnscaledEstVel  = 0;
+static int32_t 		  KF_LeftUnscaledEstPos  = 0;
 
-static int32_t KF_UnscaledEstimatedVel = 0;
-static int32_t KF_UnscaledEstimatedPos = 0;
+static int32_t KF_LeftResiduum 		  = 0; //can be local?
+static int32_t KF_LeftPosMeasurement  = 0;
+static int32_t KF_LeftDenominator 	  = 0; //can be local?
+static int16_t KF_LeftModuloCntr 	  = 0;
 
-static int32_t KF_Residuum 			  = 0; //can be local?
-static int32_t KF_PositionMeasurement = 0;
-static int32_t KF_Denominator 		  = 0; //can be local?
-static int16_t KF_ModuloCntr 		  = 0;
+static KF_I32ColVec_t KF_RightKalmanGain 	 = {0};
+static KF_I32Mat_t 	  KF_RightCorrErrorInEst = {0};
+static KF_I32Mat_t	  KF_RightPredErrorInEst = {0};
+static KF_I32ColVec_t KF_RightCorrStateEst 	 = {0};
+static KF_I32ColVec_t KF_RightPredStateEst 	 = {0};
+static int32_t 		  KF_RightUnscaledEstVel = 0;
+static int32_t 		  KF_RightUnscaledEstPos = 0;
+
+static int32_t KF_RightResiduum 	  = 0; //can be local?
+static int32_t KF_RightPosMeasurement = 0;
+static int32_t KF_RightDenominator 	  = 0; //can be local?
+static int16_t KF_RightModuloCntr 	  = 0;
+
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 static void KF_UpdateMeasurement()
 {
-	KF_PositionMeasurement = Q4CLeft_GetPos();
+	KF_LeftPosMeasurement = Q4CLeft_GetPos();
+	KF_RightPosMeasurement = Q4CRight_GetPos();
 }
 
 static void KF_UpdateUnscaledVals()
 {
-	KF_UnscaledEstimatedPos = (KF_ModuloCntr*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) + KF_CorrectedStateEst.aRow[0])/((int32_t)KF_SCALE_X);
-	KF_UnscaledEstimatedVel = KF_CorrectedStateEst.aRow[1]/(int32_t)KF_SCALE_X;
+	KF_LeftUnscaledEstPos = (KF_LeftModuloCntr*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) + KF_LeftCorrStateEst.aRow[0])/((int32_t)KF_SCALE_X);
+	KF_LeftUnscaledEstVel = KF_LeftCorrStateEst.aRow[1]/(int32_t)KF_SCALE_X;
+
+	KF_RightUnscaledEstPos = (KF_RightModuloCntr*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) + KF_RightCorrStateEst.aRow[0])/((int32_t)KF_SCALE_X);
+	KF_RightUnscaledEstVel = KF_RightCorrStateEst.aRow[1]/(int32_t)KF_SCALE_X;
 }
 
 static void KF_UpdateModuloCounter()
 {
-	if(KF_ModuloCntr > 0)
+	if(KF_LeftModuloCntr > 0)
 	{
-		if((KF_CorrectedStateEst.aRow[0] >= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) && ((((int32_t)KF_SCALE_X)*KF_PositionMeasurement) >=  KF_ModuloCntr*(int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)))
+		if((KF_LeftCorrStateEst.aRow[0] >= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) && ((((int32_t)KF_SCALE_X)*KF_LeftPosMeasurement) >=  KF_LeftModuloCntr*(int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)))
 		{
-			KF_CorrectedStateEst.aRow[0] %= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A);
-			KF_ModuloCntr++;
+			KF_LeftCorrStateEst.aRow[0] %= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A);
+			KF_LeftModuloCntr++;
 		}
-		else if((KF_CorrectedStateEst.aRow[0] <= 0) && (((int32_t)KF_SCALE_X)*KF_PositionMeasurement) <= KF_ModuloCntr*(int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))
+		else if((KF_LeftCorrStateEst.aRow[0] <= 0) && (((int32_t)KF_SCALE_X)*KF_LeftPosMeasurement) <= KF_LeftModuloCntr*(int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))
 		{
-			KF_CorrectedStateEst.aRow[0] = ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))-1;
-			KF_ModuloCntr--;
+			KF_LeftCorrStateEst.aRow[0] = ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))-1;
+			KF_LeftModuloCntr--;
 		}
 	}
-	else if(KF_ModuloCntr == 0)
+	else if(KF_LeftModuloCntr == 0)
 	{
-		if((KF_CorrectedStateEst.aRow[0] >= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) && ((((int32_t)KF_SCALE_X)*KF_PositionMeasurement) >=  (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)))
+		if((KF_LeftCorrStateEst.aRow[0] >= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) && ((((int32_t)KF_SCALE_X)*KF_LeftPosMeasurement) >=  (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)))
 		{
-			KF_CorrectedStateEst.aRow[0] %= ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A));
-			KF_ModuloCntr++;
+			KF_LeftCorrStateEst.aRow[0] %= ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A));
+			KF_LeftModuloCntr++;
 		}
-		else if((KF_CorrectedStateEst.aRow[0] <= -((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))) && (((int32_t)KF_SCALE_X*KF_PositionMeasurement) <= -((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))))
+		else if((KF_LeftCorrStateEst.aRow[0] <= -((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))) && (((int32_t)KF_SCALE_X*KF_LeftPosMeasurement) <= -((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))))
 		{
-			KF_CorrectedStateEst.aRow[0] *= (-1);
-			KF_CorrectedStateEst.aRow[0] %= ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A));
-			KF_CorrectedStateEst.aRow[0] *= (-1);
-			KF_ModuloCntr--;
+			KF_LeftCorrStateEst.aRow[0] *= (-1);
+			KF_LeftCorrStateEst.aRow[0] %= ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A));
+			KF_LeftCorrStateEst.aRow[0] *= (-1);
+			KF_LeftModuloCntr--;
 		}
 	}
-	else if(KF_ModuloCntr < 0)
+	else if(KF_LeftModuloCntr < 0)
 	{
-		if((KF_CorrectedStateEst.aRow[0] <= -((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))) && ((((int32_t)KF_SCALE_X)*KF_PositionMeasurement) <=  KF_ModuloCntr*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))))
+		if((KF_LeftCorrStateEst.aRow[0] <= -((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))) && ((((int32_t)KF_SCALE_X)*KF_LeftPosMeasurement) <=  KF_LeftModuloCntr*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))))
 		{
-			KF_CorrectedStateEst.aRow[0] *= (-1);
-			KF_CorrectedStateEst.aRow[0] %= ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A));
-			KF_CorrectedStateEst.aRow[0] *= (-1);
-			KF_ModuloCntr--;
+			KF_LeftCorrStateEst.aRow[0] *= (-1);
+			KF_LeftCorrStateEst.aRow[0] %= ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A));
+			KF_LeftCorrStateEst.aRow[0] *= (-1);
+			KF_LeftModuloCntr--;
 		}
-		else if((KF_CorrectedStateEst.aRow[0] >= 0) && (((int32_t)KF_SCALE_X)*KF_PositionMeasurement) >= KF_ModuloCntr*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)))
+		else if((KF_LeftCorrStateEst.aRow[0] >= 0) && (((int32_t)KF_SCALE_X)*KF_LeftPosMeasurement) >= KF_LeftModuloCntr*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)))
 		{
-			KF_CorrectedStateEst.aRow[0] = (-((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)))+1;
-			KF_ModuloCntr++;
+			KF_LeftCorrStateEst.aRow[0] = (-((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)))+1;
+			KF_LeftModuloCntr++;
+		}
+	}
+
+
+	if(KF_RightModuloCntr > 0)
+	{
+		if((KF_RightCorrStateEst.aRow[0] >= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) && ((((int32_t)KF_SCALE_X)*KF_RightPosMeasurement) >=  KF_RightModuloCntr*(int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)))
+		{
+			KF_RightCorrStateEst.aRow[0] %= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A);
+			KF_RightModuloCntr++;
+		}
+		else if((KF_RightCorrStateEst.aRow[0] <= 0) && (((int32_t)KF_SCALE_X)*KF_RightPosMeasurement) <= KF_RightModuloCntr*(int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))
+		{
+			KF_RightCorrStateEst.aRow[0] = ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))-1;
+			KF_RightModuloCntr--;
+		}
+	}
+	else if(KF_RightModuloCntr == 0)
+	{
+		if((KF_RightCorrStateEst.aRow[0] >= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) && ((((int32_t)KF_SCALE_X)*KF_RightPosMeasurement) >=  (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)))
+		{
+			KF_RightCorrStateEst.aRow[0] %= ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A));
+			KF_RightModuloCntr++;
+		}
+		else if((KF_RightCorrStateEst.aRow[0] <= -((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))) && (((int32_t)KF_SCALE_X*KF_RightPosMeasurement) <= -((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))))
+		{
+			KF_RightCorrStateEst.aRow[0] *= (-1);
+			KF_RightCorrStateEst.aRow[0] %= ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A));
+			KF_RightCorrStateEst.aRow[0] *= (-1);
+			KF_RightModuloCntr--;
+		}
+	}
+	else if(KF_RightModuloCntr < 0)
+	{
+		if((KF_RightCorrStateEst.aRow[0] <= -((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))) && ((((int32_t)KF_SCALE_X)*KF_RightPosMeasurement) <=  KF_RightModuloCntr*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))))
+		{
+			KF_RightCorrStateEst.aRow[0] *= (-1);
+			KF_RightCorrStateEst.aRow[0] %= ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A));
+			KF_RightCorrStateEst.aRow[0] *= (-1);
+			KF_RightModuloCntr--;
+		}
+		else if((KF_RightCorrStateEst.aRow[0] >= 0) && (((int32_t)KF_SCALE_X)*KF_RightPosMeasurement) >= KF_RightModuloCntr*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)))
+		{
+			KF_RightCorrStateEst.aRow[0] = (-((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)))+1;
+			KF_RightModuloCntr++;
 		}
 	}
 }
@@ -138,13 +201,16 @@ static void KF_SetInitialValues()
 	uint8_t j = 0u;
 	for(i = 0u; i < KF_SYS_DIMENSION; i++)
 	{
-		KF_CorrectedStateEst.aRow[i] = kfCfg->StateInitialEstimate->aRow[i];
+		KF_LeftCorrStateEst.aRow[i] = kfCfg->StateInitialEstimate->aRow[i];
+		KF_RightCorrStateEst.aRow[i] = kfCfg->StateInitialEstimate->aRow[i];
+
 	}
 	for(i = 0u; i < KF_SYS_DIMENSION; i++)
 	{
 		for(j = 0u; j < KF_SYS_DIMENSION; j++)
 		{
-			KF_CorrectedErrorInEst.aRow[i].aCol[j] = kfCfg->InitialErrorInEstimate->aRow[i].aCol[j];
+			KF_LeftCorrErrorInEst.aRow[i].aCol[j] = kfCfg->InitialErrorInEstimate->aRow[i].aCol[j];
+			KF_RightCorrErrorInEst.aRow[i].aCol[j] = kfCfg->InitialErrorInEstimate->aRow[i].aCol[j];
 		}
 	}
 }
@@ -416,49 +482,85 @@ void KF_Main()
 {
 	StdRtn_t retVal = ERR_OK;
 
-	KF_I32ColVec_t P_times_c	    = {0};
-	KF_I32ColVec_t K_times_Residuum = {0};
-	KF_I32ColVec_t tempColVec 		= {0};
-	KF_I32Mat_t Ident_minus_K_times_cT = {0};
-	KF_I32Mat_t tempMat  = {0};
-	KF_I32Mat_t tempMat2 = {0};
-	KF_I32Mat_t tempMat3 = {0};
-	int32_t tempResult = 0;
+	KF_I32ColVec_t Left_P_times_c	    = {0};
+	KF_I32ColVec_t Left_K_times_Residuum = {0};
+	KF_I32ColVec_t LeftTempColVec 		= {0};
+	KF_I32Mat_t Left_Ident_minus_K_times_cT = {0};
+	KF_I32Mat_t LeftTempMat  = {0};
+	KF_I32Mat_t LeftTempMat2 = {0};
+	KF_I32Mat_t LeftTempMat3 = {0};
+	int32_t LeftTempResult = 0;
+
+
+	KF_I32ColVec_t Right_P_times_c	    = {0};
+	KF_I32ColVec_t Right_K_times_Residuum = {0};
+	KF_I32ColVec_t RightTempColVec 		= {0};
+	KF_I32Mat_t Right_Ident_minus_K_times_cT = {0};
+	KF_I32Mat_t RightTempMat  = {0};
+	KF_I32Mat_t RightTempMat2 = {0};
+	KF_I32Mat_t RightTempMat3 = {0};
+	int32_t RightTempResult = 0;
 
 	KF_UpdateModuloCounter();
 
 	/* Time Update / "predictor" */
 		//x_k_hat
-		retVal |= KF_MultMatColVec(kfCfg->SystemMatrix, &KF_CorrectedStateEst, &KF_PredictedStateEst, (int32_t)KF_SCALE_A); //scale x
+		retVal |= KF_MultMatColVec(kfCfg->SystemMatrix, &KF_LeftCorrStateEst, &KF_LeftPredStateEst, (int32_t)KF_SCALE_A); //scale x
+
+		retVal |= KF_MultMatColVec(kfCfg->SystemMatrix, &KF_RightCorrStateEst, &KF_RightPredStateEst, (int32_t)KF_SCALE_A); //scale x
 
 		//P_k
-		retVal |= KF_MultMatrices(kfCfg->SystemMatrix, &KF_CorrectedErrorInEst, &tempMat, (int32_t)KF_SCALE_A);
-		retVal |= KF_MultMatrices(&tempMat, &KF_SystemMatrixTransposed, &tempMat2, (int32_t)KF_SCALE_A);
-		retVal |= KF_AddMatrices(&tempMat2, kfCfg->ProcessNoiseCov, &KF_PredictedErrorInEst, FALSE); //ERROR IN ESTIMATE
+		retVal |= KF_MultMatrices(kfCfg->SystemMatrix, &KF_LeftCorrErrorInEst, &LeftTempMat, (int32_t)KF_SCALE_A);
+		retVal |= KF_MultMatrices(&LeftTempMat, &KF_SystemMatrixTransposed, &LeftTempMat2, (int32_t)KF_SCALE_A);
+		retVal |= KF_AddMatrices(&LeftTempMat2, kfCfg->ProcessNoiseCov, &KF_LeftPredErrorInEst, FALSE); //ERROR IN ESTIMATE
+
+		retVal |= KF_MultMatrices(kfCfg->SystemMatrix, &KF_RightCorrErrorInEst, &RightTempMat, (int32_t)KF_SCALE_A);
+		retVal |= KF_MultMatrices(&RightTempMat, &KF_SystemMatrixTransposed, &RightTempMat2, (int32_t)KF_SCALE_A);
+		retVal |= KF_AddMatrices(&RightTempMat2, kfCfg->ProcessNoiseCov, &KF_RightPredErrorInEst, FALSE); //ERROR IN ESTIMATE
 
 	/* Measurement Update / "corrector" */
 		//KalmanGain
-		retVal |= KF_MultMatColVec(&KF_PredictedErrorInEst, &KF_MeasurementVector, &P_times_c, 1); 		//numerator
-		retVal |= KF_MultRowVecColVec(kfCfg->MeasurementVectorTransposed, &P_times_c, &tempResult);		//denominator
-		KF_Denominator = (tempResult + (*kfCfg->MeasurementNoiseCov));  								//denominator
+		retVal |= KF_MultMatColVec(&KF_LeftPredErrorInEst, &KF_MeasurementVector, &Left_P_times_c, 1); 		//numerator
+		retVal |= KF_MultRowVecColVec(kfCfg->MeasurementVectorTransposed, &Left_P_times_c, &LeftTempResult);		//denominator
+		KF_LeftDenominator = (LeftTempResult + (*kfCfg->MeasurementNoiseCov));  								//denominator
 
-		P_times_c.aRow[0] *= (int32_t)KF_SCALE_KALMANGAIN; //scale numerator
-		P_times_c.aRow[1] *= (int32_t)KF_SCALE_KALMANGAIN;
+		retVal |= KF_MultMatColVec(&KF_RightPredErrorInEst, &KF_MeasurementVector, &Right_P_times_c, 1); 		//numerator
+		retVal |= KF_MultRowVecColVec(kfCfg->MeasurementVectorTransposed, &Right_P_times_c, &RightTempResult);		//denominator
+		KF_RightDenominator = (RightTempResult + (*kfCfg->MeasurementNoiseCov));  								//denominator
 
-		retVal |= KF_MultColVecFactor(&P_times_c, KF_Denominator, &KF_KalmanGain, TRUE);
+		Left_P_times_c.aRow[0] *= (int32_t)KF_SCALE_KALMANGAIN; //scale numerator
+		Left_P_times_c.aRow[1] *= (int32_t)KF_SCALE_KALMANGAIN;
+
+		Right_P_times_c.aRow[0] *= (int32_t)KF_SCALE_KALMANGAIN; //scale numerator
+		Right_P_times_c.aRow[1] *= (int32_t)KF_SCALE_KALMANGAIN;
+
+		retVal |= KF_MultColVecFactor(&Left_P_times_c, KF_LeftDenominator, &KF_LeftKalmanGain, TRUE);
+
+		retVal |= KF_MultColVecFactor(&Right_P_times_c, KF_RightDenominator, &KF_RightKalmanGain, TRUE);
+
 
 		//x_k_hat
-		KF_Residuum = ((((int32_t)KF_SCALE_X)*KF_PositionMeasurement) % ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))) - KF_CorrectedStateEst.aRow[0];
-		retVal |= KF_MultColVecFactor(&KF_KalmanGain, KF_Residuum, &K_times_Residuum, FALSE);
-		retVal |= KF_MultColVecFactor(&K_times_Residuum, (int32_t)KF_SCALE_KALMANGAIN, &tempColVec, TRUE);
-		retVal |= KF_AddColVecs(&KF_PredictedStateEst, &tempColVec, &KF_CorrectedStateEst, FALSE);
+		KF_LeftResiduum = ((((int32_t)KF_SCALE_X)*KF_LeftPosMeasurement) % ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))) - KF_LeftCorrStateEst.aRow[0];
+		retVal |= KF_MultColVecFactor(&KF_LeftKalmanGain, KF_LeftResiduum, &Left_K_times_Residuum, FALSE);
+		retVal |= KF_MultColVecFactor(&Left_K_times_Residuum, (int32_t)KF_SCALE_KALMANGAIN, &LeftTempColVec, TRUE);
+		retVal |= KF_AddColVecs(&KF_LeftPredStateEst, &LeftTempColVec, &KF_LeftCorrStateEst, FALSE);
+
+		KF_RightResiduum = ((((int32_t)KF_SCALE_X)*KF_RightPosMeasurement) % ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))) - KF_RightCorrStateEst.aRow[0];
+		retVal |= KF_MultColVecFactor(&KF_RightKalmanGain, KF_RightResiduum, &Right_K_times_Residuum, FALSE);
+		retVal |= KF_MultColVecFactor(&Right_K_times_Residuum, (int32_t)KF_SCALE_KALMANGAIN, &RightTempColVec, TRUE);
+		retVal |= KF_AddColVecs(&KF_RightPredStateEst, &RightTempColVec, &KF_RightCorrStateEst, FALSE);
+
 
 		KF_UpdateMeasurement();
 
 		//P_k
-		retVal |= KF_MultColVecRowVec(&KF_KalmanGain, kfCfg->MeasurementVectorTransposed, &tempMat3);
-		retVal |= KF_AddMatrices(kfCfg->IdentityMatrix, &tempMat3, &Ident_minus_K_times_cT, TRUE);
-		retVal |= KF_MultMatrices(&Ident_minus_K_times_cT, &KF_PredictedErrorInEst, &KF_CorrectedErrorInEst, (int32_t)KF_SCALE_KALMANGAIN);
+		retVal |= KF_MultColVecRowVec(&KF_LeftKalmanGain, kfCfg->MeasurementVectorTransposed, &LeftTempMat3);
+		retVal |= KF_AddMatrices(kfCfg->IdentityMatrix, &LeftTempMat3, &Left_Ident_minus_K_times_cT, TRUE);
+		retVal |= KF_MultMatrices(&Left_Ident_minus_K_times_cT, &KF_LeftPredErrorInEst, &KF_LeftCorrErrorInEst, (int32_t)KF_SCALE_KALMANGAIN);
+
+		retVal |= KF_MultColVecRowVec(&KF_RightKalmanGain, kfCfg->MeasurementVectorTransposed, &RightTempMat3);
+		retVal |= KF_AddMatrices(kfCfg->IdentityMatrix, &RightTempMat3, &Right_Ident_minus_K_times_cT, TRUE);
+		retVal |= KF_MultMatrices(&Right_Ident_minus_K_times_cT, &KF_RightPredErrorInEst, &KF_RightCorrErrorInEst, (int32_t)KF_SCALE_KALMANGAIN);
 
 	if(ERR_OK != retVal)
 	{
