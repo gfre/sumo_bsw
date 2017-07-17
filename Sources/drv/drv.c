@@ -26,6 +26,7 @@
 #include "drv.h"
 #include "drv_api.h"
 #include "pid_api.h"
+#include "kf_api.h"
 #include "tacho_api.h"
 #include "mot.h"
 
@@ -293,8 +294,10 @@ void DRV_MainFct(void)
 		/* process incoming commands */
 	}
 	if (DRV_Status.mode==DRV_MODE_SPEED) {
-		PID_Speed(TACHO_GetSpeed(TRUE), DRV_Status.speed.left, TRUE);
-		PID_Speed(TACHO_GetSpeed(FALSE), DRV_Status.speed.right, FALSE);
+		PID_Speed(KF_GetSpeed(TRUE), DRV_Status.speed.left, TRUE);
+		PID_Speed(KF_GetSpeed(FALSE), DRV_Status.speed.right, FALSE);
+//		PID_Speed(TACHO_GetSpeed(TRUE), DRV_Status.speed.left, TRUE);
+//		PID_Speed(TACHO_GetSpeed(FALSE), DRV_Status.speed.right, FALSE);
 	} else if (DRV_Status.mode==DRV_MODE_STOP) {
 		PID_Speed(TACHO_GetSpeed(TRUE), 0, TRUE);
 		PID_Speed(TACHO_GetSpeed(FALSE), 0, FALSE);
