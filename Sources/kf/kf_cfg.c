@@ -46,14 +46,14 @@ static KF_I32RowVec_t KF_MeasurementVectorTransposed = //measurement Vector
 				{1, 0},
 };
 
-static int32_t KF_MeasurementNoiseCov = 10*KF_SCALE_ERROR;// measurement noise covariance for s
+static int32_t KF_MeasurementNoiseCov = 1*KF_SCALE_ERROR;// measurement noise covariance for s
 
 
 static KF_I32Mat_t KF_ProcessNoiseCov = // process noise covariance matrix
 {
 		{
 				{10*KF_SCALE_ERROR, 0},
-				{0, 2000*KF_SCALE_ERROR},
+				{0, 2500*KF_SCALE_ERROR},
 		},
 };
 
