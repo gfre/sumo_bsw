@@ -34,6 +34,7 @@
 #define KF_SCALE_A (1000u)
 #define KF_SCALE_X (100u)
 #define KF_MAX_POS_VAL (2000000000u)
+#define KF_USE_MEASUREMENT_MATRIX (0u) //set to 1 if using more than 1 measurement:this turns c from a vector to a matrix and makes calculation of inverse necessary thus changing the entire algorithm
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
@@ -49,11 +50,21 @@ typedef struct KF_I32Matrix_s {
 	KF_I32RowVec_t aRow[KF_SYS_DIMENSION];
 }KF_I32Mat_t;
 
+typedef struct KF_I32RowVecLowDim_s { //necessary for determinant using cramers rule
+	int32_t aCol[KF_SYS_DIMENSION-1];
+}KF_I32RowVecLowDim_t;
+
+typedef struct KF_I32MatrixLowDim_s {
+	KF_I32RowVec_t aRow[KF_SYS_DIMENSION-1];
+}KF_I32MatLowDim_t;
+
 typedef struct{
 	KF_I32Mat_t* 	SystemMatrix;
 	KF_I32RowVec_t* MeasurementVectorTransposed;
+	KF_I32Mat_t* 	MeasurementMatrix;
 	KF_I32Mat_t* 	IdentityMatrix;
 	int32_t* 	 	MeasurementNoiseCov;
+	KF_I32Mat_t* 	MeasNoiseCovMat;
 	KF_I32Mat_t* 	ProcessNoiseCov;
 	KF_I32Mat_t* 	InitialErrorInEstimate;
 	KF_I32ColVec_t* StateInitialEstimate;

@@ -42,6 +42,9 @@ static void KF_SetInitialValues(void);
 static StdRtn_t KF_AddMatrices(const KF_I32Mat_t* m_, const KF_I32Mat_t* n_, KF_I32Mat_t* result_, bool subtract_);
 static StdRtn_t KF_MultMatrices(const KF_I32Mat_t* m_, const KF_I32Mat_t* v_, KF_I32Mat_t* result_, int32_t divider_);
 static StdRtn_t KF_TransposeMat(const KF_I32Mat_t* m_, KF_I32Mat_t* result_);
+static StdRtn_t KF_InvertMatrix(const KF_I32Mat_t* m_, const int32_t factor_, KF_I32Mat_t* result_);
+static StdRtn_t KF_Minor(const KF_I32Mat_t* m_, const uint8_t* row_, const uint8_t* col_, KF_I32MatLowDim_t* result_);
+static StdRtn_t KF_Determinant(const KF_I32Mat_t* m_, const KF_I32MatLowDim_t* mlow_, int32_t* result_);
 
 //Matrix-vector operations
 static StdRtn_t KF_MultRowVecMat(const KF_I32RowVec_t* v_, const KF_I32Mat_t* M_, KF_I32RowVec_t* result_);
@@ -58,32 +61,49 @@ static StdRtn_t KF_MultColVecRowVec(const KF_I32ColVec_t* v_, const KF_I32RowVec
 static const KF_Cfg_t* kfCfg = NULL;
 
 static KF_I32Mat_t 	  KF_SystemMatrixTransposed = {0};
-static KF_I32ColVec_t KF_MeasurementVector 		= {0};
 
-static KF_I32ColVec_t KF_LeftKalmanGain 	 = {0};
+
+
 static KF_I32Mat_t 	  KF_LeftCorrErrorInEst  = {0};
-static KF_I32Mat_t	  KF_LeftPredErrorInEst  = {0};
-static KF_I32ColVec_t KF_LeftCorrStateEst 	 = {0};
-static KF_I32ColVec_t KF_LeftPredStateEst 	 = {0};
-static int32_t 		  KF_LeftUnscaledEstVel  = 0;
-static int32_t 		  KF_LeftUnscaledEstPos  = 0;
-
-static int32_t KF_LeftResiduum 		  = 0; //can be local?
-static int32_t KF_LeftPosMeasurement  = 0;
-static int32_t KF_LeftDenominator 	  = 0; //can be local?
-static int16_t KF_LeftModuloCntr 	  = 0;
-
-static KF_I32ColVec_t KF_RightKalmanGain 	 = {0};
 static KF_I32Mat_t 	  KF_RightCorrErrorInEst = {0};
+static KF_I32Mat_t	  KF_LeftPredErrorInEst  = {0};
 static KF_I32Mat_t	  KF_RightPredErrorInEst = {0};
+
+static KF_I32ColVec_t KF_LeftCorrStateEst 	 = {0};
 static KF_I32ColVec_t KF_RightCorrStateEst 	 = {0};
+static KF_I32ColVec_t KF_LeftPredStateEst 	 = {0};
 static KF_I32ColVec_t KF_RightPredStateEst 	 = {0};
+
+static int32_t 		  KF_LeftUnscaledEstVel  = 0;
 static int32_t 		  KF_RightUnscaledEstVel = 0;
+static int32_t 		  KF_LeftUnscaledEstPos  = 0;
 static int32_t 		  KF_RightUnscaledEstPos = 0;
 
-static int32_t KF_RightResiduum 	  = 0; //can be local?
-static int32_t KF_RightPosMeasurement = 0;
-static int32_t KF_RightDenominator 	  = 0; //can be local?
+#if KF_USE_MEASUREMENT_MATRIX
+	static KF_I32Mat_t KF_MeasurementMatrixTransp = {0};
+
+	static KF_I32Mat_t KF_LeftKalmanGain = {0};
+	static KF_I32Mat_t KF_RightKalmanGain = {0};
+	static KF_I32ColVec_t KF_LeftResiduum = {0};
+	static KF_I32ColVec_t KF_RightResiduum = {0};
+	static KF_I32ColVec_t KF_LeftMeasurements = {0};
+	static KF_I32ColVec_t KF_RightMeasurements = {0};
+#else
+
+	static KF_I32ColVec_t KF_MeasurementVector 		= {0};
+
+	static KF_I32ColVec_t KF_LeftKalmanGain 	 = {0};
+	static KF_I32ColVec_t KF_RightKalmanGain 	 = {0};
+	static int32_t KF_LeftResiduum 		  = 0; //can be local?
+	static int32_t KF_RightResiduum 	  = 0; //can be local?
+	static int32_t KF_RightPosMeasurement = 0;
+	static int32_t KF_LeftPosMeasurement  = 0;
+	static int32_t KF_RightDenominator 	  = 0; //can be local?
+	static int32_t KF_LeftDenominator 	  = 0; //can be local?
+
+#endif
+
+static int16_t KF_LeftModuloCntr 	  = 0;
 static int16_t KF_RightModuloCntr 	  = 0;
 
 
@@ -138,7 +158,6 @@ static void KF_UpdateModuloCounter()
 		KF_RightPosMeasurement 		 = -KF_RightPosMeasurement;
 		KF_RightModuloCntr--;
 	}
-
 }
 
 static void KF_SetInitialValues()
@@ -150,7 +169,6 @@ static void KF_SetInitialValues()
 	{
 		KF_LeftCorrStateEst.aRow[i] = kfCfg->StateInitialEstimate->aRow[i];
 		KF_RightCorrStateEst.aRow[i] = kfCfg->StateInitialEstimate->aRow[i];
-
 	}
 	for(i = 0u; i < KF_SYS_DIMENSION; i++)
 	{
@@ -247,6 +265,139 @@ static StdRtn_t KF_TransposeMat(const KF_I32Mat_t* M_, KF_I32Mat_t* result_)
 			for(j = 0; j < KF_SYS_DIMENSION; j++)
 			{
 				result_->aRow[i].aCol[j] = M_->aRow[j].aCol[i];
+			}
+		}
+	}
+	return retVal;
+}
+
+static StdRtn_t KF_Determinant(const KF_I32Mat_t* m_,const KF_I32MatLowDim_t* mlow_, int32_t* result_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	uint8_t i = 0u;
+	uint8_t j = 0u;
+	bool  calcLowDim = FALSE;
+	if (NULL == m_ && NULL != mlow_) // decide if det of lower dim matrix should be calculated
+	{
+		calcLowDim = TRUE;
+	}
+
+	if(NULL != result_){
+		retVal = ERR_OK;
+		*result_ = 0;
+		if(TRUE == calcLowDim)
+		{
+			if(2 == (KF_SYS_DIMENSION-1))
+			{
+				*result_ = mlow_->aRow[0].aCol[0]*mlow_->aRow[1].aCol[1] - mlow_->aRow[0].aCol[1]*mlow_->aRow[1].aCol[0];
+			}
+			else if(3 == (KF_SYS_DIMENSION-1))
+			{
+				for(i = 0u; i < (KF_SYS_DIMENSION-1); i++) //Regel von Sarrus
+				{
+					result_ += (mlow_->aRow[0].aCol[i]*(mlow_->aRow[1].aCol[(i+1)%(KF_SYS_DIMENSION-1)]*mlow_->aRow[2].aCol[(i+2)%(KF_SYS_DIMENSION-1)] - mlow_->aRow[0].aCol[(i+1)%(KF_SYS_DIMENSION-1)]*mlow_->aRow[1].aCol[(i+3)%(KF_SYS_DIMENSION-1)]*mlow_->aRow[2].aCol[(i+2)%(KF_SYS_DIMENSION-1)]));
+				}
+			}
+		}else
+		{
+			if(2 == KF_SYS_DIMENSION)
+			{
+				*result_ = m_->aRow[0].aCol[0]*m_->aRow[1].aCol[1] - m_->aRow[0].aCol[1]*m_->aRow[1].aCol[0];
+			}
+			else if(3 == KF_SYS_DIMENSION)
+			{
+				for(i = 0u; i < KF_SYS_DIMENSION; i++) //Regel von Sarrus
+				{
+					result_ += (m_->aRow[0].aCol[i]*(m_->aRow[1].aCol[(i+1)%KF_SYS_DIMENSION]*m_->aRow[2].aCol[(i+2)%KF_SYS_DIMENSION] - m_->aRow[0].aCol[(i+1)%KF_SYS_DIMENSION]*m_->aRow[1].aCol[(i+3)%KF_SYS_DIMENSION]*m_->aRow[2].aCol[(i+2)%KF_SYS_DIMENSION]));
+				}
+			}
+		}
+
+	}
+	return retVal;
+}
+
+static StdRtn_t KF_Minor(const KF_I32Mat_t* m_, const uint8_t* row_, const uint8_t* col_, KF_I32MatLowDim_t* result_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	uint8_t i = 0u;
+	uint8_t j = 0u;
+	uint8_t k = 0u;
+	uint8_t l = 0u;
+
+	if(NULL != result_)
+	{
+		retVal = ERR_OK;
+		for(i = 0u; i < KF_SYS_DIMENSION-1; i++)
+		{
+			for(j = 0u; j < KF_SYS_DIMENSION-1; j++)
+			{
+				for(k = 0; k < KF_SYS_DIMENSION; k++)
+				{
+					if(k == *row_) continue;
+					for(l = 0; l < KF_SYS_DIMENSION; l++)
+					{
+						if(l == *col_) continue;
+						result_->aRow[i].aCol[j] = m_->aRow[k].aCol[l];
+					}
+				}
+			}
+		}
+	}
+	return retVal;
+}
+
+static StdRtn_t KF_InvertMatrix(const KF_I32Mat_t* m_, const int32_t factor_, KF_I32Mat_t* result_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	int32_t det_m = 0;
+	int32_t tempDet = 0;
+	uint8_t i = 0u;
+	uint8_t j = 0u;
+	int8_t negate = 1;
+	KF_I32MatLowDim_t minor = {0};
+
+	if(NULL != result_)
+	{
+		retVal = ERR_VALUE;
+		for(i = 0u; i < KF_SYS_DIMENSION; i++) //make sure every element in Result is 0!
+		{
+			for(j = 0u; j < KF_SYS_DIMENSION; j++)
+			{
+					result_->aRow[i].aCol[j] = 0;
+			}
+		}
+
+		KF_Determinant(m_, NULL, &det_m);
+		if(0 != det_m)
+		{
+			retVal = ERR_OK;
+			if(2 == KF_SYS_DIMENSION)
+			{
+				result_->aRow[0].aCol[0] = (factor_*m_->aRow[KF_SYS_DIMENSION-1].aCol[KF_SYS_DIMENSION-1])/det_m;
+				result_->aRow[0].aCol[1] = (-factor_*m_->aRow[0].aCol[1])/det_m;
+				result_->aRow[1].aCol[0] = (-factor_*m_->aRow[1].aCol[0])/det_m;
+				result_->aRow[1].aCol[1] = (factor_*m_->aRow[0].aCol[0])/det_m;
+			}
+			else
+			{
+				for(i = 0u; i < KF_SYS_DIMENSION; i++) //i-te zeile, j-te spalte
+				{
+					for(j = 0u; j < KF_SYS_DIMENSION; j++)
+					{
+						if(0 != (i+j)%2)
+						{
+							negate = -1;
+						}
+						else
+						{
+							negate = 1;
+						}
+						KF_Minor(m_, &j, &i, &minor);									//minor is the lower dim matrix constructed by ignoring row j and column i
+						KF_Determinant(NULL, &minor, &tempDet);							//tempDet is the Cofactor for i and j
+						result_->aRow[j].aCol[i] = (negate*(factor_*tempDet))/det_m;    //already transposed!
+					}
+				}
 			}
 		}
 	}
@@ -450,6 +601,10 @@ void KF_Init()
 		for(;;){}
 	}
 	KF_SetInitialValues();
+
+	KF_I32Mat_t testInvert;
+
+	KF_InvertMatrix(kfCfg->SystemMatrix, (int32)1000000, &testInvert);
 }
 
 void KF_Main()
@@ -476,7 +631,13 @@ void KF_Main()
 	int32_t RightTempResult = 0;
 
 	KF_UpdateModuloCounter();
+#if KF_USE_C_MATRIX
 
+
+
+
+
+#else
 	/* Time Update / "predictor" */
 		//x_k_hat
 		retVal |= KF_MultMatColVec(kfCfg->SystemMatrix, &KF_LeftCorrStateEst, &KF_LeftPredStateEst, (int32_t)KF_SCALE_A); //scale x
@@ -535,7 +696,7 @@ void KF_Main()
 		retVal |= KF_MultColVecRowVec(&KF_RightKalmanGain, kfCfg->MeasurementVectorTransposed, &RightTempMat3);
 		retVal |= KF_AddMatrices(kfCfg->IdentityMatrix, &RightTempMat3, &Right_Ident_minus_K_times_cT, TRUE);
 		retVal |= KF_MultMatrices(&Right_Ident_minus_K_times_cT, &KF_RightPredErrorInEst, &KF_RightCorrErrorInEst, (int32_t)KF_SCALE_KALMANGAIN);
-
+#endif
 	if(ERR_OK != retVal)
 	{
 		for(;;){} //error case
