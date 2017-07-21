@@ -42,9 +42,9 @@ static void KF_SetInitialValues(void);
 static StdRtn_t KF_AddMatrices(const KF_I32Mat_t* m_, const KF_I32Mat_t* n_, KF_I32Mat_t* result_, bool subtract_);
 static StdRtn_t KF_MultMatrices(const KF_I32Mat_t* m_, const KF_I32Mat_t* v_, KF_I32Mat_t* result_, int32_t divider_);
 static StdRtn_t KF_TransposeMat(const KF_I32Mat_t* m_, KF_I32Mat_t* result_);
-static StdRtn_t KF_InvertMatrix(const KF_I32Mat_t* m_, const int32_t factor_, KF_I32Mat_t* result_);
-static StdRtn_t KF_Minor(const KF_I32Mat_t* m_, const uint8_t* row_, const uint8_t* col_, KF_I32MatLowDim_t* result_);
-static StdRtn_t KF_Determinant(const KF_I32Mat_t* m_, const KF_I32MatLowDim_t* mlow_, int32_t* result_);
+static StdRtn_t KF_InvertMatrix(const KF_I32Mat_t* m_, const int32_t det_m_, KF_I32Mat_t* result_, int32_t scaleDown_);
+static StdRtn_t KF_Minor(const KF_I32Mat_t* m_, const uint8_t row_, const uint8_t col_, KF_I32MatLowDim_t* result_);
+static StdRtn_t KF_Determinant(const KF_I32Mat_t* m_, const KF_I32MatLowDim_t* mlow_, int32_t* result_, int32_t scaleDown_);
 
 //Matrix-vector operations
 static StdRtn_t KF_MultRowVecMat(const KF_I32RowVec_t* v_, const KF_I32Mat_t* M_, KF_I32RowVec_t* result_);
@@ -271,9 +271,10 @@ static StdRtn_t KF_TransposeMat(const KF_I32Mat_t* M_, KF_I32Mat_t* result_)
 	return retVal;
 }
 
-static StdRtn_t KF_Determinant(const KF_I32Mat_t* m_,const KF_I32MatLowDim_t* mlow_, int32_t* result_)
+static StdRtn_t KF_Determinant(const KF_I32Mat_t* m_,const KF_I32MatLowDim_t* mlow_, int32_t* result_, int32_t scaleDown_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	int32_t tempDet = 0;
 	uint8_t i = 0u;
 	uint8_t j = 0u;
 	bool  calcLowDim = FALSE;
@@ -284,40 +285,40 @@ static StdRtn_t KF_Determinant(const KF_I32Mat_t* m_,const KF_I32MatLowDim_t* ml
 
 	if(NULL != result_){
 		retVal = ERR_OK;
-		*result_ = 0;
 		if(TRUE == calcLowDim)
 		{
 			if(2 == (KF_SYS_DIMENSION-1))
 			{
-				*result_ = mlow_->aRow[0].aCol[0]*mlow_->aRow[1].aCol[1] - mlow_->aRow[0].aCol[1]*mlow_->aRow[1].aCol[0];
+				tempDet = (mlow_->aRow[0].aCol[0]*mlow_->aRow[1].aCol[1])/scaleDown_ - (mlow_->aRow[0].aCol[1]*mlow_->aRow[1].aCol[0])/scaleDown_;
 			}
 			else if(3 == (KF_SYS_DIMENSION-1))
 			{
 				for(i = 0u; i < (KF_SYS_DIMENSION-1); i++) //Regel von Sarrus
 				{
-					result_ += (mlow_->aRow[0].aCol[i]*(mlow_->aRow[1].aCol[(i+1)%(KF_SYS_DIMENSION-1)]*mlow_->aRow[2].aCol[(i+2)%(KF_SYS_DIMENSION-1)] - mlow_->aRow[0].aCol[(i+1)%(KF_SYS_DIMENSION-1)]*mlow_->aRow[1].aCol[(i+3)%(KF_SYS_DIMENSION-1)]*mlow_->aRow[2].aCol[(i+2)%(KF_SYS_DIMENSION-1)]));
+					tempDet += ((((mlow_->aRow[0].aCol[i]*mlow_->aRow[1].aCol[(i+1)%(KF_SYS_DIMENSION-1)])/scaleDown_)*mlow_->aRow[2].aCol[(i+2)%(KF_SYS_DIMENSION-1)])/scaleDown_) - (((mlow_->aRow[0].aCol[(i+1)%(KF_SYS_DIMENSION-1)]*mlow_->aRow[1].aCol[(i+3)%(KF_SYS_DIMENSION-1)])/scaleDown_)*mlow_->aRow[2].aCol[(i+2)%(KF_SYS_DIMENSION-1)])/scaleDown_;
 				}
 			}
 		}else
 		{
 			if(2 == KF_SYS_DIMENSION)
 			{
-				*result_ = m_->aRow[0].aCol[0]*m_->aRow[1].aCol[1] - m_->aRow[0].aCol[1]*m_->aRow[1].aCol[0];
+				tempDet = (m_->aRow[0].aCol[0]*m_->aRow[1].aCol[1])/scaleDown_ - (m_->aRow[0].aCol[1]*m_->aRow[1].aCol[0])/scaleDown_;
 			}
 			else if(3 == KF_SYS_DIMENSION)
 			{
 				for(i = 0u; i < KF_SYS_DIMENSION; i++) //Regel von Sarrus
 				{
-					result_ += (m_->aRow[0].aCol[i]*(m_->aRow[1].aCol[(i+1)%KF_SYS_DIMENSION]*m_->aRow[2].aCol[(i+2)%KF_SYS_DIMENSION] - m_->aRow[0].aCol[(i+1)%KF_SYS_DIMENSION]*m_->aRow[1].aCol[(i+3)%KF_SYS_DIMENSION]*m_->aRow[2].aCol[(i+2)%KF_SYS_DIMENSION]));
+					tempDet += (((m_->aRow[0].aCol[i]*m_->aRow[1].aCol[(i+1)%KF_SYS_DIMENSION])/scaleDown_)*m_->aRow[2].aCol[(i+2)%KF_SYS_DIMENSION]/scaleDown_) - (((m_->aRow[0].aCol[(i+1)%KF_SYS_DIMENSION]*m_->aRow[1].aCol[(i+3)%KF_SYS_DIMENSION])/scaleDown_)*m_->aRow[2].aCol[(i+2)%KF_SYS_DIMENSION])/scaleDown_;
 				}
 			}
 		}
 
 	}
+	*result_  = tempDet;
 	return retVal;
 }
 
-static StdRtn_t KF_Minor(const KF_I32Mat_t* m_, const uint8_t* row_, const uint8_t* col_, KF_I32MatLowDim_t* result_)
+static StdRtn_t KF_Minor(const KF_I32Mat_t* m_, const uint8_t row_, const uint8_t col_, KF_I32MatLowDim_t* result_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	uint8_t i = 0u;
@@ -328,29 +329,26 @@ static StdRtn_t KF_Minor(const KF_I32Mat_t* m_, const uint8_t* row_, const uint8
 	if(NULL != result_)
 	{
 		retVal = ERR_OK;
-		for(i = 0u; i < KF_SYS_DIMENSION-1; i++)
-		{
-			for(j = 0u; j < KF_SYS_DIMENSION-1; j++)
-			{
+
 				for(k = 0; k < KF_SYS_DIMENSION; k++)
 				{
-					if(k == *row_) continue;
+					if(k == row_) continue;
 					for(l = 0; l < KF_SYS_DIMENSION; l++)
 					{
-						if(l == *col_) continue;
+						if(l == col_) continue;
 						result_->aRow[i].aCol[j] = m_->aRow[k].aCol[l];
+						j++;
+						if(j == (KF_SYS_DIMENSION-1)) j = 0;
 					}
+					i++;
 				}
-			}
-		}
 	}
 	return retVal;
 }
 
-static StdRtn_t KF_InvertMatrix(const KF_I32Mat_t* m_, const int32_t factor_, KF_I32Mat_t* result_)
+static StdRtn_t KF_InvertMatrix(const KF_I32Mat_t* m_, const int32_t det_m_, KF_I32Mat_t* result_, int32_t scaleDown_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	int32_t det_m = 0;
 	int32_t tempDet = 0;
 	uint8_t i = 0u;
 	uint8_t j = 0u;
@@ -368,16 +366,15 @@ static StdRtn_t KF_InvertMatrix(const KF_I32Mat_t* m_, const int32_t factor_, KF
 			}
 		}
 
-		KF_Determinant(m_, NULL, &det_m);
-		if(0 != det_m)
+		if(0 != det_m_)
 		{
 			retVal = ERR_OK;
 			if(2 == KF_SYS_DIMENSION)
 			{
-				result_->aRow[0].aCol[0] = (factor_*m_->aRow[KF_SYS_DIMENSION-1].aCol[KF_SYS_DIMENSION-1])/det_m;
-				result_->aRow[0].aCol[1] = (-factor_*m_->aRow[0].aCol[1])/det_m;
-				result_->aRow[1].aCol[0] = (-factor_*m_->aRow[1].aCol[0])/det_m;
-				result_->aRow[1].aCol[1] = (factor_*m_->aRow[0].aCol[0])/det_m;
+				result_->aRow[0].aCol[0] = (m_->aRow[KF_SYS_DIMENSION-1].aCol[KF_SYS_DIMENSION-1])/det_m_;
+				result_->aRow[0].aCol[1] = (-m_->aRow[0].aCol[1])/det_m_;
+				result_->aRow[1].aCol[0] = (-m_->aRow[1].aCol[0])/det_m_;
+				result_->aRow[1].aCol[1] = (m_->aRow[0].aCol[0])/det_m_;
 			}
 			else
 			{
@@ -393,9 +390,9 @@ static StdRtn_t KF_InvertMatrix(const KF_I32Mat_t* m_, const int32_t factor_, KF
 						{
 							negate = 1;
 						}
-						KF_Minor(m_, &j, &i, &minor);									//minor is the lower dim matrix constructed by ignoring row j and column i
-						KF_Determinant(NULL, &minor, &tempDet);							//tempDet is the Cofactor for i and j
-						result_->aRow[j].aCol[i] = (negate*(factor_*tempDet))/det_m;    //already transposed!
+						KF_Minor(m_, j, i, &minor);										//minor is the lower dim matrix constructed by ignoring row j and column i
+						KF_Determinant(NULL, &minor, &tempDet, scaleDown_);							//tempDet is the Cofactor for i and j
+						result_->aRow[i].aCol[j] = (negate*(tempDet))/det_m_;   //already transposed!
 					}
 				}
 			}
@@ -603,8 +600,11 @@ void KF_Init()
 	KF_SetInitialValues();
 
 	KF_I32Mat_t testInvert;
+	int32_t testDet;
 
-	KF_InvertMatrix(kfCfg->SystemMatrix, (int32)1000000, &testInvert);
+	KF_Determinant(kfCfg->SystemMatrix, NULL, &testDet, KF_SCALE_A);
+	testDet/=KF_SCALE_A;
+	KF_InvertMatrix(kfCfg->SystemMatrix, testDet, &testInvert, (int32_t)KF_SCALE_A);
 }
 
 void KF_Main()

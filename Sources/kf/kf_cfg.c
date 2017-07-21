@@ -28,29 +28,32 @@
 static KF_I32Mat_t KF_SystemMatrix =
 {
 		{
-				{1*KF_SCALE_A, ((TACHO_SAMPLE_PERIOD_MS*KF_SCALE_A)/1000)},
-				{0, 1*KF_SCALE_A},
+				{1*KF_SCALE_A, ((TACHO_SAMPLE_PERIOD_MS*KF_SCALE_A)/1000), TACHO_SAMPLE_PERIOD_MS*TACHO_SAMPLE_PERIOD_MS*KF_SCALE_A/(2*1000)},
+				{0, 1*KF_SCALE_A, TACHO_SAMPLE_PERIOD_MS*KF_SCALE_A},
+				{0, 0, 1*KF_SCALE_A},
 		},
 };
 
 static KF_I32Mat_t KF_IdentityMatrix =
 {
 		{
-				{KF_SCALE_KALMANGAIN, 0},
-				{0, KF_SCALE_KALMANGAIN},
+				{KF_SCALE_KALMANGAIN, 0, 0},
+				{0, KF_SCALE_KALMANGAIN, 0},
+				{0, 0, KF_SCALE_KALMANGAIN},
 		},
 };
 
 static KF_I32RowVec_t KF_MeasurementVectorTransposed = //measurement Vector
 {
-				{1, 0},
+				{1, 0, 0},
 };
 
 static KF_I32Mat_t KF_MeasurementMatrix =
 {
 		{
-				{1, 0},
-				{0, 1},
+				{1, 0, 0},
+				{0, 1, 0},
+				{0, 0, 1},
 		},
 };
 
@@ -59,8 +62,9 @@ static int32_t KF_MeasurementNoiseCov = 1*KF_SCALE_ERROR;// measurement noise co
 static KF_I32Mat_t KF_MeasNoiseCovMatrix =
 {
 		{
-				{3*KF_SCALE_ERROR, 0},
-				{0, 5*KF_SCALE_ERROR},
+				{3*KF_SCALE_ERROR, 0, 0},
+				{0, 5*KF_SCALE_ERROR, 0},
+				{0, 0, 1*KF_SCALE_ERROR},
 		},
 };
 
@@ -68,22 +72,24 @@ static KF_I32Mat_t KF_MeasNoiseCovMatrix =
 static KF_I32Mat_t KF_ProcessNoiseCov = // process noise covariance matrix
 {
 		{
-				{10*KF_SCALE_ERROR, 0},
-				{0, 2500*KF_SCALE_ERROR},
+				{10*KF_SCALE_ERROR, 0, 0},
+				{0, 2500*KF_SCALE_ERROR, 0},
+				{0, 0, 1*KF_SCALE_ERROR},
 		},
 };
 
 static KF_I32Mat_t KF_InitialErrorInEstimate = // initial error in estimate covariance matrix
 {
 		{
-			{100, 0},
-			{0, 100},
+			{100, 0, 0},
+			{0, 100, 0},
+			{0, 0, 100},
 		},
 };
 
 static KF_I32ColVec_t KF_StateInitialEstimate =  //initial estimate
 {
-		{0, 0},
+		{0, 0, 0},
 };
 
 static KF_Cfg_t kfCfg =

@@ -28,7 +28,7 @@
 
 
 /*======================================= >> #DEFINES << =========================================*/
-#define KF_SYS_DIMENSION (0x02u)
+#define KF_SYS_DIMENSION (0x03u)
 #define KF_SCALE_KALMANGAIN (100u)
 #define KF_SCALE_ERROR (50u)
 #define KF_SCALE_A (1000u)
@@ -55,7 +55,7 @@ typedef struct KF_I32RowVecLowDim_s { //necessary for determinant using cramers 
 }KF_I32RowVecLowDim_t;
 
 typedef struct KF_I32MatrixLowDim_s {
-	KF_I32RowVec_t aRow[KF_SYS_DIMENSION-1];
+	KF_I32RowVecLowDim_t aRow[KF_SYS_DIMENSION-1];
 }KF_I32MatLowDim_t;
 
 typedef struct{
