@@ -90,7 +90,7 @@ static KF_I32Mat_t KF_I =
 	{
 			{
 					{3*KF_SCALE_ERROR, 0},
-					{0, 0*KF_SCALE_ERROR},
+					{0, 40000*KF_SCALE_ERROR},
 			},
 	};
 

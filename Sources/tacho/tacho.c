@@ -71,6 +71,20 @@ int32_t TACHO_GetSpeed(bool isLeft) {
 	}
 }
 
+int32_t TACHO_GetUnfilteredSpeed(bool isLeft_)
+{
+	int32_t actualSpeed = 0;
+	if(TRUE == isLeft_)
+	{
+		actualSpeed = TACHO_actual5MsSpeed;
+	}
+	else
+	{
+		actualSpeed = TACHO_actual5MsSpeed;
+	}
+	return actualSpeed;
+}
+
 void TACHO_CalcSpeed(void) {
 	/* we calculate the speed as follow:
                               1000         
