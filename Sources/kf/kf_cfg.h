@@ -33,7 +33,7 @@
 #define KF_SCALE_X (100u)
 #define KF_SCALE_DET (1000u)  //needs to be at least one decade grater than SCALE_ERROR
 #define KF_MAX_POS_VAL (2000000000u)
-#define KF_USE_MEASUREMENT_MATRIX (1u) //set to 1 if using more than 1 measurement:this turns c from a vector to a matrix and makes calculation of inverse necessary thus changing the entire algorithm
+#define KF_USE_MEASUREMENT_MATRIX (0u) //set to 1 if using more than 1 measurement:this turns c from a vector to a matrix and makes calculation of inverse necessary thus changing the entire algorithm
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/

@@ -69,11 +69,16 @@ static KF_I32Mat_t 	  KF_Ident =
 		},
 };
 
+static KF_I32Mat_t 	  KF_LeftPrevErrInEst  = {0};
+static KF_I32Mat_t 	  KF_RightPrevErrInEst = {0};
 static KF_I32Mat_t 	  KF_LeftCorrErrInEst  = {0};
 static KF_I32Mat_t 	  KF_RightCorrErrInEst = {0};
 static KF_I32Mat_t	  KF_LeftPredErrInEst  = {0};
 static KF_I32Mat_t	  KF_RightPredErrInEst = {0};
 
+
+static KF_I32ColVec_t KF_LeftPrevStateEst 	 = {0};
+static KF_I32ColVec_t KF_RightPrevStateEst 	 = {0};
 static KF_I32ColVec_t KF_LeftCorrStateEst 	 = {0};
 static KF_I32ColVec_t KF_RightCorrStateEst 	 = {0};
 static KF_I32ColVec_t KF_LeftPredStateEst 	 = {0};
@@ -149,11 +154,11 @@ static void KF_UpdateInput()
 
 static void KF_UpdateUnscaledVals()
 {
-	KF_LeftPos = (KF_LeftModCntr*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) + KF_LeftCorrStateEst.aRow[0])/((int32_t)KF_SCALE_X);
-	KF_LeftSpeed = KF_LeftCorrStateEst.aRow[1]/(int32_t)KF_SCALE_X;
+	KF_LeftPos = (KF_LeftModCntr*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) + KF_LeftPredStateEst.aRow[0])/((int32_t)KF_SCALE_X);
+	KF_LeftSpeed = KF_LeftPredStateEst.aRow[1]/(int32_t)KF_SCALE_X;
 
-	KF_RightPos = (KF_RightModCntr*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) + KF_RightCorrStateEst.aRow[0])/((int32_t)KF_SCALE_X);
-	KF_RightSpeed = KF_RightCorrStateEst.aRow[1]/(int32_t)KF_SCALE_X;
+	KF_RightPos = (KF_RightModCntr*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) + KF_RightPredStateEst.aRow[0])/((int32_t)KF_SCALE_X);
+	KF_RightSpeed = KF_RightPredStateEst.aRow[1]/(int32_t)KF_SCALE_X;
 }
 
 static void KF_UpdateModuloCounter()
@@ -231,15 +236,15 @@ static void KF_SetInitialValues()
 	uint8_t j = 0u;
 	for(i = 0u; i < KF_SYS_DIMENSION; i++)
 	{
-		KF_LeftCorrStateEst.aRow[i] = kfCfg->x0->aRow[i];
-		KF_RightCorrStateEst.aRow[i] = kfCfg->x0->aRow[i];
+		KF_LeftPrevStateEst.aRow[i] = kfCfg->x0->aRow[i];
+		KF_RightPrevStateEst.aRow[i] = kfCfg->x0->aRow[i];
 	}
 	for(i = 0u; i < KF_SYS_DIMENSION; i++)
 	{
 		for(j = 0u; j < KF_SYS_DIMENSION; j++)
 		{
-			KF_LeftCorrErrInEst.aRow[i].aCol[j] = kfCfg->P0->aRow[i].aCol[j];
-			KF_RightCorrErrInEst.aRow[i].aCol[j] = kfCfg->P0->aRow[i].aCol[j];
+			KF_LeftPrevErrInEst.aRow[i].aCol[j] = kfCfg->P0->aRow[i].aCol[j];
+			KF_RightPrevErrInEst.aRow[i].aCol[j] = kfCfg->P0->aRow[i].aCol[j];
 		}
 	}
 }
@@ -673,6 +678,8 @@ void KF_Init()
 void KF_Main()
 {
 	StdRtn_t retVal = ERR_OK;
+	uint8_t i = 0u;
+	uint8_t j = 0u;
 
 	KF_I32ColVec_t Left_P_times_c	    	= {0};
 	KF_I32ColVec_t Left_B_times_u			= {0};
@@ -695,27 +702,8 @@ void KF_Main()
 	KF_I32Mat_t RightTempMat3 = {0};
 	int32_t RightTempResult   =  0;
 
-	KF_UpdateModuloCounter();
-	KF_UpdateInput();
 
-	/* Time Update / "predictor" */
-		//x_k_hat	KF_PredStateEst scaled to KF_SCALE_X!
-		retVal |= KF_MultMatColVec(kfCfg->A, &KF_LeftCorrStateEst, &LeftTempColVec, (int32_t)KF_SCALE_A);
-		retVal |= KF_MultMatColVec(kfCfg->B, &KF_LeftU, &Left_B_times_u, (int32_t)1);
-		retVal |= KF_AddColVecs(&LeftTempColVec, &Left_B_times_u, &KF_LeftPredStateEst, FALSE);
 
-		retVal |= KF_MultMatColVec(kfCfg->A, &KF_RightCorrStateEst, &KF_RightPredStateEst, (int32_t)KF_SCALE_A);
-		retVal |= KF_MultMatColVec(kfCfg->B, &KF_RightU, &Right_B_times_u, (int32_t)1);
-		retVal |= KF_AddColVecs(&RightTempColVec, &Right_B_times_u, &KF_RightPredStateEst, FALSE);
-
-		//P_k		KF_PredErrorInEst scaled to KF_SCALE_ERR!
-		retVal |= KF_MultMatrices(kfCfg->A, &KF_LeftCorrErrInEst, &LeftTempMat, (int32_t)KF_SCALE_A);
-		retVal |= KF_MultMatrices(&LeftTempMat, &KF_AT, &LeftTempMat2, (int32_t)KF_SCALE_A);
-		retVal |= KF_AddMatrices(&LeftTempMat2, kfCfg->Q, &KF_LeftPredErrInEst, FALSE);
-
-		retVal |= KF_MultMatrices(kfCfg->A, &KF_RightCorrErrInEst, &RightTempMat, (int32_t)KF_SCALE_A);
-		retVal |= KF_MultMatrices(&RightTempMat, &KF_AT, &RightTempMat2, (int32_t)KF_SCALE_A);
-		retVal |= KF_AddMatrices(&RightTempMat2, kfCfg->Q, &KF_RightPredErrInEst, FALSE);
 
 	/* Measurement Update / "corrector" */
 		//KalmanGain	KF_KalmanGain scaled to KF_SCALE_KALMANGAIN
@@ -724,13 +712,11 @@ void KF_Main()
 				KF_I32Mat_t Right_P_times_CT = {0};
 				KF_I32Mat_t Left_C_times_P   = {0};
 				KF_I32Mat_t Right_C_times_P  = {0};
-				uint8_t i = 0u;
-				uint8_t j = 0u;
 
 				//left
-				retVal |= KF_MultMatrices(&KF_LeftPredErrInEst, &KF_CT, &Left_P_times_CT, (int32_t)1);
+				retVal |= KF_MultMatrices(&KF_LeftPrevErrInEst, &KF_CT, &Left_P_times_CT, (int32_t)1);
 				retVal |= KF_MultMatrices(&Left_P_times_CT, &KF_Ident, &LeftTempMat3, (int32_t)KF_SCALE_ERROR);
-				retVal |= KF_MultMatrices(kfCfg->C, &KF_LeftPredErrInEst, &Left_C_times_P, (int32_t)1);
+				retVal |= KF_MultMatrices(kfCfg->C, &KF_LeftPrevErrInEst, &Left_C_times_P, (int32_t)1);
 				retVal |= KF_MultMatrices(&Left_C_times_P, &KF_CT, &LeftTempMat, (int32_t)1);
 				retVal |= KF_AddMatrices(&LeftTempMat, kfCfg->R, &KF_LeftDenominator, FALSE);
 				retVal |= KF_MultMatrices(&KF_LeftDenominator, &KF_Ident, &LeftTempMat, (int32_t)KF_SCALE_ERROR);
@@ -741,9 +727,9 @@ void KF_Main()
 				retVal |= KF_MultMatrices(&LeftTempMat, kfCfg->I, &KF_LeftKalmanGain, (int32_t)KF_SCALE_ERROR);
 
 				//right
-				retVal |= KF_MultMatrices(&KF_RightPredErrInEst, &KF_CT, &Right_P_times_CT, (int32_t)1);
+				retVal |= KF_MultMatrices(&KF_RightPrevErrInEst, &KF_CT, &Right_P_times_CT, (int32_t)1);
 				retVal |= KF_MultMatrices(&Right_P_times_CT, &KF_Ident, &RightTempMat3, (int32_t)KF_SCALE_ERROR);
-				retVal |= KF_MultMatrices(kfCfg->C, &KF_RightPredErrInEst, &Right_C_times_P, (int32_t)1);
+				retVal |= KF_MultMatrices(kfCfg->C, &KF_RightPrevErrInEst, &Right_C_times_P, (int32_t)1);
 				retVal |= KF_MultMatrices(&Right_C_times_P, &KF_CT, &RightTempMat, (int32_t)1);
 				retVal |= KF_AddMatrices(&RightTempMat, kfCfg->R, &KF_RightDenominator, FALSE);
 				retVal |= KF_MultMatrices(&KF_RightDenominator, &KF_Ident, &RightTempMat, (int32_t)KF_SCALE_ERROR);
@@ -755,7 +741,7 @@ void KF_Main()
 
 			#else
 				//left
-				retVal |= KF_MultMatColVec(&KF_LeftPredErrInEst, &KF_c, &Left_P_times_c, 1); 		//numerator
+				retVal |= KF_MultMatColVec(&KF_LeftPrevErrInEst, &KF_c, &Left_P_times_c, 1); 		//numerator
 				retVal |= KF_MultRowVecColVec(kfCfg->cT, &Left_P_times_c, &LeftTempResult);		//denominator
 				KF_LeftDenominator = (LeftTempResult + (*kfCfg->r));  								//denominator
 				Left_P_times_c.aRow[0] *= (int32_t)KF_SCALE_KALMANGAIN; //scale numerator
@@ -763,7 +749,7 @@ void KF_Main()
 				retVal |= KF_MultColVecFactor(&Left_P_times_c, KF_LeftDenominator, &KF_LeftKalmanGain, TRUE);
 
 				//right
-				retVal |= KF_MultMatColVec(&KF_RightPredErrInEst, &KF_c, &Right_P_times_c, 1); 		//numerator
+				retVal |= KF_MultMatColVec(&KF_RightPrevErrInEst, &KF_c, &Right_P_times_c, 1); 		//numerator
 				retVal |= KF_MultRowVecColVec(kfCfg->cT, &Right_P_times_c, &RightTempResult);		//denominator
 				KF_RightDenominator = (RightTempResult + (*kfCfg->r));  								//denominator
 				Right_P_times_c.aRow[0] *= (int32_t)KF_SCALE_KALMANGAIN; //scale numerator
@@ -772,32 +758,34 @@ void KF_Main()
 			#endif
 
 		//x_k_hat
+		KF_UpdateMeasurements();
 #if KF_USE_MEASUREMENT_MATRIX
 		//left
-		retVal |= KF_MultMatColVec(kfCfg->C, &KF_LeftPredStateEst, &LeftTempColVec, (int32_t)1);
+		retVal |= KF_MultMatColVec(kfCfg->C, &KF_LeftPrevStateEst, &LeftTempColVec, (int32_t)1);
 		retVal |= KF_AddColVecs(&KF_LeftY, &LeftTempColVec, &KF_LeftResiduum, TRUE);
 		retVal |= KF_MultMatColVec(&KF_LeftKalmanGain, &KF_LeftResiduum, &Left_K_times_Residuum, (int32_t)KF_SCALE_KALMANGAIN);
 
 		//right
-		retVal |= KF_MultMatColVec(kfCfg->C, &KF_RightPredStateEst, &RightTempColVec, (int32_t)1);
+		retVal |= KF_MultMatColVec(kfCfg->C, &KF_RightPrevStateEst, &RightTempColVec, (int32_t)1);
 		retVal |= KF_AddColVecs(&KF_RightY, &RightTempColVec, &KF_RightResiduum, TRUE);
 		retVal |= KF_MultMatColVec(&KF_RightKalmanGain, &KF_RightResiduum, &Right_K_times_Residuum, (int32_t)KF_SCALE_KALMANGAIN);
+
+
+
 #else
-		KF_LeftResiduum = KF_LeftY - KF_LeftCorrStateEst.aRow[0];
+		KF_LeftResiduum = KF_LeftY - KF_LeftPrevStateEst.aRow[0];
 		retVal |= KF_MultColVecFactor(&KF_LeftKalmanGain, KF_LeftResiduum, &LeftTempColVec, FALSE);
 		retVal |= KF_MultColVecFactor(&LeftTempColVec, (int32_t)KF_SCALE_KALMANGAIN, &Left_K_times_Residuum, TRUE);
 
-		KF_RightResiduum = KF_RightY - KF_RightCorrStateEst.aRow[0];
+		KF_RightResiduum = KF_RightY - KF_RightPrevStateEst.aRow[0];
 		retVal |= KF_MultColVecFactor(&KF_RightKalmanGain, KF_RightResiduum, &RightTempColVec, FALSE);
 		retVal |= KF_MultColVecFactor(&RightTempColVec, (int32_t)KF_SCALE_KALMANGAIN, &Right_K_times_Residuum, TRUE);
 #endif
 		//left
-		retVal |= KF_AddColVecs(&KF_LeftPredStateEst, &Left_K_times_Residuum, &KF_LeftCorrStateEst, FALSE);
+		retVal |= KF_AddColVecs(&KF_LeftPrevStateEst, &Left_K_times_Residuum, &KF_LeftCorrStateEst, FALSE);
 		//right
-		retVal |= KF_AddColVecs(&KF_RightPredStateEst, &Right_K_times_Residuum, &KF_RightCorrStateEst, FALSE);
+		retVal |= KF_AddColVecs(&KF_RightPrevStateEst, &Right_K_times_Residuum, &KF_RightCorrStateEst, FALSE);
 
-
-		KF_UpdateMeasurements();
 
 		//P_k
 #if KF_USE_MEASUREMENT_MATRIX
@@ -810,10 +798,49 @@ void KF_Main()
 		retVal |= KF_MultColVecRowVec(&KF_RightKalmanGain, kfCfg->cT, &RightTempMat);
 #endif
 		retVal |= KF_AddMatrices(kfCfg->I, &LeftTempMat, &LeftTempMat2, TRUE);
-		retVal |= KF_MultMatrices(&LeftTempMat2, &KF_LeftPredErrInEst, &KF_LeftCorrErrInEst, (int32_t)KF_SCALE_KALMANGAIN);
+		retVal |= KF_MultMatrices(&LeftTempMat2, &KF_LeftPrevErrInEst, &KF_LeftCorrErrInEst, (int32_t)KF_SCALE_KALMANGAIN);
 
 		retVal |= KF_AddMatrices(kfCfg->I, &RightTempMat, &RightTempMat2, TRUE);
-		retVal |= KF_MultMatrices(&RightTempMat2, &KF_RightPredErrInEst, &KF_RightCorrErrInEst, (int32_t)KF_SCALE_KALMANGAIN);
+		retVal |= KF_MultMatrices(&RightTempMat2, &KF_RightPrevErrInEst, &KF_RightCorrErrInEst, (int32_t)KF_SCALE_KALMANGAIN);
+
+
+
+	/* Time Update / "predictor" */
+		KF_UpdateModuloCounter();
+		KF_UpdateInput();
+
+		//x_k_hat	KF_PredStateEst scaled to KF_SCALE_X!
+		retVal |= KF_MultMatColVec(kfCfg->A, &KF_LeftCorrStateEst, &LeftTempColVec, (int32_t)KF_SCALE_A);
+		retVal |= KF_MultMatColVec(kfCfg->B, &KF_LeftU, &Left_B_times_u, (int32_t)1);
+		retVal |= KF_AddColVecs(&LeftTempColVec, &Left_B_times_u, &KF_LeftPredStateEst, FALSE);
+
+		retVal |= KF_MultMatColVec(kfCfg->A, &KF_RightCorrStateEst, &RightTempColVec, (int32_t)KF_SCALE_A);
+		retVal |= KF_MultMatColVec(kfCfg->B, &KF_RightU, &Right_B_times_u, (int32_t)1);
+		retVal |= KF_AddColVecs(&RightTempColVec, &Right_B_times_u, &KF_RightPredStateEst, FALSE);
+
+		//P_k		KF_PredErrorInEst scaled to KF_SCALE_ERR!
+		retVal |= KF_MultMatrices(kfCfg->A, &KF_LeftCorrErrInEst, &LeftTempMat, (int32_t)KF_SCALE_A);
+		retVal |= KF_MultMatrices(&LeftTempMat, &KF_AT, &LeftTempMat2, (int32_t)KF_SCALE_A);
+		retVal |= KF_AddMatrices(&LeftTempMat2, kfCfg->Q, &KF_LeftPredErrInEst, FALSE);
+
+		retVal |= KF_MultMatrices(kfCfg->A, &KF_RightCorrErrInEst, &RightTempMat, (int32_t)KF_SCALE_A);
+		retVal |= KF_MultMatrices(&RightTempMat, &KF_AT, &RightTempMat2, (int32_t)KF_SCALE_A);
+		retVal |= KF_AddMatrices(&RightTempMat2, kfCfg->Q, &KF_RightPredErrInEst, FALSE);
+
+
+		for(i = 0u; i < KF_SYS_DIMENSION; i++)
+		{
+			KF_LeftPrevStateEst.aRow[i]  = KF_LeftPredStateEst.aRow[i];
+			KF_RightPrevStateEst.aRow[i] = KF_RightPredStateEst.aRow[i];
+		}
+		for(i = 0u; i < KF_SYS_DIMENSION; i++)
+		{
+			for(j = 0u; j < KF_SYS_DIMENSION; j++)
+			{
+				KF_LeftPrevErrInEst.aRow[i].aCol[j]  = KF_LeftPredErrInEst.aRow[i].aCol[j];
+				KF_RightPrevErrInEst.aRow[i].aCol[j] = KF_RightPredErrInEst.aRow[i].aCol[j];
+			}
+		}
 
 	if(ERR_OK != retVal)
 	{
