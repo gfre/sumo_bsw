@@ -127,11 +127,11 @@ static int16_t KF_RightModCntr 	  = 0;
 static void KF_UpdateMeasurements()
 {
 #if KF_USE_MEASUREMENT_MATRIX
-		KF_LeftY.aRow[0] +=  ((Q4CLeft_GetPos()*KF_SCALE_X)-(KF_LeftY.aRow[0] + (KF_LeftModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
-		KF_LeftY.aRow[1] = KF_SCALE_X*TACHO_GetUnfilteredSpeed(TRUE);
+		KF_LeftY.aRow[0] +=  (int32_t)((Q4CLeft_GetPos()*KF_SCALE_X)-(KF_LeftY.aRow[0] + (KF_LeftModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
+		KF_LeftY.aRow[1] = (int32_t)KF_SCALE_X*TACHO_GetUnfilteredSpeed(TRUE);
 
-		KF_RightY.aRow[0] +=  ((Q4CRight_GetPos()*KF_SCALE_X)-(KF_RightY.aRow[0] + (KF_RightModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
-		KF_RightY.aRow[1] = 0;
+		KF_RightY.aRow[0] +=  (int32_t)((Q4CRight_GetPos()*KF_SCALE_X)-(KF_RightY.aRow[0] + (KF_RightModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
+		KF_RightY.aRow[1] = (int32_t)0;
 #else
 		KF_LeftY  += ((Q4CLeft_GetPos()*KF_SCALE_X)-(KF_LeftY + (KF_LeftModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
 
@@ -154,11 +154,11 @@ static void KF_UpdateInput()
 
 static void KF_UpdateUnscaledVals()
 {
-	KF_LeftPos = (KF_LeftModCntr*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) + KF_LeftPredStateEst.aRow[0])/((int32_t)KF_SCALE_X);
-	KF_LeftSpeed = KF_LeftPredStateEst.aRow[1]/(int32_t)KF_SCALE_X;
+	KF_LeftPos = (KF_LeftModCntr*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) + KF_LeftCorrStateEst.aRow[0])/((int32_t)KF_SCALE_X);
+	KF_LeftSpeed = KF_LeftCorrStateEst.aRow[1]/(int32_t)KF_SCALE_X;
 
-	KF_RightPos = (KF_RightModCntr*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) + KF_RightPredStateEst.aRow[0])/((int32_t)KF_SCALE_X);
-	KF_RightSpeed = KF_RightPredStateEst.aRow[1]/(int32_t)KF_SCALE_X;
+	KF_RightPos = (KF_RightModCntr*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) + KF_RightCorrStateEst.aRow[0])/((int32_t)KF_SCALE_X);
+	KF_RightSpeed = KF_RightCorrStateEst.aRow[1]/(int32_t)KF_SCALE_X;
 }
 
 static void KF_UpdateModuloCounter()
