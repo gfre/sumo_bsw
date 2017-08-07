@@ -60,9 +60,9 @@ static int32_t PID(int32_t currVal, int32_t setVal, PID_Config_t *config) {
 	error = setVal-currVal; /* calculate error */
 	pid = (error*config->pFactor100)/100; /* P part */
 	config->integral += error; /* integrate error */
-	if (config->integral>config->iAntiWindup) {
+	if (config->integral > config->iAntiWindup) {
 		config->integral = config->iAntiWindup;
-	} else if (config->integral<-config->iAntiWindup) {
+	} else if (config->integral < -config->iAntiWindup) {
 		config->integral = -config->iAntiWindup;
 	}
 #if 1 /* see http://brettbeauregard.com/blog/2011/04/improving-the-beginner%E2%80%99s-pid-reset-windup/ */
@@ -129,9 +129,12 @@ static void PID_SpeedCfg(int32_t currSpeed, int32_t setSpeed, bool isLeft, PID_C
 	MOT_Direction_t direction = MOT_DIR_FORWARD;
 	MOT_MotorDevice_t *motHandle;
 
-	if (setSpeed==0) {
+	/*if (setSpeed==0) {
 		speed = 0;
-	} else {
+		PID_Start();
+	}
+	else */
+	{
 		speed = PID(currSpeed, setSpeed, config);
 	}
 	if (speed>=0) {

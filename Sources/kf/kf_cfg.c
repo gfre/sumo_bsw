@@ -90,7 +90,7 @@ static KF_I32Mat_t KF_I =
 	{
 			{
 					{3*KF_SCALE_ERROR, 0},
-					{0, 40000*KF_SCALE_ERROR},
+					{0, 20000*KF_SCALE_ERROR},
 			},
 	};
 
@@ -118,11 +118,14 @@ static KF_I32Mat_t KF_I =
 			&KF_I,
 			&KF_A,
 			&KF_B,
-			&KF_cT,
+#if KF_USE_MEASUREMENT_MATRIX
 			&KF_C,
-			&KF_x0,
-			&KF_r,
 			&KF_R,
+#else
+			&KF_cT,
+			&KF_r,
+#endif
+			&KF_x0,
 			&KF_Q,
 			&KF_P0,
 	};

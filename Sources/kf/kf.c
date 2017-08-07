@@ -22,8 +22,6 @@
 #include "kf.h"
 #include "kf_cfg.h"
 #include "kf_api.h"
-#include "Q4CLeft.h"
-#include "Q4CRight.h"
 #include "tacho_api.h"
 
 
@@ -127,15 +125,15 @@ static int16_t KF_RightModCntr 	  = 0;
 static void KF_UpdateMeasurements()
 {
 #if KF_USE_MEASUREMENT_MATRIX
-		KF_LeftY.aRow[0] +=  (int32_t)((Q4CLeft_GetPos()*KF_SCALE_X)-(KF_LeftY.aRow[0] + (KF_LeftModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
-		KF_LeftY.aRow[1] = (int32_t)KF_SCALE_X*TACHO_GetUnfilteredSpeed(TRUE);
+		KF_LeftY.aRow[0] += (int32_t)((TACHO_GetCurrentPosition(TRUE)*KF_SCALE_X)-(KF_LeftY.aRow[0] + (KF_LeftModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
+		KF_LeftY.aRow[1]  = (int32_t)KF_SCALE_X*TACHO_GetUnfilteredSpeed(TRUE);
 
-		KF_RightY.aRow[0] +=  (int32_t)((Q4CRight_GetPos()*KF_SCALE_X)-(KF_RightY.aRow[0] + (KF_RightModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
-		KF_RightY.aRow[1] = (int32_t)0;
+		KF_RightY.aRow[0] += (int32_t)((TACHO_GetCurrentPosition(FALSE)*KF_SCALE_X)-(KF_RightY.aRow[0] + (KF_RightModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
+		KF_RightY.aRow[1]  = (int32_t)KF_SCALE_X*TACHO_GetUnfilteredSpeed(FALSE);
 #else
-		KF_LeftY  += ((Q4CLeft_GetPos()*KF_SCALE_X)-(KF_LeftY + (KF_LeftModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
+		KF_LeftY  += (int32_t)((TACHO_GetCurrentPosition(TRUE)*KF_SCALE_X)-(KF_LeftY + (KF_LeftModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
 
-		KF_RightY += ((Q4CRight_GetPos()*KF_SCALE_X)-(KF_RightY + (KF_RightModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
+		KF_RightY += (int32_t)((TACHO_GetCurrentPosition(FALSE)*KF_SCALE_X)-(KF_RightY + (KF_RightModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
 #endif
 }
 
@@ -154,10 +152,10 @@ static void KF_UpdateInput()
 
 static void KF_UpdateUnscaledVals()
 {
-	KF_LeftPos = (KF_LeftModCntr*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) + KF_LeftCorrStateEst.aRow[0])/((int32_t)KF_SCALE_X);
+	KF_LeftPos   = (KF_LeftModCntr*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) + KF_LeftCorrStateEst.aRow[0])/((int32_t)KF_SCALE_X);
 	KF_LeftSpeed = KF_LeftCorrStateEst.aRow[1]/(int32_t)KF_SCALE_X;
 
-	KF_RightPos = (KF_RightModCntr*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) + KF_RightCorrStateEst.aRow[0])/((int32_t)KF_SCALE_X);
+	KF_RightPos   = (KF_RightModCntr*((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) + KF_RightCorrStateEst.aRow[0])/((int32_t)KF_SCALE_X);
 	KF_RightSpeed = KF_RightCorrStateEst.aRow[1]/(int32_t)KF_SCALE_X;
 }
 
@@ -167,64 +165,64 @@ static void KF_UpdateModuloCounter()
 	if((KF_LeftCorrStateEst.aRow[0] >= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) && ((KF_LeftY.aRow[0]) >= ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))))
 		{
 			KF_LeftCorrStateEst.aRow[0] %= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A);
-			KF_LeftY.aRow[0]  		%= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A);
+			KF_LeftY.aRow[0]  			%= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A);
 			KF_LeftModCntr++;
 		}else if((KF_LeftCorrStateEst.aRow[0] <= -(int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) && ((KF_LeftY.aRow[0]) <= -((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))))
 		{
 			KF_LeftCorrStateEst.aRow[0] = -KF_LeftCorrStateEst.aRow[0];
-			KF_LeftY.aRow[0] 		= -KF_LeftY.aRow[0] ;
+			KF_LeftY.aRow[0] 			= -KF_LeftY.aRow[0] ;
 			KF_LeftCorrStateEst.aRow[0] %= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A);
-			KF_LeftY.aRow[0]  		%= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A);
+			KF_LeftY.aRow[0]  			%= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A);
 			KF_LeftCorrStateEst.aRow[0] = -KF_LeftCorrStateEst.aRow[0];
-			KF_LeftY.aRow[0]  		= -KF_LeftY.aRow[0] ;
+			KF_LeftY.aRow[0]  			= -KF_LeftY.aRow[0] ;
 			KF_LeftModCntr--;
 		}
 
 		if((KF_RightCorrStateEst.aRow[0] >= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) && ((KF_RightY.aRow[0] ) >= ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))))
 		{
 			KF_RightCorrStateEst.aRow[0] %= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A);
-			KF_RightY.aRow[0]  		 %= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A);
+			KF_RightY.aRow[0]  		 	 %= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A);
 			KF_RightModCntr++;
 		}else if((KF_RightCorrStateEst.aRow[0] <= -(int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) && ((KF_RightY.aRow[0] ) <= -((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))))
 		{
 			KF_RightCorrStateEst.aRow[0] = -KF_RightCorrStateEst.aRow[0];
-			KF_RightY.aRow[0]  		 = -KF_RightY.aRow[0] ;
+			KF_RightY.aRow[0]  		 	 = -KF_RightY.aRow[0] ;
 			KF_RightCorrStateEst.aRow[0] %= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A);
-			KF_RightY.aRow[0]  		 %= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A);
+			KF_RightY.aRow[0]  			 %= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A);
 			KF_RightCorrStateEst.aRow[0] = -KF_RightCorrStateEst.aRow[0];
-			KF_RightY.aRow[0]  		 = -KF_RightY.aRow[0] ;
+			KF_RightY.aRow[0]  		 	 = -KF_RightY.aRow[0] ;
 			KF_RightModCntr--;
 		}
 #else
 	if((KF_LeftCorrStateEst.aRow[0] >= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) && ((KF_LeftY) >= ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))))
 	{
 		KF_LeftCorrStateEst.aRow[0] %= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A);
-		KF_LeftY 		%= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A);
+		KF_LeftY 					%= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A);
 		KF_LeftModCntr++;
 	}else if((KF_LeftCorrStateEst.aRow[0] <= -(int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) && ((KF_LeftY) <= -((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))))
 	{
 		KF_LeftCorrStateEst.aRow[0] = -KF_LeftCorrStateEst.aRow[0];
-		KF_LeftY 		= -KF_LeftY;
+		KF_LeftY 					= -KF_LeftY;
 		KF_LeftCorrStateEst.aRow[0] %= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A);
-		KF_LeftY 		%= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A);
+		KF_LeftY 					%= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A);
 		KF_LeftCorrStateEst.aRow[0] = -KF_LeftCorrStateEst.aRow[0];
-		KF_LeftY 		= -KF_LeftY;
+		KF_LeftY 					= -KF_LeftY;
 		KF_LeftModCntr--;
 	}
 
 	if((KF_RightCorrStateEst.aRow[0] >= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) && ((KF_RightY) >= ((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))))
 	{
 		KF_RightCorrStateEst.aRow[0] %= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A);
-		KF_RightY 		 %= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A);
+		KF_RightY 					 %= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A);
 		KF_RightModCntr++;
 	}else if((KF_RightCorrStateEst.aRow[0] <= -(int32_t)(KF_MAX_POS_VAL/KF_SCALE_A)) && ((KF_RightY) <= -((int32_t)(KF_MAX_POS_VAL/KF_SCALE_A))))
 	{
 		KF_RightCorrStateEst.aRow[0] = -KF_RightCorrStateEst.aRow[0];
-		KF_RightY 		 = -KF_RightY;
+		KF_RightY 		 			 = -KF_RightY;
 		KF_RightCorrStateEst.aRow[0] %= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A);
-		KF_RightY 		 %= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A);
+		KF_RightY 					 %= (int32_t)(KF_MAX_POS_VAL/KF_SCALE_A);
 		KF_RightCorrStateEst.aRow[0] = -KF_RightCorrStateEst.aRow[0];
-		KF_RightY 		 = -KF_RightY;
+		KF_RightY 		 			 = -KF_RightY;
 		KF_RightModCntr--;
 	}
 #endif

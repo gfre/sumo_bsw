@@ -49,6 +49,7 @@
  */
 EXTERNAL_ int32_t TACHO_GetSpeed(bool isLeft);
 EXTERNAL_ int32_t TACHO_GetUnfilteredSpeed(bool isLeft_);
+EXTERNAL_ int32_t TACHO_GetCurrentPosition(bool isLeft_);
 
 
 

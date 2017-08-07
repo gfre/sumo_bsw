@@ -28,6 +28,9 @@
 
 /*======================================= >> #DEFINES << =========================================*/
 #define NUM_OF_TASKS        (sizeof(taskCfgItems)/sizeof(taskCfgItems[0]))
+#define TASK_TIMING_1MS     (1u)
+#define TASK_TIMING_2MS     (2u)
+#define TASK_TIMING_3MS     (3u)
 #define TASK_TIMING_5MS     (5u)
 #define TASK_TIMING_10MS    (10u)
 #define TASK_TIMING_20MS	(20u)

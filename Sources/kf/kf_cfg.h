@@ -27,16 +27,24 @@
 
 /*======================================= >> #DEFINES << =========================================*/
 #define KF_SYS_DIMENSION (0x02u)
-#define KF_SCALE_KALMANGAIN (1000u)
+#define KF_SCALE_KALMANGAIN (100u)
 #define KF_SCALE_ERROR (50u)
 #define KF_SCALE_A (1000u)
 #define KF_SCALE_X (100u)
 #define KF_SCALE_DET (1000u)  //needs to be at least one decade grater than SCALE_ERROR
 #define KF_MAX_POS_VAL (2000000000u)
-#define KF_USE_MEASUREMENT_MATRIX (0u) //set to 1 if using more than 1 measurement:this turns c from a vector to a matrix and makes calculation of inverse necessary thus changing the entire algorithm
+#define KF_USE_MEASUREMENT_MATRIX (1u) //set to 1 if using more than 1 measurement:this turns c from a vector to a matrix and makes calculation of inverse necessary thus changing the entire algorithm
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
+//typedef struct KF_I32Vec_s {
+//	KF_vectype_t type;
+//	union{
+//	int32_t aCol[KF_SYS_DIMENSION];
+//	int32_t aRow[KF_SYS_DIMENSION];
+//	};
+//}KF_I32Vec_t;
+
 typedef struct KF_I32ColVec_s {
 	int32_t aRow[KF_SYS_DIMENSION];
 }KF_I32ColVec_t;
@@ -61,14 +69,16 @@ typedef struct{
 	KF_I32Mat_t* 	I;
 	KF_I32Mat_t* 	A;
 	KF_I32Mat_t* 	B;
-	KF_I32RowVec_t* cT;
+#if KF_USE_MEASUREMENT_MATRIX
 	KF_I32Mat_t* 	C;
-	KF_I32ColVec_t* x0;
-	int32_t* 	 	r;
 	KF_I32Mat_t* 	R;
+#else
+	KF_I32RowVec_t* cT;
+	int32_t* 	 	r;
+#endif
+	KF_I32ColVec_t* x0;
 	KF_I32Mat_t* 	Q;
 	KF_I32Mat_t* 	P0;
-
 }KF_Cfg_t;
 
 

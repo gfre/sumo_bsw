@@ -54,7 +54,14 @@ static volatile Q4CLeft_QuadCntrType TACHO_LeftPosHistory[NOF_HISTORY], TACHO_Ri
 /*!< position index in history */
 static volatile uint8_t TACHO_PosHistory_Index = 0;
 
-static int32_t TACHO_currLeftSpeed = 0, TACHO_currRightSpeed = 0, TACHO_actual5MsSpeed = 0;
+
+static int32_t TACHO_currLeftSpeed = 0, TACHO_currRightSpeed = 0, TACHO_unfltrdLeftSpeed = 0, TACHO_unfltrdRightSpeed = 0, TACHO_currLeftPos = 0, TACHO_currRightPos = 0;
+
+//static volatile int32_t TL_VelIntegrator = 0;
+//static int32_t TL_PosEst = 0, TL_VelEst = 0, TL_VelInt, TL_Ki = 40000, TL_Kp = 200, TL_LastError = 0,
+//		TL_LastVelEst = 0, TL_LastVelInt, TL_LastPosEst;
+
+
 
 
 
@@ -71,16 +78,30 @@ int32_t TACHO_GetSpeed(bool isLeft) {
 	}
 }
 
+int32_t TACHO_GetCurrentPosition(bool isLeft_)
+{
+	int32_t pos = 0;
+	if(TRUE == isLeft_)
+	{
+		pos = TACHO_currLeftPos;
+	}
+	else
+	{
+		pos = TACHO_currRightPos;
+	}
+	return pos;
+}
+
 int32_t TACHO_GetUnfilteredSpeed(bool isLeft_)
 {
 	int32_t actualSpeed = 0;
 	if(TRUE == isLeft_)
 	{
-		actualSpeed = TACHO_actual5MsSpeed;
+		actualSpeed = TACHO_unfltrdLeftSpeed;
 	}
 	else
 	{
-		actualSpeed = TACHO_actual5MsSpeed;
+		actualSpeed = TACHO_unfltrdRightSpeed;
 	}
 	return actualSpeed;
 }
@@ -92,9 +113,9 @@ void TACHO_CalcSpeed(void) {
                        samplePeriod (ms) 
   As this function may be called very frequently, it is important to make it as efficient as possible!
 	 */
-	int32_t deltaLeft, deltaRight, delta5Ms, secondNewestLeft, newLeft, newRight, oldLeft, oldRight;
-	int32_t speedLeft, speedRight, actual5MsSpeed;
-	bool negLeft, negRight, negActual;
+	int32_t deltaLeft, deltaRight, delta5MsLeft, delta5MsRight, secondNewestLeft, newLeft, secondNewestRight, newRight, oldLeft, oldRight;
+	int32_t speedLeft, speedRight, actual5MsLeftSpeed, actual5MsRightSpeed;
+	bool negLeft, negRight, negActualLeft, negActualRight;
 	CS1_CriticalVariable()
 
 	CS1_EnterCritical();
@@ -104,15 +125,18 @@ void TACHO_CalcSpeed(void) {
 		newLeft = (int32_t)TACHO_LeftPosHistory[NOF_HISTORY-1];
 		newRight = (int32_t)TACHO_RightPosHistory[NOF_HISTORY-1];
 		secondNewestLeft = (int32_t)TACHO_LeftPosHistory[NOF_HISTORY-2];
+		secondNewestRight = (int32_t)TACHO_RightPosHistory[NOF_HISTORY-2];
 	} else{
 		newLeft = (int32_t)TACHO_LeftPosHistory[TACHO_PosHistory_Index-1];
 		newRight = (int32_t)TACHO_RightPosHistory[TACHO_PosHistory_Index-1];
 		if(TACHO_PosHistory_Index == 1)
 		{
-			secondNewestLeft = (int32_t)TACHO_LeftPosHistory[NOF_HISTORY-1];
+			secondNewestLeft  = (int32_t)TACHO_LeftPosHistory[NOF_HISTORY-1];
+			secondNewestRight = (int32_t)TACHO_RightPosHistory[NOF_HISTORY-1];
 		}else
 		{
-			secondNewestLeft = (int32_t)TACHO_LeftPosHistory[TACHO_PosHistory_Index-2];
+			secondNewestLeft  = (int32_t)TACHO_LeftPosHistory[TACHO_PosHistory_Index-2];
+			secondNewestRight = (int32_t)TACHO_RightPosHistory[TACHO_PosHistory_Index-2];
 		}
 	}
 	CS1_ExitCritical();
@@ -132,12 +156,19 @@ void TACHO_CalcSpeed(void) {
 	} else {
 		negRight = FALSE;
 	}
-	delta5Ms = secondNewestLeft-newLeft;
-	if (delta5Ms < 0) {
-		delta5Ms = -delta5Ms;
-		negActual = TRUE;
+	delta5MsLeft = secondNewestLeft-newLeft;
+	if (delta5MsLeft < 0) {
+		delta5MsLeft = -delta5MsLeft;
+		negActualLeft = TRUE;
 	} else {
-		negActual = FALSE;
+		negActualLeft = FALSE;
+	}
+	delta5MsRight = secondNewestRight-newRight;
+	if (delta5MsRight < 0) {
+		delta5MsRight = -delta5MsRight;
+		negActualRight = TRUE;
+	} else {
+		negActualRight = FALSE;
 	}
 	/* calculate speed. this is based on the delta and the time (number of samples or entries in the history table) */
 	speedLeft = (int32_t)(deltaLeft*1000U/(TACHO_SAMPLE_PERIOD_MS*(NOF_HISTORY-1)));
@@ -148,13 +179,21 @@ void TACHO_CalcSpeed(void) {
 	if (negRight) {
 		speedRight = -speedRight;
 	}
-	actual5MsSpeed = (int32_t)(delta5Ms*1000U/(TACHO_SAMPLE_PERIOD_MS));
-	if (negActual) {
-		actual5MsSpeed = -actual5MsSpeed;
+	actual5MsLeftSpeed = (int32_t)(delta5MsLeft*1000U/(TACHO_SAMPLE_PERIOD_MS));
+	if (TRUE == negActualLeft) {
+		actual5MsLeftSpeed = -actual5MsLeftSpeed;
 	}
-	TACHO_currLeftSpeed = -speedLeft; /* store current speed in global variable */
-	TACHO_currRightSpeed = -speedRight; /* store current speed in global variable */
-	TACHO_actual5MsSpeed = -actual5MsSpeed;
+	actual5MsRightSpeed = (int32_t)(delta5MsRight*1000U/(TACHO_SAMPLE_PERIOD_MS));
+	if (TRUE == negActualRight) {
+		actual5MsRightSpeed = -actual5MsRightSpeed;
+	}
+	TACHO_currLeftSpeed     = -speedLeft;  /* store current speed in global variable */
+	TACHO_currRightSpeed    = -speedRight; /* store current speed in global variable */
+	TACHO_unfltrdLeftSpeed  = -actual5MsLeftSpeed;
+	TACHO_unfltrdRightSpeed = -actual5MsRightSpeed;
+
+
+
 }
 
 void TACHO_Sample(void) {
@@ -168,6 +207,8 @@ void TACHO_Sample(void) {
 	/* left */
 	TACHO_LeftPosHistory[TACHO_PosHistory_Index] = Q4CLeft_GetPos();
 	TACHO_RightPosHistory[TACHO_PosHistory_Index] = Q4CRight_GetPos();
+	TACHO_currLeftPos  = (int32_t)TACHO_LeftPosHistory[TACHO_PosHistory_Index];
+	TACHO_currRightPos = (int32_t)TACHO_RightPosHistory[TACHO_PosHistory_Index];
 	TACHO_PosHistory_Index++;
 	if (TACHO_PosHistory_Index >= NOF_HISTORY) {
 		TACHO_PosHistory_Index = 0;
