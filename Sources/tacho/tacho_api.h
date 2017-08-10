@@ -50,6 +50,7 @@ typedef struct TACHO_Filter_s{
 	bool isUsingSampledSpeed;
     void (*pFilterInitFct)(void);
     void (*pFilterMainFct)(void);
+    void (*pFilterDeinitFct)(void);
 	int32_t (*pGetSpeedFct)(bool isLeft_);
 }TACHO_Filter_t;
 

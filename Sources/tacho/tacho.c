@@ -78,6 +78,25 @@ void MAF_Init(void)
 	MAF_currRightSpeed = 0;
 	MAF_PosHistory_Index = 0;
 }
+
+void MAF_Deinit(void)
+{
+	uint8_t i = 0u;
+
+	MAF_currLeftSpeed   = 0;
+	MAF_currRightSpeed  = 0;
+	MAF_PosHistory_Index = 0;
+	for(i = 0u; i < sizeof(MAF_LeftPosHistory)/sizeof(MAF_LeftPosHistory[0]); i++)
+	{
+		MAF_LeftPosHistory[i] = 0;
+	}
+	for(i = 0u; i < sizeof(MAF_RightPosHistory)/sizeof(MAF_RightPosHistory[0]); i++)
+	{
+		MAF_RightPosHistory[i] = 0;
+	}
+}
+
+
 int32_t MAF_Get_Speed(bool isLeft_)
 {
 	return (int32_t)TACHO_CONDITIONAL_RETURN(isLeft_, MAF_currLeftSpeed, MAF_currRightSpeed);
@@ -213,8 +232,17 @@ void TACHO_Set_FilterType(TACHO_FilterType_t type_)
 {
 	TACHO_Cfg_t *tbl = NULL;
 	tbl = Get_pTachoCfg();
+	if( (NULL != pActiveFilterCfg) && (NULL != pActiveFilterCfg->pFilterDeinitFct) )
+	{
+		if(TRUE == pActiveFilterCfg->isInitialized)
+		{
+			pActiveFilterCfg->pFilterDeinitFct();
+			pActiveFilterCfg->isInitialized = FALSE;
+		}
+	}
+
 	pActiveFilterCfg = &(tbl->pFilterTable[type_]);
-	if( (NULL != pActiveFilterCfg) && ( NULL != pActiveFilterCfg->pFilterInitFct ) )
+	if( (NULL != pActiveFilterCfg) && (NULL != pActiveFilterCfg->pFilterInitFct) )
 	{
 		if(FALSE == pActiveFilterCfg->isInitialized)
 		{

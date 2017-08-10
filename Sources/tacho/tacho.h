@@ -76,6 +76,7 @@ void TACHO_Main(void);
 
 void MAF_Init(void);
 void MAF_Main(void);
+void MAF_Deinit(void);
 int32_t MAF_Get_Speed(bool isLeft_);
 
 

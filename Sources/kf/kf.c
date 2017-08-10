@@ -670,7 +670,11 @@ void KF_Init()
 		for(;;){}
 	}
 	KF_SetInitialValues();
-
+}
+void KF_Deinit()
+{
+	KF_LeftSpeed  = 0;
+	KF_RightSpeed = 0;
 }
 
 void KF_Main()

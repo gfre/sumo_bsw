@@ -38,6 +38,7 @@
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 void KF_Init(void);
 void KF_Main(void);
+void KF_Deinit(void);
 
 
 #ifdef EXTERNAL_
