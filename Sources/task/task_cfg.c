@@ -19,6 +19,7 @@
 /*======================================= >> #INCLUDES << ========================================*/
 #include "task_cfg.h"
 #include "tacho.h"
+#include "tacho_api.h"
 #include "appl.h"
 #include "sh.h"
 #include "rnet.h"
@@ -86,8 +87,7 @@ static const TASK_SwcCfg_t dbgTaskSwcCfg[] = {
  */
 static const TASK_SwcCfg_t drvTaskSwcCfg[] = {
 		{DRV_SWC_STRING, DRV_MainFct, DRV_Init},
-		{TACHO_SWC_STRING, TACHO_CalcSpeed, TACHO_Init},
-		{KF_SWC_STRING, KF_Main, KF_Init},
+		{TACHO_SWC_STRING, TACHO_Main, TACHO_Init},
 };
 
 /*

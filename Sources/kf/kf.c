@@ -125,15 +125,15 @@ static int16_t KF_RightModCntr 	  = 0;
 static void KF_UpdateMeasurements()
 {
 #if KF_USE_MEASUREMENT_MATRIX
-		KF_LeftY.aRow[0] += (int32_t)((TACHO_GetCurrentPosition(TRUE)*KF_SCALE_X)-(KF_LeftY.aRow[0] + (KF_LeftModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
-		KF_LeftY.aRow[1]  = (int32_t)KF_SCALE_X*TACHO_GetUnfilteredSpeed(TRUE);
+		KF_LeftY.aRow[0] += (int32_t)((TACHO_Get_CurrentPosition(TRUE)*KF_SCALE_X)-(KF_LeftY.aRow[0] + (KF_LeftModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
+		KF_LeftY.aRow[1]  = (int32_t)KF_SCALE_X*TACHO_Get_UnfilteredSpeed(TRUE);
 
-		KF_RightY.aRow[0] += (int32_t)((TACHO_GetCurrentPosition(FALSE)*KF_SCALE_X)-(KF_RightY.aRow[0] + (KF_RightModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
-		KF_RightY.aRow[1]  = (int32_t)KF_SCALE_X*TACHO_GetUnfilteredSpeed(FALSE);
+		KF_RightY.aRow[0] += (int32_t)((TACHO_Get_CurrentPosition(FALSE)*KF_SCALE_X)-(KF_RightY.aRow[0] + (KF_RightModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
+		KF_RightY.aRow[1]  = (int32_t)KF_SCALE_X*TACHO_Get_UnfilteredSpeed(FALSE);
 #else
-		KF_LeftY  += (int32_t)((TACHO_GetCurrentPosition(TRUE)*KF_SCALE_X)-(KF_LeftY + (KF_LeftModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
+		KF_LeftY  += (int32_t)((TACHO_Get_CurrentPosition(TRUE)*KF_SCALE_X)-(KF_LeftY + (KF_LeftModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
 
-		KF_RightY += (int32_t)((TACHO_GetCurrentPosition(FALSE)*KF_SCALE_X)-(KF_RightY + (KF_RightModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
+		KF_RightY += (int32_t)((TACHO_Get_CurrentPosition(FALSE)*KF_SCALE_X)-(KF_RightY + (KF_RightModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
 #endif
 }
 

@@ -252,8 +252,8 @@ bool DRV_HasTurned(void) {
 	if (DRV_Status.mode==DRV_MODE_POS) {
 		int32_t speedL, speedR;
 
-		speedL = TACHO_GetSpeed(TRUE);
-		speedR = TACHO_GetSpeed(FALSE);
+		speedL = Get_pTachoCfg()->pFilterTable[TACHO_Get_FilterType()].pGetSpeedFct(TRUE);
+		speedR = Get_pTachoCfg()->pFilterTable[TACHO_Get_FilterType()].pGetSpeedFct(FALSE);
 		if (speedL>-DRV_TURN_SPEED_LOW && speedL<DRV_TURN_SPEED_LOW && speedR>-DRV_TURN_SPEED_LOW && speedR<DRV_TURN_SPEED_LOW) { /* speed close to zero */
 			pos = Q4CLeft_GetPos();
 			if (match(pos, DRV_Status.pos.left)) {
@@ -274,6 +274,7 @@ void DRV_DeInit(void) {
 }
 
 void DRV_Init(void) {
+	uint8_t i = 0u;
 	MOT_Init();
 
 	DRV_Status.mode = DRV_MODE_NONE;
@@ -293,14 +294,13 @@ void DRV_MainFct(void)
 	while (GetCmd()==ERR_OK) { /* returns ERR_RXEMPTY if queue is empty */
 		/* process incoming commands */
 	}
+
 	if (DRV_Status.mode==DRV_MODE_SPEED) {
-		PID_Speed(KF_GetSpeed(TRUE), DRV_Status.speed.left, TRUE);
-		PID_Speed(KF_GetSpeed(FALSE), DRV_Status.speed.right, FALSE);
-//		PID_Speed(TACHO_GetSpeed(TRUE), DRV_Status.speed.left, TRUE);
-//		PID_Speed(TACHO_GetSpeed(FALSE), DRV_Status.speed.right, FALSE);
+		PID_Speed(Get_pTachoCfg()->pFilterTable[TACHO_Get_FilterType()].pGetSpeedFct(TRUE), DRV_Status.speed.left, TRUE);
+		PID_Speed(Get_pTachoCfg()->pFilterTable[TACHO_Get_FilterType()].pGetSpeedFct(FALSE), DRV_Status.speed.right, FALSE);
 	} else if (DRV_Status.mode==DRV_MODE_STOP) {
-		PID_Speed(TACHO_GetSpeed(TRUE), 0, TRUE);
-		PID_Speed(TACHO_GetSpeed(FALSE), 0, FALSE);
+		PID_Speed(Get_pTachoCfg()->pFilterTable[TACHO_Get_FilterType()].pGetSpeedFct(TRUE), 0, TRUE);
+		PID_Speed(Get_pTachoCfg()->pFilterTable[TACHO_Get_FilterType()].pGetSpeedFct(FALSE), 0, FALSE);
 	} else if (DRV_Status.mode==DRV_MODE_POS) {
 		PID_Pos(Q4CLeft_GetPos(), DRV_Status.pos.left, TRUE);
 		PID_Pos(Q4CRight_GetPos(), DRV_Status.pos.right, FALSE);

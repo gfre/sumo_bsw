@@ -1,47 +1,59 @@
 /***********************************************************************************************//**
- * @file		kf.h
- * @ingroup		kf Kalman Filter
- * @brief 		This header file contains the init and main function declarations as part of the task
- * 				component drive
+ * @file		tacho_cfg.c
+ * @ingroup		tacho
+ * @brief 		<This is a brief description.>
  *
- * @author 	S. Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
- * @date 	23.06.2017
+ * <This is a detailed description.>
  *
- * @copyright @<LGPL2_1>
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	13.06.2017
+ *
+ * @copyright @LGPL2_1
  *
  ***************************************************************************************************/
 
-#ifndef KF_H_
-#define KF_H_
+#define MASTER_tacho_cfg_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
+#include "tacho_cfg.h"
+#include "kf.h"
+#include "kf_api.h"
+#include "tacho.h"
 
 
-
-#ifdef MASTER_KF_C_
-#define EXTERNAL_
-#else
-#define EXTERNAL_ extern
-#endif
 
 /*======================================= >> #DEFINES << =========================================*/
-#define KF_FILTER_STRING	("kalman filter")
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 
+
+
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 
+
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
+static TACHO_Filter_t FilterTbl[] =
+{
+		{MAF_FILTER_STRING, MOVING_AVERAGE_FILTER, FALSE, FALSE, MAF_Init, MAF_Main, MAF_Get_Speed},
+		{KF_FILTER_STRING,  KALMAN_FILTER,  	   FALSE, TRUE,  KF_Init,  KF_Main,  KF_GetSpeed},
+};
+
+
+static TACHO_Cfg_t tachoCfg =
+{
+		FilterTbl,
+		sizeof(FilterTbl)/sizeof(FilterTbl[0]),
+};
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 
+
+
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-void KF_Init(void);
-void KF_Main(void);
+
+TACHO_Cfg_t* Get_pTachoCfg(void) {return &tachoCfg;}
 
 
-#ifdef EXTERNAL_
-#undef EXTERNAL_
-#endif
-
-#endif /* KF_H_ */
+#ifdef MASTER_tacho_cfg_C_
+#undef MASTER_tacho_cfg_C_
+#endif /* !MASTER_refl_cfg_C_ */

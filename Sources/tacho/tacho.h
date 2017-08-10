@@ -20,7 +20,7 @@
 #define TACHO_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
-
+#include "platform.h"
 
 
 #ifdef MASTER_tacho_C_
@@ -38,6 +38,8 @@
  * String identification of the SWC @ref tacho
  */
 #define TACHO_SWC_STRING ("Tacho")
+#define MAF_FILTER_STRING ("moving average filter")
+
 /**
  *  Speed sample period in ms. Make sure that speed is sampled at the given rate.
  */
@@ -70,6 +72,11 @@ void TACHO_Deinit(void);
  */
 void TACHO_Init(void);
 
+void TACHO_Main(void);
+
+void MAF_Init(void);
+void MAF_Main(void);
+int32_t MAF_Get_Speed(bool isLeft_);
 
 
 /**

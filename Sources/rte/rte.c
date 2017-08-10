@@ -343,7 +343,7 @@ StdRtn_t RTE_Read_SpdoVelLe(uint16 *vel_)
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != vel_)
 	{
-		*vel_ = TACHO_GetSpeed(LEFT);
+		*vel_ = Get_pTachoCfg()->pFilterTable[TACHO_Get_FilterType()].pGetSpeedFct(LEFT);
 		retVal = ERR_OK;
 	}
 	return retVal;
@@ -355,7 +355,7 @@ StdRtn_t RTE_Read_SpdoVelRi(uint16 *vel_)
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != vel_)
 	{
-		*vel_ = TACHO_GetSpeed(RIGHT);
+		*vel_ = Get_pTachoCfg()->pFilterTable[TACHO_Get_FilterType()].pGetSpeedFct(RIGHT);
 		retVal = ERR_OK;
 	}
 	return retVal;
