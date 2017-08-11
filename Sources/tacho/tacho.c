@@ -23,10 +23,10 @@
 /*======================================= >> #INCLUDES << ========================================*/
 #include "tacho.h"
 #include "tacho_api.h"
+#include "maf.h"
 #include "Q4CLeft.h"
 #include "Q4CRight.h"
 #include "FRTOS1.h"
-#include "CS1.h"
 
 
 
@@ -34,7 +34,7 @@
 #define TACHO_CONDITIONAL_RETURN(condVar_, trueVal_, falseVal_) ( (TRUE == condVar_) ? (trueVal_) : (falseVal_) )
 
 
-#define NOF_HISTORY (16U+1U)
+
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 
@@ -44,18 +44,12 @@
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 static int32_t TACHO_unfltrdLeftSpeed = 0, TACHO_unfltrdRightSpeed = 0;
-static int32_t TACHO_currLeftPos = 0, TACHO_currRightPos = 0;
-static int32_t TACHO_oldLeftPos = 0, TACHO_oldRightPos = 0;
+static int32_t TACHO_currLeftPos      = 0, TACHO_currRightPos      = 0;
+static int32_t TACHO_oldLeftPos       = 0, TACHO_oldRightPos       = 0;
 
 static TACHO_Filter_t *pActiveFilterCfg = NULL;
 
 
-/*!< for better accuracy, we calculate the speed over some samples */
-static volatile Q4CLeft_QuadCntrType MAF_LeftPosHistory[NOF_HISTORY], MAF_RightPosHistory[NOF_HISTORY];
-/*!< position index in history */
-static volatile uint8_t MAF_PosHistory_Index = 0;
-
-static int32_t MAF_currLeftSpeed = 0, MAF_currRightSpeed = 0;
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 
 
@@ -72,91 +66,12 @@ int32_t TACHO_Get_UnfilteredSpeed(bool isLeft_)
 }
 
 
-void MAF_Init(void)
-{
-	MAF_currLeftSpeed = 0;
-	MAF_currRightSpeed = 0;
-	MAF_PosHistory_Index = 0;
-}
-
-void MAF_Deinit(void)
-{
-	uint8_t i = 0u;
-
-	MAF_currLeftSpeed   = 0;
-	MAF_currRightSpeed  = 0;
-	MAF_PosHistory_Index = 0;
-	for(i = 0u; i < sizeof(MAF_LeftPosHistory)/sizeof(MAF_LeftPosHistory[0]); i++)
-	{
-		MAF_LeftPosHistory[i] = 0;
-	}
-	for(i = 0u; i < sizeof(MAF_RightPosHistory)/sizeof(MAF_RightPosHistory[0]); i++)
-	{
-		MAF_RightPosHistory[i] = 0;
-	}
-}
-
-
-int32_t MAF_Get_Speed(bool isLeft_)
-{
-	return (int32_t)TACHO_CONDITIONAL_RETURN(isLeft_, MAF_currLeftSpeed, MAF_currRightSpeed);
-}
-void MAF_Main(void) {
-	/* we calculate the speed as follow:
-                              1000
-  steps/sec =  delta * -----------------
-                       samplePeriod (ms)
-  As this function may be called very frequently, it is important to make it as efficient as possible!
-	 */
-	int32_t deltaLeft, deltaRight, newLeft, newRight, oldLeft, oldRight;
-	int32_t speedLeft, speedRight;
-	bool negLeft, negRight;
-	CS1_CriticalVariable()
-
-	CS1_EnterCritical();
-	oldLeft = (int32_t)MAF_LeftPosHistory[MAF_PosHistory_Index]; /* oldest left entry */
-	oldRight = (int32_t)MAF_RightPosHistory[MAF_PosHistory_Index]; /* oldest right entry */
-	if (MAF_PosHistory_Index==0) { /* get newest entry */
-		newLeft = (int32_t)MAF_LeftPosHistory[NOF_HISTORY-1];
-		newRight = (int32_t)MAF_RightPosHistory[NOF_HISTORY-1];
-	} else{
-		newLeft = (int32_t)MAF_LeftPosHistory[MAF_PosHistory_Index-1];
-		newRight = (int32_t)MAF_RightPosHistory[MAF_PosHistory_Index-1];
-	}
-	CS1_ExitCritical();
-	deltaLeft = oldLeft-newLeft; /* delta of oldest position and most recent one */
-	/* use unsigned arithmetic */
-	if (deltaLeft < 0) {
-		deltaLeft = -deltaLeft;
-		negLeft = TRUE;
-	} else {
-		negLeft = FALSE;
-	}
-	deltaRight = oldRight-newRight; /* delta of oldest position and most recent one */
-	/* use unsigned arithmetic */
-	if (deltaRight < 0) {
-		deltaRight = -deltaRight;
-		negRight = TRUE;
-	} else {
-		negRight = FALSE;
-	}
-	/* calculate speed. this is based on the delta and the time (number of samples or entries in the history table) */
-	speedLeft  = (int32_t)(deltaLeft*1000U/(TACHO_SAMPLE_PERIOD_MS*(NOF_HISTORY-1)));
-	if (negLeft) {
-		speedLeft  = -speedLeft;
-	}
-	speedRight = (int32_t)(deltaRight*1000U/(TACHO_SAMPLE_PERIOD_MS*(NOF_HISTORY-1)));
-	if (negRight) {
-		speedRight = -speedRight;
-	}
-	MAF_currLeftSpeed     = -speedLeft;  /* store current speed in global variable */
-	MAF_currRightSpeed    = -speedRight; /* store current speed in global variable */
-}
 
 
 void TACHO_Sample(void) {
 	static int cnt = 0;
-
+	Q4CLeft_QuadCntrType tempLeft  = 0;
+	Q4CLeft_QuadCntrType tempRight = 0;
 	/* get called from the RTOS tick counter. Divide the frequency. */
 	cnt += portTICK_PERIOD_MS;
 	if (cnt < TACHO_SAMPLE_PERIOD_MS) { /* sample only every TACHO_SAMPLE_PERIOD_MS */
@@ -165,17 +80,16 @@ void TACHO_Sample(void) {
 	cnt = 0; /* reset counter */
 
 	/* left */
-	TACHO_oldLeftPos  = TACHO_currLeftPos;
-	TACHO_oldRightPos = TACHO_currRightPos;
-	MAF_LeftPosHistory[MAF_PosHistory_Index]  = Q4CLeft_GetPos();
-	MAF_RightPosHistory[MAF_PosHistory_Index] = Q4CRight_GetPos();
-	TACHO_currLeftPos  = (int32_t)MAF_LeftPosHistory[MAF_PosHistory_Index];
-	TACHO_currRightPos = (int32_t)MAF_RightPosHistory[MAF_PosHistory_Index];
-	MAF_PosHistory_Index++;
-	if (MAF_PosHistory_Index >= NOF_HISTORY) {
-		MAF_PosHistory_Index = 0;
+	TACHO_oldLeftPos   = TACHO_currLeftPos;
+	TACHO_oldRightPos  = TACHO_currRightPos;
+	tempLeft  = Q4CLeft_GetPos();
+	tempRight = Q4CRight_GetPos();
+	TACHO_currLeftPos  = tempLeft;
+	TACHO_currRightPos = tempRight;
+	if(MOVING_AVERAGE_FILTER == pActiveFilterCfg->FilterType)
+	{
+		MAF_UpdateRingBuffer(tempLeft, tempRight);
 	}
-
 	if(TRUE == pActiveFilterCfg->isUsingSampledSpeed)
 	{
 		int32_t deltaLeft = 0, speedLeft = 0, deltaRight = 0, speedRight = 0;
@@ -184,22 +98,21 @@ void TACHO_Sample(void) {
 		if(deltaLeft < 0)
 		{
 			deltaLeft = -deltaLeft;
-			negLeft = TRUE;
+			negLeft   = TRUE;
 		}
 		else negLeft = FALSE;
-
 		deltaRight = TACHO_oldRightPos - TACHO_currRightPos;
 		if(deltaRight < 0)
 		{
 			deltaRight = -deltaRight;
-			negRight = TRUE;
+			negRight   = TRUE;
 		}
 		else negRight = FALSE;
 		speedLeft =(int32_t)(deltaLeft*1000U/(TACHO_SAMPLE_PERIOD_MS));
 		if(TRUE == negLeft) speedLeft = -speedLeft;
 		speedRight =(int32_t)(deltaRight*1000U/(TACHO_SAMPLE_PERIOD_MS));
 		if(TRUE == negRight) speedRight = -speedRight;
-		TACHO_unfltrdLeftSpeed = -speedLeft;
+		TACHO_unfltrdLeftSpeed  = -speedLeft;
 		TACHO_unfltrdRightSpeed = -speedRight;
 	}
 }
@@ -237,6 +150,11 @@ void TACHO_Set_FilterType(TACHO_FilterType_t type_)
 		if(TRUE == pActiveFilterCfg->isInitialized)
 		{
 			pActiveFilterCfg->pFilterDeinitFct();
+			if(TRUE == pActiveFilterCfg->isUsingSampledSpeed)
+			{
+				TACHO_unfltrdLeftSpeed  = 0;
+				TACHO_unfltrdRightSpeed = 0;
+			}
 			pActiveFilterCfg->isInitialized = FALSE;
 		}
 	}
