@@ -298,6 +298,8 @@ void DRV_MainFct(void)
 	if (DRV_Status.mode==DRV_MODE_SPEED) {
 		PID_Speed(Get_pTachoCfg()->pFilterTable[TACHO_Get_FilterType()].pGetSpeedFct(TRUE), DRV_Status.speed.left, TRUE);
 		PID_Speed(Get_pTachoCfg()->pFilterTable[TACHO_Get_FilterType()].pGetSpeedFct(FALSE), DRV_Status.speed.right, FALSE);
+		//PI(Get_pPidCfg()->pPlantTbl[PID_Get_PlantType()]);
+
 	} else if (DRV_Status.mode==DRV_MODE_STOP) {
 		PID_Speed(Get_pTachoCfg()->pFilterTable[TACHO_Get_FilterType()].pGetSpeedFct(TRUE), 0, TRUE);
 		PID_Speed(Get_pTachoCfg()->pFilterTable[TACHO_Get_FilterType()].pGetSpeedFct(FALSE), 0, FALSE);
@@ -314,3 +316,11 @@ DRV_Status_t *DRV_GetCurStatus(void)
 {
 	return &DRV_Status;
 }
+
+int32_t DRV_Get_LeftSpeedTargetVal(void){return DRV_Status.speed.left;}
+
+int32_t DRV_Get_RightSpeedTargetVal(void){return DRV_Status.speed.right;}
+
+int32_t DRV_Get_LeftPosTargetVal(void){return DRV_Status.pos.left;}
+
+int32_t DRV_Get_RightPosTargetVal(void){return DRV_Status.pos.left;}

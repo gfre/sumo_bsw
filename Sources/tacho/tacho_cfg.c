@@ -32,7 +32,7 @@
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-static TACHO_Filter_t FilterTbl[] =
+static TACHO_Filter_t filterTbl[] =
 {
 		{MAF_FILTER_STRING, MOVING_AVERAGE_FILTER, FALSE, FALSE, MAF_Init, MAF_Main, MAF_Deinit, MAF_Get_Speed},
 		{KF_FILTER_STRING,  KALMAN_FILTER,  	   FALSE, TRUE,  KF_Init,  KF_Main,  KF_Deinit,  KF_GetSpeed},
@@ -41,7 +41,7 @@ static TACHO_Filter_t FilterTbl[] =
 
 static TACHO_Cfg_t tachoCfg =
 {
-		FilterTbl,
+		filterTbl,
 		sizeof(FilterTbl)/sizeof(FilterTbl[0]),
 };
 

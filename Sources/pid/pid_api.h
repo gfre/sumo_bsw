@@ -55,7 +55,37 @@ typedef struct PID_Config_s {
 } PID_Config_t;
 	
 
+typedef enum PID_PlantType_e
+{
+	PID_LEFT_MOTOR_SPEED = 0,
+	PID_RIGHT_MOTOR_SPEED,
+	PID_LEFT_MOTOR_POS,
+	PID_RIGHT_MOTOR_POS,
+}PID_PlantType_t;
 
+typedef struct PID_Plant_s
+{
+	PID_PlantType_t PlantType;
+	bool isInitialized;
+	int32_t Factor_KP_scld;
+	int32_t Factor_KI_scld;
+	int32_t Factor_KD_scld;
+	int32_t Scale;
+	int32_t Saturation;
+	int32_t iWindUpMaxVal;
+	int32_t lastError;
+	int32_t integralVal;
+	void (*pInitFct)(PID_Plant_t);
+	void (*pDeinitFct)(PID_Plant_t);
+	int32_t (*pGetCurrentValFct)(bool);
+	int32_t (*pGetTargetValFct)(void);
+}PID_Plant_t;
+
+typedef struct PID_PlantCfg_s
+{
+	PID_Plant_t* pPlantTbl;
+	int8_t       numOfPlants;
+}PID_PlantCfg_t;
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 /**
@@ -112,7 +142,7 @@ EXTERNAL_ PID_Config_t *PID_Get_SpdLeCfg(void);
  */
 EXTERNAL_ PID_Config_t *PID_Get_SpdRiCfg(void);
 
-
+EXTERNAL_ PID_PlantCfg_t* Get_pPidCfg(void);
 
 /**
  * @}

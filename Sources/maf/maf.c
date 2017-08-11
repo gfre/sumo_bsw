@@ -63,9 +63,13 @@ void MAF_UpdateRingBuffer(Q4CLeft_QuadCntrType leftVal_, Q4CLeft_QuadCntrType ri
 void MAF_Init(void)
 {
 	uint8_t i = 0u;
+	CS1_CriticalVariable();
+
+	CS1_EnterCritical();
 	MAF_currLeftSpeed    = 0;
 	MAF_currRightSpeed   = 0;
 	MAF_PosHistory_Index = 0;
+
 	for(i = 0u; i < sizeof(MAF_LeftPosHistory)/sizeof(MAF_LeftPosHistory[0]); i++)
 	{
 		MAF_LeftPosHistory[i] = 0;
@@ -74,14 +78,19 @@ void MAF_Init(void)
 	{
 		MAF_RightPosHistory[i] = 0;
 	}
+	CS1_ExitCritical();
 }
 
 void MAF_Deinit(void)
 {
 	uint8_t i = 0u;
+	CS1_CriticalVariable();
+
+	CS1_EnterCritical();
 	MAF_currLeftSpeed    = 0;
 	MAF_currRightSpeed   = 0;
 	MAF_PosHistory_Index = 0;
+
 	for(i = 0u; i < sizeof(MAF_LeftPosHistory)/sizeof(MAF_LeftPosHistory[0]); i++)
 	{
 		MAF_LeftPosHistory[i] = 0;
@@ -90,6 +99,7 @@ void MAF_Deinit(void)
 	{
 		MAF_RightPosHistory[i] = 0;
 	}
+	CS1_ExitCritical();
 }
 
 void MAF_Main(void) {

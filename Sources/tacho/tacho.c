@@ -47,7 +47,7 @@ static int32_t TACHO_unfltrdLeftSpeed = 0, TACHO_unfltrdRightSpeed = 0;
 static int32_t TACHO_currLeftPos      = 0, TACHO_currRightPos      = 0;
 static int32_t TACHO_oldLeftPos       = 0, TACHO_oldRightPos       = 0;
 
-static TACHO_Filter_t *pActiveFilterCfg = NULL;
+static TACHO_Filter_t *pActiveFilter = NULL;
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
@@ -84,13 +84,13 @@ void TACHO_Sample(void) {
 	TACHO_oldRightPos  = TACHO_currRightPos;
 	tempLeft  = Q4CLeft_GetPos();
 	tempRight = Q4CRight_GetPos();
-	TACHO_currLeftPos  = tempLeft;
-	TACHO_currRightPos = tempRight;
-	if(MOVING_AVERAGE_FILTER == pActiveFilterCfg->FilterType)
+	TACHO_currLeftPos  = (int32_t)tempLeft;
+	TACHO_currRightPos = (int32_t)tempRight;
+	if(MOVING_AVERAGE_FILTER == pActiveFilter->FilterType)
 	{
 		MAF_UpdateRingBuffer(tempLeft, tempRight);
 	}
-	if(TRUE == pActiveFilterCfg->isUsingSampledSpeed)
+	if(TRUE == pActiveFilter->isUsingSampledSpeed)
 	{
 		int32_t deltaLeft = 0, speedLeft = 0, deltaRight = 0, speedRight = 0;
 		bool negLeft, negRight;
@@ -131,9 +131,9 @@ void TACHO_Init(void)
 
 void TACHO_Main(void)
 {
-	if( ( NULL != pActiveFilterCfg ) && ( NULL != pActiveFilterCfg->pFilterMainFct ) )
+	if( ( NULL != pActiveFilter ) && ( NULL != pActiveFilter->pFilterMainFct ) )
 	{
-		pActiveFilterCfg->pFilterMainFct();
+		pActiveFilter->pFilterMainFct();
 	}
 	else
 	{
@@ -145,27 +145,27 @@ void TACHO_Set_FilterType(TACHO_FilterType_t type_)
 {
 	TACHO_Cfg_t *tbl = NULL;
 	tbl = Get_pTachoCfg();
-	if( (NULL != pActiveFilterCfg) && (NULL != pActiveFilterCfg->pFilterDeinitFct) )
+	if( (NULL != pActiveFilter) && (NULL != pActiveFilter->pFilterDeinitFct) )
 	{
-		if(TRUE == pActiveFilterCfg->isInitialized)
+		if(TRUE == pActiveFilter->isInitialized)
 		{
-			pActiveFilterCfg->pFilterDeinitFct();
-			if(TRUE == pActiveFilterCfg->isUsingSampledSpeed)
+			pActiveFilter->pFilterDeinitFct();
+			if(TRUE == pActiveFilter->isUsingSampledSpeed)
 			{
 				TACHO_unfltrdLeftSpeed  = 0;
 				TACHO_unfltrdRightSpeed = 0;
 			}
-			pActiveFilterCfg->isInitialized = FALSE;
+			pActiveFilter->isInitialized = FALSE;
 		}
 	}
 
-	pActiveFilterCfg = &(tbl->pFilterTable[type_]);
-	if( (NULL != pActiveFilterCfg) && (NULL != pActiveFilterCfg->pFilterInitFct) )
+	pActiveFilter = &(tbl->pFilterTable[type_]);
+	if( (NULL != pActiveFilter) && (NULL != pActiveFilter->pFilterInitFct) )
 	{
-		if(FALSE == pActiveFilterCfg->isInitialized)
+		if(FALSE == pActiveFilter->isInitialized)
 		{
-			pActiveFilterCfg->pFilterInitFct();
-			pActiveFilterCfg->isInitialized = TRUE;
+			pActiveFilter->pFilterInitFct();
+			pActiveFilter->isInitialized = TRUE;
 		}
 	}
 	else
@@ -176,7 +176,7 @@ void TACHO_Set_FilterType(TACHO_FilterType_t type_)
 
 TACHO_FilterType_t TACHO_Get_FilterType(void)
 {
-	return pActiveFilterCfg->FilterType;
+	return pActiveFilter->FilterType;
 }
 
 #ifdef MASTER_tacho_C_
