@@ -46,7 +46,7 @@ static int32_t MAF_currLeftSpeed = 0, MAF_currRightSpeed = 0;
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 int32_t MAF_Get_Speed(bool isLeft_)
 {
-	return (int32_t)MAF_CONDITIONAL_RETURN(isLeft_, MAF_currLeftSpeed, MAF_currRightSpeed);
+	return MAF_CONDITIONAL_RETURN(isLeft_, MAF_currLeftSpeed, MAF_currRightSpeed);
 }
 
 void MAF_UpdateRingBuffer(Q4CLeft_QuadCntrType leftVal_, Q4CLeft_QuadCntrType rightVal_)

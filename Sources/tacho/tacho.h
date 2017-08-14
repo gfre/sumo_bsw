@@ -38,7 +38,6 @@
  * String identification of the SWC @ref tacho
  */
 #define TACHO_SWC_STRING ("Tacho")
-#define MAF_FILTER_STRING ("moving average filter")
 
 /**
  *  Speed sample period in ms. Make sure that speed is sampled at the given rate.
@@ -52,11 +51,6 @@
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-/**
- * @brief Calculates the speed based on the position information from the encoder.
- */
-void TACHO_CalcSpeed(void);
-
 /**
  * @brief Sampling routine to calculate speed, must be called periodically with a fixed frequency.
  */
@@ -74,10 +68,6 @@ void TACHO_Init(void);
 
 void TACHO_Main(void);
 
-void MAF_Init(void);
-void MAF_Main(void);
-void MAF_Deinit(void);
-int32_t MAF_Get_Speed(bool isLeft_);
 
 
 /**

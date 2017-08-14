@@ -38,6 +38,7 @@
 #define MAF_FILTER_STRING ("moving average filter")
 
 
+
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 
 

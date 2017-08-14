@@ -19,11 +19,15 @@
 #include "pid_api.h"
 #include "drv_api.h"
 #include "tacho_api.h"
-
+#include "maf_api.h"
 
 
 /*======================================= >> #DEFINES << =========================================*/
 #define MOTOR_MAX_VAL (0xFFFF)
+#define PID_LEFT_MOTOR_SPD_NAME  ("speed L")
+#define PID_RIGHT_MOTOR_SPD_NAME ("speed R")
+#define PID_LEFT_MOTOR_POS_NAME  ("pos L")
+#define PID_RIGHT_MOTOR_POS_NAME ("pos R")
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
@@ -37,12 +41,18 @@
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
+static PID_Cfg_t LeftSpeedCfg  = {2000u,  80u,  0u,  100u, MOTOR_MAX_VAL,};
+static PID_Cfg_t RightSpeedCfg = {2000u,  80u,  0u,  100u, MOTOR_MAX_VAL,};
+static PID_Cfg_t LeftPosCfg    = {1000u,  1u,   50u, 100u, 200,};
+static PID_Cfg_t RightPosCfg   = {1000u,  1u,   50u, 100u, 200,};
+
+
 static PID_Plant_t plantTbl[] =
 {
-		{PID_LEFT_MOTOR_SPEED,  FALSE, 2000,  80,  0, 100, 0, MOTOR_MAX_VAL, 0, 0, PID_Init2, PID_Deinit2, MAF_Get_Speed,             DRV_Get_LeftSpeedTargetVal},
-		{PID_RIGHT_MOTOR_SPEED, FALSE, 2000,  80,  0, 100, 0, MOTOR_MAX_VAL, 0, 0, PID_Init2, PID_Deinit2, MAF_Get_Speed,             DRV_Get_RightSpeedTargetVal},
-		{PID_LEFT_MOTOR_POS,    FALSE, 1000,   1, 50, 100, 0, MOTOR_MAX_VAL, 0, 0, PID_Init2, PID_Deinit2, TACHO_Get_CurrentPosition, DRV_Get_LeftPosTargetVal},
-		{PID_RIGHT_MOTOR_POS,   FALSE, 1000,   1, 50, 100, 0, MOTOR_MAX_VAL, 0, 0, PID_Init2, PID_Deinit2, TACHO_Get_CurrentPosition, DRV_Get_RightPosTargetVal},
+		{PID_LEFT_MOTOR_SPD_NAME,  PID_LEFT_MOTOR_SPEED,  &LeftSpeedCfg,  PID_NO_SAT, 0, 0, TACHO_Read_CurFltrdLeftSpd,  DRV_Read_LeftSpdTrgtVal},
+		{PID_RIGHT_MOTOR_SPD_NAME, PID_RIGHT_MOTOR_SPEED, &RightSpeedCfg, PID_NO_SAT, 0, 0, TACHO_Read_CurFltrdRightSpd, DRV_Read_RightSpdTrgtVal},
+		{PID_LEFT_MOTOR_POS_NAME,  PID_LEFT_MOTOR_POS,    &LeftPosCfg,    PID_NO_SAT, 0, 0, TACHO_Read_CurLeftPos,       DRV_Read_LeftPosTrgtVal},
+		{PID_RIGHT_MOTOR_POS_NAME, PID_RIGHT_MOTOR_POS,   &RightPosCfg,   PID_NO_SAT, 0, 0, TACHO_Read_CurRightPos,		 DRV_Read_RightPosTrgtVal},
 
 };
 

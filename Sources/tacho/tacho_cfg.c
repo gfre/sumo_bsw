@@ -18,6 +18,8 @@
 #include "tacho_cfg.h"
 #include "kf.h"
 #include "kf_api.h"
+#include "maf.h"
+#include "maf_api.h"
 #include "tacho.h"
 
 
@@ -35,14 +37,14 @@
 static TACHO_Filter_t filterTbl[] =
 {
 		{MAF_FILTER_STRING, MOVING_AVERAGE_FILTER, FALSE, FALSE, MAF_Init, MAF_Main, MAF_Deinit, MAF_Get_Speed},
-		{KF_FILTER_STRING,  KALMAN_FILTER,  	   FALSE, TRUE,  KF_Init,  KF_Main,  KF_Deinit,  KF_GetSpeed},
+		{KF_FILTER_STRING,  KALMAN_FILTER,  	   FALSE, TRUE,  KF_Init,  KF_Main,  KF_Deinit,  KF_Get_Speed},
 };
 
 
 static TACHO_Cfg_t tachoCfg =
 {
 		filterTbl,
-		sizeof(FilterTbl)/sizeof(FilterTbl[0]),
+		sizeof(filterTbl)/sizeof(filterTbl[0]),
 };
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/

@@ -124,16 +124,24 @@ static int16_t KF_RightModCntr 	  = 0;
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 static void KF_UpdateMeasurements()
 {
+	int32_t leftPos = 0, rightPos = 0;
+	(void)TACHO_Read_CurLeftPos(&leftPos);
+	(void)TACHO_Read_CurRightPos(&rightPos);
+
 #if KF_USE_MEASUREMENT_MATRIX
-		KF_LeftY.aRow[0] += (int32_t)((TACHO_Get_CurrentPosition(TRUE)*KF_SCALE_X)-(KF_LeftY.aRow[0] + (KF_LeftModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
-		KF_LeftY.aRow[1]  = (int32_t)KF_SCALE_X*TACHO_Get_UnfilteredSpeed(TRUE);
+	int32_t leftSpeed = 0, rightSpeed = 0;
+	(void)TACHO_Read_CurUnfltrdLeftSpd(&leftSpeed);
+	(void)TACHO_Read_CurUnfltrdRightSpd(&rightSpeed);
 
-		KF_RightY.aRow[0] += (int32_t)((TACHO_Get_CurrentPosition(FALSE)*KF_SCALE_X)-(KF_RightY.aRow[0] + (KF_RightModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
-		KF_RightY.aRow[1]  = (int32_t)KF_SCALE_X*TACHO_Get_UnfilteredSpeed(FALSE);
+		KF_LeftY.aRow[0] += (int32_t)((leftPos*KF_SCALE_X)-(KF_LeftY.aRow[0] + (KF_LeftModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
+		KF_LeftY.aRow[1]  = (int32_t)KF_SCALE_X*leftSpeed;
+
+		KF_RightY.aRow[0] += (int32_t)((rightPos*KF_SCALE_X)-(KF_RightY.aRow[0] + (KF_RightModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
+		KF_RightY.aRow[1]  = (int32_t)KF_SCALE_X*rightSpeed;
 #else
-		KF_LeftY  += (int32_t)((TACHO_Get_CurrentPosition(TRUE)*KF_SCALE_X)-(KF_LeftY + (KF_LeftModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
+		KF_LeftY  += (int32_t)((leftPos*KF_SCALE_X)-(KF_LeftY + (KF_LeftModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
 
-		KF_RightY += (int32_t)((TACHO_Get_CurrentPosition(FALSE)*KF_SCALE_X)-(KF_RightY + (KF_RightModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
+		KF_RightY += (int32_t)((rightPos*KF_SCALE_X)-(KF_RightY + (KF_RightModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
 #endif
 }
 
@@ -622,7 +630,7 @@ static StdRtn_t KF_MultColVecRowVec(const KF_I32ColVec_t* v_, const KF_I32RowVec
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-int32_t KF_GetSpeed(bool isLeft_)
+int32_t KF_Get_Speed(bool isLeft_)
 {
 	int32_t speed = 0;
 	if(TRUE == isLeft_)

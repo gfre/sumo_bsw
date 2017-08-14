@@ -146,13 +146,15 @@ EXTERNAL_ uint8_t DRV_Stop(int32_t timeoutMs);
  * @brief Returns the reference to the current [status information](@ref DRV_Status_t).
  * @return pointer to the status information
  */
-EXTERNAL_ int32_t DRV_Get_LeftSpeedTargetVal(void);
+EXTERNAL_ StdRtn_t DRV_Read_LeftSpdTrgtVal(int32_t* speed_);
 
-EXTERNAL_ int32_t DRV_Get_RightSpeedTargetVal(void);
+EXTERNAL_ StdRtn_t DRV_Read_RightSpdTrgtVal(int32_t* speed_);
 
-EXTERNAL_ int32_t DRV_Get_LeftPosTargetVal(void);
+EXTERNAL_ StdRtn_t DRV_Read_LeftPosTrgtVal(int32_t* pos_);
 
-EXTERNAL_ int32_t DRV_Get_RightPosTargetVal(void);
+EXTERNAL_ StdRtn_t DRV_Read_RightPosTrgtVal(int32_t* pos_);
+
+EXTERNAL_ DRV_Status_t *DRV_GetCurStatus(void);
 
 
 /**

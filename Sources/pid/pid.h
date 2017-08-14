@@ -47,10 +47,6 @@
  */
 void PID_Init(void);
 
-void PID_Init2(PID_Plant_t* plant_);
-
-void PID_Deinit2(PID_Plant_t* plant_);
-
 /**
  * @brief Driver de-initialization
  */
