@@ -29,7 +29,6 @@
 
 /*======================================= >> #DEFINES << =========================================*/
 #define PID_DEBUG 0 /* careful: this will slow down the PID loop frequency! */
-#define MAXVAL (0xFFFF)
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 
@@ -60,7 +59,7 @@ StdRtn_t PI(PID_Plant_t* plant_, int32_t* result_)
 		retVal |= plant_->pCurValFct(&cur);
 		error = trgt - cur;
 
-		if(PID_LEFT_MOTOR_POS == plant_->PlantType || PID_RIGHT_MOTOR_POS == plant_->PlantType) //teil der config? so nicht allgemein
+		if( (PID_LEFT_MOTOR_POS == plant_->PlantType) || (PID_RIGHT_MOTOR_POS == plant_->PlantType) ) //teil der config? so nicht allgemein
 		{
 			if (error>-10 && error<10)  /* avoid jitter around zero */
 			{
@@ -68,38 +67,38 @@ StdRtn_t PI(PID_Plant_t* plant_, int32_t* result_)
 			}
 		}
 
-		if( (plant_->Saturation <= PID_NEG_SAT  && error < 0) || (plant_->Saturation >= PID_POS_SAT && error > 0) )
+		if( ( (plant_->Saturation <= PID_NEG_SAT)  && (error < 0) ) || ( (plant_->Saturation >= PID_POS_SAT) && (error > 0) ) )
 		{
 			/* don't allow integrating in direction of saturation -> do nothing */
 		}
 		else //allow integrating in opposite direction to saturation
 		{
-			plant_->integralVal += (int32_t)((plant_->Config->Factor_KI_scld*error)/plant_->Config->Scale);
+			plant_->integralVal += ( (((int32_t)plant_->Config->Factor_KI_scld)*error)/((int32_t)plant_->Config->Scale) );
 		}
 
-		if( (plant_->integralVal > -(int32_t)(plant_->Config->iWindUpMaxVal)) && (plant_->integralVal < (int32_t)plant_->Config->iWindUpMaxVal) )
+		if( (plant_->integralVal > -((int32_t)plant_->Config->iWindUpMaxVal)) && (plant_->integralVal < (int32_t)plant_->Config->iWindUpMaxVal) )
 		{
 			plant_->Saturation = PID_NO_SAT;
 		}
-		else if(plant_->integralVal < -(int32_t)(plant_->Config->iWindUpMaxVal))
+		else if(plant_->integralVal < -((int32_t)plant_->Config->iWindUpMaxVal))
 		{
-			plant_->integralVal = -(int32_t)(plant_->Config->iWindUpMaxVal);
+			plant_->integralVal = -((int32_t)plant_->Config->iWindUpMaxVal);
 			plant_->Saturation  = PID_NEG_SAT;
 		}
-		else if(plant_->integralVal > (int32_t)plant_->Config->iWindUpMaxVal)
+		else if(plant_->integralVal > ((int32_t)plant_->Config->iWindUpMaxVal) )
 		{
-			plant_->integralVal = (int32_t)plant_->Config->iWindUpMaxVal;
+			plant_->integralVal = ((int32_t)plant_->Config->iWindUpMaxVal);
 			plant_->Saturation  = PID_POS_SAT;
 		}
 
-		pTerm = (int32_t)((plant_->Config->Factor_KP_scld)*error/plant_->Config->Scale);
+		pTerm = ( (((int32_t)plant_->Config->Factor_KP_scld)*error)/((int32_t)plant_->Config->Scale) );
 
-		if(pTerm < -(int32_t)(plant_->Config->iWindUpMaxVal))     pTerm = -(int32_t)(plant_->Config->iWindUpMaxVal);
-		else if(pTerm > (int32_t)(plant_->Config->iWindUpMaxVal)) pTerm =  (int32_t)(plant_->Config->iWindUpMaxVal);
+		if(pTerm < -((int32_t)plant_->Config->iWindUpMaxVal))     pTerm = -((int32_t)plant_->Config->iWindUpMaxVal);
+		else if(pTerm > (int32_t)(plant_->Config->iWindUpMaxVal)) pTerm =  ((int32_t)plant_->Config->iWindUpMaxVal);
 
 		pi = pTerm + plant_->integralVal;
-		if(pi < -(int32_t)(plant_->Config->iWindUpMaxVal))     pi = -(int32_t)plant_->Config->iWindUpMaxVal;
-		else if(pi > (int32_t)(plant_->Config->iWindUpMaxVal)) pi =  (int32_t)plant_->Config->iWindUpMaxVal;
+		if(pi < -((int32_t)plant_->Config->iWindUpMaxVal))     pi = -((int32_t)plant_->Config->iWindUpMaxVal);
+		else if(pi > ((int32_t)plant_->Config->iWindUpMaxVal)) pi =  ((int32_t)plant_->Config->iWindUpMaxVal);
 
 		*result_ = pi;
 	}

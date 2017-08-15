@@ -81,7 +81,7 @@ typedef struct PID_PlantCfg_s
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 
-EXTERNAL_ StdRtn_t PI(PID_Plant_t* plant_, int32_t*);
+EXTERNAL_ StdRtn_t PI(PID_Plant_t* plant_, int32_t* result_);
 
 EXTERNAL_ PID_PlantCfg_t* Get_pPidCfg(void);
 
