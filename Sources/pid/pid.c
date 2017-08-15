@@ -48,10 +48,7 @@
 StdRtn_t PI(PID_Plant_t* plant_, int32_t* result_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	int32_t pTerm = 0;
-	int32_t pi    = 0;
-	int32_t error = 0;
-	int32_t trgt = 0, cur = 0;
+	int32_t pTerm = 0, dTerm = 0, u = 0, error = 0, trgt = 0, cur = 0;
 	if(NULL != result_)
 	{
 		retVal = ERR_OK;
@@ -61,7 +58,7 @@ StdRtn_t PI(PID_Plant_t* plant_, int32_t* result_)
 
 		if( (PID_LEFT_MOTOR_POS == plant_->PlantType) || (PID_RIGHT_MOTOR_POS == plant_->PlantType) ) //teil der config? so nicht allgemein
 		{
-			if (error>-10 && error<10)  /* avoid jitter around zero */
+			if ( (error > -10) && (error<10) )  /* avoid jitter around zero */
 			{
 				error = 0;
 			}
@@ -96,11 +93,11 @@ StdRtn_t PI(PID_Plant_t* plant_, int32_t* result_)
 		if(pTerm < -((int32_t)plant_->Config->iWindUpMaxVal))     pTerm = -((int32_t)plant_->Config->iWindUpMaxVal);
 		else if(pTerm > (int32_t)(plant_->Config->iWindUpMaxVal)) pTerm =  ((int32_t)plant_->Config->iWindUpMaxVal);
 
-		pi = pTerm + plant_->integralVal;
-		if(pi < -((int32_t)plant_->Config->iWindUpMaxVal))     pi = -((int32_t)plant_->Config->iWindUpMaxVal);
-		else if(pi > ((int32_t)plant_->Config->iWindUpMaxVal)) pi =  ((int32_t)plant_->Config->iWindUpMaxVal);
+		u = pTerm + plant_->integralVal;
+		if(u < -((int32_t)plant_->Config->iWindUpMaxVal))     u = -((int32_t)plant_->Config->iWindUpMaxVal);
+		else if(u > ((int32_t)plant_->Config->iWindUpMaxVal)) u =  ((int32_t)plant_->Config->iWindUpMaxVal);
 
-		*result_ = pi;
+		*result_ = u;
 	}
 	return retVal;
 }

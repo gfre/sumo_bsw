@@ -44,6 +44,7 @@ typedef void FilterFct_t(void);
 typedef enum TACHO_FilterType_e{
 	MOVING_AVERAGE_FILTER = 0,
 	KALMAN_FILTER,
+	TRACKING_LOOP_FILTER,
 }TACHO_FilterType_t;
 
 typedef struct TACHO_Filter_s{

@@ -43,6 +43,8 @@ typedef enum PID_PlantType_e
 	PID_RIGHT_MOTOR_SPEED,
 	PID_LEFT_MOTOR_POS,
 	PID_RIGHT_MOTOR_POS,
+	PID_LFT_TL,
+	PID_RGHT_TL,
 }PID_PlantType_t;
 
 typedef enum PID_SatType_e

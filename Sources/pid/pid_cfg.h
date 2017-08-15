@@ -38,10 +38,9 @@
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-EXTERNAL_ PID_PlantCfg_t* Get_pPidCfg(void);
 
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
 
-#endif /* !TACHO_CFG_H_ */
+#endif /* !PID_CFG_H_ */
