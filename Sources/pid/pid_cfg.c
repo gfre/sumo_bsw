@@ -61,7 +61,7 @@ static PID_Plant_t plantTbl[] =
 		{PID_LEFT_MOTOR_POS_NAME,  PID_LEFT_MOTOR_POS,    &LeftPosCfg,    PID_NO_SAT, 0, 0, TACHO_Read_CurLeftPos,       DRV_Read_LeftPosTrgtVal},
 		{PID_RIGHT_MOTOR_POS_NAME, PID_RIGHT_MOTOR_POS,   &RightPosCfg,   PID_NO_SAT, 0, 0, TACHO_Read_CurRightPos,		 DRV_Read_RightPosTrgtVal},
 		{PID_LFT_TL_NAME,          PID_LFT_TL,			  &tlLftCfg,	  PID_NO_SAT, 0, 0, TL_Read_CurLftPos,			 TACHO_Read_CurLeftPos,},
-		{PID_RGHT_TL_NAME,         PID_RGHT_TL,			  &tlRghtCfg,	  PID_NO_SAT, 0, 0, TL_Read_CurLftPos,			 TACHO_Read_CurRightPos,},
+		{PID_RGHT_TL_NAME,         PID_RGHT_TL,			  &tlRghtCfg,	  PID_NO_SAT, 0, 0, TL_Read_CurRghtPos,		 TACHO_Read_CurRightPos,},
 };
 
 static PID_PlantCfg_t pidCfg =

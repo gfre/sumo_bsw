@@ -17,6 +17,7 @@
 /*======================================= >> #INCLUDES << ========================================*/
 #include "tl.h"
 #include "pid_api.h"
+#include "tacho.h"
 
 
 
@@ -35,7 +36,8 @@
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 static PID_Plant_t* TL_LftPlnt  = NULL;
 static PID_Plant_t* TL_RghtPlnt = NULL;
-static int32_t TL_CurLftSpd = 0, TL_CurRghtSpd = 0, TL_CurLftPos = 0, TL_CurRghtPos = 0;
+static int32_t TL_CurLftSpd = 0, TL_CurRghtSpd = 0;
+static int32_t TL_CurLftPos = 0, TL_CurRghtPos = 0; //scaled to 1000
 
 
 
@@ -53,7 +55,7 @@ StdRtn_t TL_Read_CurLftPos(int32_t* result_)
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != result_)
 	{
-		*result_ = TL_CurLftPos;
+		*result_ = TL_CurLftPos/1000;
 		retVal 	= ERR_OK;
 	}
 	return retVal;
@@ -64,7 +66,7 @@ StdRtn_t TL_Read_CurRghtPos(int32_t* result_)
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != result_)
 	{
-		*result_ = TL_CurRghtPos;
+		*result_ = TL_CurRghtPos/1000;
 		retVal 	= ERR_OK;
 	}
 	return retVal;
@@ -96,12 +98,17 @@ void TL_Main()
 	StdRtn_t retVal = ERR_OK;
 	retVal |= PI(TL_LftPlnt,  &TL_CurLftSpd);
 	retVal |= PI(TL_RghtPlnt, &TL_CurRghtSpd);
+	TL_CurLftPos  += TL_CurLftSpd * TACHO_SAMPLE_PERIOD_MS;
+	TL_CurRghtPos += TL_CurRghtSpd * TACHO_SAMPLE_PERIOD_MS;
+
 }
 
 void TL_Deinit()
 {
 	TL_CurLftSpd  = 0;
 	TL_CurRghtSpd = 0;
+	TL_CurLftPos  = 0;
+	TL_CurRghtPos = 0;
 }
 
 #ifdef MASTER_tl_C_
