@@ -34,8 +34,8 @@
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-static PID_Plant_t* TL_LftPlnt  = NULL;
-static PID_Plant_t* TL_RghtPlnt = NULL;
+static PID_Plnt_t* TL_LftPlnt  = NULL;
+static PID_Plnt_t* TL_RghtPlnt = NULL;
 static int32_t TL_CurLftSpd = 0, TL_CurRghtSpd = 0;
 static int32_t TL_CurLftPos = 0, TL_CurRghtPos = 0; //scaled to 1000
 
@@ -101,6 +101,10 @@ void TL_Main()
 	TL_CurLftPos  += TL_CurLftSpd * TACHO_SAMPLE_PERIOD_MS;
 	TL_CurRghtPos += TL_CurRghtSpd * TACHO_SAMPLE_PERIOD_MS;
 
+	if (ERR_OK != retVal)
+	{
+		/* error handling */
+	}
 }
 
 void TL_Deinit()

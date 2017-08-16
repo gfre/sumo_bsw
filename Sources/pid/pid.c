@@ -45,7 +45,7 @@
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-StdRtn_t PI(PID_Plant_t* plant_, int32_t* result_)
+StdRtn_t PI(PID_Plnt_t* plant_, int32_t* result_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	int32_t pTerm = 0, dTerm = 0, u = 0, error = 0, trgt = 0, cur = 0;
@@ -56,7 +56,7 @@ StdRtn_t PI(PID_Plant_t* plant_, int32_t* result_)
 		retVal |= plant_->pCurValFct(&cur);
 		error = trgt - cur;
 
-		if( (PID_LEFT_MOTOR_POS == plant_->PlantType) || (PID_RIGHT_MOTOR_POS == plant_->PlantType) ) //teil der config? so nicht allgemein
+		if( (PID_LFT_MTR_POS == plant_->PlantType) || (PID_RGHT_MTR_POS == plant_->PlantType) ) //teil der config? so nicht allgemein
 		{
 			if ( (error > -10) && (error<10) )  /* avoid jitter around zero */
 			{
@@ -106,14 +106,14 @@ StdRtn_t PI(PID_Plant_t* plant_, int32_t* result_)
 void PID_Init(void)
 {
 	NVM_PidCfg_t pidCfg = {0u};
-	PID_Plant_t* posLeftPlant = NULL;
-	PID_Plant_t* posRightPlant = NULL;
-	PID_Plant_t* speedLeftPlant = NULL;
-	PID_Plant_t* speedRightPlant = NULL;
-	posLeftPlant    = &Get_pPidCfg()->pPlantTbl[PID_LEFT_MOTOR_POS];
-	posRightPlant   = &Get_pPidCfg()->pPlantTbl[PID_RIGHT_MOTOR_POS];
-	speedLeftPlant  = &Get_pPidCfg()->pPlantTbl[PID_LEFT_MOTOR_SPEED];
-	speedRightPlant = &Get_pPidCfg()->pPlantTbl[PID_RIGHT_MOTOR_SPEED];
+	PID_Plnt_t* posLeftPlant = NULL;
+	PID_Plnt_t* posRightPlant = NULL;
+	PID_Plnt_t* speedLeftPlant = NULL;
+	PID_Plnt_t* speedRightPlant = NULL;
+	posLeftPlant    = &Get_pPidCfg()->pPlantTbl[PID_LFT_MTR_POS];
+	posRightPlant   = &Get_pPidCfg()->pPlantTbl[PID_RGHT_MTR_POS];
+	speedLeftPlant  = &Get_pPidCfg()->pPlantTbl[PID_LFT_MTR_SPD];
+	speedRightPlant = &Get_pPidCfg()->pPlantTbl[PID_RGHT_MTR_SPD];
 
 	if ( ERR_OK == NVM_Read_PIDPosCfg(&pidCfg) )
 	{

@@ -38,10 +38,10 @@ typedef StdRtn_t SavePIDCfg_t(const NVM_PidCfg_t *);
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 static void PID_PrintHelp(const CLS1_StdIOType *io);
 static void PID_PrintStatus(const CLS1_StdIOType *io);
-static void PrintPIDstatus(PID_Plant_t *plant_, const unsigned char *kindStr, const CLS1_StdIOType *io);
-static uint8_t ParsePidParameter(PID_Plant_t *plant_, const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
-static StdRtn_t PID_restoreCfg(ReadPIDCfg_t *readDfltCfg_, SavePIDCfg_t *saveCfg_, PID_Plant_t *plant_);
-static StdRtn_t PID_saveCfg(SavePIDCfg_t *saveCfg_, PID_Plant_t *plant_);
+static void PrintPIDstatus(PID_Plnt_t *plant_, const unsigned char *kindStr, const CLS1_StdIOType *io);
+static uint8_t ParsePidParameter(PID_Plnt_t *plant_, const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
+static StdRtn_t PID_restoreCfg(ReadPIDCfg_t *readDfltCfg_, SavePIDCfg_t *saveCfg_, PID_Plnt_t *plant_);
+static StdRtn_t PID_saveCfg(SavePIDCfg_t *saveCfg_, PID_Plnt_t *plant_);
 
 
 
@@ -62,7 +62,7 @@ static void PID_PrintHelp(const CLS1_StdIOType *io)
 	CLS1_SendHelpStr((unsigned char*)"  speed (L|R) restore", (unsigned char*)"Restores and saves default parameters for (L|R) speed control to NVM\r\n", io->stdOut);
 }
 
-static void PrintPIDstatus(PID_Plant_t* plant_, const unsigned char *kindStr, const CLS1_StdIOType *io)
+static void PrintPIDstatus(PID_Plnt_t* plant_, const unsigned char *kindStr, const CLS1_StdIOType *io)
 {
 	unsigned char buf[48];
 	unsigned char kindBuf[16];
@@ -119,7 +119,7 @@ static void PID_PrintStatus(const CLS1_StdIOType *io)
 
 }
 
-static uint8_t ParsePidParameter(PID_Plant_t* plant_, const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io) {
+static uint8_t ParsePidParameter(PID_Plnt_t* plant_, const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io) {
 	const unsigned char *p;
 	uint32_t val32u;
 	uint8_t val8u;
@@ -176,7 +176,7 @@ static uint8_t ParsePidParameter(PID_Plant_t* plant_, const unsigned char *cmd, 
 
 
 
-static StdRtn_t PID_restoreCfg(ReadPIDCfg_t *readDfltCfg_, SavePIDCfg_t *saveCfg_, PID_Plant_t* plant_)
+static StdRtn_t PID_restoreCfg(ReadPIDCfg_t *readDfltCfg_, SavePIDCfg_t *saveCfg_, PID_Plnt_t* plant_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	NVM_PidCfg_t tmp = {0u};
@@ -188,7 +188,7 @@ static StdRtn_t PID_restoreCfg(ReadPIDCfg_t *readDfltCfg_, SavePIDCfg_t *saveCfg
 			plant_->Config->Factor_KP_scld = (int32_t)tmp.KP_scld;
 			plant_->Config->Factor_KI_scld = (int32_t)tmp.KI_scld;
 			plant_->Config->Factor_KD_scld = (int32_t)tmp.KD_scld;
-			plant_->Config->Scale 		  = (int32_t)tmp.Scale;
+			plant_->Config->Scale 		   = (int32_t)tmp.Scale;
 			plant_->Config->iWindUpMaxVal  = (int32_t)tmp.iWindupMaxVal;
 			if (ERR_OK == saveCfg_(&tmp))
 			{
@@ -200,7 +200,7 @@ static StdRtn_t PID_restoreCfg(ReadPIDCfg_t *readDfltCfg_, SavePIDCfg_t *saveCfg
 }
 
 
-static StdRtn_t PID_saveCfg(SavePIDCfg_t *saveCfg_, PID_Plant_t *plant_)
+static StdRtn_t PID_saveCfg(SavePIDCfg_t *saveCfg_, PID_Plnt_t *plant_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	NVM_PidCfg_t tmp = {0u};
@@ -210,7 +210,7 @@ static StdRtn_t PID_saveCfg(SavePIDCfg_t *saveCfg_, PID_Plant_t *plant_)
 		tmp.KP_scld = plant_->Config->Factor_KP_scld;
 		tmp.KI_scld = plant_->Config->Factor_KI_scld;
 		tmp.KD_scld = plant_->Config->Factor_KD_scld;
-		tmp.Scale    = plant_->Config->Scale;
+		tmp.Scale   = plant_->Config->Scale;
 		tmp.iWindupMaxVal = plant_->Config->iWindUpMaxVal;
 		if (ERR_OK == saveCfg_(&tmp))
 		{
@@ -233,48 +233,48 @@ uint8_t PID_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_Std
 		PID_PrintStatus(io);
 		*handled = TRUE;
 	} else if (UTIL1_strcmp((char*)cmd, (char*)"pid pos restore")==0) {
-		if( ( ERR_OK == PID_restoreCfg(NVM_Read_Dflt_PIDPosCfg, NVM_Save_PIDPosCfg, &(Get_pPidCfg()->pPlantTbl[PID_LEFT_MOTOR_POS]) ) )
-		&&	( ERR_OK == PID_restoreCfg(NVM_Read_Dflt_PIDPosCfg, NVM_Save_PIDPosCfg, &(Get_pPidCfg()->pPlantTbl[PID_RIGHT_MOTOR_POS]) ) ) )
+		if( ( ERR_OK == PID_restoreCfg(NVM_Read_Dflt_PIDPosCfg, NVM_Save_PIDPosCfg, &(Get_pPidCfg()->pPlantTbl[PID_LFT_MTR_POS]) ) )
+		&&	( ERR_OK == PID_restoreCfg(NVM_Read_Dflt_PIDPosCfg, NVM_Save_PIDPosCfg, &(Get_pPidCfg()->pPlantTbl[PID_RGHT_MTR_POS]) ) ) )
 		{
 			*handled = TRUE;
 		}
 	} else if (UTIL1_strcmp((char*)cmd, (char*)"pid speed L restore")==0) {
-		if( ERR_OK == PID_restoreCfg(NVM_Read_Dflt_PIDSpdLeCfg, NVM_Save_PIDSpdLeCfg, &(Get_pPidCfg()->pPlantTbl[PID_LEFT_MOTOR_SPEED]) ) )
+		if( ERR_OK == PID_restoreCfg(NVM_Read_Dflt_PIDSpdLeCfg, NVM_Save_PIDSpdLeCfg, &(Get_pPidCfg()->pPlantTbl[PID_LFT_MTR_SPD]) ) )
 		{
 			*handled = TRUE;
 		}
 	} else if (UTIL1_strcmp((char*)cmd, (char*)"pid speed R restore")==0) {
-		if( ERR_OK == PID_restoreCfg(NVM_Read_Dflt_PIDSpdRiCfg, NVM_Save_PIDSpdRiCfg, &(Get_pPidCfg()->pPlantTbl[PID_RIGHT_MOTOR_SPEED]) ) )
+		if( ERR_OK == PID_restoreCfg(NVM_Read_Dflt_PIDSpdRiCfg, NVM_Save_PIDSpdRiCfg, &(Get_pPidCfg()->pPlantTbl[PID_RGHT_MTR_SPD]) ) )
 		{
 			*handled = TRUE;
 		}
 
 	} else if (UTIL1_strncmp((char*)cmd, (char*)"pid pos ", sizeof("pid pos ")-1)==0) {
-		res = ParsePidParameter( &(Get_pPidCfg()->pPlantTbl[PID_LEFT_MOTOR_POS]), cmd+sizeof("pid pos ")-1, handled, io);
+		res = ParsePidParameter( &(Get_pPidCfg()->pPlantTbl[PID_LFT_MTR_POS]), cmd+sizeof("pid pos ")-1, handled, io);
 		if (res==ERR_OK)
 		{
-			res = ParsePidParameter( &(Get_pPidCfg()->pPlantTbl[PID_RIGHT_MOTOR_POS]), cmd+sizeof("pid pos ")-1, handled, io);
+			res = ParsePidParameter( &(Get_pPidCfg()->pPlantTbl[PID_RGHT_MTR_POS]), cmd+sizeof("pid pos ")-1, handled, io);
 		}
 
 		if (res==ERR_OK)
 		{
-			if( ( ERR_OK != PID_saveCfg(NVM_Save_PIDPosCfg, &(Get_pPidCfg()->pPlantTbl[PID_LEFT_MOTOR_POS]) ) )
-			||	( ERR_OK != PID_saveCfg(NVM_Save_PIDPosCfg, &(Get_pPidCfg()->pPlantTbl[PID_RIGHT_MOTOR_POS]) ) ) )
+			if( ( ERR_OK != PID_saveCfg(NVM_Save_PIDPosCfg, &(Get_pPidCfg()->pPlantTbl[PID_LFT_MTR_POS]) ) )
+			||	( ERR_OK != PID_saveCfg(NVM_Save_PIDPosCfg, &(Get_pPidCfg()->pPlantTbl[PID_RGHT_MTR_POS]) ) ) )
 			{
 				/* error handling */
 			}
 		}
 	} else if (UTIL1_strncmp((char*)cmd, (char*)"pid speed L ", sizeof("pid speed L ")-1)==0) {
-		res = ParsePidParameter( &(Get_pPidCfg()->pPlantTbl[PID_LEFT_MOTOR_SPEED]), cmd+sizeof("pid speed L ")-1, handled, io);
+		res = ParsePidParameter( &(Get_pPidCfg()->pPlantTbl[PID_LFT_MTR_SPD]), cmd+sizeof("pid speed L ")-1, handled, io);
 
-		if( ERR_OK != PID_saveCfg(NVM_Save_PIDSpdLeCfg, &(Get_pPidCfg()->pPlantTbl[PID_LEFT_MOTOR_SPEED]) ) )
+		if( ERR_OK != PID_saveCfg(NVM_Save_PIDSpdLeCfg, &(Get_pPidCfg()->pPlantTbl[PID_LFT_MTR_SPD]) ) )
 		{
 			/* error handling */
 		}
 	} else if (UTIL1_strncmp((char*)cmd, (char*)"pid speed R ", sizeof("pid speed R ")-1)==0) {
-		res = ParsePidParameter( &(Get_pPidCfg()->pPlantTbl[PID_RIGHT_MOTOR_SPEED]), cmd+sizeof("pid speed R ")-1, handled, io);
+		res = ParsePidParameter( &(Get_pPidCfg()->pPlantTbl[PID_RGHT_MTR_SPD]), cmd+sizeof("pid speed R ")-1, handled, io);
 
-		if( ERR_OK != PID_saveCfg(NVM_Save_PIDSpdRiCfg, &(Get_pPidCfg()->pPlantTbl[PID_RIGHT_MOTOR_SPEED])) )
+		if( ERR_OK != PID_saveCfg(NVM_Save_PIDSpdRiCfg, &(Get_pPidCfg()->pPlantTbl[PID_RGHT_MTR_SPD])) )
 		{
 			/* error handling */
 		}

@@ -23,60 +23,50 @@
 #include "tl_api.h"
 
 /*======================================= >> #DEFINES << =========================================*/
-#define MOTOR_MAX_VAL (0xFFFFu)
-#define PID_LEFT_MOTOR_SPD_NAME  ("speed L")
-#define PID_RIGHT_MOTOR_SPD_NAME ("speed R")
-#define PID_LEFT_MOTOR_POS_NAME  ("pos L")
-#define PID_RIGHT_MOTOR_POS_NAME ("pos R")
-#define PID_LFT_TL_NAME		 	 ("tl L")
-#define PID_RGHT_TL_NAME		 ("tl R")
+#define MOTOR_MAX_VAL        (0xFFFFu)
+#define PID_LFT_MTR_SPD_STR  ("speed L")
+#define PID_RGHT_MTR_SPD_STR ("speed R")
+#define PID_LFT_MTR_POS_STR  ("pos L")
+#define PID_RGHT_MTR_POS_STR ("pos R")
+#define PID_LFT_TL_STR		 ("tl L")
+#define PID_RGHT_TL_STR		 ("tl R")
 
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-/* typedef unit8 TmplType_t; */
-
-
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-/* static StdRtn_t TMPL_CustomFct(const TmplType_t *input_, TmplType_t *output_); */
-
-
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-							   /* KP   |  KI  |  KD  |  Scale  |  PI Output Limit  */
-static PID_Cfg_t LeftSpeedCfg  = {2000u,  80u,   0u,    100u,     MOTOR_MAX_VAL,};
-static PID_Cfg_t RightSpeedCfg = {2000u,  80u,   0u,    100u,     MOTOR_MAX_VAL,};
-static PID_Cfg_t LeftPosCfg    = {1000u,  1u,    50u,   100u, 	  MOTOR_MAX_VAL,};
-static PID_Cfg_t RightPosCfg   = {1000u,  1u,    50u,   100u, 	  MOTOR_MAX_VAL,};
-static PID_Cfg_t tlLftCfg  	   = {1000u,  10u,   0u,    100u, 	  MOTOR_MAX_VAL,};
-static PID_Cfg_t tlRghtCfg     = {1000u,  10u,   0u,    100u, 	  MOTOR_MAX_VAL,};
+							/* KP   |  KI  |  KD  |  Scale  |  PI Output Limit  */
+static PID_Cfg_t LftSpdCfg  = {2000u,  80u,   0u,    100u,    MOTOR_MAX_VAL,};
+static PID_Cfg_t RghtSpdCfg = {2000u,  80u,   0u,    100u,    MOTOR_MAX_VAL,};
+static PID_Cfg_t LftPosCfg  = {1000u,  1u,    50u,   100u, 	  MOTOR_MAX_VAL,};
+static PID_Cfg_t RghtPosCfg = {1000u,  1u,    50u,   100u, 	  MOTOR_MAX_VAL,};
+static PID_Cfg_t TLLftCfg  	= {1000u,  10u,   0u,    100u, 	  MOTOR_MAX_VAL,}; //output of PI is velocity so 'PI Output Limit' value should be at least >5500 steps/s!
+static PID_Cfg_t TLRghtCfg  = {1000u,  10u,   0u,    100u, 	  MOTOR_MAX_VAL,};
 
-
-
-static PID_Plant_t plantTbl[] =
+static PID_Plnt_t plntTbl[] =
 {
-		{PID_LEFT_MOTOR_SPD_NAME,  PID_LEFT_MOTOR_SPEED,  &LeftSpeedCfg,  PID_NO_SAT, 0, 0, TACHO_Read_CurFltrdLeftSpd,  DRV_Read_LeftSpdTrgtVal},
-		{PID_RIGHT_MOTOR_SPD_NAME, PID_RIGHT_MOTOR_SPEED, &RightSpeedCfg, PID_NO_SAT, 0, 0, TACHO_Read_CurFltrdRightSpd, DRV_Read_RightSpdTrgtVal},
-		{PID_LEFT_MOTOR_POS_NAME,  PID_LEFT_MOTOR_POS,    &LeftPosCfg,    PID_NO_SAT, 0, 0, TACHO_Read_CurLeftPos,       DRV_Read_LeftPosTrgtVal},
-		{PID_RIGHT_MOTOR_POS_NAME, PID_RIGHT_MOTOR_POS,   &RightPosCfg,   PID_NO_SAT, 0, 0, TACHO_Read_CurRightPos,		 DRV_Read_RightPosTrgtVal},
-		{PID_LFT_TL_NAME,          PID_LFT_TL,			  &tlLftCfg,	  PID_NO_SAT, 0, 0, TL_Read_CurLftPos,			 TACHO_Read_CurLeftPos,},
-		{PID_RGHT_TL_NAME,         PID_RGHT_TL,			  &tlRghtCfg,	  PID_NO_SAT, 0, 0, TL_Read_CurRghtPos,		 TACHO_Read_CurRightPos,},
+		{PID_LFT_MTR_SPD_STR,  PID_LFT_MTR_SPD,  &LftSpdCfg,  PID_NO_SAT, 0, 0, TACHO_Read_CurFltrdLftSpd,  DRV_Read_LftSpdTrgtVal},
+		{PID_RGHT_MTR_SPD_STR, PID_RGHT_MTR_SPD, &RghtSpdCfg, PID_NO_SAT, 0, 0, TACHO_Read_CurFltrdRghtSpd, DRV_Read_RghtSpdTrgtVal},
+		{PID_LFT_MTR_POS_STR,  PID_LFT_MTR_POS,  &LftPosCfg,  PID_NO_SAT, 0, 0, TACHO_Read_CurLftPos,       DRV_Read_LftPosTrgtVal},
+		{PID_RGHT_MTR_POS_STR, PID_RGHT_MTR_POS, &RghtPosCfg, PID_NO_SAT, 0, 0, TACHO_Read_CurRghtPos,	    DRV_Read_RghtPosTrgtVal},
+		{PID_LFT_TL_STR,       PID_LFT_TL,		 &TLLftCfg,   PID_NO_SAT, 0, 0, TL_Read_CurLftPos,			TACHO_Read_CurLftPos,},
+		{PID_RGHT_TL_STR,      PID_RGHT_TL,		 &TLRghtCfg,  PID_NO_SAT, 0, 0, TL_Read_CurRghtPos,		    TACHO_Read_CurRghtPos,},
 };
 
-static PID_PlantCfg_t pidCfg =
+static PID_PlntCfg_t pidCfg =
 {
-	plantTbl,
-	sizeof(plantTbl)/sizeof(plantTbl[0]),
+	plntTbl,
+	sizeof(plntTbl)/sizeof(plntTbl[0]),
 };
-
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 
 
-
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-PID_PlantCfg_t* Get_pPidCfg(void) {return &pidCfg;}
+PID_PlntCfg_t* Get_pPidCfg(void) {return &pidCfg;}
 
 
 
