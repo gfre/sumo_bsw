@@ -16,6 +16,7 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "tl.h"
+#include "tl_api.h"
 #include "pid_api.h"
 #include "tacho.h"
 
@@ -23,7 +24,7 @@
 
 /*======================================= >> #DEFINES << =========================================*/
 #define TL_CONDITIONAL_RETURN(condVar_, trueVal_, falseVal_) ( (TRUE == condVar_)?(trueVal_) : (falseVal_) )
-
+#define TL_CalcFilteredVal( plant_,  result_ )    ( PID( plant_,  result_ ) )
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 
@@ -34,8 +35,8 @@
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-static PID_Plnt_t* TL_LftPlnt  = NULL;
-static PID_Plnt_t* TL_RghtPlnt = NULL;
+static PID_Itm_t* TL_LftPlnt  = NULL;
+static PID_Itm_t* TL_RghtPlnt = NULL;
 static int32_t TL_CurLftSpd = 0, TL_CurRghtSpd = 0;
 static int32_t TL_CurLftPos = 0, TL_CurRghtPos = 0; //scaled to 1000
 
@@ -74,8 +75,8 @@ StdRtn_t TL_Read_CurRghtPos(int32_t* result_)
 
 void TL_Init()
 {
-	TL_LftPlnt  = &(Get_pPidCfg()->pPlantTbl[PID_LFT_TL]);
-	TL_RghtPlnt = &(Get_pPidCfg()->pPlantTbl[PID_RGHT_TL]);
+	TL_LftPlnt  = &(Get_pTLCfg()->pItmTbl[TL_LFT_SPD_EST]);
+	TL_RghtPlnt = &(Get_pTLCfg()->pItmTbl[TL_RGHT_SPD_EST]);
 
 	if(NULL != TL_LftPlnt && NULL != TL_RghtPlnt)
 	{
@@ -96,8 +97,8 @@ void TL_Init()
 void TL_Main()
 {
 	StdRtn_t retVal = ERR_OK;
-	retVal |= PI(TL_LftPlnt,  &TL_CurLftSpd);
-	retVal |= PI(TL_RghtPlnt, &TL_CurRghtSpd);
+	retVal |= TL_CalcFilteredVal(TL_LftPlnt,  &TL_CurLftSpd);
+	retVal |= TL_CalcFilteredVal(TL_RghtPlnt, &TL_CurRghtSpd);
 	TL_CurLftPos  += TL_CurLftSpd * TACHO_SAMPLE_PERIOD_MS;
 	TL_CurRghtPos += TL_CurRghtSpd * TACHO_SAMPLE_PERIOD_MS;
 

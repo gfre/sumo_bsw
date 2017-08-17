@@ -37,15 +37,14 @@
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 typedef  StdRtn_t ReadValFct_t(int32_t*);
 
-typedef enum PID_PlntType_e
+typedef enum PID_ItmType_e
 {
 	PID_LFT_MTR_SPD = 0,
 	PID_RGHT_MTR_SPD,
 	PID_LFT_MTR_POS,
 	PID_RGHT_MTR_POS,
-	PID_LFT_TL,
-	PID_RGHT_TL,
-}PID_PlntType_t;
+	PID_NUM_OF_ITMS,
+}PID_ItmType_t;
 
 typedef enum PID_SatType_e
 {
@@ -54,38 +53,38 @@ typedef enum PID_SatType_e
 	PID_POS_SAT,
 }PID_SatType_t;
 
-typedef struct PID_Cfg_s
+typedef struct PID_PrmCfg_s
 {
 	uint32_t Factor_KP_scld;
 	uint32_t Factor_KI_scld;
 	uint32_t Factor_KD_scld;
 	uint8_t  Scale;
-	uint32_t  iWindUpMaxVal;
-}PID_Cfg_t;
+	uint32_t SaturationVal;
+}PID_PrmCfg_t;
 
-typedef struct PID_Plnt_s
+typedef struct PID_Itm_s
 {
-	char_t* 		pPlantName;
-	PID_PlntType_t  PlantType;
-	PID_Cfg_t*      Config;
+	char_t          *pItmName;
+	PID_ItmType_t   ItmType;
+	PID_PrmCfg_t    *Config;
 	PID_SatType_t	Saturation;
 	int32_t 		lastError;
 	int32_t 		integralVal;
 	ReadValFct_t    *pCurValFct;
 	ReadValFct_t    *pTrgtValFct;
-}PID_Plnt_t;
+}PID_Itm_t;
 
-typedef struct PID_PlantCfg_s
+typedef struct PID_Cfg_s
 {
-	PID_Plnt_t* pPlantTbl;
-	int8_t       numOfPlants;
-}PID_PlntCfg_t;
+	PID_Itm_t    *pItmTbl;
+	int8_t       NumOfItms;
+}PID_Cfg_t;
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 
-EXTERNAL_ StdRtn_t PI(PID_Plnt_t* plant_, int32_t* result_);
+EXTERNAL_ StdRtn_t PID(PID_Itm_t* plant_, int32_t* result_);
 
-EXTERNAL_ PID_PlntCfg_t* Get_pPidCfg(void);
+EXTERNAL_ PID_Cfg_t* Get_pPidCfg(void);
 
 /**
  * @}

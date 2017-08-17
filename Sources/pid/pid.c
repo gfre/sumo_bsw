@@ -45,57 +45,64 @@
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-StdRtn_t PI(PID_Plnt_t* plant_, int32_t* result_)
+StdRtn_t PID(PID_Itm_t* itm_, int32_t* result_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	int32_t pTerm = 0, dTerm = 0, u = 0, error = 0, trgt = 0, cur = 0;
 	if(NULL != result_)
 	{
 		retVal = ERR_OK;
-		retVal |= plant_->pTrgtValFct(&trgt);
-		retVal |= plant_->pCurValFct(&cur);
+		retVal |= itm_->pTrgtValFct(&trgt);
+		retVal |= itm_->pCurValFct(&cur);
 		error = trgt - cur;
 
-		if( (PID_LFT_MTR_POS == plant_->PlantType) || (PID_RGHT_MTR_POS == plant_->PlantType) ) //teil der config? so nicht allgemein
+	/* Integration and anti windup part */
+		if( (PID_LFT_MTR_POS == itm_->ItmType) || (PID_RGHT_MTR_POS == itm_->ItmType) ) // TODO could be part of itm_: "bool avoidJitter" and "int32_t JitterVal"?
 		{
-			if ( (error > -10) && (error<10) )  /* avoid jitter around zero */
+			if ( (error > -10) && (error < 10) )  /* avoid jitter around zero */
 			{
 				error = 0;
 			}
 		}
 
-		if( ( (plant_->Saturation <= PID_NEG_SAT)  && (error < 0) ) || ( (plant_->Saturation >= PID_POS_SAT) && (error > 0) ) )
+		if( ( (itm_->Saturation <= PID_NEG_SAT)  && (error < 0) ) || ( (itm_->Saturation >= PID_POS_SAT) && (error > 0) ) )
 		{
 			/* don't allow integrating in direction of saturation -> do nothing */
 		}
 		else //allow integrating in opposite direction to saturation
 		{
-			plant_->integralVal += ( (((int32_t)plant_->Config->Factor_KI_scld)*error)/((int32_t)plant_->Config->Scale) );
+			itm_->integralVal += ( (((int32_t)itm_->Config->Factor_KI_scld)*error)/((int32_t)itm_->Config->Scale) );
 		}
 
-		if( (plant_->integralVal > -((int32_t)plant_->Config->iWindUpMaxVal)) && (plant_->integralVal < (int32_t)plant_->Config->iWindUpMaxVal) )
+		if( (itm_->integralVal > -((int32_t)itm_->Config->SaturationVal)) && (itm_->integralVal < (int32_t)itm_->Config->SaturationVal) )
 		{
-			plant_->Saturation = PID_NO_SAT;
+			itm_->Saturation = PID_NO_SAT;
 		}
-		else if(plant_->integralVal < -((int32_t)plant_->Config->iWindUpMaxVal))
+		else if(itm_->integralVal < -((int32_t)itm_->Config->SaturationVal))
 		{
-			plant_->integralVal = -((int32_t)plant_->Config->iWindUpMaxVal);
-			plant_->Saturation  = PID_NEG_SAT;
+			itm_->integralVal = -((int32_t)itm_->Config->SaturationVal);
+			itm_->Saturation  = PID_NEG_SAT;
 		}
-		else if(plant_->integralVal > ((int32_t)plant_->Config->iWindUpMaxVal) )
+		else if(itm_->integralVal > ((int32_t)itm_->Config->SaturationVal) )
 		{
-			plant_->integralVal = ((int32_t)plant_->Config->iWindUpMaxVal);
-			plant_->Saturation  = PID_POS_SAT;
+			itm_->integralVal = ((int32_t)itm_->Config->SaturationVal);
+			itm_->Saturation  = PID_POS_SAT;
 		}
 
-		pTerm = ( (((int32_t)plant_->Config->Factor_KP_scld)*error)/((int32_t)plant_->Config->Scale) );
+	/* Proportional part */
+		pTerm = ( (((int32_t)itm_->Config->Factor_KP_scld)*error)/((int32_t)itm_->Config->Scale) );
 
-		if(pTerm < -((int32_t)plant_->Config->iWindUpMaxVal))     pTerm = -((int32_t)plant_->Config->iWindUpMaxVal);
-		else if(pTerm > (int32_t)(plant_->Config->iWindUpMaxVal)) pTerm =  ((int32_t)plant_->Config->iWindUpMaxVal);
+		if(pTerm < -((int32_t)itm_->Config->SaturationVal))     pTerm = -((int32_t)itm_->Config->SaturationVal);
+		else if(pTerm > (int32_t)(itm_->Config->SaturationVal)) pTerm =  ((int32_t)itm_->Config->SaturationVal);
 
-		u = pTerm + plant_->integralVal;
-		if(u < -((int32_t)plant_->Config->iWindUpMaxVal))     u = -((int32_t)plant_->Config->iWindUpMaxVal);
-		else if(u > ((int32_t)plant_->Config->iWindUpMaxVal)) u =  ((int32_t)plant_->Config->iWindUpMaxVal);
+	/* Derivative part */
+		dTerm = ( (error - (int32_t)itm_->lastError) * (int32_t)itm_->Config->Factor_KD_scld ) / ( (int32_t)itm_->Config->Scale );
+		itm_->lastError = error;
+
+	/* Calculate and bound output */
+		u = pTerm + dTerm + itm_->integralVal;
+		if(u < -((int32_t)itm_->Config->SaturationVal))     u = -((int32_t)itm_->Config->SaturationVal);
+		else if(u > ((int32_t)itm_->Config->SaturationVal)) u =  ((int32_t)itm_->Config->SaturationVal);
 
 		*result_ = u;
 	}
@@ -105,22 +112,47 @@ StdRtn_t PI(PID_Plnt_t* plant_, int32_t* result_)
 
 void PID_Init(void)
 {
+
+//	uint8_t i = 0u;
+//	PID_Cfg_t* pidCfg = NULL;
+//	PID_Itm_t* pidItm = NULL;
+//	pidCfg = Get_pPidCfg();
+//
+//	if(NULL != pidCfg && NULL != pidCfg->pItmTbl)
+//	{
+//		for(i = 0; i < pidCfg->NumOfItms; i++)
+//		{
+//			pidItm = &pidCfg->pItmTbl[i];
+//
+//			if (ERR_OK != NVM_Read_PidPrmCfg(pidItm->Config))
+//			{
+//				if (ERR_OK != NVM_Read_Dflt_PidPrmCfg(pidItm->Config))
+//				{
+//					/* error handling */
+//				}
+//		    }
+//			pidItm->Saturation  = PID_NO_SAT;
+//			pidItm->integralVal = 0;
+//			pidItm->lastError 	= 0;
+//		}
+//	}
+
 	NVM_PidCfg_t pidCfg = {0u};
-	PID_Plnt_t* posLeftPlant = NULL;
-	PID_Plnt_t* posRightPlant = NULL;
-	PID_Plnt_t* speedLeftPlant = NULL;
-	PID_Plnt_t* speedRightPlant = NULL;
-	posLeftPlant    = &Get_pPidCfg()->pPlantTbl[PID_LFT_MTR_POS];
-	posRightPlant   = &Get_pPidCfg()->pPlantTbl[PID_RGHT_MTR_POS];
-	speedLeftPlant  = &Get_pPidCfg()->pPlantTbl[PID_LFT_MTR_SPD];
-	speedRightPlant = &Get_pPidCfg()->pPlantTbl[PID_RGHT_MTR_SPD];
+	PID_Itm_t* posLeftPlant = NULL;
+	PID_Itm_t* posRightPlant = NULL;
+	PID_Itm_t* speedLeftPlant = NULL;
+	PID_Itm_t* speedRightPlant = NULL;
+	posLeftPlant    = &Get_pPidCfg()->pItmTbl[PID_LFT_MTR_POS];
+	posRightPlant   = &Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_POS];
+	speedLeftPlant  = &Get_pPidCfg()->pItmTbl[PID_LFT_MTR_SPD];
+	speedRightPlant = &Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_SPD];
 
 	if ( ERR_OK == NVM_Read_PIDPosCfg(&pidCfg) )
 	{
 		posLeftPlant->Config->Factor_KP_scld = (int32_t)pidCfg.KP_scld;
 		posLeftPlant->Config->Factor_KI_scld = (int32_t)pidCfg.KI_scld;
 		posLeftPlant->Config->Factor_KD_scld = (int32_t)pidCfg.KD_scld;
-		posLeftPlant->Config->iWindUpMaxVal  = (int32_t)pidCfg.iWindupMaxVal;
+		posLeftPlant->Config->SaturationVal  = (int32_t)pidCfg.SaturationVal;
 		posLeftPlant->Config->Scale          = (int32_t)pidCfg.Scale;
 	}
 	else if(ERR_OK == NVM_Read_Dflt_PIDPosCfg(&pidCfg))
@@ -128,7 +160,7 @@ void PID_Init(void)
 		posLeftPlant->Config->Factor_KP_scld = (int32_t)pidCfg.KP_scld;
 		posLeftPlant->Config->Factor_KI_scld = (int32_t)pidCfg.KI_scld;
 		posLeftPlant->Config->Factor_KD_scld = (int32_t)pidCfg.KD_scld;
-		posLeftPlant->Config->iWindUpMaxVal  = (int32_t)pidCfg.iWindupMaxVal;
+		posLeftPlant->Config->SaturationVal  = (int32_t)pidCfg.SaturationVal;
 		posLeftPlant->Config->Scale   		= (int32_t)pidCfg.Scale;
 		NVM_Save_PIDPosCfg(&pidCfg);
 	}
@@ -144,7 +176,7 @@ void PID_Init(void)
 	posRightPlant->Config->Factor_KP_scld = posLeftPlant->Config->Factor_KP_scld;
 	posRightPlant->Config->Factor_KI_scld = posLeftPlant->Config->Factor_KI_scld;
 	posRightPlant->Config->Factor_KD_scld = posLeftPlant->Config->Factor_KD_scld;
-	posRightPlant->Config->iWindUpMaxVal  = posLeftPlant->Config->iWindUpMaxVal;
+	posRightPlant->Config->SaturationVal  = posLeftPlant->Config->SaturationVal;
 	posRightPlant->Config->Scale   		  = posLeftPlant->Config->Scale;
 	posRightPlant->lastError   = posLeftPlant->lastError;
 	posRightPlant->integralVal = posLeftPlant->integralVal;
@@ -155,7 +187,7 @@ void PID_Init(void)
 		speedLeftPlant->Config->Factor_KP_scld = (int32_t)pidCfg.KP_scld;
 		speedLeftPlant->Config->Factor_KI_scld = (int32_t)pidCfg.KI_scld;
 		speedLeftPlant->Config->Factor_KD_scld = (int32_t)pidCfg.KD_scld;
-		speedLeftPlant->Config->iWindUpMaxVal  = (int32_t)pidCfg.iWindupMaxVal;
+		speedLeftPlant->Config->SaturationVal  = (int32_t)pidCfg.SaturationVal;
 		speedLeftPlant->Config->Scale 		  = (int32_t)pidCfg.Scale;
 	}
 	else if(ERR_OK == NVM_Read_Dflt_PIDSpdLeCfg(&pidCfg))
@@ -163,7 +195,7 @@ void PID_Init(void)
 		speedLeftPlant->Config->Factor_KP_scld = (int32_t)pidCfg.KP_scld;
 		speedLeftPlant->Config->Factor_KI_scld = (int32_t)pidCfg.KI_scld;
 		speedLeftPlant->Config->Factor_KD_scld = (int32_t)pidCfg.KD_scld;
-		speedLeftPlant->Config->iWindUpMaxVal  = (int32_t)pidCfg.iWindupMaxVal;
+		speedLeftPlant->Config->SaturationVal  = (int32_t)pidCfg.SaturationVal;
 		speedLeftPlant->Config->Scale 		  = (int32_t)pidCfg.Scale;
 		NVM_Save_PIDSpdLeCfg(&pidCfg);
 	}
@@ -177,7 +209,7 @@ void PID_Init(void)
 		speedRightPlant->Config->Factor_KP_scld = (int32_t)pidCfg.KP_scld;
 		speedRightPlant->Config->Factor_KI_scld = (int32_t)pidCfg.KI_scld;
 		speedRightPlant->Config->Factor_KD_scld = (int32_t)pidCfg.KD_scld;
-		speedRightPlant->Config->iWindUpMaxVal  = (int32_t)pidCfg.iWindupMaxVal;
+		speedRightPlant->Config->SaturationVal  = (int32_t)pidCfg.SaturationVal;
 		speedRightPlant->Config->Scale 		    = (int32_t)pidCfg.Scale;
 	}
 	else if(ERR_OK == NVM_Read_Dflt_PIDSpdRiCfg(&pidCfg))
@@ -185,7 +217,7 @@ void PID_Init(void)
 		speedRightPlant->Config->Factor_KP_scld = (int32_t)pidCfg.KP_scld;
 		speedRightPlant->Config->Factor_KI_scld = (int32_t)pidCfg.KI_scld;
 		speedRightPlant->Config->Factor_KD_scld = (int32_t)pidCfg.KD_scld;
-		speedRightPlant->Config->iWindUpMaxVal  = (int32_t)pidCfg.iWindupMaxVal;
+		speedRightPlant->Config->SaturationVal  = (int32_t)pidCfg.SaturationVal;
 		speedRightPlant->Config->Scale 		   = (int32_t)pidCfg.Scale;
 		NVM_Save_PIDSpdRiCfg(&pidCfg);
 	}

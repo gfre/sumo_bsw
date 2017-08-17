@@ -17,6 +17,7 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "ACon_Types.h"
+#include "pid_api.h"
 
 
 #ifdef MASTER_TL_C_
@@ -34,6 +35,12 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
+typedef enum TL_ItmType_e
+{
+	TL_LFT_SPD_EST = 0,
+	TL_RGHT_SPD_EST,
+	TL_NUM_OF_ITMS,
+}TL_ItmType_t;
 
 
 
@@ -41,6 +48,7 @@
 StdRtn_t TL_Read_CurLftPos(int32_t* result_);
 StdRtn_t TL_Read_CurRghtPos(int32_t* result_);
 int32_t  TL_Get_Speed(bool isLeft_);
+PID_Cfg_t *Get_pTLCfg(void);
 /**
  * @}
  */

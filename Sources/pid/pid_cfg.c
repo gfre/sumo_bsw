@@ -28,8 +28,6 @@
 #define PID_RGHT_MTR_SPD_STR ("speed R")
 #define PID_LFT_MTR_POS_STR  ("pos L")
 #define PID_RGHT_MTR_POS_STR ("pos R")
-#define PID_LFT_TL_STR		 ("tl L")
-#define PID_RGHT_TL_STR		 ("tl R")
 
 
 
@@ -38,36 +36,31 @@
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-							/* KP   |  KI  |  KD  |  Scale  |  PI Output Limit  */
-static PID_Cfg_t LftSpdCfg  = {2000u,  80u,   0u,    100u,    MOTOR_MAX_VAL,};
-static PID_Cfg_t RghtSpdCfg = {2000u,  80u,   0u,    100u,    MOTOR_MAX_VAL,};
-static PID_Cfg_t LftPosCfg  = {1000u,  1u,    50u,   100u, 	  MOTOR_MAX_VAL,};
-static PID_Cfg_t RghtPosCfg = {1000u,  1u,    50u,   100u, 	  MOTOR_MAX_VAL,};
-static PID_Cfg_t TLLftCfg  	= {1000u,  10u,   0u,    100u, 	  MOTOR_MAX_VAL,}; //output of PI is velocity so 'PI Output Limit' value should be at least >5500 steps/s!
-static PID_Cfg_t TLRghtCfg  = {1000u,  10u,   0u,    100u, 	  MOTOR_MAX_VAL,};
+							   /* KP   |  KI  |  KD  |  Scale  |  PI Output Limit  */
+static PID_PrmCfg_t LftSpdCfg  = {2000u,  80u,   0u,    100u,    MOTOR_MAX_VAL,};
+static PID_PrmCfg_t RghtSpdCfg = {2000u,  80u,   0u,    100u,    MOTOR_MAX_VAL,};
+static PID_PrmCfg_t LftPosCfg  = {1000u,  1u,    50u,   100u, 	 MOTOR_MAX_VAL,};
+static PID_PrmCfg_t RghtPosCfg = {1000u,  1u,    50u,   100u,    MOTOR_MAX_VAL,};
 
-static PID_Plnt_t plntTbl[] =
+static PID_Itm_t itmTbl[] =
 {
 		{PID_LFT_MTR_SPD_STR,  PID_LFT_MTR_SPD,  &LftSpdCfg,  PID_NO_SAT, 0, 0, TACHO_Read_CurFltrdLftSpd,  DRV_Read_LftSpdTrgtVal},
 		{PID_RGHT_MTR_SPD_STR, PID_RGHT_MTR_SPD, &RghtSpdCfg, PID_NO_SAT, 0, 0, TACHO_Read_CurFltrdRghtSpd, DRV_Read_RghtSpdTrgtVal},
 		{PID_LFT_MTR_POS_STR,  PID_LFT_MTR_POS,  &LftPosCfg,  PID_NO_SAT, 0, 0, TACHO_Read_CurLftPos,       DRV_Read_LftPosTrgtVal},
 		{PID_RGHT_MTR_POS_STR, PID_RGHT_MTR_POS, &RghtPosCfg, PID_NO_SAT, 0, 0, TACHO_Read_CurRghtPos,	    DRV_Read_RghtPosTrgtVal},
-		{PID_LFT_TL_STR,       PID_LFT_TL,		 &TLLftCfg,   PID_NO_SAT, 0, 0, TL_Read_CurLftPos,			TACHO_Read_CurLftPos,},
-		{PID_RGHT_TL_STR,      PID_RGHT_TL,		 &TLRghtCfg,  PID_NO_SAT, 0, 0, TL_Read_CurRghtPos,		    TACHO_Read_CurRghtPos,},
 };
 
-static PID_PlntCfg_t pidCfg =
+static PID_Cfg_t pidCfg =
 {
-	plntTbl,
-	sizeof(plntTbl)/sizeof(plntTbl[0]),
+	itmTbl,
+	sizeof(itmTbl)/sizeof(itmTbl[0]),
 };
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-PID_PlntCfg_t* Get_pPidCfg(void) {return &pidCfg;}
-
+PID_Cfg_t* Get_pPidCfg(void) {return &pidCfg;}
 
 
 #ifdef MASTER_pid_cfg_C_

@@ -48,19 +48,19 @@ typedef enum TACHO_FilterType_e{
 }TACHO_FltrType_t;
 
 typedef struct TACHO_Fltr_s{
-    char_t* pFilterName;
+    char_t           *pFilterName;
     TACHO_FltrType_t FilterType;
-	bool isInitialized;
-	bool isUsingSampledSpeed;
-    FltrFct_t *pFilterInitFct;
-    FltrFct_t *pFilterMainFct;
-    FltrFct_t *pFilterDeinitFct;
-	int32_t (*pGetSpeedFct)(bool isLeft_);
+	bool 		isInitialized;
+	bool 		isUsingSampledSpeed;
+    FltrFct_t 	*pFilterInitFct;
+    FltrFct_t 	*pFilterMainFct;
+    FltrFct_t   *pFilterDeinitFct;
+	int32_t    (*pGetSpeedFct)(bool isLeft_);
 }TACHO_Fltr_t;
 
 typedef struct TACHO_Cfg_s{
 	TACHO_Fltr_t* pFilterTable;
-	int8_t NumOfFilters; 			// Anzahl an Filterkomponenten in Filtertable
+	int8_t		  NumOfFilters; 			// Anzahl an Filterkomponenten in Filtertable
 }TACHO_Cfg_t;
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
@@ -71,12 +71,12 @@ typedef struct TACHO_Cfg_s{
  */
 EXTERNAL_ TACHO_Cfg_t* Get_pTachoCfg(void);
 
-EXTERNAL_ StdRtn_t TACHO_Read_CurLftPos(int32_t* pos_);
-EXTERNAL_ StdRtn_t TACHO_Read_CurRghtPos(int32_t* pos_);
-EXTERNAL_ StdRtn_t TACHO_Read_CurUnfltrdLftSpd(int32_t* speed_);
-EXTERNAL_ StdRtn_t TACHO_Read_CurUnfltrdRghtSpd(int32_t* speed_);
-EXTERNAL_ StdRtn_t TACHO_Read_CurFltrdLftSpd(int32_t* speed_);
-EXTERNAL_ StdRtn_t TACHO_Read_CurFltrdRghtSpd(int32_t* speed_);
+EXTERNAL_ StdRtn_t TACHO_Read_CurLftPos(int32_t* result_);
+EXTERNAL_ StdRtn_t TACHO_Read_CurRghtPos(int32_t* result_);
+EXTERNAL_ StdRtn_t TACHO_Read_CurUnfltrdLftSpd(int32_t* result_);
+EXTERNAL_ StdRtn_t TACHO_Read_CurUnfltrdRghtSpd(int32_t* result_);
+EXTERNAL_ StdRtn_t TACHO_Read_CurFltrdLftSpd(int32_t* result_);
+EXTERNAL_ StdRtn_t TACHO_Read_CurFltrdRghtSpd(int32_t* result_);
 
 EXTERNAL_ void TACHO_Set_FltrType(TACHO_FltrType_t type_);
 EXTERNAL_ TACHO_FltrType_t TACHO_Get_FltrType(void);

@@ -5,13 +5,15 @@
  *
  * This module implements a tachometer component which calculates the speed based on quadrature
  * counters for up to two speed sources. The sign of the calculated speed signal indicates the
- * direction of movement. Furthermore, it provides a moving average filter to smoothing the speed
- * signal using a ring buffer for data collection. The module uses the firmware components
- * @a Q4C for both, left- and right-hand side, speed signals.
+ * direction of movement. Furthermore, it provides access to filter components defined in the
+ * tacho_cfg.c file to smooth the velocity signal. By default, it uses a moving average filter
+ * to calulate the velocity. It samples the current position using component @a Q4C for
+ * both, left- and right-hand side. Sampling rate is defined by TACHO_SAMPLING_PERIOD_MS.
  *
  * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
- * @date 	30.03.2017
+ * @author  S. Helling,  stu112498@tf-uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	17.08.2017
  *
 * @copyright @LGPL2_1
  *
@@ -42,7 +44,7 @@
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 static int32_t TACHO_UnfltrdLftSpd = 0, TACHO_UnfltrdRghtSpd = 0;
-static int32_t TACHO_FltrdLftSpd 	= 0, TACHO_FltrdRghtSpd   = 0;
+static int32_t TACHO_FltrdLftSpd   = 0, TACHO_FltrdRghtSpd   = 0;
 static int32_t TACHO_CurLftPos     = 0, TACHO_CurRghtPos     = 0;
 static int32_t TACHO_OldLftPos     = 0, TACHO_OldRghtPos     = 0;
 
@@ -54,72 +56,109 @@ static TACHO_Fltr_t *pActiveFltr = NULL;
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-StdRtn_t TACHO_Read_CurLftPos(int32_t* pos_)
+StdRtn_t TACHO_Read_CurLftPos(int32_t* result_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if(NULL != pos_)
+	if(NULL != result_)
 	{
-		*pos_  = TACHO_CurLftPos;
+		*result_  = TACHO_CurLftPos;
 		retVal = ERR_OK;
 	}
 	return retVal;
 }
 
-StdRtn_t TACHO_Read_CurRghtPos(int32_t* pos_)
+StdRtn_t TACHO_Read_CurRghtPos(int32_t* result_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if(NULL != pos_)
+	if(NULL != result_)
 	{
-		*pos_  = TACHO_CurRghtPos;
+		*result_  = TACHO_CurRghtPos;
 		retVal = ERR_OK;
 	}
 	return retVal;
 }
 
-StdRtn_t TACHO_Read_CurUnfltrdLftSpd(int32_t* speed_)
+StdRtn_t TACHO_Read_CurUnfltrdLftSpd(int32_t* result_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if(NULL != speed_)
+	if(NULL != result_)
 	{
-		*speed_  = TACHO_UnfltrdLftSpd;
+		*result_  = TACHO_UnfltrdLftSpd;
 		retVal   = ERR_OK;
 	}
 	return retVal;
 }
 
-StdRtn_t TACHO_Read_CurUnfltrdRghtSpd(int32_t* speed_)
+StdRtn_t TACHO_Read_CurUnfltrdRghtSpd(int32_t* result_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if(NULL != speed_)
+	if(NULL != result_)
 	{
-		*speed_  = TACHO_UnfltrdRghtSpd;
+		*result_  = TACHO_UnfltrdRghtSpd;
 		retVal   = ERR_OK;
 	}
 	return retVal;
 }
 
-StdRtn_t TACHO_Read_CurFltrdLftSpd(int32_t* speed_)
+StdRtn_t TACHO_Read_CurFltrdLftSpd(int32_t* result_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if (NULL != speed_)
+	if (NULL != result_)
 	{
-		*speed_ = TACHO_FltrdLftSpd;
+		*result_ = TACHO_FltrdLftSpd;
 		retVal = ERR_OK;
 	}
 	return retVal;
 }
 
-StdRtn_t TACHO_Read_CurFltrdRghtSpd(int32_t* speed_)
+StdRtn_t TACHO_Read_CurFltrdRghtSpd(int32_t* result_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if (NULL != speed_)
+	if (NULL != result_)
 	{
-		*speed_ = TACHO_FltrdRghtSpd;
+		*result_ = TACHO_FltrdRghtSpd;
 		retVal  = ERR_OK;
 	}
 	return retVal;
 }
 
+void TACHO_Set_FltrType(TACHO_FltrType_t type_)
+{
+	TACHO_Cfg_t *tbl = NULL;
+	tbl = Get_pTachoCfg();
+	if( (NULL != pActiveFltr) && (NULL != pActiveFltr->pFilterDeinitFct) )
+	{
+		if(TRUE == pActiveFltr->isInitialized)
+		{
+			pActiveFltr->pFilterDeinitFct();
+			if(TRUE == pActiveFltr->isUsingSampledSpeed)
+			{
+				TACHO_UnfltrdLftSpd  = 0;
+				TACHO_UnfltrdRghtSpd = 0;
+			}
+			pActiveFltr->isInitialized = FALSE;
+		}
+	}
+
+	pActiveFltr = &(tbl->pFilterTable[type_]);
+	if( (NULL != pActiveFltr) && (NULL != pActiveFltr->pFilterInitFct) )
+	{
+		if(FALSE == pActiveFltr->isInitialized)
+		{
+			pActiveFltr->pFilterInitFct();
+			pActiveFltr->isInitialized = TRUE;
+		}
+	}
+	else
+	{
+		/* TODO error handling */
+	}
+}
+
+TACHO_FltrType_t TACHO_Get_FltrType(void)
+{
+	return pActiveFltr->FilterType;
+}
 
 void TACHO_Sample(void) {
 	static int cnt = 0;
@@ -196,43 +235,6 @@ void TACHO_Main(void)
 	}
 }
 
-void TACHO_Set_FltrType(TACHO_FltrType_t type_)
-{
-	TACHO_Cfg_t *tbl = NULL;
-	tbl = Get_pTachoCfg();
-	if( (NULL != pActiveFltr) && (NULL != pActiveFltr->pFilterDeinitFct) )
-	{
-		if(TRUE == pActiveFltr->isInitialized)
-		{
-			pActiveFltr->pFilterDeinitFct();
-			if(TRUE == pActiveFltr->isUsingSampledSpeed)
-			{
-				TACHO_UnfltrdLftSpd  = 0;
-				TACHO_UnfltrdRghtSpd = 0;
-			}
-			pActiveFltr->isInitialized = FALSE;
-		}
-	}
-
-	pActiveFltr = &(tbl->pFilterTable[type_]);
-	if( (NULL != pActiveFltr) && (NULL != pActiveFltr->pFilterInitFct) )
-	{
-		if(FALSE == pActiveFltr->isInitialized)
-		{
-			pActiveFltr->pFilterInitFct();
-			pActiveFltr->isInitialized = TRUE;
-		}
-	}
-	else
-	{
-		/* TODO error handling */
-	}
-}
-
-TACHO_FltrType_t TACHO_Get_FltrType(void)
-{
-	return pActiveFltr->FilterType;
-}
 
 #ifdef MASTER_tacho_C_
 #undef MASTER_tacho_C_

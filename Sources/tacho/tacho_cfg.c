@@ -1,11 +1,14 @@
 /***********************************************************************************************//**
  * @file		tacho_cfg.c
  * @ingroup		tacho
- * @brief 		<This is a brief description.>
+ * @brief 		Component to sample current position of motors. Also provides interface to used Filter
  *
- * <This is a detailed description.>
+ * This component provides an interface between a filter component to estimate the current velocity
+ * and the tacho.c file. New filter components can be added to the fltrTbl and must match the provided
+ * form of a 'TACHO_Fltr_t' variable and can then be activated using the command line shell.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author  S. Helling,		  stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	13.06.2017
  *
  * @copyright @LGPL2_1
@@ -36,7 +39,7 @@
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-static TACHO_Fltr_t filterTbl[] =
+static TACHO_Fltr_t fltrTbl[] =
 {
 		{MAF_FILTER_STRING, MOVING_AVERAGE_FILTER, FALSE, FALSE, MAF_Init, MAF_Main, MAF_Deinit, MAF_Get_Speed},
 		{KF_FILTER_STRING,  KALMAN_FILTER,  	   FALSE, TRUE,  KF_Init,  KF_Main,  KF_Deinit,  KF_Get_Speed},
@@ -46,8 +49,8 @@ static TACHO_Fltr_t filterTbl[] =
 
 static TACHO_Cfg_t tachoCfg =
 {
-		filterTbl,
-		sizeof(filterTbl)/sizeof(filterTbl[0]),
+		fltrTbl,
+		sizeof(fltrTbl)/sizeof(fltrTbl[0]),
 };
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/

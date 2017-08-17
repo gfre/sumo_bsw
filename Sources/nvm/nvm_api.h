@@ -61,7 +61,7 @@ typedef struct NVM_PidCfg_s
 	uint16_t KI_scld;			/**< integral gain */
 	uint16_t KD_scld;			/**< differential gain */
 	uint16_t Scale;				/**< Scaling value */
-	uint32_t iWindupMaxVal;		/**< maximum integral value for anti windup procedure */
+	uint32_t SaturationVal;		/**< maximum integral value for anti windup procedure */
 } NVM_PidCfg_t; /* 12Byte */
 
 /**

@@ -99,21 +99,21 @@ static StdRtn_t GetCmd(void) {
 			FRTOS1_taskENTER_CRITICAL();
 			if (cmd.cmd==DRV_SET_MODE) {
 //				PID_Start(); /* reset PID, especially integral counters */
-				Get_pPidCfg()->pPlantTbl[PID_LFT_MTR_SPD].Saturation = 0;
-				Get_pPidCfg()->pPlantTbl[PID_LFT_MTR_SPD].integralVal = 0;
-				Get_pPidCfg()->pPlantTbl[PID_LFT_MTR_SPD].lastError = 0;
+				Get_pPidCfg()->pItmTbl[PID_LFT_MTR_SPD].Saturation = 0;
+				Get_pPidCfg()->pItmTbl[PID_LFT_MTR_SPD].integralVal = 0;
+				Get_pPidCfg()->pItmTbl[PID_LFT_MTR_SPD].lastError = 0;
 
-				Get_pPidCfg()->pPlantTbl[PID_RGHT_MTR_SPD].Saturation = 0;
-				Get_pPidCfg()->pPlantTbl[PID_RGHT_MTR_SPD].integralVal = 0;
-				Get_pPidCfg()->pPlantTbl[PID_RGHT_MTR_SPD].lastError = 0;
+				Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_SPD].Saturation = 0;
+				Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_SPD].integralVal = 0;
+				Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_SPD].lastError = 0;
 
-				Get_pPidCfg()->pPlantTbl[PID_LFT_MTR_POS].Saturation = 0;
-				Get_pPidCfg()->pPlantTbl[PID_LFT_MTR_POS].integralVal = 0;
-				Get_pPidCfg()->pPlantTbl[PID_LFT_MTR_POS].lastError = 0;
+				Get_pPidCfg()->pItmTbl[PID_LFT_MTR_POS].Saturation = 0;
+				Get_pPidCfg()->pItmTbl[PID_LFT_MTR_POS].integralVal = 0;
+				Get_pPidCfg()->pItmTbl[PID_LFT_MTR_POS].lastError = 0;
 
-				Get_pPidCfg()->pPlantTbl[PID_RGHT_MTR_POS].Saturation = 0;
-				Get_pPidCfg()->pPlantTbl[PID_RGHT_MTR_POS].integralVal = 0;
-				Get_pPidCfg()->pPlantTbl[PID_RGHT_MTR_POS].lastError = 0;
+				Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_POS].Saturation = 0;
+				Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_POS].integralVal = 0;
+				Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_POS].lastError = 0;
 				DRV_Status.mode = cmd.mode;
 			} else if (cmd.cmd==DRV_SET_SPEED) {
 				DRV_Status.speed.left = cmd.speed.left;
@@ -193,21 +193,21 @@ uint8_t DRV_SetMode(DRV_Mode_t mode) {
 	if (mode==DRV_MODE_STOP) {
 		(void)DRV_SetPos(Q4CLeft_GetPos(), Q4CRight_GetPos()); /* set current position */
 		//PID_Start(); /* reset PID, especially integral counters */
-		Get_pPidCfg()->pPlantTbl[PID_LFT_MTR_SPD].Saturation = 0;
-		Get_pPidCfg()->pPlantTbl[PID_LFT_MTR_SPD].integralVal = 0;
-		Get_pPidCfg()->pPlantTbl[PID_LFT_MTR_SPD].lastError = 0;
+		Get_pPidCfg()->pItmTbl[PID_LFT_MTR_SPD].Saturation = 0;
+		Get_pPidCfg()->pItmTbl[PID_LFT_MTR_SPD].integralVal = 0;
+		Get_pPidCfg()->pItmTbl[PID_LFT_MTR_SPD].lastError = 0;
 
-		Get_pPidCfg()->pPlantTbl[PID_RGHT_MTR_SPD].Saturation = 0;
-		Get_pPidCfg()->pPlantTbl[PID_RGHT_MTR_SPD].integralVal = 0;
-		Get_pPidCfg()->pPlantTbl[PID_RGHT_MTR_SPD].lastError = 0;
+		Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_SPD].Saturation = 0;
+		Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_SPD].integralVal = 0;
+		Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_SPD].lastError = 0;
 
-		Get_pPidCfg()->pPlantTbl[PID_LFT_MTR_POS].Saturation = 0;
-		Get_pPidCfg()->pPlantTbl[PID_LFT_MTR_POS].integralVal = 0;
-		Get_pPidCfg()->pPlantTbl[PID_LFT_MTR_POS].lastError = 0;
+		Get_pPidCfg()->pItmTbl[PID_LFT_MTR_POS].Saturation = 0;
+		Get_pPidCfg()->pItmTbl[PID_LFT_MTR_POS].integralVal = 0;
+		Get_pPidCfg()->pItmTbl[PID_LFT_MTR_POS].lastError = 0;
 
-		Get_pPidCfg()->pPlantTbl[PID_RGHT_MTR_POS].Saturation = 0;
-		Get_pPidCfg()->pPlantTbl[PID_RGHT_MTR_POS].integralVal = 0;
-		Get_pPidCfg()->pPlantTbl[PID_RGHT_MTR_POS].lastError = 0;
+		Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_POS].Saturation = 0;
+		Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_POS].integralVal = 0;
+		Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_POS].lastError = 0;
 		mode = DRV_MODE_POS;
 	}
 
@@ -349,7 +349,7 @@ void DRV_Init(void) {
 void DRV_MainFct(void)
 {
 	StdRtn_t retVal = ERR_OK;
-	int32_t PIVal = 0;
+	int32_t PIDVal = 0;
 	while (GetCmd()==ERR_OK)  /* returns ERR_RXEMPTY if queue is empty */
 	{
 		/* process incoming commands */
@@ -357,31 +357,31 @@ void DRV_MainFct(void)
 
 	if (DRV_Status.mode==DRV_MODE_SPEED)
 	{
-		retVal |= PI( &(Get_pPidCfg()->pPlantTbl[PID_LFT_MTR_SPD]), &PIVal);
-		DRV_ParsePIValToMotor(PIVal, TRUE);
+		retVal |= PID( &(Get_pPidCfg()->pItmTbl[PID_LFT_MTR_SPD]), &PIDVal);
+		DRV_ParsePIValToMotor(PIDVal, TRUE);
 
-		retVal |= PI( &(Get_pPidCfg()->pPlantTbl[PID_RGHT_MTR_SPD]), &PIVal);
-		DRV_ParsePIValToMotor(PIVal, FALSE);
+		retVal |= PID( &(Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_SPD]), &PIDVal);
+		DRV_ParsePIValToMotor(PIDVal, FALSE);
 	}
 	else if (DRV_Status.mode==DRV_MODE_STOP)
 	{
 		DRV_SetSpeed(0, 0);
 
-		retVal |= PI( &(Get_pPidCfg()->pPlantTbl[PID_LFT_MTR_SPD]), &PIVal);
-		DRV_ParsePIValToMotor(PIVal, TRUE);
+		retVal |= PID( &(Get_pPidCfg()->pItmTbl[PID_LFT_MTR_SPD]), &PIDVal);
+		DRV_ParsePIValToMotor(PIDVal, TRUE);
 
-		retVal |= PI( &(Get_pPidCfg()->pPlantTbl[PID_RGHT_MTR_SPD]), &PIVal);
-		DRV_ParsePIValToMotor(PIVal, FALSE);
+		retVal |= PID( &(Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_SPD]), &PIDVal);
+		DRV_ParsePIValToMotor(PIDVal, FALSE);
 	}
 	else if (DRV_Status.mode==DRV_MODE_POS)
 	{
-		retVal |= PI( &(Get_pPidCfg()->pPlantTbl[PID_LFT_MTR_POS]), &PIVal );
-		PIVal = PIVal*1000;
-		DRV_ParsePIValToMotor(PIVal, TRUE);
+		retVal |= PID( &(Get_pPidCfg()->pItmTbl[PID_LFT_MTR_POS]), &PIDVal );
+		PIDVal = PIDVal*50;
+		DRV_ParsePIValToMotor(PIDVal, TRUE);
 
-		retVal |= PI( &(Get_pPidCfg()->pPlantTbl[PID_RGHT_MTR_POS]), &PIVal );
-		PIVal = PIVal*1000;
-		DRV_ParsePIValToMotor(PIVal, FALSE);
+		retVal |= PID( &(Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_POS]), &PIDVal );
+		PIDVal = PIDVal*50;
+		DRV_ParsePIValToMotor(PIDVal, FALSE);
 	}
 	else if (DRV_Status.mode==DRV_MODE_NONE)
 	{
