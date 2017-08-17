@@ -105,9 +105,9 @@ static inline StdRtn_t MtxCalc(const MTX_t *mtx1_,  const MTX_t *mtx2_, uint8_t 
 	if ( ( NULL != opFctHdls[op_] )  && ( NULL != mtxRes_ ) )
 	{
 		retVal = ERR_OK;
-		for(i = 0; i < sizeRow_; i++ )
+		for(i = 0; i < sizeRow_ && ERR_OK == retVal; i++ )
 		{
-			for(j = 0; j < sizeCol_; j++ )
+			for(j = 0; j < sizeCol_ && ERR_OK == retVal; j++ )
 			{
 				switch(op_)
 				{
