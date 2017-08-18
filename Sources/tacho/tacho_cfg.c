@@ -41,9 +41,9 @@
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 static TACHO_Fltr_t fltrTbl[] =
 {
-		{MAF_FILTER_STRING, MOVING_AVERAGE_FILTER, FALSE, FALSE, MAF_Init, MAF_Main, MAF_Deinit, MAF_Get_Speed},
-		{KF_FILTER_STRING,  KALMAN_FILTER,  	   FALSE, TRUE,  KF_Init,  KF_Main,  KF_Deinit,  KF_Get_Speed},
-		{TL_FILTER_STRING,	TRACKING_LOOP_FILTER,  FALSE, FALSE, TL_Init,  TL_Main,  TL_Deinit,  TL_Get_Speed},
+		{MAF_FILTER_STRING, MOVING_AVERAGE_FILTER, FALSE, FALSE, MAF_Init, MAF_Main,   MAF_Deinit, MAF_Get_Speed},
+		{KF_FILTER_STRING,  KALMAN_FILTER,  	   FALSE, TRUE,  KF_Init,  KF_Main,    KF_Deinit,  KF_Get_Speed},
+		{TL_FILTER_STRING,	TRACKING_LOOP_FILTER,  FALSE, FALSE, TL_Reset, TL_CalcSpd, TL_Reset,   TL_Get_Speed},
 };
 
 

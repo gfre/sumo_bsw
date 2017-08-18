@@ -58,8 +58,6 @@ static void PID_PrintHelp(const CLS1_StdIOType *io)
 	CLS1_SendHelpStr((unsigned char*)"  pos scale <value>", (unsigned char*)"Scaling value\r\n", io->stdOut);
 	CLS1_SendHelpStr((unsigned char*)"  speed (L|R) (p|i|d|w) <value>", (unsigned char*)"Sets P, I, D or anti-Windup speed value\r\n", io->stdOut);
 	CLS1_SendHelpStr((unsigned char*)"  speed (L|R) scale <value>", (unsigned char*)"Scaling value\r\n", io->stdOut);
-	CLS1_SendHelpStr((unsigned char*)"  tl (L|R) (p|i|d|w) <value>", (unsigned char*)"Sets P, I, D or anti-Windup tracking loop value\r\n", io->stdOut);
-	CLS1_SendHelpStr((unsigned char*)"  tl (L|R) scale <value>", (unsigned char*)"Scaling value\r\n", io->stdOut);
 	CLS1_SendHelpStr((unsigned char*)"  pos restore", (unsigned char*)"Restores and saves default parameters for position control to NVM\r\n", io->stdOut);
 	CLS1_SendHelpStr((unsigned char*)"  speed (L|R) restore", (unsigned char*)"Restores and saves default parameters for (L|R) speed control to NVM\r\n", io->stdOut);
 }
@@ -83,7 +81,7 @@ static void PrintPIDstatus(PID_Itm_t* itm_, const unsigned char *kindStr, const 
 
 	UTIL1_strcpy(kindBuf, sizeof(buf), (unsigned char*)"  ");
 	UTIL1_strcat(kindBuf, sizeof(buf), kindStr);
-	UTIL1_strcat(kindBuf, sizeof(buf), (unsigned char*)" windup");
+	UTIL1_strcat(kindBuf, sizeof(buf), (unsigned char*)" saturation");
 	UTIL1_Num32sToStr(buf, sizeof(buf), itm_->Config->SaturationVal);
 	UTIL1_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
 	CLS1_SendStatusStr(kindBuf, buf, io->stdOut);
@@ -235,18 +233,18 @@ uint8_t PID_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_Std
 		PID_PrintStatus(io);
 		*handled = TRUE;
 	} else if (UTIL1_strcmp((char*)cmd, (char*)"pid pos restore")==0) {
-		if( ( ERR_OK == PID_restoreCfg(NVM_Read_Dflt_PIDPosCfg, NVM_Save_PIDPosCfg, &(Get_pPidCfg()->pItmTbl[PID_LFT_MTR_POS]) ) )
-		&&	( ERR_OK == PID_restoreCfg(NVM_Read_Dflt_PIDPosCfg, NVM_Save_PIDPosCfg, &(Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_POS]) ) ) )
+		if( ( ERR_OK == PID_restoreCfg(Get_pPidCfg()->pItmTbl[PID_LFT_MTR_POS].pNVMReadDfltValFct, Get_pPidCfg()->pItmTbl[PID_LFT_MTR_POS].pNVMSaveValFct, &(Get_pPidCfg()->pItmTbl[PID_LFT_MTR_POS]) ) )
+		&&	( ERR_OK == PID_restoreCfg(Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_POS].pNVMReadDfltValFct, Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_POS].pNVMSaveValFct, &(Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_POS]) ) ) )
 		{
 			*handled = TRUE;
 		}
 	} else if (UTIL1_strcmp((char*)cmd, (char*)"pid speed L restore")==0) {
-		if( ERR_OK == PID_restoreCfg(NVM_Read_Dflt_PIDSpdLeCfg, NVM_Save_PIDSpdLeCfg, &(Get_pPidCfg()->pItmTbl[PID_LFT_MTR_SPD]) ) )
+		if( ERR_OK == PID_restoreCfg(Get_pPidCfg()->pItmTbl[PID_LFT_MTR_SPD].pNVMReadDfltValFct, Get_pPidCfg()->pItmTbl[PID_LFT_MTR_SPD].pNVMSaveValFct, &(Get_pPidCfg()->pItmTbl[PID_LFT_MTR_SPD]) ) )
 		{
 			*handled = TRUE;
 		}
 	} else if (UTIL1_strcmp((char*)cmd, (char*)"pid speed R restore")==0) {
-		if( ERR_OK == PID_restoreCfg(NVM_Read_Dflt_PIDSpdRiCfg, NVM_Save_PIDSpdRiCfg, &(Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_SPD]) ) )
+		if( ERR_OK == PID_restoreCfg(Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_SPD].pNVMReadDfltValFct, Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_SPD].pNVMSaveValFct, &(Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_SPD]) ) )
 		{
 			*handled = TRUE;
 		}
@@ -260,8 +258,8 @@ uint8_t PID_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_Std
 
 		if (res==ERR_OK)
 		{
-			if( ( ERR_OK != PID_saveCfg(NVM_Save_PIDPosCfg, &(Get_pPidCfg()->pItmTbl[PID_LFT_MTR_POS]) ) )
-			||	( ERR_OK != PID_saveCfg(NVM_Save_PIDPosCfg, &(Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_POS]) ) ) )
+			if( ( ERR_OK != PID_saveCfg(Get_pPidCfg()->pItmTbl[PID_LFT_MTR_POS].pNVMSaveValFct, &(Get_pPidCfg()->pItmTbl[PID_LFT_MTR_POS]) ) )
+			||	( ERR_OK != PID_saveCfg(Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_POS].pNVMSaveValFct, &(Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_POS]) ) ) )
 			{
 				/* error handling */
 			}
@@ -269,14 +267,14 @@ uint8_t PID_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_Std
 	} else if (UTIL1_strncmp((char*)cmd, (char*)"pid speed L ", sizeof("pid speed L ")-1)==0) {
 		res = ParsePidParameter( &(Get_pPidCfg()->pItmTbl[PID_LFT_MTR_SPD]), cmd+sizeof("pid speed L ")-1, handled, io);
 
-		if( ERR_OK != PID_saveCfg(NVM_Save_PIDSpdLeCfg, &(Get_pPidCfg()->pItmTbl[PID_LFT_MTR_SPD]) ) )
+		if( ERR_OK != PID_saveCfg(Get_pPidCfg()->pItmTbl[PID_LFT_MTR_SPD].pNVMSaveValFct, &(Get_pPidCfg()->pItmTbl[PID_LFT_MTR_SPD]) ) )
 		{
 			/* error handling */
 		}
 	} else if (UTIL1_strncmp((char*)cmd, (char*)"pid speed R ", sizeof("pid speed R ")-1)==0) {
 		res = ParsePidParameter( &(Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_SPD]), cmd+sizeof("pid speed R ")-1, handled, io);
 
-		if( ERR_OK != PID_saveCfg(NVM_Save_PIDSpdRiCfg, &(Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_SPD])) )
+		if( ERR_OK != PID_saveCfg(Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_SPD].pNVMSaveValFct, &(Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_SPD]) ) )
 		{
 			/* error handling */
 		}
