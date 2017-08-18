@@ -43,7 +43,7 @@
 /*======================================= >> #DEFINES << =========================================*/
 #define TL_LFT_SPD_STR		("tl L")
 #define TL_RGHT_SPD_STR		("tl R")
-#define TL_LFT_SAT_VAL		(6000u)
+#define TL_LFT_SAT_VAL		(0xFFFFu)
 #define TL_RGHT_SAT_VAL		TL_LFT_SAT_VAL
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 
@@ -59,8 +59,8 @@ static PID_PrmCfg_t TLRghtSpdCfg = {3500u,  25u,   0u,    100u, 	TL_RGHT_SAT_VAL
 
 static PID_Itm_t tlItmTbl[] =
 {
-		{TL_LFT_SPD_STR,  TL_LFT_SPD_EST,  &TLLftSpdCfg,  PID_NO_SAT, 0, 0, TL_Read_CurLftPos,	TACHO_Read_CurLftPos,},
-		{TL_RGHT_SPD_STR, TL_RGHT_SPD_EST, &TLRghtSpdCfg, PID_NO_SAT, 0, 0, TL_Read_CurRghtPos, TACHO_Read_CurRghtPos,},
+		{TL_LFT_SPD_STR,  TL_LFT_SPD_EST,  &TLLftSpdCfg,  PID_NO_SAT, 0, 0, TL_Read_CurLftPos,	TACHO_Read_CurLftPos,  NULL, NULL, NULL},
+		{TL_RGHT_SPD_STR, TL_RGHT_SPD_EST, &TLRghtSpdCfg, PID_NO_SAT, 0, 0, TL_Read_CurRghtPos, TACHO_Read_CurRghtPos, NULL, NULL, NULL},
 };
 
 static PID_Cfg_t tlCfg =

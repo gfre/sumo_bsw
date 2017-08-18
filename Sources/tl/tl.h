@@ -44,9 +44,10 @@
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-void TL_Init(void);
-void TL_Main(void);
-void TL_Deinit(void);
+void TL_Reset(void);
+void TL_CalcSpd(void);
+void TL_RunStartup(void);
+
 
 
 /**

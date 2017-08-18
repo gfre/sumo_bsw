@@ -21,6 +21,7 @@
 /*======================================= >> #INCLUDES << ========================================*/
 #include "ACon_Types.h"
 #include "Platform.h"
+#include "nvm_api.h"
 
 #ifdef MASTER_pid_C_
 #define EXTERNAL_
@@ -36,6 +37,8 @@
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 typedef  StdRtn_t ReadValFct_t(int32_t*);
+typedef  StdRtn_t NVMReadFct_t(NVM_PidCfg_t*);
+typedef  StdRtn_t NVMSaveValFct_t(const NVM_PidCfg_t *);
 
 typedef enum PID_ItmType_e
 {
@@ -58,7 +61,7 @@ typedef struct PID_PrmCfg_s
 	uint32_t Factor_KP_scld;
 	uint32_t Factor_KI_scld;
 	uint32_t Factor_KD_scld;
-	uint8_t  Scale;
+	uint16_t Scale;
 	uint32_t SaturationVal;
 }PID_PrmCfg_t;
 
@@ -72,6 +75,9 @@ typedef struct PID_Itm_s
 	int32_t 		integralVal;
 	ReadValFct_t    *pCurValFct;
 	ReadValFct_t    *pTrgtValFct;
+	NVMReadFct_t 	*pNVMReadValFct;
+	NVMReadFct_t	*pNVMReadDfltValFct;
+	NVMSaveValFct_t *pNVMSaveValFct;
 }PID_Itm_t;
 
 typedef struct PID_Cfg_s

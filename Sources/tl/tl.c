@@ -35,11 +35,10 @@
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-static PID_Itm_t* TL_LftPlnt  = NULL;
-static PID_Itm_t* TL_RghtPlnt = NULL;
+static PID_Itm_t* TL_LftItm  = NULL;
+static PID_Itm_t* TL_RghtItm = NULL;
 static int32_t TL_CurLftSpd = 0, TL_CurRghtSpd = 0;
 static int32_t TL_CurLftPos = 0, TL_CurRghtPos = 0; //scaled to 1000
-
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
@@ -73,32 +72,79 @@ StdRtn_t TL_Read_CurRghtPos(int32_t* result_)
 	return retVal;
 }
 
-void TL_Init()
+void TL_RunStartup()
 {
-	TL_LftPlnt  = &(Get_pTLCfg()->pItmTbl[TL_LFT_SPD_EST]);
-	TL_RghtPlnt = &(Get_pTLCfg()->pItmTbl[TL_RGHT_SPD_EST]);
+	uint8_t i = 0u;
+	PID_Cfg_t* tlCfg = NULL;
+	NVM_PidCfg_t pidPrm = {0u};
+	StdRtn_t retVal = ERR_VALUE;
 
-	if(NULL != TL_LftPlnt && NULL != TL_RghtPlnt)
+	tlCfg = Get_pTLCfg();
+	if(NULL != tlCfg)
 	{
-		TL_LftPlnt->integralVal  = 0;
-		TL_LftPlnt->lastError    = 0;
-		TL_LftPlnt->Saturation   = PID_NO_SAT;
-
-		TL_RghtPlnt->integralVal = 0;
-		TL_RghtPlnt->lastError   = 0;
-		TL_RghtPlnt->Saturation  = PID_NO_SAT;
+		for(i = 0; i < tlCfg->NumOfItms; i++)
+		{
+			if(NULL != &tlCfg->pItmTbl[i])
+			{
+				if(NULL != tlCfg->pItmTbl[i].pNVMReadValFct)
+				{
+					retVal = tlCfg->pItmTbl[i].pNVMReadValFct(&pidPrm);
+					tlCfg->pItmTbl[i].Config->Factor_KP_scld = (uint32_t)pidPrm.KP_scld;
+					tlCfg->pItmTbl[i].Config->Factor_KI_scld = (uint32_t)pidPrm.KI_scld;
+					tlCfg->pItmTbl[i].Config->Factor_KD_scld = (uint32_t)pidPrm.KD_scld;
+					tlCfg->pItmTbl[i].Config->Scale		     = (uint16_t)pidPrm.Scale;
+					tlCfg->pItmTbl[i].Config->SaturationVal  = (uint32_t)pidPrm.SaturationVal;
+				}
+				if ( (NULL != tlCfg->pItmTbl[i].pNVMReadDfltValFct) && (ERR_OK != retVal) )
+				{
+					tlCfg->pItmTbl[i].pNVMReadDfltValFct(&pidPrm);
+					tlCfg->pItmTbl[i].Config->Factor_KP_scld = (uint32_t)pidPrm.KP_scld;
+					tlCfg->pItmTbl[i].Config->Factor_KI_scld = (uint32_t)pidPrm.KI_scld;
+					tlCfg->pItmTbl[i].Config->Factor_KD_scld = (uint32_t)pidPrm.KD_scld;
+					tlCfg->pItmTbl[i].Config->Scale		     = (uint16_t)pidPrm.Scale;
+					tlCfg->pItmTbl[i].Config->SaturationVal  = (uint32_t)pidPrm.SaturationVal;
+				}
+				else
+				{
+					/* take initialized values from pid_cfg.c */
+				}
+				tlCfg->pItmTbl[i].Saturation  = PID_NO_SAT;
+				tlCfg->pItmTbl[i].integralVal = 0;
+				tlCfg->pItmTbl[i].lastError   = 0;
+			}
+		}
 	}
 	else
 	{
 		/* error handling */
 	}
+	TL_LftItm  = &tlCfg->pItmTbl[TL_LFT_SPD_EST];
+	TL_RghtItm = &tlCfg->pItmTbl[TL_RGHT_SPD_EST];
 }
 
-void TL_Main()
+void TL_Reset()
+{
+	TL_LftItm->integralVal = 0;
+	TL_LftItm->Saturation  = PID_NO_SAT;
+	TL_LftItm->lastError   = 0;
+
+	TL_RghtItm->integralVal = 0;
+	TL_RghtItm->Saturation  = PID_NO_SAT;
+	TL_RghtItm->lastError   = 0;
+
+	TL_LftItm->pCurValFct(&TL_CurLftPos);
+	TL_RghtItm->pCurValFct(&TL_CurRghtPos);
+	TL_CurLftPos  *= 1000;
+	TL_CurRghtPos *= 1000;
+	TL_CurLftSpd  = 0;
+	TL_CurRghtSpd = 0;
+}
+
+void TL_CalcSpd()
 {
 	StdRtn_t retVal = ERR_OK;
-	retVal |= TL_CalcFilteredVal(TL_LftPlnt,  &TL_CurLftSpd);
-	retVal |= TL_CalcFilteredVal(TL_RghtPlnt, &TL_CurRghtSpd);
+	retVal |= TL_CalcFilteredVal(TL_LftItm,  &TL_CurLftSpd);
+	retVal |= TL_CalcFilteredVal(TL_RghtItm, &TL_CurRghtSpd);
 	TL_CurLftPos  += TL_CurLftSpd * TACHO_SAMPLE_PERIOD_MS;
 	TL_CurRghtPos += TL_CurRghtSpd * TACHO_SAMPLE_PERIOD_MS;
 
@@ -106,14 +152,6 @@ void TL_Main()
 	{
 		/* error handling */
 	}
-}
-
-void TL_Deinit()
-{
-	TL_CurLftSpd  = 0;
-	TL_CurRghtSpd = 0;
-	TL_CurLftPos  = 0;
-	TL_CurRghtPos = 0;
 }
 
 #ifdef MASTER_tl_C_
