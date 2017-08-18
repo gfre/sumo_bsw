@@ -92,8 +92,8 @@ typedef struct NVM_RomCfg_s
 	uint8_t filler[3];					/**< filler 	 						+ 3B mod4 0B */
 	NVM_PidCfg_t pidCfgPos;				/**< PID position control config 	 	+12B mod4 0B */
 	NVM_PidCfg_t pidCfgSpdLe;			/**< PID speed control left config 	 	+12B mod4 0B */
-	NVM_PidCfg_t pidCfgSpdRi;			/**< Reflectance sensors calib data	 	+24B mod4 0B */
-	NVM_ReflCalibData_t reflCalibData;
+	NVM_PidCfg_t pidCfgSpdRi;			/**< PID speed control right config  	+12B mod4 0B */
+	NVM_ReflCalibData_t reflCalibData;	/**< Reflectance sensors calib data	 	+24B mod4 0B */
 } NVM_RomCfg_t; /* 1 + 3 + 3*12 + 24 = 65 Byte*/
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
