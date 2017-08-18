@@ -112,114 +112,45 @@ StdRtn_t PID(PID_Itm_t* itm_, int32_t* result_)
 
 void PID_Init(void)
 {
+	uint8_t i = 0u;
+	PID_Cfg_t* pidCfg = NULL;
+	NVM_PidCfg_t pidPrm = {0u};
+	StdRtn_t retVal = ERR_VALUE;
 
-//	uint8_t i = 0u;
-//	PID_Cfg_t* pidCfg = NULL;
-//	PID_Itm_t* pidItm = NULL;
-//	pidCfg = Get_pPidCfg();
-//
-//	if(NULL != pidCfg && NULL != pidCfg->pItmTbl)
-//	{
-//		for(i = 0; i < pidCfg->NumOfItms; i++)
-//		{
-//			pidItm = &pidCfg->pItmTbl[i];
-//
-//			if (ERR_OK != NVM_Read_PidPrmCfg(pidItm->Config))
-//			{
-//				if (ERR_OK != NVM_Read_Dflt_PidPrmCfg(pidItm->Config))
-//				{
-//					/* error handling */
-//				}
-//		    }
-//			pidItm->Saturation  = PID_NO_SAT;
-//			pidItm->integralVal = 0;
-//			pidItm->lastError 	= 0;
-//		}
-//	}
-
-	NVM_PidCfg_t pidCfg = {0u};
-	PID_Itm_t* posLeftPlant = NULL;
-	PID_Itm_t* posRightPlant = NULL;
-	PID_Itm_t* speedLeftPlant = NULL;
-	PID_Itm_t* speedRightPlant = NULL;
-	posLeftPlant    = &Get_pPidCfg()->pItmTbl[PID_LFT_MTR_POS];
-	posRightPlant   = &Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_POS];
-	speedLeftPlant  = &Get_pPidCfg()->pItmTbl[PID_LFT_MTR_SPD];
-	speedRightPlant = &Get_pPidCfg()->pItmTbl[PID_RGHT_MTR_SPD];
-
-	if ( ERR_OK == NVM_Read_PIDPosCfg(&pidCfg) )
+	pidCfg = Get_pPidCfg();
+	if(NULL != pidCfg)
 	{
-		posLeftPlant->Config->Factor_KP_scld = (int32_t)pidCfg.KP_scld;
-		posLeftPlant->Config->Factor_KI_scld = (int32_t)pidCfg.KI_scld;
-		posLeftPlant->Config->Factor_KD_scld = (int32_t)pidCfg.KD_scld;
-		posLeftPlant->Config->SaturationVal  = (int32_t)pidCfg.SaturationVal;
-		posLeftPlant->Config->Scale          = (int32_t)pidCfg.Scale;
-	}
-	else if(ERR_OK == NVM_Read_Dflt_PIDPosCfg(&pidCfg))
-	{
-		posLeftPlant->Config->Factor_KP_scld = (int32_t)pidCfg.KP_scld;
-		posLeftPlant->Config->Factor_KI_scld = (int32_t)pidCfg.KI_scld;
-		posLeftPlant->Config->Factor_KD_scld = (int32_t)pidCfg.KD_scld;
-		posLeftPlant->Config->SaturationVal  = (int32_t)pidCfg.SaturationVal;
-		posLeftPlant->Config->Scale   		= (int32_t)pidCfg.Scale;
-		NVM_Save_PIDPosCfg(&pidCfg);
-	}
-	else
-	{
-		/* error handling */
-	}
-	posLeftPlant->lastError   = 0;
-	posLeftPlant->integralVal = 0;
-
-
-
-	posRightPlant->Config->Factor_KP_scld = posLeftPlant->Config->Factor_KP_scld;
-	posRightPlant->Config->Factor_KI_scld = posLeftPlant->Config->Factor_KI_scld;
-	posRightPlant->Config->Factor_KD_scld = posLeftPlant->Config->Factor_KD_scld;
-	posRightPlant->Config->SaturationVal  = posLeftPlant->Config->SaturationVal;
-	posRightPlant->Config->Scale   		  = posLeftPlant->Config->Scale;
-	posRightPlant->lastError   = posLeftPlant->lastError;
-	posRightPlant->integralVal = posLeftPlant->integralVal;
-
-
-	if ( ERR_OK == NVM_Read_PIDSpdLeCfg(&pidCfg) )
-	{
-		speedLeftPlant->Config->Factor_KP_scld = (int32_t)pidCfg.KP_scld;
-		speedLeftPlant->Config->Factor_KI_scld = (int32_t)pidCfg.KI_scld;
-		speedLeftPlant->Config->Factor_KD_scld = (int32_t)pidCfg.KD_scld;
-		speedLeftPlant->Config->SaturationVal  = (int32_t)pidCfg.SaturationVal;
-		speedLeftPlant->Config->Scale 		  = (int32_t)pidCfg.Scale;
-	}
-	else if(ERR_OK == NVM_Read_Dflt_PIDSpdLeCfg(&pidCfg))
-	{
-		speedLeftPlant->Config->Factor_KP_scld = (int32_t)pidCfg.KP_scld;
-		speedLeftPlant->Config->Factor_KI_scld = (int32_t)pidCfg.KI_scld;
-		speedLeftPlant->Config->Factor_KD_scld = (int32_t)pidCfg.KD_scld;
-		speedLeftPlant->Config->SaturationVal  = (int32_t)pidCfg.SaturationVal;
-		speedLeftPlant->Config->Scale 		  = (int32_t)pidCfg.Scale;
-		NVM_Save_PIDSpdLeCfg(&pidCfg);
-	}
-	else
-	{
-		/* error handling */
-	}
-
-	if ( ERR_OK == NVM_Read_PIDSpdRiCfg(&pidCfg) )
-	{
-		speedRightPlant->Config->Factor_KP_scld = (int32_t)pidCfg.KP_scld;
-		speedRightPlant->Config->Factor_KI_scld = (int32_t)pidCfg.KI_scld;
-		speedRightPlant->Config->Factor_KD_scld = (int32_t)pidCfg.KD_scld;
-		speedRightPlant->Config->SaturationVal  = (int32_t)pidCfg.SaturationVal;
-		speedRightPlant->Config->Scale 		    = (int32_t)pidCfg.Scale;
-	}
-	else if(ERR_OK == NVM_Read_Dflt_PIDSpdRiCfg(&pidCfg))
-	{
-		speedRightPlant->Config->Factor_KP_scld = (int32_t)pidCfg.KP_scld;
-		speedRightPlant->Config->Factor_KI_scld = (int32_t)pidCfg.KI_scld;
-		speedRightPlant->Config->Factor_KD_scld = (int32_t)pidCfg.KD_scld;
-		speedRightPlant->Config->SaturationVal  = (int32_t)pidCfg.SaturationVal;
-		speedRightPlant->Config->Scale 		   = (int32_t)pidCfg.Scale;
-		NVM_Save_PIDSpdRiCfg(&pidCfg);
+		for(i = 0; i < pidCfg->NumOfItms; i++)
+		{
+			if(NULL != &pidCfg->pItmTbl[i])
+			{
+				if(NULL != pidCfg->pItmTbl[i].pNVMReadValFct)
+				{
+					retVal = pidCfg->pItmTbl[i].pNVMReadValFct(&pidPrm);
+					pidCfg->pItmTbl[i].Config->Factor_KP_scld = (uint32_t)pidPrm.KP_scld;
+					pidCfg->pItmTbl[i].Config->Factor_KI_scld = (uint32_t)pidPrm.KI_scld;
+					pidCfg->pItmTbl[i].Config->Factor_KD_scld = (uint32_t)pidPrm.KD_scld;
+					pidCfg->pItmTbl[i].Config->Scale		  = (uint16_t)pidPrm.Scale;
+					pidCfg->pItmTbl[i].Config->SaturationVal  = (uint32_t)pidPrm.SaturationVal;
+				}
+				if ( (NULL != pidCfg->pItmTbl[i].pNVMReadDfltValFct) && (ERR_OK != retVal) )
+				{
+					pidCfg->pItmTbl[i].pNVMReadDfltValFct(&pidPrm);
+					pidCfg->pItmTbl[i].Config->Factor_KP_scld = (uint32_t)pidPrm.KP_scld;
+					pidCfg->pItmTbl[i].Config->Factor_KI_scld = (uint32_t)pidPrm.KI_scld;
+					pidCfg->pItmTbl[i].Config->Factor_KD_scld = (uint32_t)pidPrm.KD_scld;
+					pidCfg->pItmTbl[i].Config->Scale		  = (uint16_t)pidPrm.Scale;
+					pidCfg->pItmTbl[i].Config->SaturationVal  = (uint32_t)pidPrm.SaturationVal;
+				}
+				else
+				{
+					/* take initialized values from pid_cfg.c */
+				}
+				pidCfg->pItmTbl[i].Saturation  = PID_NO_SAT;
+				pidCfg->pItmTbl[i].integralVal = 0;
+				pidCfg->pItmTbl[i].lastError   = 0;
+			}
+		}
 	}
 	else
 	{
