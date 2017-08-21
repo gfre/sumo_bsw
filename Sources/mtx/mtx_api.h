@@ -32,40 +32,16 @@
  * @{
  */
 /*======================================= >> #DEFINES << =========================================*/
-/*/**
- * @brief
- *
- */
-/* #define TMPL_MACRO (0xFFu) */
 
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-/*/**
- * @brief
- *
- */
-/* typedef enum EnumType_e {
-/*	 ENUM_VAL1 = 0x00		/**< enum value 1 description */
-/*	,ENUM_VAL2				/**< enum value 2 description */
-/*	,ENUM_CNT				/**< count of enum values */
-/*	,ENUM_NONE				/**< none or invalid enum values */
-/*} EnumType_t; */
-	
-
-
+typedef int32_t MTX_t;
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-/*/**
- * @brief
- *
- * @param input_
- * @param output_
- * @return
- */
-/*EXTERNAL_ StdRtn_t TMPL_CustomFct(const TmplType_t *input_, TmplType_t *output_); */
-
-
+EXTERNAL_ StdRtn_t MTX_Add(uint8_t sizeRows1_, uint8_t sizeCols1_, const MTX_t smd1_[sizeRows1_][sizeCols1_], uint8_t sizeRows2_, uint8_t sizeCols2_, const MTX_t smd2_[sizeRows2_][sizeCols2_], MTX_t sum_[sizeRows1_][sizeCols2_]);
+EXTERNAL_ StdRtn_t MTX_Sub(uint8_t sizeRows1_, uint8_t sizeCols1_, const MTX_t min_[sizeRows1_][sizeCols1_], uint8_t sizeRows2_, uint8_t sizeCols2_, const MTX_t sub_[sizeRows2_][sizeCols2_], MTX_t diff_[sizeRows1_][sizeCols2_]);
+EXTERNAL_ StdRtn_t MTX_Mult(uint8_t sizeRows1_, uint8_t sizeCols1_, const MTX_t fac1_[sizeRows1_][sizeCols1_], uint8_t sizeRows2_, uint8_t sizeCols2_, const MTX_t fac2_[sizeRows2_][sizeCols2_], MTX_t prod_[sizeRows1_][sizeCols2_]);
 
 /**
  * @}

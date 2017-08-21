@@ -17,6 +17,7 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "dapp.h"
+#include "mtx_api.h"
 
 
 /*======================================= >> #DEFINES << =========================================*/
@@ -25,7 +26,6 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-/* typedef unit8 studType_t;
 
 
 
@@ -51,9 +51,7 @@
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 void DAPP_Init(void)
 {
-	/*
-	 * Write your initialization code here!
-	 */
+
 }
 
 
@@ -61,9 +59,9 @@ void DAPP_Init(void)
 
 void DAPP_Main(void)
 {
-	/*
-	 * Write your main function here!
-	 */
+MTX_t m1[2][3] = {{1,3,4},{1,2,6}};
+MTX_t m2[3][3] = {{1,3,4},{2,3,4},{1,2,0}};
+MTX_Add(2, 3, m1, 3, 3, m2, m3);
 }
 
 #ifdef MASTER_STUD_C_
