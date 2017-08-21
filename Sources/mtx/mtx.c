@@ -106,6 +106,10 @@ static inline StdRtn_t Trns(int32_t x1_, int32_t x2_, int32_t *res_)
 	return retVal;
 }
 
+static inline StdRtn_t LSE()
+{
+
+}
 
 
 
