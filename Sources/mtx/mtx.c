@@ -32,7 +32,7 @@ typedef enum MTX_Op_e
 	,MTX_SUB
 	,MTX_MULT
 	,MTX_DIV
-//	,MTX_TRNS
+	,MTX_TRNS
 //	,MTX_INV
 //	,MTX_ADJ
 	,MTX_CNT_OF_OPS
@@ -44,13 +44,14 @@ typedef StdRtn_t MTX_OpFct_t(int32_t x1_,  int32_t x2_, int32_t *res_);
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 static inline StdRtn_t Add(int32_t x1_,  int32_t x2_, int32_t *res_);
 static inline StdRtn_t Sub(int32_t x1_,  int32_t x2_, int32_t *res_);
-static inline StdRtn_t Mult(int32_t x1_,  int32_t x2_, int32_t *res_);
+static inline StdRtn_t Mult(int32_t x1_, int32_t x2_, int32_t *res_);
 static inline StdRtn_t Div(int32_t x1_,  int32_t x2_, int32_t *res_);
+static inline StdRtn_t Trns(int32_t x1_, int32_t x2_, int32_t *res_);
 
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-static MTX_OpFct_t *opFctHdls[MTX_CNT_OF_OPS] = {Add, Sub, Mult, Div,};
+static MTX_OpFct_t *opFctHdls[MTX_CNT_OF_OPS] = {Add, Sub, Mult, Div, Trns};
 
 
 
@@ -60,7 +61,7 @@ static inline StdRtn_t Add(int32_t x1_,  int32_t x2_, int32_t *res_)
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if (NULL != res_)
 	{
-		*res_ = x1_ + x2_;
+		*res_  = x1_ + x2_;
 		retVal = ERR_OK;
 	}
 	return retVal;
@@ -71,7 +72,7 @@ static inline StdRtn_t Sub(int32_t x1_,  int32_t x2_, int32_t *res_)
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if (NULL != res_)
 	{
-		*res_ = x1_ - x2_;
+		*res_  = x1_ - x2_;
 		retVal = ERR_OK;
 	}
 	return retVal;
@@ -94,7 +95,17 @@ static inline StdRtn_t Div(int32_t x1_,  int32_t x2_, int32_t *res_)
 	return ERR_OK;
 }
 
-// TODO
+static inline StdRtn_t Trns(int32_t x1_, int32_t x2_, int32_t *res_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if(NULL != res_)
+	{
+		*res_  = x1_;
+		retVal = ERR_OK;
+	}
+	return retVal;
+}
+
 
 
 
@@ -133,6 +144,9 @@ static inline StdRtn_t MtxCalc(uint8_t sizeRows1_, uint8_t sizeCols1_, const MTX
 					break;
 				case MTX_DIV:
 					break;
+				case MTX_TRNS:
+						retVal |= opFctHdls[op_](mtx1_[j][i], 0, &(mtxRes_[i][j]));
+					break;
 				default:
 					retVal |= ERR_PARAM_DATA;
 					break;
@@ -162,10 +176,15 @@ StdRtn_t MTX_Mult(uint8_t sizeRows1_, uint8_t sizeCols1_, const MTX_t fac1_[size
 	return MtxCalc(sizeRows1_, sizeCols1_, fac1_, sizeRows2_, sizeCols2_, fac2_, MTX_MULT, prod_);
 }
 
-//StdRtn_t MTX_Div(const MTX_t *divd_,  const MTX_t *divr_, MTX_t *quot_)
-//{
-//	return MtxCalc(divd_, divr_, MTX_SIZE_ROW , MTX_SIZE_COL , MTX_DIV, quot_);
-//}
+StdRtn_t MTX_Div(uint8_t sizeRows1_, uint8_t sizeCols1_, const MTX_t divd_[sizeRows1_][sizeCols1_], uint8_t sizeRows2_, uint8_t sizeCols2_, const MTX_t divs_[sizeRows2_][sizeCols2_], MTX_t quot_[sizeRows1_][sizeCols2_])
+{
+	return MtxCalc(sizeRows1_, sizeCols1_, divd_, sizeRows2_, sizeCols2_, divs_, MTX_DIV, quot_);
+}
+
+StdRtn_t MTX_Trns(uint8_t  sizeRows1_, uint8_t sizeCols1_, const MTX_t trns_[sizeRows1_][sizeCols1_], uint8_t sizeRows2_, uint8_t sizeCols2_, const MTX_t null_[sizeRows2_][sizeCols2_], MTX_t trnsp_[sizeRows1_][sizeCols1_])
+{
+	return MtxCalc(sizeRows1_, sizeCols1_, trns_, sizeRows1_, sizeCols1_, NULL, MTX_TRNS, trnsp_);
+}
 
 
 #ifdef MASTER_mtx_C_

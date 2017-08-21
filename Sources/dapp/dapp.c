@@ -61,7 +61,11 @@ void DAPP_Main(void)
 {
 MTX_t m1[2][3] = {{1,3,4},{1,2,6}};
 MTX_t m2[3][3] = {{1,3,4},{2,3,4},{1,2,0}};
-MTX_Add(2, 3, m1, 3, 3, m2, m3);
+MTX_t m3[2][3] = {0};
+MTX_t m4[3][3] = {0};
+MTX_Add(2, 3, m1, 2, 3, m1, m3);
+MTX_Mult(2, 3, m1, 3, 3, m2, m3);
+MTX_Trns(3, 3, m2, 0, 0, NULL, m4);
 }
 
 #ifdef MASTER_STUD_C_
