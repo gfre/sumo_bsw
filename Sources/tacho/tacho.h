@@ -20,7 +20,7 @@
 #define TACHO_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
-
+#include "platform.h"
 
 
 #ifdef MASTER_tacho_C_
@@ -39,6 +39,11 @@
  */
 #define TACHO_SWC_STRING ("Tacho")
 
+/**
+ *  Speed sample period in ms. Make sure that speed is sampled at the given rate.
+ */
+#define TACHO_SAMPLE_PERIOD_MS (5)
+
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
@@ -46,11 +51,6 @@
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-/**
- * @brief Calculates the speed based on the position information from the encoder.
- */
-void TACHO_CalcSpeed(void);
-
 /**
  * @brief Sampling routine to calculate speed, must be called periodically with a fixed frequency.
  */
@@ -65,6 +65,8 @@ void TACHO_Deinit(void);
  * @brief Initialization of the module
  */
 void TACHO_Init(void);
+
+void TACHO_Main(void);
 
 
 

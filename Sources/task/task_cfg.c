@@ -19,15 +19,19 @@
 /*======================================= >> #INCLUDES << ========================================*/
 #include "task_cfg.h"
 #include "tacho.h"
+#include "tacho_api.h"
 #include "appl.h"
 #include "sh.h"
 #include "rnet.h"
 #include "drv.h"
 #include "refl.h"
-
+#include "kf.h"
 
 /*======================================= >> #DEFINES << =========================================*/
 #define NUM_OF_TASKS        (sizeof(taskCfgItems)/sizeof(taskCfgItems[0]))
+#define TASK_TIMING_1MS     (1u)
+#define TASK_TIMING_2MS     (2u)
+#define TASK_TIMING_3MS     (3u)
 #define TASK_TIMING_5MS     (5u)
 #define TASK_TIMING_10MS    (10u)
 #define TASK_TIMING_20MS	(20u)
@@ -83,7 +87,7 @@ static const TASK_SwcCfg_t dbgTaskSwcCfg[] = {
  */
 static const TASK_SwcCfg_t drvTaskSwcCfg[] = {
 		{DRV_SWC_STRING, DRV_MainFct, DRV_Init},
-		{TACHO_SWC_STRING, TACHO_CalcSpeed, TACHO_Init},
+		{TACHO_SWC_STRING, TACHO_Main, TACHO_Init},
 };
 
 /*

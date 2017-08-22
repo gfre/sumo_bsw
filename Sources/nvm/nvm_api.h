@@ -57,11 +57,11 @@
  */
 typedef struct NVM_PidCfg_s
 {
-	uint16_t pGain100;			/**< proportional gain */
-	uint16_t iGain100;			/**< integral gain */
-	uint16_t dGain100;			/**< differential gain */
-	uint16_t maxSpdPerc;		/**< maximum speed command in percent */
-	uint32_t iAntiWindup;		/**< maximum integral value for anti windup procedure */
+	uint16_t KP_scld;			/**< proportional gain */
+	uint16_t KI_scld;			/**< integral gain */
+	uint16_t KD_scld;			/**< differential gain */
+	uint16_t Scale;				/**< Scaling value */
+	uint32_t SaturationVal;		/**< maximum integral value for anti windup procedure */
 } NVM_PidCfg_t; /* 12Byte */
 
 /**
@@ -92,8 +92,8 @@ typedef struct NVM_RomCfg_s
 	uint8_t filler[3];					/**< filler 	 						+ 3B mod4 0B */
 	NVM_PidCfg_t pidCfgPos;				/**< PID position control config 	 	+12B mod4 0B */
 	NVM_PidCfg_t pidCfgSpdLe;			/**< PID speed control left config 	 	+12B mod4 0B */
-	NVM_PidCfg_t pidCfgSpdRi;			/**< Reflectance sensors calib data	 	+24B mod4 0B */
-	NVM_ReflCalibData_t reflCalibData;
+	NVM_PidCfg_t pidCfgSpdRi;			/**< PID speed control right config  	+12B mod4 0B */
+	NVM_ReflCalibData_t reflCalibData;	/**< Reflectance sensors calib data	 	+24B mod4 0B */
 } NVM_RomCfg_t; /* 1 + 3 + 3*12 + 24 = 65 Byte*/
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/

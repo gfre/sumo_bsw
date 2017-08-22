@@ -25,6 +25,7 @@
 #include "rnet_clshdlr.h"
 #include "nvm_clshdlr.h"
 #include "pid_clshdlr.h"
+#include "tl_clshdlr.h"
 #include "mot_clshdlr.h"
 #include "tacho_clshdlr.h"
 #include "drv_clshdlr.h"
@@ -70,6 +71,7 @@ static const CLS1_ParseCommandCallback CmdParserTable[] =
   DRV_ParseCommand,
   TACHO_ParseCommand,
   PID_ParseCommand,
+  TL_ParseCommand,
   Q4CLeft_ParseCommand,
   Q4CRight_ParseCommand,
   BUZ_ParseCommand,

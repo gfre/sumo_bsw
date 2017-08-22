@@ -20,6 +20,7 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "Platform.h"
+#include "ACon_Types.h"
 
 
 
@@ -38,8 +39,29 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
+typedef void FltrFct_t(void);
 
+typedef enum TACHO_FilterType_e{
+	MOVING_AVERAGE_FILTER = 0,
+	KALMAN_FILTER,
+	TRACKING_LOOP_FILTER,
+}TACHO_FltrType_t;
 
+typedef struct TACHO_Fltr_s{
+    char_t           *pFilterName;
+    TACHO_FltrType_t FilterType;
+	bool 		isInitialized;
+	bool 		isUsingSampledSpeed;
+    FltrFct_t 	*pFilterInitFct;
+    FltrFct_t 	*pFilterMainFct;
+    FltrFct_t   *pFilterDeinitFct;
+	int32_t    (*pGetSpeedFct)(bool isLeft_);
+}TACHO_Fltr_t;
+
+typedef struct TACHO_Cfg_s{
+	TACHO_Fltr_t* pFilterTable;
+	int8_t		  NumOfFilters; 			// Anzahl an Filterkomponenten in Filtertable
+}TACHO_Cfg_t;
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
  /**
@@ -47,7 +69,19 @@
  * @param isLeft TRUE for left speed, FALSE for right speed.
  * @return Actual speed value
  */
-EXTERNAL_ int32_t TACHO_GetSpeed(bool isLeft);
+EXTERNAL_ TACHO_Cfg_t* Get_pTachoCfg(void);
+
+EXTERNAL_ StdRtn_t TACHO_Read_CurLftPos(int32_t* result_);
+EXTERNAL_ StdRtn_t TACHO_Read_CurRghtPos(int32_t* result_);
+EXTERNAL_ StdRtn_t TACHO_Read_CurUnfltrdLftSpd(int32_t* result_);
+EXTERNAL_ StdRtn_t TACHO_Read_CurUnfltrdRghtSpd(int32_t* result_);
+EXTERNAL_ StdRtn_t TACHO_Read_CurFltrdLftSpd(int32_t* result_);
+EXTERNAL_ StdRtn_t TACHO_Read_CurFltrdRghtSpd(int32_t* result_);
+
+EXTERNAL_ void TACHO_Set_FltrType(TACHO_FltrType_t type_);
+EXTERNAL_ TACHO_FltrType_t TACHO_Get_FltrType(void);
+
+
 
 
 
