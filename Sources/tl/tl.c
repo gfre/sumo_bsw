@@ -158,7 +158,7 @@ void TL_DeInit(void)
 }
 
 
-StdRtn_t TL_Read_FltrdSig(int32_t* pSig_, const uint8_t idx_)
+StdRtn_t TL_Read_i32FltrdSig(int32_t* pSig_, const uint8_t idx_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if( ( NULL != pSig_ ) && (NULL != pTbl) && ( NULL != pTbl->aTls) )
@@ -173,7 +173,7 @@ StdRtn_t TL_Read_FltrdSig(int32_t* pSig_, const uint8_t idx_)
 	return retVal;
 }
 
-StdRtn_t TL_Read_dFltrdValdt(int32_t* pSig_, const uint8_t idx_)
+StdRtn_t TL_Read_i32dFltrdValdt(int32_t* pSig_, const uint8_t idx_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if( ( NULL != pSig_ ) && (NULL != pTbl) && ( NULL != pTbl->aTls) )
@@ -181,7 +181,7 @@ StdRtn_t TL_Read_dFltrdValdt(int32_t* pSig_, const uint8_t idx_)
 		retVal = ERR_PARAM_VALUE;
 		if( idx_< pTbl->numTls )
 		{
-			*pSig_ = TL_DOWNSACLE(pTbl->aTls[idx_].data.dfltrdValdt);
+			*pSig_ = pTbl->aTls[idx_].data.dfltrdValdt;
 			retVal 	= ERR_OK;
 		}
 	}
@@ -198,7 +198,7 @@ StdRtn_t TL_Read_vFltrdVal(void* pSig_)
 		TL_vReadVal_t *pSig = (TL_vReadVal_t *)pSig_;
 		if( pSig->idx < pTbl->numTls )
 		{
-			pSig->val = TL_DOWNSACLE(pTbl->aTls[pSig->idx].data.fltrdVal);
+			pSig->val = pTbl->aTls[pSig->idx].data.fltrdVal;
 			retVal 	= ERR_OK;
 		}
 	}
