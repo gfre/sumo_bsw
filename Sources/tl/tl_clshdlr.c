@@ -125,7 +125,8 @@ static uint8_t ParseTLParameter(PID_Itm_t* itm_, const unsigned char *cmd, bool 
 	uint8_t val8u;
 	uint8_t res = ERR_OK;
 
-	if (UTIL1_strncmp((char*)cmd, (char*)"p ", sizeof("p ")-1)==0) {
+	if (UTIL1_strncmp((char*)cmd, (char*)"p ", sizeof("p ")-1)==0)
+	{
 		p = cmd+sizeof("p");
 		if (UTIL1_ScanDecimal32uNumber(&p, &val32u)==ERR_OK) {
 			itm_->Config->Factor_KP_scld = val32u;
@@ -134,7 +135,9 @@ static uint8_t ParseTLParameter(PID_Itm_t* itm_, const unsigned char *cmd, bool 
 			CLS1_SendStr((unsigned char*)"Wrong argument\r\n", io->stdErr);
 			res = ERR_FAILED;
 		}
-	} else if (UTIL1_strncmp((char*)cmd, (char*)"i ", sizeof("i ")-1)==0) {
+	}
+	else if (UTIL1_strncmp((char*)cmd, (char*)"i ", sizeof("i ")-1)==0)
+	{
 		p = cmd+sizeof("i");
 		if (UTIL1_ScanDecimal32uNumber(&p, &val32u)==ERR_OK) {
 			itm_->Config->Factor_KI_scld = val32u;
@@ -143,7 +146,9 @@ static uint8_t ParseTLParameter(PID_Itm_t* itm_, const unsigned char *cmd, bool 
 			CLS1_SendStr((unsigned char*)"Wrong argument\r\n", io->stdErr);
 			res = ERR_FAILED;
 		}
-	} else if (UTIL1_strncmp((char*)cmd, (char*)"d ", sizeof("d ")-1)==0) {
+	}
+	else if (UTIL1_strncmp((char*)cmd, (char*)"d ", sizeof("d ")-1)==0)
+	{
 		p = cmd+sizeof("d");
 		if (UTIL1_ScanDecimal32uNumber(&p, &val32u)==ERR_OK) {
 			itm_->Config->Factor_KD_scld = val32u;
@@ -152,7 +157,9 @@ static uint8_t ParseTLParameter(PID_Itm_t* itm_, const unsigned char *cmd, bool 
 			CLS1_SendStr((unsigned char*)"Wrong argument\r\n", io->stdErr);
 			res = ERR_FAILED;
 		}
-	} else if (UTIL1_strncmp((char*)cmd, (char*)"w ", sizeof("w ")-1)==0) {
+	}
+	else if (UTIL1_strncmp((char*)cmd, (char*)"w ", sizeof("w ")-1)==0)
+	{
 		p = cmd+sizeof("w");
 		if (UTIL1_ScanDecimal32uNumber(&p, &val32u)==ERR_OK) {
 			itm_->Config->SaturationVal = val32u;
@@ -161,7 +168,9 @@ static uint8_t ParseTLParameter(PID_Itm_t* itm_, const unsigned char *cmd, bool 
 			CLS1_SendStr((unsigned char*)"Wrong argument\r\n", io->stdErr);
 			res = ERR_FAILED;
 		}
-	} else if (UTIL1_strncmp((char*)cmd, (char*)"scale ", sizeof("scale ")-1)==0) {
+	}
+	else if (UTIL1_strncmp((char*)cmd, (char*)"scale ", sizeof("scale ")-1)==0)
+	{
 		p = cmd+sizeof("scale");
 		if (UTIL1_ScanDecimal8uNumber(&p, &val8u)==ERR_OK && val8u<=100) {
 			itm_->Config->Scale = val8u;
@@ -226,29 +235,47 @@ uint8_t TL_ParseCommand(const unsigned char *cmd_, bool *handled_, const CLS1_St
 {
 	uint8_t res = ERR_OK;
 	TL_ItmTbl_t *pTbl = Get_pTlItmTbl();
-
+	const uchar_t *p;
+	uint8_t val8u;
 	/* TODO */
-	int32_t tlIdx = 0;
+	uint8_t tlIdx = 0;
 
 	if (UTIL1_strcmp((char*)cmd_, (char*)CLS1_CMD_HELP)==0 || UTIL1_strcmp((char*)cmd_, (char*)"tl help")==0) {
 		TL_PrintHelp(io_);
 		*handled_ = TRUE;
-	} else if (UTIL1_strcmp((char*)cmd_, (char*)CLS1_CMD_STATUS)==0 || UTIL1_strcmp((char*)cmd_, (char*)"tl status")==0) {
+	}
+	else if (UTIL1_strcmp((char*)cmd_, (char*)CLS1_CMD_STATUS)==0 || UTIL1_strcmp((char*)cmd_, (char*)"tl status")==0) {
 		TL_PrintStatus(io_);
 		*handled_ = TRUE;
-	} else if (UTIL1_strcmp((char*)cmd_, (char*)"tl restore")==0) {
-		if( ERR_OK == TL_restoreCfg(pTbl->aTls[tlIdx].cfg.pNVMReadDfltValFct, pTbl->aTls[tlIdx].cfg.pNVMSaveValFct, &pTbl->aTls[tlIdx].cfg) )
+	}
+	else if (ERR_OK == UTIL1_strncmp((char*)cmd_, (char*)"tl", sizeof("tl")-1) )
+	{
+		if (ERR_OK == UTIL1_ScanDecimal8uNumber(&cmd_, &tlIdx) )
 		{
-			*handled_ = TRUE;
-		}
-	} else if (UTIL1_strncmp((char*)cmd_, (char*)"tl pid ", sizeof("tl pid ")-1)==0) {
-		res = ParseTLParameter( &(pTbl->aTls[tlIdx].cfg), cmd_+sizeof("tl speed R ")-1, handled_, io_);
-
-		if( ERR_OK != TL_saveCfg(pTbl->aTls[tlIdx].cfg.pNVMSaveValFct, &(pTbl->aTls[tlIdx].cfg)) )
-		{
-			/* error handling */
+			/* UTIL1_ScanDecimal8uNumber returns the pointer after the last scanned digit in its first
+			 * argument, therefore cmd_ points to the whitespace after the index */
+			if( tlIdx < pTbl->numTls )
+			{
+				if( ERR_OK == UTIL1_strcmp((char*)cmd_, (char*)" restore") )
+				{
+					if( ERR_OK == TL_restoreCfg(pTbl->aTls[tlIdx].cfg.pNVMReadDfltValFct, pTbl->aTls[tlIdx].cfg.pNVMSaveValFct, &pTbl->aTls[tlIdx].cfg) )
+					{
+						*handled_ = TRUE;
+					}
+				}
+				else if (UTIL1_strncmp((char*)cmd_, (char*)" pid ", sizeof(" pid ")-1)==0)
+				{
+					res = ParseTLParameter( &(pTbl->aTls[tlIdx].cfg), cmd_+sizeof(" pid ")-1, handled_, io_);
+					if( ERR_OK != TL_saveCfg(pTbl->aTls[tlIdx].cfg.pNVMSaveValFct, &(pTbl->aTls[tlIdx].cfg)) )
+					{
+						/* error handling */
+					}
+				}
+			}
 		}
 	}
+
+
 	return res;
 }
 

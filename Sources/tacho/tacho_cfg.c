@@ -39,7 +39,7 @@
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-
+int32_t TL_Get_Speed(bool isLeft_);
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
@@ -60,7 +60,20 @@ static TACHO_FltrItmTbl_t ftlrTbl =
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
+int32_t TL_Get_Speed(bool isLeft_)
+{
+	int32_t tmp = 0;
+	if( TRUE == isLeft_)
+	{
+		(void)TL_Read_i32dFltrdValdt(&tmp, TACHO_LEFT);
+	}
+	else
+	{
+		(void)TL_Read_i32dFltrdValdt(&tmp, TACHO_RIGHT);
+	}
 
+	return tmp;
+}
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
