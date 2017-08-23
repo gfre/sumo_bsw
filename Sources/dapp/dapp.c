@@ -20,7 +20,6 @@
 #include "mtx_api.h"
 #include "tacho_api.h"
 
-
 /*======================================= >> #DEFINES << =========================================*/
 
 
@@ -29,6 +28,7 @@ typedef struct TestMatCfg_s
 {
 	MTX_t *A;
 	MTX_t *B;
+	MTX_t *x0;
 }TestMatCfg_t;
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 
@@ -37,11 +37,13 @@ typedef struct TestMatCfg_s
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 int32_t A[2][3] = {{1,3,4},{1,2,6}};
 int32_t B[3][5] = {{1,3,3,4,5},{2,3,1,4,6},{1,0,1,3,2}};
+int32_t x[3][1] = {{4},{5},{6}};
 
 MTX_t Mat_A = {A[0], 2, 3};
 MTX_t Mat_B = {B[0], 3, 5};
+MTX_t Vec_x = {x[0], 3, 1};
 
-TestMatCfg_t cfg = {&Mat_A, &Mat_B};
+TestMatCfg_t cfg = {&Mat_A, &Mat_B, &Vec_x};
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
@@ -59,6 +61,10 @@ void DAPP_Main(void)
 	int32_t temp[2][5] = {0u};
 	MTX_t tempMat= {temp[0], 2, 5};
 	MTX_Mult(*cfg.A, *cfg.B, &tempMat);
+
+	int32_t temp2[2][1] = {0u};
+	MTX_t tempVec = {temp2[0],2,1};
+	MTX_Mult(*cfg.A, *cfg.x0, &tempVec);
 }
 
 #ifdef MASTER_STUD_C_
