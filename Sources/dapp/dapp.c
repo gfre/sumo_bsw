@@ -25,17 +25,10 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-typedef struct TestMat_t
-{
-	int32_t* pData;
-	uint8_t  NumRows;
-	uint8_t	 NumCols;
-}TestMat_t;
-
 typedef struct TestMatCfg_s
 {
-	TestMat_t *A;
-	TestMat_t *B;
+	MTX_t *A;
+	MTX_t *B;
 }TestMatCfg_t;
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 
@@ -45,27 +38,13 @@ typedef struct TestMatCfg_s
 int32_t A[2][3] = {{1,3,4},{1,2,6}};
 int32_t B[3][5] = {{1,3,3,4,5},{2,3,1,4,6},{1,0,1,3,2}};
 
-TestMat_t Mat_A = {A[0], 2, 3};
-TestMat_t Mat_B = {B[0], 3, 5};
+MTX_t Mat_A = {A[0], 2, 3};
+MTX_t Mat_B = {B[0], 3, 5};
 
 TestMatCfg_t cfg = {&Mat_A, &Mat_B};
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-static void itThroughMat(TestMat_t* m_)
-{
-	uint8_t i = 0u, j = 0u;
-	int32_t momval = 0;
-	 for(i = 0u; i < m_->NumRows; i++)
-	 {
-		 for(j = 0u; j < m_->NumCols; j++)
-		 {
-			 momval = (m_->pData + i*m_->NumCols)[j];
-		 }
-	 }
-}
-
-
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 void DAPP_Init(void)
@@ -75,14 +54,11 @@ void DAPP_Init(void)
 }
 
 
-
-
-
-
 void DAPP_Main(void)
 {
-	itThroughMat(cfg.A);
-	itThroughMat(cfg.B);
+	int32_t temp[2][5] = {0u};
+	MTX_t tempMat= {temp[0], 2, 5};
+	MTX_Mult(*cfg.A, *cfg.B, &tempMat);
 }
 
 #ifdef MASTER_STUD_C_
