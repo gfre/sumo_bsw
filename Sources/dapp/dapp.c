@@ -38,12 +38,14 @@ typedef struct TestMatCfg_s
 int32_t A[2][3] = {{1,3,4},{1,2,6}};
 int32_t B[3][5] = {{1,3,3,4,5},{2,3,1,4,6},{1,0,1,3,2}};
 int32_t x[3][1] = {{4},{5},{6}};
+int32_t rowvec[1][3] = {{1,3,4}};
 
 MTX_t Mat_A = {A[0], 2, 3};
 MTX_t Mat_B = {B[0], 3, 5};
 MTX_t Vec_x = {x[0], 3, 1};
+MTX_t RowVec = {rowvec[0], 1, 3};
 
-TestMatCfg_t cfg = {&Mat_A, &Mat_B, &Vec_x};
+TestMatCfg_t cfg = {&Mat_A, &Mat_B, &RowVec};
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
@@ -65,6 +67,11 @@ void DAPP_Main(void)
 	int32_t temp2[2][1] = {0u};
 	MTX_t tempVec = {temp2[0],2,1};
 	MTX_Mult(*cfg.A, *cfg.x0, &tempVec);
+
+
+	int32_t tempRowVec[1][5] = {0u};
+	MTX_t tempRowVec1 = {tempRowVec[0],1,5};
+	MTX_Mult(*cfg.x0, *cfg.B, &tempRowVec1);
 }
 
 #ifdef MASTER_STUD_C_
