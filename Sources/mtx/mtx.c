@@ -96,24 +96,13 @@ static inline StdRtn_t Div(int32_t x1_,  int32_t x2_, int32_t *res_)
 	return ERR_OK;
 }
 
-static inline StdRtn_t Trns(int32_t x1_, int32_t x2_, int32_t *res_)
-{
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if(NULL != res_)
-	{
-		*res_  = x1_;
-		retVal = ERR_OK;
-	}
-	return retVal;
-}
-
 static inline StdRtn_t LSE()
 {
 
 }
 
 
-static inline StdRtn_t MtxCalc(const MTX_t *mtx1_, const MTX_t *mtx2_, MTX_Op_t op_, MTX_t* mtxRes_)
+static inline StdRtn_t MtxCalc(const MTX_t *mtx1_, const MTX_t *mtx2_, MTX_Op_t op_, MTX_t *mtxRes_)
 {
 	uint8_t i=0u, j=0u, k=0u;
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
