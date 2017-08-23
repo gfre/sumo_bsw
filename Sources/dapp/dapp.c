@@ -25,9 +25,9 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-typedef struct TestMat_s
+typedef struct TestMat_t
 {
-	int32_t* pRow;
+	int32_t* pData;
 	uint8_t  NumRows;
 	uint8_t	 NumCols;
 }TestMat_t;
@@ -37,7 +37,6 @@ typedef struct TestMatCfg_s
 	TestMat_t *A;
 	TestMat_t *B;
 }TestMatCfg_t;
-
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 
 
@@ -61,7 +60,7 @@ static void itThroughMat(TestMat_t* m_)
 	 {
 		 for(j = 0u; j < m_->NumCols; j++)
 		 {
-			 momval = (m_->pRow + i*m_->NumCols)[j];
+			 momval = (m_->pData + i*m_->NumCols)[j];
 		 }
 	 }
 }

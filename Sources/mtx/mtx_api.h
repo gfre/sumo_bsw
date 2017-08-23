@@ -36,13 +36,19 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-typedef int32_t MTX_t;
+typedef struct MTX_s
+{
+	int32_t* pData;
+	uint8_t  NumRows;
+	uint8_t	 NumCols;
+}MTX_t;
+
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-EXTERNAL_ StdRtn_t MTX_Add(uint8_t sizeRows1_, uint8_t sizeCols1_, const MTX_t smd1_[sizeRows1_][sizeCols1_], uint8_t sizeRows2_, uint8_t sizeCols2_, const MTX_t smd2_[sizeRows2_][sizeCols2_], MTX_t sum_[sizeRows1_][sizeCols2_]);
-EXTERNAL_ StdRtn_t MTX_Sub(uint8_t sizeRows1_, uint8_t sizeCols1_, const MTX_t min_[sizeRows1_][sizeCols1_], uint8_t sizeRows2_, uint8_t sizeCols2_, const MTX_t sub_[sizeRows2_][sizeCols2_], MTX_t diff_[sizeRows1_][sizeCols2_]);
-EXTERNAL_ StdRtn_t MTX_Mult(uint8_t sizeRows1_, uint8_t sizeCols1_, const MTX_t fac1_[sizeRows1_][sizeCols1_], uint8_t sizeRows2_, uint8_t sizeCols2_, const MTX_t fac2_[sizeRows2_][sizeCols2_], MTX_t prod_[sizeRows1_][sizeCols2_]);
-EXTERNAL_ StdRtn_t MTX_Trns(uint8_t  sizeRows1_, uint8_t sizeCols1_, const MTX_t trns_[sizeRows1_][sizeCols1_], uint8_t sizeRows2_, uint8_t sizeCols2_, const MTX_t divs_[sizeRows2_][sizeCols2_], MTX_t trnsp_[sizeRows1_][sizeCols1_]);
+EXTERNAL_ StdRtn_t MTX_Add(const MTX_t smd1_, const MTX_t smd2_, MTX_t* sum_);
+EXTERNAL_ StdRtn_t MTX_Sub(const MTX_t min_, const MTX_t sub_, MTX_t* diff_);
+EXTERNAL_ StdRtn_t MTX_Mult(const MTX_t fac1_, const MTX_t fac2_, MTX_t* prod_);
+EXTERNAL_ StdRtn_t MTX_Trns(const MTX_t trns_, const MTX_t divs_, MTX_t* trnsp_);
 /**
  * @}
  */
