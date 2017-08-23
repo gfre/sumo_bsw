@@ -19,7 +19,7 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "ACon_Types.h"
-#include "platform.h"
+#include "Platform.h"
 
 #ifdef MASTER_tl_C_
 #define EXTERNAL_
@@ -40,9 +40,20 @@
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-void TL_Reset(void);
-void TL_CalcSpd(void);
-void TL_RunStartup(void);
+/**
+ *
+ */
+EXTERNAL_ void TL_Init(void);
+
+/**
+ *
+ */
+EXTERNAL_ void TL_Main(void);
+
+/**
+ *
+ */
+EXTERNAL_ void TL_DeInit(void);
 
 
 

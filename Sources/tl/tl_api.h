@@ -38,20 +38,27 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-typedef enum TL_ItmType_e
-{
-	TL_LFT_SPD_EST = 0,
-	TL_RGHT_SPD_EST,
-	TL_NUM_OF_ITMS,
-}TL_ItmType_t;
 
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-StdRtn_t TL_Read_CurLftPos(int32_t* result_);
-StdRtn_t TL_Read_CurRghtPos(int32_t* result_);
-int32_t  TL_Get_Speed(bool isLeft_);
-PID_Cfg_t *Get_pTLCfg(void);
+/**
+ *
+ * @param sig_
+ * @param idx_
+ * @return
+ */
+StdRtn_t TL_Read_FltrdVal(int32_t* sig_, uint8_t idx_);
+
+/**
+ *
+ * @param sig_
+ * @param idx_
+ * @return
+ */
+StdRtn_t TL_Read_dFltrdValdt(int32_t* sig_, uint8_t idx_);
+
+
 /**
  * @}
  */

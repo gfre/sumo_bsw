@@ -257,7 +257,6 @@ static StdRtn_t runSTARTUP(void)
 {
 	NVM_Init();
 	PID_Init();
-	TL_RunStartup();
 	ID_Init();
 	IND_Init();
 	RTE_Init();

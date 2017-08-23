@@ -21,7 +21,7 @@
 #include "tl_clshdlr.h"
 #include "pid_api.h"
 #include "nvm_api.h"
-#include "tl_api.h"
+#include "tl_cfg.h"
 
 
 /*======================================= >> #DEFINES << =========================================*/
@@ -31,17 +31,16 @@
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 typedef StdRtn_t ReadPIDCfg_t(NVM_PidCfg_t *);
 typedef StdRtn_t SavePIDCfg_t(const NVM_PidCfg_t *);
-//typedef PID_Config_t *GetPIDConfig_t(void);
 
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-static void TL_PrintHelp(const CLS1_StdIOType *io);
-static void TL_PrintStatus(const CLS1_StdIOType *io);
-static void PrintTLstatus(PID_Itm_t *itm_, const unsigned char *kindStr, const CLS1_StdIOType *io);
-static uint8_t ParseTLParameter(PID_Itm_t *itm_, const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
-static StdRtn_t TL_restoreCfg(ReadPIDCfg_t *readDfltCfg_, SavePIDCfg_t *saveCfg_, PID_Itm_t *itm_);
-static StdRtn_t TL_saveCfg(SavePIDCfg_t *saveCfg_, PID_Itm_t *itm_);
+static void TL_PrintHelp(const CLS1_StdIOType *io_);
+static void TL_PrintStatus(const CLS1_StdIOType *io_);
+static void PrintTLstatus(const TL_Itm_t *itm_, const unsigned char *kindStr_, const CLS1_StdIOType *io_);
+static uint8_t ParseTLParameter(TL_Cfg_t *itm_, const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
+static StdRtn_t TL_restoreCfg(ReadPIDCfg_t *readDfltCfg_, SavePIDCfg_t *saveCfg_, TL_Cfg_t *itm_);
+static StdRtn_t TL_saveCfg(SavePIDCfg_t *saveCfg_, const TL_Cfg_t *itm_);
 
 
 
@@ -50,70 +49,74 @@ static StdRtn_t TL_saveCfg(SavePIDCfg_t *saveCfg_, PID_Itm_t *itm_);
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-static void TL_PrintHelp(const CLS1_StdIOType *io)
+static void TL_PrintHelp(const CLS1_StdIOType *io_)
 {
-	CLS1_SendHelpStr((unsigned char*)"tl", (unsigned char*)"Group of Tracking Loop commands\r\n", io->stdOut);
-	CLS1_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Shows TL help or status\r\n", io->stdOut);
-	CLS1_SendHelpStr((unsigned char*)"  speed (L|R) (p|i|d|w) <value>", (unsigned char*)"Sets P, I, D or anti-Windup speed value\r\n", io->stdOut);
-	CLS1_SendHelpStr((unsigned char*)"  speed (L|R) scale <value>", (unsigned char*)"Scaling value\r\n", io->stdOut);
-	CLS1_SendHelpStr((unsigned char*)"  speed (L|R) restore", (unsigned char*)"Restores and saves default parameters for (L|R) speed control to NVM\r\n", io->stdOut);
+	CLS1_SendHelpStr((unsigned char*)"tl", (unsigned char*)"Group of Tracking Loop commands\r\n", io_->stdOut);
+	CLS1_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Shows TL help or status\r\n", io_->stdOut);
+	CLS1_SendHelpStr((unsigned char*)"  speed (L|R) (p|i|d|w) <value>", (unsigned char*)"Sets P, I, D or anti-Windup speed value\r\n", io_->stdOut);
+	CLS1_SendHelpStr((unsigned char*)"  speed (L|R) scale <value>", (unsigned char*)"Scaling value\r\n", io_->stdOut);
+	CLS1_SendHelpStr((unsigned char*)"  speed (L|R) restore", (unsigned char*)"Restores and saves default parameters for (L|R) speed control to NVM\r\n", io_->stdOut);
 }
 
-static void PrintTLstatus(PID_Itm_t* itm_, const unsigned char *kindStr, const CLS1_StdIOType *io)
+static void PrintTLstatus(const TL_Itm_t* itm_, const unsigned char *kindStr_, const CLS1_StdIOType *io_)
 {
-	unsigned char buf[48];
-	unsigned char kindBuf[16];
+	uchar_t buf[48];
+	uchar_t kindBuf[16];
 
 	UTIL1_strcpy(kindBuf, sizeof(buf), (unsigned char*)"  ");
-	UTIL1_strcat(kindBuf, sizeof(buf), kindStr);
+	UTIL1_strcat(kindBuf, sizeof(buf), kindStr_);
 	UTIL1_strcat(kindBuf, sizeof(buf), (unsigned char*)" TL");
 	UTIL1_strcpy(buf, sizeof(buf), (unsigned char*)"p: ");
-	UTIL1_strcatNum32s(buf, sizeof(buf), itm_->Config->Factor_KP_scld);
+	UTIL1_strcatNum32s(buf, sizeof(buf), itm_->cfg.Config->Factor_KP_scld);
 	UTIL1_strcat(buf, sizeof(buf), (unsigned char*)" i: ");
-	UTIL1_strcatNum32s(buf, sizeof(buf), itm_->Config->Factor_KI_scld);
+	UTIL1_strcatNum32s(buf, sizeof(buf), itm_->cfg.Config->Factor_KI_scld);
 	UTIL1_strcat(buf, sizeof(buf), (unsigned char*)" d: ");
-	UTIL1_strcatNum32s(buf, sizeof(buf), itm_->Config->Factor_KD_scld);
+	UTIL1_strcatNum32s(buf, sizeof(buf), itm_->cfg.Config->Factor_KD_scld);
 	UTIL1_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
-	CLS1_SendStatusStr(kindBuf, buf, io->stdOut);
+	CLS1_SendStatusStr(kindBuf, buf, io_->stdOut);
 
 	UTIL1_strcpy(kindBuf, sizeof(buf), (unsigned char*)"  ");
-	UTIL1_strcat(kindBuf, sizeof(buf), kindStr);
+	UTIL1_strcat(kindBuf, sizeof(buf), kindStr_);
 	UTIL1_strcat(kindBuf, sizeof(buf), (unsigned char*)" sat");
-	UTIL1_Num32sToStr(buf, sizeof(buf), itm_->Config->SaturationVal);
+	UTIL1_Num32sToStr(buf, sizeof(buf), itm_->cfg.Config->SaturationVal);
 	UTIL1_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
-	CLS1_SendStatusStr(kindBuf, buf, io->stdOut);
+	CLS1_SendStatusStr(kindBuf, buf, io_->stdOut);
 
 	UTIL1_strcpy(kindBuf, sizeof(buf), (unsigned char*)"  ");
-	UTIL1_strcat(kindBuf, sizeof(buf), kindStr);
+	UTIL1_strcat(kindBuf, sizeof(buf), kindStr_);
 	UTIL1_strcat(kindBuf, sizeof(buf), (unsigned char*)" err");
-	UTIL1_Num32sToStr(buf, sizeof(buf), itm_->lastError);
+	UTIL1_Num32sToStr(buf, sizeof(buf), itm_->cfg.lastError);
 	UTIL1_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
-	CLS1_SendStatusStr(kindBuf, buf, io->stdOut);
+	CLS1_SendStatusStr(kindBuf, buf, io_->stdOut);
 
 	UTIL1_strcpy(kindBuf, sizeof(buf), (unsigned char*)"  ");
-	UTIL1_strcat(kindBuf, sizeof(buf), kindStr);
+	UTIL1_strcat(kindBuf, sizeof(buf), kindStr_);
 	UTIL1_strcat(kindBuf, sizeof(buf), (unsigned char*)" int");
-	UTIL1_Num32sToStr(buf, sizeof(buf), itm_->integralVal);
+	UTIL1_Num32sToStr(buf, sizeof(buf), itm_->cfg.integralVal);
 	UTIL1_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
-	CLS1_SendStatusStr(kindBuf, buf, io->stdOut);
+	CLS1_SendStatusStr(kindBuf, buf, io_->stdOut);
 
 	UTIL1_strcpy(kindBuf, sizeof(buf), (unsigned char*)"  ");
-	UTIL1_strcat(kindBuf, sizeof(buf), kindStr);
+	UTIL1_strcat(kindBuf, sizeof(buf), kindStr_);
 	UTIL1_strcat(kindBuf, sizeof(buf), (unsigned char*)" scale");
-	UTIL1_Num8uToStr(buf, sizeof(buf), itm_->Config->Scale);
+	UTIL1_Num8uToStr(buf, sizeof(buf), itm_->cfg.Config->Scale);
 	UTIL1_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
-	CLS1_SendStatusStr(kindBuf, buf, io->stdOut);
+	CLS1_SendStatusStr(kindBuf, buf, io_->stdOut);
 }
 
-static void TL_PrintStatus(const CLS1_StdIOType *io)
+static void TL_PrintStatus(const CLS1_StdIOType *io_)
 {
 	uint8_t i = 0u;
-	CLS1_SendStatusStr((unsigned char*)"TL", (unsigned char*)"\r\n", io->stdOut);
-	for(i = 0; i < Get_pTLCfg()->NumOfItms; i++)
-	{
-		PrintTLstatus(&(Get_pTLCfg()->pItmTbl[i]), Get_pTLCfg()->pItmTbl[i].pItmName, io);
-	}
+	TL_ItmTbl_t *pTbl = Get_pTlItmTbl();
 
+	CLS1_SendStatusStr((unsigned char*)"TL", (unsigned char*)"\r\n", io_->stdOut);
+	if( (NULL != pTbl) && ( NULL != pTbl->aTls) )
+	{
+		for(i = 0u; i < pTbl->numTls; i++)
+		{
+			PrintTLstatus(&(pTbl->aTls[i]), pTbl->aTls[i].cfg.pItmName, io_);
+		}
+	}
 }
 
 static uint8_t ParseTLParameter(PID_Itm_t* itm_, const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io) {
@@ -173,7 +176,7 @@ static uint8_t ParseTLParameter(PID_Itm_t* itm_, const unsigned char *cmd, bool 
 
 
 
-static StdRtn_t TL_restoreCfg(ReadPIDCfg_t *readDfltCfg_, SavePIDCfg_t *saveCfg_, PID_Itm_t* itm_)
+static StdRtn_t TL_restoreCfg(ReadPIDCfg_t *readDfltCfg_, SavePIDCfg_t *saveCfg_, TL_Cfg_t* itm_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	NVM_PidCfg_t tmp = {0u};
@@ -197,7 +200,7 @@ static StdRtn_t TL_restoreCfg(ReadPIDCfg_t *readDfltCfg_, SavePIDCfg_t *saveCfg_
 }
 
 
-static StdRtn_t TL_saveCfg(SavePIDCfg_t *saveCfg_, PID_Itm_t *itm_)
+static StdRtn_t TL_saveCfg(SavePIDCfg_t *saveCfg_, const TL_Cfg_t *itm_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	NVM_PidCfg_t tmp = {0u};
@@ -219,37 +222,29 @@ static StdRtn_t TL_saveCfg(SavePIDCfg_t *saveCfg_, PID_Itm_t *itm_)
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-uint8_t TL_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io)
+uint8_t TL_ParseCommand(const unsigned char *cmd_, bool *handled_, const CLS1_StdIOType *io_)
 {
 	uint8_t res = ERR_OK;
+	TL_ItmTbl_t *pTbl = Get_pTlItmTbl();
 
-	if (UTIL1_strcmp((char*)cmd, (char*)CLS1_CMD_HELP)==0 || UTIL1_strcmp((char*)cmd, (char*)"tl help")==0) {
-		TL_PrintHelp(io);
-		*handled = TRUE;
-	} else if (UTIL1_strcmp((char*)cmd, (char*)CLS1_CMD_STATUS)==0 || UTIL1_strcmp((char*)cmd, (char*)"tl status")==0) {
-		TL_PrintStatus(io);
-		*handled = TRUE;
-	} else if (UTIL1_strcmp((char*)cmd, (char*)"tl speed L restore")==0) {
-		if( ERR_OK == TL_restoreCfg(Get_pTLCfg()->pItmTbl[TL_LFT_SPD_EST].pNVMReadDfltValFct, Get_pTLCfg()->pItmTbl[TL_LFT_SPD_EST].pNVMSaveValFct, &Get_pTLCfg()->pItmTbl[TL_LFT_SPD_EST]) )
-		{
-			*handled = TRUE;
-		}
-	} else if (UTIL1_strcmp((char*)cmd, (char*)"tl speed R restore")==0) {
-		if( ERR_OK == TL_restoreCfg(Get_pTLCfg()->pItmTbl[TL_RGHT_SPD_EST].pNVMReadDfltValFct, Get_pTLCfg()->pItmTbl[TL_RGHT_SPD_EST].pNVMSaveValFct, &Get_pTLCfg()->pItmTbl[TL_RGHT_SPD_EST]) )
-		{
-			*handled = TRUE;
-		}
-	} else if (UTIL1_strncmp((char*)cmd, (char*)"tl speed L ", sizeof("tl speed L ")-1)==0) {
-		res = ParseTLParameter( &(Get_pTLCfg()->pItmTbl[TL_LFT_SPD_EST]), cmd+sizeof("tl speed L ")-1, handled, io);
+	/* TODO */
+	int32_t tlIdx = 0;
 
-		if( ERR_OK != TL_saveCfg(Get_pTLCfg()->pItmTbl[TL_LFT_SPD_EST].pNVMSaveValFct, &(Get_pTLCfg()->pItmTbl[TL_LFT_SPD_EST])) )
+	if (UTIL1_strcmp((char*)cmd_, (char*)CLS1_CMD_HELP)==0 || UTIL1_strcmp((char*)cmd_, (char*)"tl help")==0) {
+		TL_PrintHelp(io_);
+		*handled_ = TRUE;
+	} else if (UTIL1_strcmp((char*)cmd_, (char*)CLS1_CMD_STATUS)==0 || UTIL1_strcmp((char*)cmd_, (char*)"tl status")==0) {
+		TL_PrintStatus(io_);
+		*handled_ = TRUE;
+	} else if (UTIL1_strcmp((char*)cmd_, (char*)"tl restore")==0) {
+		if( ERR_OK == TL_restoreCfg(pTbl->aTls[tlIdx].cfg.pNVMReadDfltValFct, pTbl->aTls[tlIdx].cfg.pNVMSaveValFct, &pTbl->aTls[tlIdx].cfg) )
 		{
-			/* error handling */
+			*handled_ = TRUE;
 		}
-	} else if (UTIL1_strncmp((char*)cmd, (char*)"tl speed R ", sizeof("tl speed R ")-1)==0) {
-		res = ParseTLParameter( &(Get_pTLCfg()->pItmTbl[TL_RGHT_SPD_EST]), cmd+sizeof("tl speed R ")-1, handled, io);
+	} else if (UTIL1_strncmp((char*)cmd_, (char*)"tl pid ", sizeof("tl pid ")-1)==0) {
+		res = ParseTLParameter( &(pTbl->aTls[tlIdx].cfg), cmd_+sizeof("tl speed R ")-1, handled_, io_);
 
-		if( ERR_OK != TL_saveCfg(Get_pTLCfg()->pItmTbl[TL_RGHT_SPD_EST].pNVMSaveValFct, &(Get_pTLCfg()->pItmTbl[TL_RGHT_SPD_EST])) )
+		if( ERR_OK != TL_saveCfg(pTbl->aTls[tlIdx].cfg.pNVMSaveValFct, &(pTbl->aTls[tlIdx].cfg)) )
 		{
 			/* error handling */
 		}

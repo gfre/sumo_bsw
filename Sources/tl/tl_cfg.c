@@ -35,16 +35,20 @@
 #define MASTER_tl_cfg_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "tl.h"
-#include "tl_api.h"
+#include "tl_cfg.h"
+
+/** Application APIs */
 #include "tacho_api.h"
 
 
 /*======================================= >> #DEFINES << =========================================*/
-#define TL_LFT_SPD_STR		("tl L")
-#define TL_RGHT_SPD_STR		("tl R")
-#define TL_LFT_SAT_VAL		(0xFFFFu)
-#define TL_RGHT_SAT_VAL		TL_LFT_SAT_VAL
+#define TL_TACHO_LEFT_STRING		("TL Tacho Left")
+#define TL_TACHO_RIGHT_STRING		("TL Tacho Right")
+
+
+#define TL_DFLT_PID_SATURATION_VALUE	(0xFFFFu)
+#define TL_DFLT_DATA_INIT  				{0,0}
+
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 
 
@@ -52,21 +56,23 @@
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 
 
+
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 							     /* KP   |  KI  |  KD  |  Scale  |  PI Output Limit  */
-static PID_PrmCfg_t TLLftSpdCfg  = {3500u,  25u,   0u,    100u, 	TL_LFT_SAT_VAL,};  //output of PI must not be bounded so 'PI Output Limit' value...
-static PID_PrmCfg_t TLRghtSpdCfg = {3500u,  25u,   0u,    100u, 	TL_RGHT_SAT_VAL,}; //...should be at least the possible output value for the tracked state!
+static PID_PrmCfg_t pidCfgLeft  = {3500u,  25u,   0u,    100u, 	TL_DFLT_PID_SATURATION_VALUE,};  //output of PI must not be bounded so 'PI Output Limit' value...
+static PID_PrmCfg_t pidCfgRight = {3500u,  25u,   0u,    100u, 	TL_DFLT_PID_SATURATION_VALUE,}; //...should be at least the possible output value for the tracked state!
 
-static PID_Itm_t tlItmTbl[] =
+
+static TL_Itm_t items[] =
 {
-		{TL_LFT_SPD_STR,  TL_LFT_SPD_EST,  &TLLftSpdCfg,  PID_NO_SAT, 0, 0, TL_Read_CurLftPos,	TACHO_Read_PosLft,  NULL, NULL, NULL},
-		{TL_RGHT_SPD_STR, TL_RGHT_SPD_EST, &TLRghtSpdCfg, PID_NO_SAT, 0, 0, TL_Read_CurRghtPos, TACHO_Read_PosRght, NULL, NULL, NULL},
+		{ {TL_TACHO_LEFT_STRING,  TACHO_LEFT,  &pidCfgLeft,  PID_NO_SAT, 0, 0, NULL, TACHO_Read_CurLftPos,  NULL, NULL, NULL}, TL_DFLT_DATA_INIT },
+		{ {TL_TACHO_RIGHT_STRING, TACHO_RIGHT, &pidCfgRight, PID_NO_SAT, 0, 0, NULL, TACHO_Read_CurRghtPos, NULL, NULL, NULL}, TL_DFLT_DATA_INIT }
 };
 
-static PID_Cfg_t tlCfg =
+static TL_ItmTbl_t itemTable =
 {
-		tlItmTbl,
-		sizeof(tlItmTbl)/(sizeof(tlItmTbl[0])),
+		items,
+		sizeof(items)/(sizeof(items[0])),
 };
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
@@ -74,8 +80,7 @@ static PID_Cfg_t tlCfg =
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-
-PID_Cfg_t *Get_pTLCfg(void) {return &tlCfg;}
+TL_ItmTbl_t *Get_pTlItmTbl(void) {return &itemTable;}
 
 
 #ifdef MASTER_tl_cfg_C_

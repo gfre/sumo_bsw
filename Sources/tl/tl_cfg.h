@@ -16,8 +16,7 @@
 #define TACHO_CFG_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "tacho_api.h"
-
+#include "pid_api.h"
 
 
 #ifdef MASTER_tacho_cfg_C_
@@ -35,10 +34,39 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
+typedef PID_Itm_t TL_Cfg_t;
+
+/**
+ *
+ */
+typedef struct TL_Data_s{
+	int32_t fltrdVal;
+	int32_t dfltrdValdt;
+} TL_Data_t;
+
+/**
+ *
+ */
+typedef struct TL_Itm_s{
+	TL_Cfg_t cfg;
+	TL_Data_t data;
+}TL_Itm_t;
+
+
+/**
+ *
+ */
+typedef struct TL_ItmTbl_t
+{
+	TL_Itm_t *aTls;
+	uint8_t numTls;
+} TL_ItmTbl_t;
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-EXTERNAL_ TACHO_Cfg_t* Get_pTachoCfg(void);
+EXTERNAL_ TL_ItmTbl_t *Get_pTlItmTbl(void);
+
+
 
 #ifdef EXTERNAL_
 #undef EXTERNAL_
