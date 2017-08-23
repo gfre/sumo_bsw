@@ -60,7 +60,7 @@
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 							     /* KP   |  KI  |  KD  |  Scale  |  PI Output Limit  */
 static PID_PrmCfg_t pidCfgLeft  = {3500u,  25u,   0u,    100u, 	TL_DFLT_PID_SATURATION_VALUE,};  //output of PI must not be bounded so 'PI Output Limit' value...
-static PID_PrmCfg_t pidCfgRight = {3500u,  25u,   0u,    100u, 	TL_DFLT_PID_SATURATION_VALUE,}; //...should be at least the possible output value for the tracked state!
+static PID_PrmCfg_t pidCfgRight = {3500u,  25u,   0u,    100u, 	TL_DFLT_PID_SATURATION_VALUE,};  //...should be at least the possible output value for the tracked state!
 
 
 static TL_Itm_t items[] =

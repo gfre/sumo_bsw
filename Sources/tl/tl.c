@@ -158,30 +158,66 @@ void TL_DeInit(void)
 }
 
 
-StdRtn_t TL_Read_FltrdSig(int32_t* sig_, uint8_t idx_)
+StdRtn_t TL_Read_FltrdSig(int32_t* pSig_, const uint8_t idx_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if( ( NULL != sig_ ) && (NULL != pTbl) && ( NULL != pTbl->aTls) )
+	if( ( NULL != pSig_ ) && (NULL != pTbl) && ( NULL != pTbl->aTls) )
 	{
 		retVal = ERR_PARAM_VALUE;
 		if( idx_< pTbl->numTls )
 		{
-			*sig_ = TL_DOWNSACLE(pTbl->aTls[idx_].data.fltrdVal);
+			*pSig_ = TL_DOWNSACLE(pTbl->aTls[idx_].data.fltrdVal);
 			retVal 	= ERR_OK;
 		}
 	}
 	return retVal;
 }
 
-StdRtn_t TL_Read_dFltrdValdt(int32_t* sig_, uint8_t idx_)
+StdRtn_t TL_Read_dFltrdValdt(int32_t* pSig_, const uint8_t idx_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if( ( NULL != sig_ ) && (NULL != pTbl) && ( NULL != pTbl->aTls) )
+	if( ( NULL != pSig_ ) && (NULL != pTbl) && ( NULL != pTbl->aTls) )
 	{
 		retVal = ERR_PARAM_VALUE;
 		if( idx_< pTbl->numTls )
 		{
-			*sig_ = TL_DOWNSACLE(pTbl->aTls[idx_].data.dfltrdValdt);
+			*pSig_ = TL_DOWNSACLE(pTbl->aTls[idx_].data.dfltrdValdt);
+			retVal 	= ERR_OK;
+		}
+	}
+	return retVal;
+}
+
+StdRtn_t TL_Read_vFltrdVal(void* pSig_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+
+	if( ( NULL != pSig_ ) && (NULL != pTbl) && ( NULL != pTbl->aTls) )
+	{
+		retVal = ERR_PARAM_VALUE;
+		TL_vReadVal_t *pSig = (TL_vReadVal_t *)pSig_;
+		if( pSig->idx < pTbl->numTls )
+		{
+			pSig->val = TL_DOWNSACLE(pTbl->aTls[pSig->idx].data.fltrdVal);
+			retVal 	= ERR_OK;
+		}
+	}
+	return retVal;
+}
+
+
+
+StdRtn_t TL_Read_vdFltrdValdt(void* pSig_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+
+	if( ( NULL != pSig_ ) && (NULL != pTbl) && ( NULL != pTbl->aTls) )
+	{
+		retVal = ERR_PARAM_VALUE;
+		TL_vReadVal_t *pSig = (TL_vReadVal_t *)pSig_;
+		if( pSig->idx < pTbl->numTls )
+		{
+			pSig->val = TL_DOWNSACLE(pTbl->aTls[pSig->idx].data.dfltrdValdt);
 			retVal 	= ERR_OK;
 		}
 	}

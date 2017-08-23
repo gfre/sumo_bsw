@@ -17,7 +17,7 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "ACon_Types.h"
-#include "pid_api.h"
+
 
 
 #ifdef MASTER_TL_C_
@@ -38,7 +38,10 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-
+typedef struct TL_vReadVal_s{
+	int32_t val;
+	const uint8_t idx;
+}TL_vReadVal_t;
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
@@ -48,7 +51,7 @@
  * @param idx_
  * @return
  */
-StdRtn_t TL_Read_FltrdVal(int32_t* sig_, uint8_t idx_);
+StdRtn_t TL_Read_i32FltrdVal(int32_t* sig_, uint8_t idx_);
 
 /**
  *
@@ -56,7 +59,21 @@ StdRtn_t TL_Read_FltrdVal(int32_t* sig_, uint8_t idx_);
  * @param idx_
  * @return
  */
-StdRtn_t TL_Read_dFltrdValdt(int32_t* sig_, uint8_t idx_);
+StdRtn_t TL_Read_i32dFltrdValdt(int32_t* sig_, uint8_t idx_);
+
+/**
+ *
+ * @param pSig_
+ * @return
+ */
+StdRtn_t TL_Read_vFltrdVal(void* pSig_);
+
+/**
+ *
+ * @param pSig_
+ * @return
+ */
+StdRtn_t TL_Read_vdFltrdValdt(void* pSig_);
 
 
 /**
