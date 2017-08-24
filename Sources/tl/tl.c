@@ -90,7 +90,6 @@ void TL_Init(void)
 					errVal = ERR_OK;
 					pTbl->aTls[i].cfg.Config->Factor_KP_scld = (uint32_t)pidPrm.KP_scld;
 					pTbl->aTls[i].cfg.Config->Factor_KI_scld = (uint32_t)pidPrm.KI_scld;
-					pTbl->aTls[i].cfg.Config->Factor_KD_scld = (uint32_t)pidPrm.KD_scld;
 					pTbl->aTls[i].cfg.Config->Scale		     = (uint16_t)pidPrm.Scale;
 					pTbl->aTls[i].cfg.Config->SaturationVal  = (uint32_t)pidPrm.SaturationVal;
 				}
@@ -104,11 +103,12 @@ void TL_Init(void)
 					errVal = ERR_OK;
 					pTbl->aTls[i].cfg.Config->Factor_KP_scld = (uint32_t)pidPrm.KP_scld;
 					pTbl->aTls[i].cfg.Config->Factor_KI_scld = (uint32_t)pidPrm.KI_scld;
-					pTbl->aTls[i].cfg.Config->Factor_KD_scld = (uint32_t)pidPrm.KD_scld;
 					pTbl->aTls[i].cfg.Config->Scale		     = (uint16_t)pidPrm.Scale;
 					pTbl->aTls[i].cfg.Config->SaturationVal  = (uint32_t)pidPrm.SaturationVal;
 				}
 			}
+			/* PI-control only, D-part is always 0 for a tracking loop */
+			pTbl->aTls[i].cfg.Config->Factor_KD_scld = 0u;
 
 			if (ERR_OK != errVal)
 			{
