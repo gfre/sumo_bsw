@@ -309,8 +309,8 @@ bool DRV_HasTurned(void) {
 	if (DRV_Status.mode==DRV_MODE_POS) {
 		int32_t speedL, speedR;
 
-		speedL = Get_pTachoCfg()->pFilterTable[TACHO_Get_FltrType()].pGetSpeedFct(TRUE);
-		speedR = Get_pTachoCfg()->pFilterTable[TACHO_Get_FltrType()].pGetSpeedFct(FALSE);
+		TACHO_Read_CurFltrdLftSpd(&speedL);
+		TACHO_Read_CurFltrdRghtSpd(&speedR);
 		if (speedL>-DRV_TURN_SPEED_LOW && speedL<DRV_TURN_SPEED_LOW && speedR>-DRV_TURN_SPEED_LOW && speedR<DRV_TURN_SPEED_LOW) { /* speed close to zero */
 			pos = Q4CLeft_GetPos();
 			if (match(pos, DRV_Status.pos.left)) {

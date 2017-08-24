@@ -50,17 +50,17 @@ static void TACHO_PrintStatus(const CLS1_StdIOType *io) {
 	CLS1_SendStatusStr((unsigned char*)"Tacho", (unsigned char*)"\r\n", io->stdOut);
 	CLS1_SendStr((unsigned char*)"Speeds:\r\n", io->stdOut);
 	CLS1_SendStatusStr((unsigned char*)"  L speed", (unsigned char*)"", io->stdOut);
-	CLS1_SendNum32s(Get_pTachoCfg()->pFilterTable[TACHO_Get_FltrType()].pGetSpeedFct(TRUE), io->stdOut);
+	//CLS1_SendNum32s(Get_pTachoCfg()->pFilterTable[TACHO_Get_FltrType()].pGetSpeedFct(TRUE), io->stdOut);
 	CLS1_SendStr((unsigned char*)" steps/sec\r\n", io->stdOut);
 	CLS1_SendStatusStr((unsigned char*)"  R speed", (unsigned char*)"", io->stdOut);
-	CLS1_SendNum32s(Get_pTachoCfg()->pFilterTable[TACHO_Get_FltrType()].pGetSpeedFct(FALSE), io->stdOut);
+	//CLS1_SendNum32s(Get_pTachoCfg()->pFilterTable[TACHO_Get_FltrType()].pGetSpeedFct(FALSE), io->stdOut);
 	CLS1_SendStr((unsigned char*)" steps/sec\r\n", io->stdOut);
 
 	CLS1_SendStatusStr((unsigned char*)"Filters:", (unsigned char*)"\r\n", io->stdOut);
 	for(i = 0; i < Get_pTachoCfg()->NumOfFilters; i++)
 	{
-		if(Get_pTachoCfg()->pFilterTable[i].FilterType == Get_pTachoCfg()->pFilterTable[TACHO_Get_FltrType()].FilterType) enabled = TRUE;
-		else enabled = FALSE;
+		//if(Get_pTachoCfg()->pFilterTable[i].FilterType == Get_pTachoCfg()->pFilterTable[TACHO_Get_FltrType()].FilterType) enabled = TRUE;
+		//else enabled = FALSE;
 		CLS1_SendStr((unsigned char*)"  ", io->stdOut);
 		CLS1_SendStatusStr((unsigned char*)"filter name", (unsigned char*)Get_pTachoCfg()->pFilterTable[i].pFilterName, io->stdOut);
 		CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
@@ -90,7 +90,7 @@ static uint8_t TACHO_ParseParameter(TACHO_Cfg_t* config_, const unsigned char* c
 	{
 		if(UTIL1_strcmp((char*)cmd_, config_->pFilterTable[i].pFilterName) == 0)
 		{
-			TACHO_Set_FltrType(i);
+			//TACHO_Set_FltrType(i);
 			*handled_ = TRUE;
 			retVal = ERR_OK;
 			break;
@@ -99,7 +99,7 @@ static uint8_t TACHO_ParseParameter(TACHO_Cfg_t* config_, const unsigned char* c
 	if(ERR_OK != retVal)
 	{
 		CLS1_SendStr((unsigned char*)"Wrong argument\r\n ->Using Moving Average Filter\r\n", io_->stdErr);
-		TACHO_Set_FltrType(MOVING_AVERAGE_FILTER);
+		//TACHO_Set_FltrType(MOVING_AVERAGE_FILTER);
 	}
 	return retVal;
 }
