@@ -39,7 +39,7 @@
 
 /** Application APIs */
 #include "tacho_api.h"
-
+#include "tl_api.h"
 
 /*======================================= >> #DEFINES << =========================================*/
 #define TL_TACHO_LEFT_STRING		("TACHO Left")
@@ -56,8 +56,8 @@
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-
-
+static StdRtn_t TL_Read_EstdLftPos(int32_t* sig_);
+static StdRtn_t TL_Read_EstdRghtPos(int32_t* sig_);
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 							     /* KP   |  KI  |       KD        | Scale |  PI Output Limit  */
@@ -67,8 +67,8 @@ static PID_PrmCfg_t pidCfgRight = {3500u,  25u,   TL_DFLT_D_GAIN,    100u, 	TL_D
 
 static TL_Itm_t items[] =
 {
-		{ {TL_TACHO_LEFT_STRING,  TACHO_LEFT,  &pidCfgLeft,  PID_NO_SAT, 0, 0, NULL, TACHO_Read_CurLftPos,  NULL, NULL, NULL}, TL_DFLT_DATA_INIT },
-		{ {TL_TACHO_RIGHT_STRING, TACHO_RIGHT, &pidCfgRight, PID_NO_SAT, 0, 0, NULL, TACHO_Read_CurRghtPos, NULL, NULL, NULL}, TL_DFLT_DATA_INIT }
+		{ {TL_TACHO_LEFT_STRING,  TACHO_LEFT,  &pidCfgLeft,  PID_NO_SAT, 0, 0, TL_Read_EstdLftPos,  TACHO_Read_CurLftPos,  NULL, NULL, NULL}, TL_DFLT_DATA_INIT },
+		{ {TL_TACHO_RIGHT_STRING, TACHO_RIGHT, &pidCfgRight, PID_NO_SAT, 0, 0, TL_Read_EstdRghtPos, TACHO_Read_CurRghtPos, NULL, NULL, NULL}, TL_DFLT_DATA_INIT }
 };
 
 static TL_ItmTbl_t itemTable =
@@ -78,8 +78,18 @@ static TL_ItmTbl_t itemTable =
 };
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
+/* TODO */
+/* Quick and Dirty workaround */
+static StdRtn_t TL_Read_EstdLftPos(int32_t* sig_)
+{
+	return TL_Read_i32dFltrdValdt(sig_, TACHO_LEFT);
+}
 
 
+static StdRtn_t TL_Read_EstdRghtPos(int32_t* sig_)
+{
+	return TL_Read_i32dFltrdValdt(sig_, TACHO_RIGHT);
+}
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 TL_ItmTbl_t *Get_pTlItmTbl(void) {return &itemTable;}
