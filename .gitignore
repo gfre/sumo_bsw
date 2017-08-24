@@ -10,3 +10,5 @@ core
 *.g_x*
 *.project
 *.cproject
+.project
+.cproject
