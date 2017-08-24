@@ -42,12 +42,14 @@
 
 
 /*======================================= >> #DEFINES << =========================================*/
-#define TL_TACHO_LEFT_STRING		("TL Tacho Left")
-#define TL_TACHO_RIGHT_STRING		("TL Tacho Right")
-
+#define TL_TACHO_LEFT_STRING		("TACHO Left")
+#define TL_TACHO_RIGHT_STRING		("TACHO Right")
 
 #define TL_DFLT_PID_SATURATION_VALUE	(0xFFFFu)
 #define TL_DFLT_DATA_INIT  				{0,0}
+#define TL_DFLT_D_GAIN					(0x0u)
+
+
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 
@@ -58,9 +60,9 @@
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-							     /* KP   |  KI  |  KD  |  Scale  |  PI Output Limit  */
-static PID_PrmCfg_t pidCfgLeft  = {3500u,  25u,   0u,    100u, 	TL_DFLT_PID_SATURATION_VALUE,};  //output of PI must not be bounded so 'PI Output Limit' value...
-static PID_PrmCfg_t pidCfgRight = {3500u,  25u,   0u,    100u, 	TL_DFLT_PID_SATURATION_VALUE,};  //...should be at least the possible output value for the tracked state!
+							     /* KP   |  KI  |       KD        | Scale |  PI Output Limit  */
+static PID_PrmCfg_t pidCfgLeft  = {3500u,  25u,   TL_DFLT_D_GAIN,    100u, 	TL_DFLT_PID_SATURATION_VALUE,};  //output of PI must not be bounded so 'PI Output Limit' value...
+static PID_PrmCfg_t pidCfgRight = {3500u,  25u,   TL_DFLT_D_GAIN,    100u, 	TL_DFLT_PID_SATURATION_VALUE,};  //...should be at least the possible output value for the tracked state!
 
 
 static TL_Itm_t items[] =
