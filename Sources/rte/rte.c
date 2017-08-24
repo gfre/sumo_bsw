@@ -335,39 +335,16 @@ StdRtn_t RTE_Play_BuzBeep(uint16 freqHz_, uint16 durMs_)
 /**
  * Interface implementation for the speedometer
  */
-#define LEFT   (TRUE)
-#define RIGHT  (FALSE)
-
 StdRtn_t RTE_Read_SpdoVelLe(uint16 *vel_)
 {
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if(NULL != vel_)
-	{
-		*vel_ = Get_pTachoCfg()->pFilterTable[TACHO_Get_FltrType()].pGetSpeedFct(LEFT);
-		retVal = ERR_OK;
-	}
-	return retVal;
+	return TACHO_Read_CurFltrdLftSpd(vel_);
 }
 
 
 StdRtn_t RTE_Read_SpdoVelRi(uint16 *vel_)
 {
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if(NULL != vel_)
-	{
-		*vel_ = Get_pTachoCfg()->pFilterTable[TACHO_Get_FltrType()].pGetSpeedFct(RIGHT);
-		retVal = ERR_OK;
-	}
-	return retVal;
+	return TACHO_Read_CurFltrdRghtSpd(vel_);
 }
-
-#ifdef LEFT
-#undef LEFT
-#endif
-
-#ifdef RIGHT
-#undef RIGHT
-#endif
 
 /*================================================================================================*/
 
