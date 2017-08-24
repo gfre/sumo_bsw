@@ -57,12 +57,12 @@ static void TACHO_PrintStatus(const CLS1_StdIOType *io) {
 	CLS1_SendStr((unsigned char*)" steps/sec\r\n", io->stdOut);
 
 	CLS1_SendStatusStr((unsigned char*)"Filters:", (unsigned char*)"\r\n", io->stdOut);
-	for(i = 0; i < Get_pTachoCfg()->NumOfFilters; i++)
+	for(i = 0; i < Get_pFltrTbl()->numFltrs; i++)
 	{
 		//if(Get_pTachoCfg()->pFilterTable[i].FilterType == Get_pTachoCfg()->pFilterTable[TACHO_Get_FltrType()].FilterType) enabled = TRUE;
 		//else enabled = FALSE;
 		CLS1_SendStr((unsigned char*)"  ", io->stdOut);
-		CLS1_SendStatusStr((unsigned char*)"filter name", (unsigned char*)Get_pTachoCfg()->pFilterTable[i].pFilterName, io->stdOut);
+		CLS1_SendStatusStr((unsigned char*)"filter name", (unsigned char*)Get_pFltrTbl()->aFltrs[i].aFltrName, io->stdOut);
 		CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
 		CLS1_SendStatusStr((unsigned char*)"   enabled", (enabled)?(unsigned char*)"Yes\r\n":(unsigned char*)"No\r\n", io->stdOut);
 	}
@@ -74,23 +74,23 @@ static void TACHO_PrintStatus(const CLS1_StdIOType *io) {
  */
 static void TACHO_PrintHelp(const CLS1_StdIOType *io) {
 	uint8_t i = 0u;
-	CLS1_SendHelpStr((unsigned char*)"tacho", (unsigned char*)"Group of tacho commands\r\n", io->stdOut);
+	CLS1_SendHelpStr((unsigned char*)"TACHO", (unsigned char*)"Group of tacho commands\r\n", io->stdOut);
 	CLS1_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Shows tacho help or status\r\n", io->stdOut);
 	CLS1_SendHelpStr((unsigned char*)"  filter", (unsigned char*)"Change filter type for tacho component\r\n", io->stdOut);
-	for(i = 0; i < Get_pTachoCfg()->NumOfFilters; i++){
-		CLS1_SendHelpStr((unsigned char*)Get_pTachoCfg()->pFilterTable[i].pFilterName, (unsigned char*)"Enables this filter to calculate speed\r\n", io->stdOut);
+	for(i = 0; i < Get_pFltrTbl()->numFltrs; i++){
+		CLS1_SendHelpStr((unsigned char*)Get_pFltrTbl()->aFltrs[i].aFltrName, (unsigned char*)"Enables this filter to calculate speed\r\n", io->stdOut);
 	}
 }
 
-static uint8_t TACHO_ParseParameter(TACHO_Cfg_t* config_, const unsigned char* cmd_, bool* handled_, const CLS1_StdIOType* io_)
+static uint8_t TACHO_ParseParameter(TACHO_FltrItmTbl_t* config_, const unsigned char* cmd_, bool* handled_, const CLS1_StdIOType* io_)
 {
 	int8_t retVal = ERR_FAILED;
 	uint8_t i = 0u;
-	for(i = 0u; i < config_->NumOfFilters; i++)
+	for(i = 0u; i < config_->numFltrs; i++)
 	{
-		if(UTIL1_strcmp((char*)cmd_, config_->pFilterTable[i].pFilterName) == 0)
+		if(UTIL1_strcmp((char*)cmd_, config_->aFltrs[i].aFltrName) == 0)
 		{
-			//TACHO_Set_FltrType(i);
+			TACHO_Req_FltrType(i);
 			*handled_ = TRUE;
 			retVal = ERR_OK;
 			break;
@@ -99,7 +99,7 @@ static uint8_t TACHO_ParseParameter(TACHO_Cfg_t* config_, const unsigned char* c
 	if(ERR_OK != retVal)
 	{
 		CLS1_SendStr((unsigned char*)"Wrong argument\r\n ->Using Moving Average Filter\r\n", io_->stdErr);
-		//TACHO_Set_FltrType(MOVING_AVERAGE_FILTER);
+		TACHO_Req_FltrType(TACHO_FLTR_MOV_AVR);
 	}
 	return retVal;
 }

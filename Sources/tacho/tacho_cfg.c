@@ -43,18 +43,18 @@
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-static TACHO_Fltr_t fltrTbl[] =
+static TACHO_FltrItm_t fltrItms[] =
 {
-		{MAF_FILTER_STRING, MOVING_AVERAGE_FILTER, FALSE, MAF_Init, MAF_Main,   MAF_Deinit, MAF_Get_Speed},
-		{KF_FILTER_STRING,  KALMAN_FILTER,  	   TRUE,  KF_Init,  KF_Main,    KF_Deinit,  KF_Get_Speed},
-		{TL_FILTER_STRING,	TRACKING_LOOP_FILTER,  FALSE, TL_Reset, TL_CalcSpd, TL_Reset,   TL_Get_Speed},
+		{MAF_FILTER_STRING, TACHO_FLTR_MOV_AVR,    FALSE, MAF_Init, MAF_Main,   MAF_Deinit, MAF_Get_Speed},
+		{KF_FILTER_STRING,  TACHO_FLTR_TRACK_LOOP, TRUE,  KF_Init,  KF_Main,    KF_Deinit,  KF_Get_Speed},
+		{TL_FILTER_STRING,	TACHO_FLTR_KALMAN,     FALSE, TL_Reset, TL_CalcSpd, TL_Reset,   TL_Get_Speed},
 };
 
 
-static TACHO_Cfg_t tachoCfg =
+static TACHO_FltrItmTbl_t ftlrTbl =
 {
-		fltrTbl,
-		sizeof(fltrTbl)/sizeof(fltrTbl[0]),
+		fltrItms,
+		sizeof(fltrItms)/sizeof(fltrItms[0]),
 };
 
 
@@ -64,7 +64,7 @@ static TACHO_Cfg_t tachoCfg =
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-TACHO_Cfg_t* Get_pTachoCfg(void) {return &tachoCfg;}
+TACHO_FltrItmTbl_t* Get_pFltrTbl(void) {return &ftlrTbl;}
 
 
 

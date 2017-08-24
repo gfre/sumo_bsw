@@ -38,44 +38,60 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
+typedef enum TACHO_ID_e
+{
+	 TACHO_ID_LEFT = 0
+	,TACHO_ID_RIGHT
+	,TACHO_ID_CNT
+} TACHO_ID_t;
+
+typedef struct TACHO_Data_s
+{
+	TACHO_FltrItm_t *pActFltr;
+	uint8_t fltrID[TACHO_FLTR_CNT];
+	int16_t rawSpd[TACHO_ID_CNT];
+	int16_t fltrdSpd[TACHO_ID_CNT];
+	int32_t curPos[TACHO_ID_CNT];
+	int32_t prevPos[TACHO_ID_CNT];
+} TACHO_Data_t;
+
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-static void TACHO_Set_FltrType(TACHO_FltrType_t type_);
-static TACHO_FltrType_t TACHO_Get_FltrType(void);
+static TACHO_Fltr_t TACHO_Get_FltrType(void);
 
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-static int32_t TACHO_UnfltrdLftSpd = 0, TACHO_UnfltrdRghtSpd = 0;
-static int32_t TACHO_FltrdLftSpd   = 0, TACHO_FltrdRghtSpd   = 0;
-static int32_t TACHO_CurLftPos     = 0, TACHO_CurRghtPos     = 0;
-static int32_t TACHO_OldLftPos     = 0, TACHO_OldRghtPos     = 0;
-
-static TACHO_Fltr_t *pActiveFltr = NULL;
+static TACHO_Data_t data ={0};
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-static void TACHO_Set_FltrType(TACHO_FltrType_t type_)
+static void TACHO_Set_FltrType(TACHO_Fltr_t type_)
 {
-	TACHO_Cfg_t *tbl = NULL;
-	tbl = Get_pTachoCfg();
-	if( (NULL != pActiveFltr) && (NULL != pActiveFltr->pFilterDeinitFct) )
+	TACHO_FltrItmTbl_t *pFltrTbl = NULL;
+
+	if( (NULL != data.pActFltr) && (NULL != data.pActFltr->deinitFct) )
 	{
-			pActiveFltr->pFilterDeinitFct();
-			if(TRUE == pActiveFltr->isUsingSampledSpeed)
+			data.pActFltr->deinitFct();
+			if(TRUE == data.pActFltr->reqUnfltrdSpd)
 			{
-				TACHO_UnfltrdLftSpd  = 0;
-				TACHO_UnfltrdRghtSpd = 0;
+				data.rawSpd[TACHO_ID_LEFT]  = 0;
+				data.rawSpd[TACHO_ID_RIGHT] = 0;
 			}
 
 
 	}
 
-	pActiveFltr = &(tbl->pFilterTable[type_]);
-	if( (NULL != pActiveFltr) && (NULL != pActiveFltr->pFilterInitFct) )
+	pFltrTbl = Get_pFltrTbl();
+	if( (NULL != pFltrTbl) && (NULL != pFltrTbl->aFltrs ) )
 	{
-			pActiveFltr->pFilterInitFct();
+
+	}
+	data.pActFltr = &(pFltrTbl->aFltrs[type_]);
+	if( (NULL != data.pActFltr) && (NULL != data.pActFltr->initFct) )
+	{
+		data.pActFltr->initFct();
 	}
 	else
 	{
@@ -83,84 +99,17 @@ static void TACHO_Set_FltrType(TACHO_FltrType_t type_)
 	}
 }
 
-static TACHO_FltrType_t TACHO_Get_FltrType(void)
+static TACHO_Fltr_t TACHO_Get_FltrType(void)
 {
-	return pActiveFltr->FilterType;
+	return data.pActFltr->fltrType;
 }
 
+static void Get_FltrIDs(void)
+{
 
+}
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-StdRtn_t TACHO_Read_CurLftPos(int32_t* result_)
-{
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if(NULL != result_)
-	{
-		*result_  = TACHO_CurLftPos;
-		retVal = ERR_OK;
-	}
-	return retVal;
-}
-
-StdRtn_t TACHO_Read_CurRghtPos(int32_t* result_)
-{
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if(NULL != result_)
-	{
-		*result_  = TACHO_CurRghtPos;
-		retVal = ERR_OK;
-	}
-	return retVal;
-}
-
-StdRtn_t TACHO_Read_CurUnfltrdLftSpd(int32_t* result_)
-{
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if(NULL != result_)
-	{
-		*result_  = TACHO_UnfltrdLftSpd;
-		retVal   = ERR_OK;
-	}
-	return retVal;
-}
-
-StdRtn_t TACHO_Read_CurUnfltrdRghtSpd(int32_t* result_)
-{
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if(NULL != result_)
-	{
-		*result_  = TACHO_UnfltrdRghtSpd;
-		retVal   = ERR_OK;
-	}
-	return retVal;
-}
-
-StdRtn_t TACHO_Read_CurFltrdLftSpd(int32_t* result_)
-{
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if (NULL != result_)
-	{
-		*result_ = TACHO_FltrdLftSpd;
-		retVal = ERR_OK;
-	}
-	return retVal;
-}
-
-StdRtn_t TACHO_Read_CurFltrdRghtSpd(int32_t* result_)
-{
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if (NULL != result_)
-	{
-		*result_ = TACHO_FltrdRghtSpd;
-		retVal  = ERR_OK;
-	}
-	return retVal;
-}
-
-
-
-
-
 void TACHO_Sample(void) {
 	static int cnt = 0;
 	Q4CLeft_QuadCntrType tempLeft  = 0;
@@ -173,28 +122,28 @@ void TACHO_Sample(void) {
 	cnt = 0; /* reset counter */
 
 	/* left */
-	TACHO_OldLftPos   = TACHO_CurLftPos;
-	TACHO_OldRghtPos  = TACHO_CurRghtPos;
-	tempLeft  = Q4CLeft_GetPos();
-	tempRight = Q4CRight_GetPos();
-	TACHO_CurLftPos  = (int32_t)tempLeft;
-	TACHO_CurRghtPos = (int32_t)tempRight;
-	if(MOVING_AVERAGE_FILTER == pActiveFltr->FilterType)
+	data.prevPos[TACHO_ID_LEFT]  = data.curPos[TACHO_ID_LEFT];
+	data.prevPos[TACHO_ID_RIGHT] = data.curPos[TACHO_ID_RIGHT];
+
+	data.curPos[TACHO_ID_LEFT]  = (int32_t)Q4CLeft_GetPos();
+	data.curPos[TACHO_ID_RIGHT] = (int32_t)Q4CRight_GetPos();
+
+	if(TACHO_FLTR_MOV_AVR == data.pActFltr->fltrType)
 	{
-		MAF_UpdateRingBuffer(tempLeft, tempRight);
+		MAF_UpdateRingBuffer(data.curPos[TACHO_ID_LEFT], data.curPos[TACHO_ID_RIGHT]);
 	}
-	if(TRUE == pActiveFltr->isUsingSampledSpeed)
+	if(TRUE == data.pActFltr->reqUnfltrdSpd)
 	{
 		int32_t deltaLeft = 0, speedLeft = 0, deltaRight = 0, speedRight = 0;
 		bool negLeft, negRight;
-		deltaLeft = TACHO_OldLftPos - TACHO_CurLftPos;
+		deltaLeft = data.prevPos[TACHO_ID_LEFT] - data.curPos[TACHO_ID_LEFT];
 		if(deltaLeft < 0)
 		{
 			deltaLeft = -deltaLeft;
 			negLeft   = TRUE;
 		}
 		else negLeft = FALSE;
-		deltaRight = TACHO_OldRghtPos - TACHO_CurRghtPos;
+		deltaRight = data.prevPos[TACHO_ID_RIGHT] - data.curPos[TACHO_ID_RIGHT];
 		if(deltaRight < 0)
 		{
 			deltaRight = -deltaRight;
@@ -205,8 +154,8 @@ void TACHO_Sample(void) {
 		if(TRUE == negLeft) speedLeft = -speedLeft;
 		speedRight =(int32_t)(deltaRight*1000U/(TACHO_SAMPLE_PERIOD_MS));
 		if(TRUE == negRight) speedRight = -speedRight;
-		TACHO_UnfltrdLftSpd  = -speedLeft;
-		TACHO_UnfltrdRghtSpd = -speedRight;
+		data.rawSpd[TACHO_ID_LEFT]  = -speedLeft;
+		data.rawSpd[TACHO_ID_RIGHT] = -speedRight;
 	}
 }
 
@@ -214,26 +163,113 @@ void TACHO_Sample(void) {
 
 void TACHO_Deinit(void)
 {
-	/* nothing to do */
+	if( ( NULL != data.pActFltr ) && ( NULL != data.pActFltr->deinitFct ) )
+	{
+		data.pActFltr->deinitFct();
+	}
+	data.pActFltr = NULL;
 }
 
 void TACHO_Init(void)
 {
-	TACHO_Set_FltrType(MOVING_AVERAGE_FILTER); //attention when changing! also change in pid_cfg.c!
+	TACHO_FltrItmTbl_t *pFltrTbl = NULL;
+	pFltrTbl = Get_pFltrTbl();
+
+	if( (NULL != pFltrTbl) && (NULL != pFltrTbl->aFltrs ) )
+	{
+		Get_FltrIDs();
+		data.pActFltr = &(pFltrTbl->aFltrs[data.fltrID[TACHO_FLTR_KALMAN]]);
+		if( NULL != data.pActFltr->initFct)
+		{
+			data.pActFltr->initFct();
+		}
+	}
+
 }
 
 void TACHO_Main(void)
 {
-	if( ( NULL != pActiveFltr ) && ( NULL != pActiveFltr->pFilterMainFct ) )
+	if( ( NULL != data.pActFltr ) && ( NULL != data.pActFltr->mainFct ) )
 	{
-		pActiveFltr->pFilterMainFct();
-		TACHO_FltrdLftSpd  = pActiveFltr->pGetSpeedFct(TRUE);
-		TACHO_FltrdRghtSpd = pActiveFltr->pGetSpeedFct(FALSE);
+		data.pActFltr->mainFct();
+		data.fltrdSpd[TACHO_ID_LEFT]  = data.pActFltr->apiSpeedFct(TRUE);
+		data.fltrdSpd[TACHO_ID_RIGHT] = data.pActFltr->apiSpeedFct(FALSE);
 	}
 	else
 	{
-		/* TODO error handling */
+		/* error handling */
 	}
+}
+
+StdRtn_t TACHO_Req_FilterType(TACHO_Fltr_t type_)
+{
+
+}
+
+StdRtn_t TACHO_Read_PosLft(int32_t* pos_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if(NULL != pos_)
+	{
+		*pos_  = data.curPos[TACHO_ID_LEFT];
+		retVal = ERR_OK;
+	}
+	return retVal;
+}
+
+StdRtn_t TACHO_Read_PosRght(int32_t* pos_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if(NULL != pos_)
+	{
+		*pos_  = data.curPos[TACHO_ID_RIGHT];
+		retVal = ERR_OK;
+	}
+	return retVal;
+}
+
+StdRtn_t TACHO_Read_RawSpdLft(int32_t* spd_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if(NULL != spd_)
+	{
+		*spd_  = data.rawSpd[TACHO_ID_LEFT];
+		retVal   = ERR_OK;
+	}
+	return retVal;
+}
+
+StdRtn_t TACHO_Read_RawSpdRght(int32_t* spd_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if(NULL != spd_)
+	{
+		*spd_  = data.rawSpd[TACHO_ID_RIGHT];
+		retVal   = ERR_OK;
+	}
+	return retVal;
+}
+
+StdRtn_t TACHO_Read_FltrdSpdLft(int32_t* spd_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if (NULL != spd_)
+	{
+		*spd_ = data.fltrdSpd[TACHO_ID_LEFT];
+		retVal = ERR_OK;
+	}
+	return retVal;
+}
+
+StdRtn_t TACHO_Read_FltrdSpdRght(int32_t* spd_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if (NULL != spd_)
+	{
+		*spd_ = data.fltrdSpd[TACHO_ID_RIGHT];
+		retVal  = ERR_OK;
+	}
+	return retVal;
 }
 
 

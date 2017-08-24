@@ -45,7 +45,13 @@
 #define TACHO_SAMPLE_PERIOD_MS (5)
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-
+typedef enum TACHO_Fltr_e
+{
+	 TACHO_FLTR_MOV_AVR = 0
+	,TACHO_FLTR_TRACK_LOOP
+	,TACHO_FLTR_KALMAN
+	,TACHO_FLTR_CNT
+} TACHO_Fltr_t;
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
@@ -54,45 +60,49 @@
  * @param isLeft TRUE for left speed, FALSE for right speed.
  * @return Actual speed value
  */
-EXTERNAL_ StdRtn_t TACHO_Read_CurLftPos(int32_t* result_);
+EXTERNAL_ StdRtn_t TACHO_Read_PosLft(int32_t* pos_);
 
 /**
  *
- * @param result_
+ * @param pos_
  * @return
  */
-EXTERNAL_ StdRtn_t TACHO_Read_CurRghtPos(int32_t* result_);
+EXTERNAL_ StdRtn_t TACHO_Read_PosRght(int32_t* pos_);
 
 /**
  *
- * @param result_
+ * @param spd_
  * @return
  */
-EXTERNAL_ StdRtn_t TACHO_Read_CurUnfltrdLftSpd(int32_t* result_);
+EXTERNAL_ StdRtn_t TACHO_Read_RawSpdLft(int32_t* spd_);
 
 /**
  *
- * @param result_
+ * @param spd_
  * @return
  */
-EXTERNAL_ StdRtn_t TACHO_Read_CurUnfltrdRghtSpd(int32_t* result_);
+EXTERNAL_ StdRtn_t TACHO_Read_RawSpdRght(int32_t* spd_);
 
 /**
  *
- * @param result_
+ * @param spd_
  * @return
  */
-EXTERNAL_ StdRtn_t TACHO_Read_CurFltrdLftSpd(int32_t* result_);
+EXTERNAL_ StdRtn_t TACHO_Read_FltrdSpdLft(int32_t* spd_);
 
 /**
  *
- * @param result_
+ * @param spd_
  * @return
  */
-EXTERNAL_ StdRtn_t TACHO_Read_CurFltrdRghtSpd(int32_t* result_);
+EXTERNAL_ StdRtn_t TACHO_Read_FltrdSpdRght(int32_t* spd_);
 
-
-
+/**
+ *
+ * @param type_
+ * @return
+ */
+EXTERNAL_ StdRtn_t TACHO_Req_FilterType(TACHO_Fltr_t type_);
 
 
 

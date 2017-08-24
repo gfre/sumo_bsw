@@ -45,10 +45,10 @@ static PID_PrmCfg_t RghtPosCfg = {1000u,  1u,    50u,   100u,    MOTOR_MAX_VAL,}
 
 static PID_Itm_t itmTbl[] =
 {
-		{PID_LFT_MTR_SPD_STR,  PID_LFT_MTR_SPD,  &LftSpdCfg,  PID_NO_SAT, 0, 0, TACHO_Read_CurFltrdLftSpd,  DRV_Read_LftSpdTrgtVal,  NVM_Read_PIDSpdLeCfg, NVM_Read_Dflt_PIDSpdLeCfg, NVM_Save_PIDSpdLeCfg},
-		{PID_RGHT_MTR_SPD_STR, PID_RGHT_MTR_SPD, &RghtSpdCfg, PID_NO_SAT, 0, 0, TACHO_Read_CurFltrdRghtSpd, DRV_Read_RghtSpdTrgtVal, NVM_Read_PIDSpdRiCfg, NVM_Read_Dflt_PIDSpdRiCfg, NVM_Save_PIDSpdRiCfg},
-		{PID_LFT_MTR_POS_STR,  PID_LFT_MTR_POS,  &LftPosCfg,  PID_NO_SAT, 0, 0, TACHO_Read_CurLftPos,       DRV_Read_LftPosTrgtVal,  NVM_Read_PIDPosCfg,   NVM_Read_Dflt_PIDPosCfg,   NVM_Save_PIDPosCfg},
-		{PID_RGHT_MTR_POS_STR, PID_RGHT_MTR_POS, &RghtPosCfg, PID_NO_SAT, 0, 0, TACHO_Read_CurRghtPos,	    DRV_Read_RghtPosTrgtVal, NVM_Read_PIDPosCfg,   NVM_Read_Dflt_PIDPosCfg,   NVM_Save_PIDPosCfg},
+		{PID_LFT_MTR_SPD_STR,  PID_LFT_MTR_SPD,  &LftSpdCfg,  PID_NO_SAT, 0, 0, TACHO_Read_FltrdSpdLft,  DRV_Read_LftSpdTrgtVal,  NVM_Read_PIDSpdLeCfg, NVM_Read_Dflt_PIDSpdLeCfg, NVM_Save_PIDSpdLeCfg},
+		{PID_RGHT_MTR_SPD_STR, PID_RGHT_MTR_SPD, &RghtSpdCfg, PID_NO_SAT, 0, 0, TACHO_Read_FltrdSpdRght, DRV_Read_RghtSpdTrgtVal, NVM_Read_PIDSpdRiCfg, NVM_Read_Dflt_PIDSpdRiCfg, NVM_Save_PIDSpdRiCfg},
+		{PID_LFT_MTR_POS_STR,  PID_LFT_MTR_POS,  &LftPosCfg,  PID_NO_SAT, 0, 0, TACHO_Read_PosLft,       DRV_Read_LftPosTrgtVal,  NVM_Read_PIDPosCfg,   NVM_Read_Dflt_PIDPosCfg,   NVM_Save_PIDPosCfg},
+		{PID_RGHT_MTR_POS_STR, PID_RGHT_MTR_POS, &RghtPosCfg, PID_NO_SAT, 0, 0, TACHO_Read_PosRght,	    DRV_Read_RghtPosTrgtVal, NVM_Read_PIDPosCfg,   NVM_Read_Dflt_PIDPosCfg,   NVM_Save_PIDPosCfg},
 };
 
 static PID_Cfg_t pidCfg =
