@@ -24,6 +24,7 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "tacho.h"
+#include "tacho_cfg.h"
 #include "tacho_api.h"
 #include "maf.h"
 #include "Q4CLeft.h"
@@ -40,6 +41,9 @@
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
+static void TACHO_Set_FltrType(TACHO_FltrType_t type_);
+static TACHO_FltrType_t TACHO_Get_FltrType(void);
+
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
@@ -52,6 +56,37 @@ static TACHO_Fltr_t *pActiveFltr = NULL;
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
+static void TACHO_Set_FltrType(TACHO_FltrType_t type_)
+{
+	TACHO_Cfg_t *tbl = NULL;
+	tbl = Get_pTachoCfg();
+	if( (NULL != pActiveFltr) && (NULL != pActiveFltr->pFilterDeinitFct) )
+	{
+			pActiveFltr->pFilterDeinitFct();
+			if(TRUE == pActiveFltr->isUsingSampledSpeed)
+			{
+				TACHO_UnfltrdLftSpd  = 0;
+				TACHO_UnfltrdRghtSpd = 0;
+			}
+
+
+	}
+
+	pActiveFltr = &(tbl->pFilterTable[type_]);
+	if( (NULL != pActiveFltr) && (NULL != pActiveFltr->pFilterInitFct) )
+	{
+			pActiveFltr->pFilterInitFct();
+	}
+	else
+	{
+		/* error handling */
+	}
+}
+
+static TACHO_FltrType_t TACHO_Get_FltrType(void)
+{
+	return pActiveFltr->FilterType;
+}
 
 
 
@@ -122,43 +157,9 @@ StdRtn_t TACHO_Read_CurFltrdRghtSpd(int32_t* result_)
 	return retVal;
 }
 
-void TACHO_Set_FltrType(TACHO_FltrType_t type_)
-{
-	TACHO_Cfg_t *tbl = NULL;
-	tbl = Get_pTachoCfg();
-	if( (NULL != pActiveFltr) && (NULL != pActiveFltr->pFilterDeinitFct) )
-	{
-		if(TRUE == pActiveFltr->isInitialized)
-		{
-			pActiveFltr->pFilterDeinitFct();
-			if(TRUE == pActiveFltr->isUsingSampledSpeed)
-			{
-				TACHO_UnfltrdLftSpd  = 0;
-				TACHO_UnfltrdRghtSpd = 0;
-			}
-			pActiveFltr->isInitialized = FALSE;
-		}
-	}
 
-	pActiveFltr = &(tbl->pFilterTable[type_]);
-	if( (NULL != pActiveFltr) && (NULL != pActiveFltr->pFilterInitFct) )
-	{
-		if(FALSE == pActiveFltr->isInitialized)
-		{
-			pActiveFltr->pFilterInitFct();
-			pActiveFltr->isInitialized = TRUE;
-		}
-	}
-	else
-	{
-		/* TODO error handling */
-	}
-}
 
-TACHO_FltrType_t TACHO_Get_FltrType(void)
-{
-	return pActiveFltr->FilterType;
-}
+
 
 void TACHO_Sample(void) {
 	static int cnt = 0;

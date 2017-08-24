@@ -20,7 +20,7 @@
 #define TACHO_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "platform.h"
+#include "Platform.h"
 
 
 #ifdef MASTER_tacho_C_
@@ -58,7 +58,6 @@ void TACHO_Deinit(void);
 void TACHO_Init(void);
 
 void TACHO_Main(void);
-
 
 
 /**

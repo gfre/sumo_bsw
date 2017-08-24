@@ -16,7 +16,7 @@
 #define TACHO_CFG_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "tacho_api.h"
+#include "Platform.h"
 
 
 
@@ -35,10 +35,33 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
+typedef void FltrFct_t(void);
 
+typedef enum TACHO_FilterType_e{
+	MOVING_AVERAGE_FILTER = 0,
+	KALMAN_FILTER,
+	TRACKING_LOOP_FILTER,
+}TACHO_FltrType_t;
+
+typedef struct TACHO_Fltr_s{
+    char_t           *pFilterName;
+    TACHO_FltrType_t FilterType;
+	bool 		isUsingSampledSpeed;
+    FltrFct_t 	*pFilterInitFct;
+    FltrFct_t 	*pFilterMainFct;
+    FltrFct_t   *pFilterDeinitFct;
+	int32_t    (*pGetSpeedFct)(bool isLeft_);
+}TACHO_Fltr_t;
+
+typedef struct TACHO_Cfg_s{
+	TACHO_Fltr_t* pFilterTable;
+	int8_t		  NumOfFilters; 			// Anzahl an Filterkomponenten in Filtertable
+}TACHO_Cfg_t;
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 EXTERNAL_ TACHO_Cfg_t* Get_pTachoCfg(void);
+
+
 
 #ifdef EXTERNAL_
 #undef EXTERNAL_

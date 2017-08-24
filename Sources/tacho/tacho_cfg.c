@@ -19,17 +19,20 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "tacho_cfg.h"
+
+/* Filter headers API + function calls */
 #include "kf.h"
 #include "kf_api.h"
 #include "maf.h"
 #include "maf_api.h"
-#include "tacho.h"
 #include "tl.h"
 #include "tl_api.h"
 
 
 
 /*======================================= >> #DEFINES << =========================================*/
+
+
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 
@@ -38,12 +41,13 @@
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 
 
+
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 static TACHO_Fltr_t fltrTbl[] =
 {
-		{MAF_FILTER_STRING, MOVING_AVERAGE_FILTER, FALSE, FALSE, MAF_Init, MAF_Main,   MAF_Deinit, MAF_Get_Speed},
-		{KF_FILTER_STRING,  KALMAN_FILTER,  	   FALSE, TRUE,  KF_Init,  KF_Main,    KF_Deinit,  KF_Get_Speed},
-		{TL_FILTER_STRING,	TRACKING_LOOP_FILTER,  FALSE, FALSE, TL_Reset, TL_CalcSpd, TL_Reset,   TL_Get_Speed},
+		{MAF_FILTER_STRING, MOVING_AVERAGE_FILTER, FALSE, MAF_Init, MAF_Main,   MAF_Deinit, MAF_Get_Speed},
+		{KF_FILTER_STRING,  KALMAN_FILTER,  	   TRUE,  KF_Init,  KF_Main,    KF_Deinit,  KF_Get_Speed},
+		{TL_FILTER_STRING,	TRACKING_LOOP_FILTER,  FALSE, TL_Reset, TL_CalcSpd, TL_Reset,   TL_Get_Speed},
 };
 
 
@@ -53,13 +57,15 @@ static TACHO_Cfg_t tachoCfg =
 		sizeof(fltrTbl)/sizeof(fltrTbl[0]),
 };
 
+
+
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-
 TACHO_Cfg_t* Get_pTachoCfg(void) {return &tachoCfg;}
+
 
 
 #ifdef MASTER_tacho_cfg_C_

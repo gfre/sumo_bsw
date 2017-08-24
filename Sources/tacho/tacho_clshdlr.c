@@ -19,7 +19,7 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "tacho_clshdlr.h"
-#include "tacho_api.h"
+#include "tacho_cfg.h"
 
 
 
@@ -65,7 +65,6 @@ static void TACHO_PrintStatus(const CLS1_StdIOType *io) {
 		CLS1_SendStatusStr((unsigned char*)"filter name", (unsigned char*)Get_pTachoCfg()->pFilterTable[i].pFilterName, io->stdOut);
 		CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
 		CLS1_SendStatusStr((unsigned char*)"   enabled", (enabled)?(unsigned char*)"Yes\r\n":(unsigned char*)"No\r\n", io->stdOut);
-		CLS1_SendStatusStr((unsigned char*)"   intialized", (Get_pTachoCfg()->pFilterTable[i].isInitialized)?(unsigned char*)"Yes\r\n":(unsigned char*)"No\r\n", io->stdOut);
 	}
 }
 
