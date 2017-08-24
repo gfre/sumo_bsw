@@ -151,6 +151,7 @@ static uint8_t PrintStatus(const CLS1_StdIOType *io) {
   }
   CLS1_SendStr((unsigned char*)"\r\n", io->stdOut);
 
+  /* print calibration data */
   if (REFL_Get_pCalibData()!=NULL) /* have calibration data */
   {
     CLS1_SendStatusStr((unsigned char*)"  min val", (unsigned char*)"", io->stdOut);
