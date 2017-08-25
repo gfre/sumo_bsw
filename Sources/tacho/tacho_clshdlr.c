@@ -90,7 +90,7 @@ static uint8_t Parse_TachoParam(TACHO_FltrItmTbl_t* config_, const unsigned char
 	{
 		if(UTIL1_strcmp((char*)cmd_, config_->aFltrs[i].aFltrName) == 0)
 		{
-			TACHO_Req_FltrType(i);
+			TACHO_Set_FltrReq(i);
 			*handled_ = TRUE;
 			retVal = ERR_OK;
 			break;
@@ -99,7 +99,7 @@ static uint8_t Parse_TachoParam(TACHO_FltrItmTbl_t* config_, const unsigned char
 	if(ERR_OK != retVal)
 	{
 		CLS1_SendStr((unsigned char*)"Wrong argument\r\n ->Using Moving Average Filter\r\n", io_->stdErr);
-		TACHO_Req_FltrType(TACHO_FLTR_MOV_AVR);
+		TACHO_Set_FltrReq(TACHO_FLTR_MOV_AVR);
 	}
 	return retVal;
 }

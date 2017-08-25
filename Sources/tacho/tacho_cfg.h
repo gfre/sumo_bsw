@@ -31,7 +31,7 @@
  * @{
  */
 /*======================================= >> #DEFINES << =========================================*/
-
+#define TACHO_MAX_NUM_OF_FILTERS (0xFA)
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
@@ -39,7 +39,7 @@
 /**
  *
  */
-typedef void FltrFct_t(void);
+typedef void FltrRtFct_t(void);
 
 /**
  *
@@ -53,12 +53,12 @@ typedef int32_t ApiFct_t(bool);
  */
 typedef struct TACHO_FltrItm_s
 {
-    const uchar_t *aFltrName;
-    TACHO_Fltr_t fltrType;
-	bool reqUnfltrdSpd;
-    FltrFct_t *initFct;
-    FltrFct_t *mainFct;
-    FltrFct_t *deinitFct;
+    TACHO_FltrID_t fltrID;
+    bool reqRawSpd;
+	const uchar_t *aFltrName;
+	FltrRtFct_t *initFct;
+	FltrRtFct_t *mainFct;
+	FltrRtFct_t *deinitFct;
     ApiFct_t *apiSpeedFct;
 } TACHO_FltrItm_t;
 
@@ -78,7 +78,7 @@ EXTERNAL_ TACHO_FltrItmTbl_t* Get_pFltrTbl(void);
  * @param type_
  * @return
  */
-EXTERNAL_ StdRtn_t TACHO_Req_FilterType(TACHO_Fltr_t type_);
+EXTERNAL_ StdRtn_t TACHO_Req_FltrChange(TACHO_FltrID_t type_);
 
 #ifdef EXTERNAL_
 #undef EXTERNAL_

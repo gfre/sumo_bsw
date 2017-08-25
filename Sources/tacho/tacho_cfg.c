@@ -27,7 +27,7 @@
 #include "maf_api.h"
 #include "tl.h"
 #include "tl_api.h"
-
+#include "tl_cfg.h"
 
 
 /*======================================= >> #DEFINES << =========================================*/
@@ -45,9 +45,9 @@
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 static TACHO_FltrItm_t fltrItms[] =
 {
-		{MAF_FILTER_STRING, TACHO_FLTR_MOV_AVR,    FALSE, MAF_Init, MAF_Main,   MAF_Deinit, MAF_Get_Speed},
-		{KF_FILTER_STRING,  TACHO_FLTR_TRACK_LOOP, TRUE,  KF_Init,  KF_Main,    KF_Deinit,  KF_Get_Speed},
-		{TL_FILTER_STRING,	TACHO_FLTR_KALMAN,     FALSE, TL_Reset, TL_CalcSpd, TL_Reset,   TL_Get_Speed},
+		{TACHO_FLTR_MOV_AVR,    FALSE, MAF_FILTER_STRING, MAF_Init, MAF_Main,   MAF_Deinit, MAF_Get_Speed},
+		{TACHO_FLTR_KALMAN,     TRUE,  KF_FILTER_STRING,  KF_Init,  KF_Main,    KF_Deinit,  KF_Get_Speed},
+		{TACHO_FLTR_TRACK_LOOP, FALSE, TL_FILTER_STRING,  TL_RunStartup, TL_CalcSpd, TL_RunStartup,   TL_Get_Speed},
 };
 
 
