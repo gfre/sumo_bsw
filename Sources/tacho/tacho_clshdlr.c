@@ -32,7 +32,7 @@
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-
+static uint8_t Parse_TachoParam(TACHO_FltrItmTbl_t* config_, const unsigned char* cmd_, bool* handled_, const CLS1_StdIOType* io_);
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
@@ -82,7 +82,7 @@ static void TACHO_PrintHelp(const CLS1_StdIOType *io) {
 	}
 }
 
-static uint8_t TACHO_ParseParameter(TACHO_FltrItmTbl_t* config_, const unsigned char* cmd_, bool* handled_, const CLS1_StdIOType* io_)
+static uint8_t Parse_TachoParam(TACHO_FltrItmTbl_t* config_, const unsigned char* cmd_, bool* handled_, const CLS1_StdIOType* io_)
 {
 	int8_t retVal = ERR_FAILED;
 	uint8_t i = 0u;
@@ -115,7 +115,7 @@ uint8_t TACHO_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_S
 		*handled = TRUE;
 	} else if(UTIL1_strncmp((char*)cmd, (char*)"tacho filter ", sizeof("tacho filter ")-1) == 0)
 	{
-		TACHO_ParseParameter(Get_pTachoCfg(), cmd+sizeof("tacho filter ")-1, handled, io);
+		Parse_TachoParam(Get_pFltrTbl(), cmd+sizeof("tacho filter ")-1, handled, io);
 	}
 	return ERR_OK;
 }

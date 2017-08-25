@@ -201,7 +201,7 @@ void TACHO_Main(void)
 	}
 }
 
-StdRtn_t TACHO_Req_FilterType(TACHO_Fltr_t type_)
+StdRtn_t TACHO_Req_FltrType(TACHO_Fltr_t type_)
 {
 
 }
@@ -250,7 +250,7 @@ StdRtn_t TACHO_Read_RawSpdRght(int32_t* spd_)
 	return retVal;
 }
 
-StdRtn_t TACHO_Read_FltrdSpdLft(int32_t* spd_)
+StdRtn_t TACHO_Read_SpdLft(int32_t* spd_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if (NULL != spd_)
@@ -261,7 +261,7 @@ StdRtn_t TACHO_Read_FltrdSpdLft(int32_t* spd_)
 	return retVal;
 }
 
-StdRtn_t TACHO_Read_FltrdSpdRght(int32_t* spd_)
+StdRtn_t TACHO_Read_SpdRght(int32_t* spd_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if (NULL != spd_)

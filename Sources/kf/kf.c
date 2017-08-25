@@ -125,13 +125,13 @@ static int16_t KF_RightModCntr 	  = 0;
 static void KF_UpdateMeasurements()
 {
 	int32_t leftPos = 0, rightPos = 0;
-	(void)TACHO_Read_CurLftPos(&leftPos);
-	(void)TACHO_Read_CurRghtPos(&rightPos);
+	(void)TACHO_Read_PosLft(&leftPos);
+	(void)TACHO_Read_PosRght(&rightPos);
 
 #if KF_USE_MEASUREMENT_MATRIX
 	int32_t leftSpeed = 0, rightSpeed = 0;
-	(void)TACHO_Read_CurUnfltrdLftSpd(&leftSpeed);
-	(void)TACHO_Read_CurUnfltrdRghtSpd(&rightSpeed);
+	(void)TACHO_Read_SpdLft(&leftSpeed);
+	(void)TACHO_Read_SpdRght(&rightSpeed);
 
 		KF_LeftY.aRow[0] += (int32_t)((leftPos*KF_SCALE_X)-(KF_LeftY.aRow[0] + (KF_LeftModCntr*(KF_MAX_POS_VAL/KF_SCALE_A))));
 		KF_LeftY.aRow[1]  = (int32_t)KF_SCALE_X*leftSpeed;
