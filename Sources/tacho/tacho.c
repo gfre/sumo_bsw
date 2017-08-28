@@ -26,7 +26,6 @@
 #include "tacho.h"
 #include "tacho_cfg.h"
 #include "tacho_api.h"
-#include "maf.h"
 #include "Q4CLeft.h"
 #include "Q4CRight.h"
 #include "CS1.h"
@@ -294,6 +293,10 @@ StdRtn_t TACHO_Read_SpdRght(int32_t* spd_)
 	return retVal;
 }
 
+uint8_t TACHO_Get_ActFltrIdx(void)
+{
+	return data.actFltrIdx;
+}
 
 #ifdef MASTER_tacho_C_
 #undef MASTER_tacho_C_

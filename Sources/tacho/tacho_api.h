@@ -37,15 +37,21 @@
 /**
  * String identification of the SWC @ref tacho
  */
-#define TACHO_SWC_STRING ("Tacho")
+#define TACHO_SWC_STRING ("tacho")
 
 /**
  *  Speed sample period in ms. Make sure that speed is sampled at the given rate.
  */
 #define TACHO_SAMPLE_PERIOD_MS (5)
 
+/**
+ *
+ */
 #define TACHO_FILTER_ID_INVALID  (0xFF)
 
+/**
+ *
+ */
 #define TACHO_SPEED_VALUE_INVALID (0xFFFF)
 
 
@@ -104,6 +110,11 @@ EXTERNAL_ StdRtn_t TACHO_Read_SpdRght(int32_t* spd_);
  */
 EXTERNAL_ StdRtn_t TACHO_Set_FltrReq(uint8_t idx_);
 
+/**
+ *
+ * @return
+ */
+uint8_t TACHO_Get_ActFltrIdx(void);
 
 
 /**
