@@ -39,15 +39,15 @@
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-static int32_t TL_Get_Speed(bool isLeft_);
-
+static StdRtn_t KF_Read_i16EstdVal(int16_t *pVal_, uint8_t idx_);
+static StdRtn_t MAF_Read_i16FltrdVal(int16_t *pVal_, uint8_t idx_);
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 static TACHO_FltrItm_t fltrItms[] =
 {
-		{KF_SWC_STRING,  TRUE,  KF_Init,  KF_Main,  KF_Deinit,  NULL, KF_Get_Speed},
-		{TL_SWC_STRING,  FALSE, TL_Init,  TL_Main,  TL_DeInit,  NULL, TL_Get_Speed},
-		{MAF_SWC_STRING, FALSE, MAF_Init, MAF_Main, MAF_Deinit, MAF_UpdateRingBuffer, MAF_Get_Speed},
+		{KF_SWC_STRING,  TRUE,  KF_Init,  KF_Main,  KF_Deinit,  NULL, KF_Read_i16EstdVal},
+		{TL_SWC_STRING,  FALSE, TL_Init,  TL_Main,  TL_DeInit,  NULL, TL_Read_i16dFltrdValdt},
+		{MAF_SWC_STRING, FALSE, MAF_Init, MAF_Main, MAF_Deinit, MAF_UpdateRingBuffer, MAF_Read_i16FltrdVal},
 };
 
 
@@ -60,20 +60,43 @@ static TACHO_FltrItmTbl_t ftlrTbl =
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-static int32_t TL_Get_Speed(bool isLeft_)
+// TODO Workaround - Read API needs to be provided from KF and MAF
+StdRtn_t KF_Read_i16EstdVal(int16_t *pVal_, uint8_t idx_)
 {
-	int32_t tmp = 0;
-	if( TRUE == isLeft_)
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if( NULL != pVal_)
 	{
-		(void)TL_Read_i32dFltrdValdt(&tmp, 0);
+		if(0 == idx_)
+		{
+			*pVal_ = KF_Get_Speed(TRUE);
+		}
+		else
+		{
+			*pVal_ = KF_Get_Speed(FALSE);
+		}
+		retVal = ERR_OK;
 	}
-	else
-	{
-		(void)TL_Read_i32dFltrdValdt(&tmp, 1);
-	}
-
-	return tmp;
+	return retVal;
 }
+
+StdRtn_t MAF_Read_i16FltrdVal(int16_t *pVal_, uint8_t idx_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if( NULL != pVal_)
+	{
+		if(0 == idx_)
+		{
+			*pVal_ = MAF_Get_Speed(TRUE);
+		}
+		else
+		{
+			*pVal_ = MAF_Get_Speed(FALSE);
+		}
+		retVal = ERR_OK;
+	}
+	return retVal;
+}
+
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/

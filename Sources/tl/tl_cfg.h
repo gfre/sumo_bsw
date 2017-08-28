@@ -41,7 +41,7 @@ typedef PID_Itm_t TL_Cfg_t;
  */
 typedef struct TL_Data_s{
 	int32_t fltrdVal;
-	int32_t dfltrdValdt;
+	int16_t dfltrdValdt;
 } TL_Data_t;
 
 /**

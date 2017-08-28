@@ -46,7 +46,7 @@ typedef void FltrRtFct_t(void);
  * @param
  * @return
  */
-typedef int32_t ApiFct_t(bool);
+typedef StdRtn_t ReadFct_t(int16_t *spdd_, uint8_t idx_);
 
 /**
  *
@@ -59,7 +59,7 @@ typedef struct TACHO_FltrItm_s
 	FltrRtFct_t *mainFct;
 	FltrRtFct_t *deinitFct;
 	FltrRtFct_t *sampleCbFct;
-    ApiFct_t *apiSpeedFct;
+    ReadFct_t *readSpdFct;
 } TACHO_FltrItm_t;
 
 /**

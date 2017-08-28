@@ -203,11 +203,17 @@ void TACHO_Init(void)
 
 void TACHO_Main(void)
 {
+	StdRtn_t errVal = ERR_OK;
+
 	if( ( NULL != data.pActFltr ) && ( NULL != data.pActFltr->mainFct ) )
 	{
 		data.pActFltr->mainFct();
-		data.fltrdSpd[TACHO_ID_LEFT]  = data.pActFltr->apiSpeedFct(TRUE);
-		data.fltrdSpd[TACHO_ID_RIGHT] = data.pActFltr->apiSpeedFct(FALSE);
+		errVal |= data.pActFltr->readSpdFct(&data.fltrdSpd[TACHO_ID_LEFT],TACHO_ID_LEFT);
+		errVal |= data.pActFltr->readSpdFct(&data.fltrdSpd[TACHO_ID_RIGHT],TACHO_ID_RIGHT);
+		if( ERR_OK != errVal )
+		{
+			/* error handling */
+		}
 	}
 	else
 	{

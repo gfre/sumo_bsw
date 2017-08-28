@@ -53,7 +53,7 @@ typedef struct TL_vReadVal_s{
  * @param idx_
  * @return
  */
-EXTERNAL_ StdRtn_t TL_Read_i32FltrdVal(int32_t* sig_, uint8_t idx_);
+EXTERNAL_ StdRtn_t TL_Read_i32FltrdVal(int32_t* pVal_, uint8_t idx_);
 
 /**
  *
@@ -61,21 +61,21 @@ EXTERNAL_ StdRtn_t TL_Read_i32FltrdVal(int32_t* sig_, uint8_t idx_);
  * @param idx_
  * @return
  */
-EXTERNAL_ StdRtn_t TL_Read_i32dFltrdValdt(int32_t* sig_, uint8_t idx_);
+EXTERNAL_ StdRtn_t TL_Read_i16dFltrdValdt(int16_t* pVal_, uint8_t idx_);
 
 /**
  *
- * @param pSig_
+ * @param pVal
  * @return
  */
-EXTERNAL_ StdRtn_t TL_Read_vFltrdVal(void* pSig_);
+EXTERNAL_ StdRtn_t TL_Read_vFltrdVal(void* pVal);
 
 /**
  *
- * @param pSig_
+ * @param pVal
  * @return
  */
-EXTERNAL_ StdRtn_t TL_Read_vdFltrdValdt(void* pSig_);
+EXTERNAL_ StdRtn_t TL_Read_vdFltrdValdt(void* pVal);
 
 
 /**

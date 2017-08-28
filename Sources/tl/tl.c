@@ -158,47 +158,47 @@ void TL_DeInit(void)
 }
 
 
-StdRtn_t TL_Read_i32FltrdVal(int32_t* pSig_, const uint8_t idx_)
+StdRtn_t TL_Read_i32FltrdVal(int32_t* pVal_, const uint8_t idx_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if( ( NULL != pSig_ ) && (NULL != pTbl) && ( NULL != pTbl->aTls) )
+	if( ( NULL != pVal_ ) && (NULL != pTbl) && ( NULL != pTbl->aTls) )
 	{
 		retVal = ERR_PARAM_VALUE;
 		if( idx_< pTbl->numTls )
 		{
-			*pSig_ = TL_DOWNSACLE(pTbl->aTls[idx_].data.fltrdVal);
+			*pVal_ = TL_DOWNSACLE(pTbl->aTls[idx_].data.fltrdVal);
 			retVal 	= ERR_OK;
 		}
 	}
 	return retVal;
 }
 
-StdRtn_t TL_Read_i32dFltrdValdt(int32_t* pSig_, const uint8_t idx_)
+StdRtn_t TL_Read_i16dFltrdValdt(int16_t* pVal_, const uint8_t idx_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if( ( NULL != pSig_ ) && (NULL != pTbl) && ( NULL != pTbl->aTls) )
+	if( ( NULL != pVal_ ) && (NULL != pTbl) && ( NULL != pTbl->aTls) )
 	{
 		retVal = ERR_PARAM_VALUE;
 		if( idx_< pTbl->numTls )
 		{
-			*pSig_ = pTbl->aTls[idx_].data.dfltrdValdt;
+			*pVal_ = pTbl->aTls[idx_].data.dfltrdValdt;
 			retVal 	= ERR_OK;
 		}
 	}
 	return retVal;
 }
 
-StdRtn_t TL_Read_vFltrdVal(void* pSig_)
+StdRtn_t TL_Read_vFltrdVal(void* pVal_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 
-	if( ( NULL != pSig_ ) && (NULL != pTbl) && ( NULL != pTbl->aTls) )
+	if( ( NULL != pVal_ ) && (NULL != pTbl) && ( NULL != pTbl->aTls) )
 	{
 		retVal = ERR_PARAM_VALUE;
-		TL_vReadVal_t *pSig = (TL_vReadVal_t *)pSig_;
-		if( pSig->idx < pTbl->numTls )
+		TL_vReadVal_t *pVal = (TL_vReadVal_t *)pVal_;
+		if( pVal->idx < pTbl->numTls )
 		{
-			pSig->val = pTbl->aTls[pSig->idx].data.fltrdVal;
+			pVal->val = pTbl->aTls[pVal->idx].data.fltrdVal;
 			retVal 	= ERR_OK;
 		}
 	}
@@ -207,17 +207,17 @@ StdRtn_t TL_Read_vFltrdVal(void* pSig_)
 
 
 
-StdRtn_t TL_Read_vdFltrdValdt(void* pSig_)
+StdRtn_t TL_Read_vdFltrdValdt(void* pVal_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 
-	if( ( NULL != pSig_ ) && (NULL != pTbl) && ( NULL != pTbl->aTls) )
+	if( ( NULL != pVal_ ) && (NULL != pTbl) && ( NULL != pTbl->aTls) )
 	{
 		retVal = ERR_PARAM_VALUE;
-		TL_vReadVal_t *pSig = (TL_vReadVal_t *)pSig_;
-		if( pSig->idx < pTbl->numTls )
+		TL_vReadVal_t *pVal = (TL_vReadVal_t *)pVal_;
+		if( pVal->idx < pTbl->numTls )
 		{
-			pSig->val = TL_DOWNSACLE(pTbl->aTls[pSig->idx].data.dfltrdValdt);
+			pVal->val = TL_DOWNSACLE(pTbl->aTls[pVal->idx].data.dfltrdValdt);
 			retVal 	= ERR_OK;
 		}
 	}
