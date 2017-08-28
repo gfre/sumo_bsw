@@ -47,7 +47,7 @@ typedef struct MTX_s
 EXTERNAL_ StdRtn_t MTX_Add(const MTX_t *smd1_, const MTX_t *smd2_, MTX_t *sum_);
 EXTERNAL_ StdRtn_t MTX_Sub(const MTX_t *min_, const MTX_t *sub_, MTX_t *diff_);
 EXTERNAL_ StdRtn_t MTX_Mult(const MTX_t *fac1_, const MTX_t *fac2_, MTX_t *prod_);
-EXTERNAL_ StdRtn_t MTX_Trns(const MTX_t *trns_, const MTX_t *divs_, MTX_t *trnsp_);
+EXTERNAL_ StdRtn_t MTX_Div(const MTX_t *divd_, const MTX_t *divs_, MTX_t *quot_);
 /**
  * @}
  */

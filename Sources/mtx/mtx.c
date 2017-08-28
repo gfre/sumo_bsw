@@ -47,12 +47,11 @@ typedef StdRtn_t MTX_OpFct_t(int32_t x1_,  int32_t x2_, int32_t *res_);
 static inline StdRtn_t Add(int32_t x1_,  int32_t x2_, int32_t *res_);
 static inline StdRtn_t Sub(int32_t x1_,  int32_t x2_, int32_t *res_);
 static inline StdRtn_t Mult(int32_t x1_, int32_t x2_, int32_t *res_);
-static inline StdRtn_t Div(int32_t x1_,  int32_t x2_, int32_t *res_);
 
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-static MTX_OpFct_t *opFctHdls[MTX_CNT_OF_OPS] = {Add, Sub, Mult, Div};
+static MTX_OpFct_t *opFctHdls[MTX_CNT_OF_OPS] = {Add, Sub, Mult};
 
 
 
@@ -90,14 +89,9 @@ static inline StdRtn_t Mult(int32_t x1_,  int32_t x2_, int32_t *res_)
 	return retVal;
 }
 
-static inline StdRtn_t Div(int32_t x1_,  int32_t x2_, int32_t *res_)
+static inline StdRtn_t AppendCol(const MTX_t *mtx1_, const MTX_t *mtx2_, MTX_t *mtxRes_)
 {
-	//TODO
-	return ERR_OK;
-}
-static inline StdRtn_t AppendCol(MTX_t *mtx1_, MTX_t *mtx2_, MTX_t *mtxRes_)
-{
-	uint8_t i = 0; k = 0u;
+	uint8_t i = 0u, j = 0u;
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if ( NULL != mtxRes_){
 		retVal = ERR_OK;
@@ -106,7 +100,7 @@ static inline StdRtn_t AppendCol(MTX_t *mtx1_, MTX_t *mtx2_, MTX_t *mtxRes_)
 			for(j = 0u; j < mtxRes_->NumCols; j++)
 			{
 				if( j == mtx1_->NumCols )
-					MTXRes(i,j) = MTX2(i,i);
+					MTXRes(i,j) = MTX2(i,0);
 				else
 					MTXRes(i,j) = MTX1(i,j);
 			}
@@ -119,6 +113,7 @@ static inline StdRtn_t DivideBySmallestValueInRow(MTX_t *mtx1_, uint8_t row_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	int32_t temp = 0;
+	uint8_t j = 0u;
 	if(NULL != mtx1_)
 	{
 		retVal = ERR_OK;
@@ -152,6 +147,7 @@ static inline StdRtn_t DivideBySmallestValueInRow(MTX_t *mtx1_, uint8_t row_)
 static inline StdRtn_t FindPivotCoeffInRow(MTX_t *mtx1_, uint8_t row_, uint8_t *pivot_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	uint8_t j = 0u;
 
 	if(NULL != pivot_)
 	{
@@ -170,21 +166,55 @@ static inline StdRtn_t FindPivotCoeffInRow(MTX_t *mtx1_, uint8_t row_, uint8_t *
 	return retVal;
 }
 
-static inline StdRtn_t LSE(MTX_t *mtx1_, MTX_t *mtx2_)
+static inline StdRtn_t MultRowFac(MTX_t *mtx1_, uint8_t row_, int32_t fac_)
 {
-	uint8_t i = 0; k = 0u;
-	uint8_t pivot[mtx1_->NumRows] = {0u};
-	StdRtn_t retVal = ERR_OK;
-	int32_t tempMat[mtx1_->NumRows][ (mtx1_->NumCols+1) ] = {0u};
-	MTX_t AugmentedMat = {&tempMat, mtx1_->NumRows, (mtx1_->NumCols + 1)};
-
-	retval |= AppendCol(mtx1_, mtx2_, &AugmentedMat);
-	for(i = 0u; (i < AugmentedMat.NumRows) && (ERR_OK == retVal); i++)
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	uint8_t j = 0u;
+	if(NULL != mtx1_)
 	{
-		retVal |= DivideBySmallestValueInRow(&AugmentedMat, i);
-		retVal |= FindPivotCoeffInRow(&AugmentedMat, i, &pivot[i]);
+		retVal = ERR_OK;
+		for(j = 0u; j < mtx1_->NumCols; j++)
+		{
+			MTX1(row_,j) *= fac_;
+		}
 	}
+	return retVal;
+}
+static inline StdRtn_t SubtractRow1f2(MTX_t *mtxRes_, uint8_t row1_, uint8_t row2_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	uint8_t j = 0u;
+	if( (NULL != mtxRes_) )
+	{
+		retVal = ERR_OK;
+		for(j = 0u; j < mtxRes_->NumCols; j++)
+		{
+			MTXRes(row2_,j) = MTXRes(row2_,j) - MTXRes(row1_,j);
+		}
+	}
+	return retVal;
+}
 
+static inline StdRtn_t LSE(const MTX_t *mtx1_, const MTX_t *mtx2_, MTX_t *mtxRes_)
+{
+	uint8_t i = 0u;
+
+	// uint8_t pivot[2] = {0u};
+
+	StdRtn_t retVal = ERR_OK;
+	int32_t tempMat[2][3] = {0u};
+	MTX_t AugmentedMat = {&tempMat[0], mtx1_->NumRows, (mtx1_->NumCols + 1)};
+
+	retVal |= AppendCol(mtx1_, mtx2_, &AugmentedMat);
+	int32_t upperLeftVal = (AugmentedMat.pData)[0];
+	retVal |= MultRowFac(&AugmentedMat, 0, (AugmentedMat.pData + AugmentedMat.NumCols)[0]);
+	retVal |= MultRowFac(&AugmentedMat, 1, upperLeftVal);
+	retVal |= SubtractRow1f2(&AugmentedMat, 0, (AugmentedMat.NumRows-1));
+
+	(AugmentedMat.pData + AugmentedMat.NumCols)[AugmentedMat.NumCols-1] /= (AugmentedMat.pData + AugmentedMat.NumCols)[AugmentedMat.NumCols-2];
+	(AugmentedMat.pData + AugmentedMat.NumCols)[AugmentedMat.NumCols-2] = 1;
+	MTXRes(1,0) = (AugmentedMat.pData + AugmentedMat.NumCols)[AugmentedMat.NumCols-1];
+	MTXRes(0,0) = ((AugmentedMat.pData)[AugmentedMat.NumCols-1] - (AugmentedMat.pData)[AugmentedMat.NumCols-2] * MTXRes(1,0)) / (AugmentedMat.pData)[0];
 }
 
 
@@ -206,7 +236,7 @@ static inline StdRtn_t MtxCalc(const MTX_t *mtx1_, const MTX_t *mtx2_, MTX_Op_t 
 				case MTX_SUB:
 					if( ((mtx1_->NumRows == mtx2_->NumRows) && (mtx1_->NumCols == mtx2_->NumCols)) && ((mtxRes_->NumRows == mtx1_->NumRows) && (mtxRes_->NumCols == mtx1_->NumCols))  )  //dimensions must agree
 					{
-						retVal |= opFctHdls[op_](MTX1(i,j), MTX2(i,j), &(MTXRes(i,j) ));
+						retVal |= opFctHdls[op_](MTX1(i,j), MTX2(i,j), &(MTXRes(i,j)) );
 					}
 					else
 						retVal = ERR_PARAM_SIZE;
@@ -222,12 +252,6 @@ static inline StdRtn_t MtxCalc(const MTX_t *mtx1_, const MTX_t *mtx2_, MTX_Op_t 
 					}
 					else
 						retVal = ERR_PARAM_SIZE;
-					break;
-				case MTX_DIV:
-					if( (mtx1_->NumRows == mtxRes_->NumRows) && (mtx1_->NumCols == mtx2_->NumRows) && (mtx2_->Cols == mtxRes_->NumCols) )
-					{
-						/* ??? */
-					}
 					break;
 				default:
 					retVal |= ERR_PARAM_DATA;
@@ -257,9 +281,9 @@ StdRtn_t MTX_Mult(const MTX_t *fac1_, const MTX_t *fac2_, MTX_t *prod_)
 	return MtxCalc(fac1_, fac2_, MTX_MULT, prod_);
 }
 
-StdRtn_t MTX_Div(const MTX_t *divd_, const MTX_t *divs_, MTX_t *quot_)
+StdRtn_t MTX_Div(const MTX_t *divd_,const MTX_t *divs_, MTX_t *quot_)
 {
-	return MtxCalc(divd_, divs_, MTX_DIV, quot_);
+	return LSE(divd_, divs_, quot_);
 }
 
 
