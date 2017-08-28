@@ -62,8 +62,11 @@ typedef struct TACHO_Data_s
 static StdRtn_t Calc_RawSpd(TACHO_ID_t id_);
 static StdRtn_t Set_TachoFltr(uint8_t idx_);
 
+
+
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 static TACHO_Data_t data ={0};
+
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
