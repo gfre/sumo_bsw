@@ -129,7 +129,7 @@ static void KF_UpdateMeasurements()
 	(void)TACHO_Read_PosRght(&rightPos);
 
 #if KF_USE_MEASUREMENT_MATRIX
-	int32_t leftSpeed = 0, rightSpeed = 0;
+	int16_t leftSpeed = 0, rightSpeed = 0;
 	(void)TACHO_Read_SpdLft(&leftSpeed);
 	(void)TACHO_Read_SpdRght(&rightSpeed);
 
