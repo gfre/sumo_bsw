@@ -39,7 +39,20 @@
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
+/**
+  *
+  */
+void MAF_UpdateRingBuffer(void);
+
+/**
+ *
+ * @param isLeft_
+ * @return
+ */
 int32_t MAF_Get_Speed(bool isLeft_);
+
+
+
 /**
  * @}
  */

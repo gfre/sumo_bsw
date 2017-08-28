@@ -15,7 +15,8 @@
 #define MASTER_maf_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "tacho.h"
+#include "maf.h"
+#include "tacho_api.h"
 #include "Q4CLeft.h"
 #include "Q4CRight.h"
 #include "CS1.h"
@@ -49,8 +50,12 @@ int32_t MAF_Get_Speed(bool isLeft_)
 	return MAF_CONDITIONAL_RETURN(isLeft_, MAF_currLeftSpeed, MAF_currRightSpeed);
 }
 
-void MAF_UpdateRingBuffer(Q4CLeft_QuadCntrType leftVal_, Q4CLeft_QuadCntrType rightVal_)
+void MAF_UpdateRingBuffer(void)
 {
+	Q4CLeft_QuadCntrType leftVal_ = 0, rightVal_ = 0;
+	(void)TACHO_Read_CurLftPos((Q4CLeft_QuadCntrType *)&leftVal_);
+	(void)TACHO_Read_CurRghtPos((Q4CLeft_QuadCntrType *)&rightVal_);
+
 	MAF_LeftPosHistory[MAF_PosHistory_Index]  = leftVal_;
 	MAF_RightPosHistory[MAF_PosHistory_Index] = rightVal_;
 	MAF_PosHistory_Index++;

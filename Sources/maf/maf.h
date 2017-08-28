@@ -21,6 +21,7 @@
 #include "platform.h"
 
 
+
 #ifdef MASTER_maf_C_
 #define EXTERNAL_
 #else
@@ -35,7 +36,7 @@
 /**
  * String identification of the SWC @ref maf
  */
-#define MAF_FILTER_STRING ("moving average filter")
+#define MAF_FILTER_STRING ("Moving average filter")
 
 
 
@@ -44,10 +45,20 @@
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
+/**
+ *
+ */
 void MAF_Init(void);
+
+/**
+ *
+ */
 void MAF_Main(void);
+
+/**
+ *
+ */
 void MAF_Deinit(void);
-void MAF_UpdateRingBuffer(int32_t leftVal, int32_t rightVal_);
 
 
 

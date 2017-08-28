@@ -34,15 +34,6 @@
  * @{
  */
 /*======================================= >> #DEFINES << =========================================*/
-/**
- * String identification of the SWC @ref tacho
- */
-#define TACHO_SWC_STRING ("Tacho")
-
-/**
- *  Speed sample period in ms. Make sure that speed is sampled at the given rate.
- */
-#define TACHO_SAMPLE_PERIOD_MS (5)
 
 
 
