@@ -253,15 +253,19 @@ static inline StdRtn_t SlvSystmOfLnrEqtns(const MTX_t *mtx1_ , const MTX_t *vec1
 		{
 			retVal = ERR_OK;
 			retVal |= AppndColVecToMat(mtx1_, vec1_, &AugmentedMat);
-			retVal |= MultRowWFctr(&MTXAugRow(0), AugmentedMat.NumCols, MTX1(1,0));
-			retVal |= MultRowWFctr(&MTXAugRow(1), AugmentedMat.NumCols, MTX1(0,0));
-			retVal |= SbtrctRow1frmRow2(&MTXAugRow(0), &MTXAugRow(1), AugmentedMat.NumCols);
+
+			if(0 != MTX1(1,0) )
+			{
+				retVal |= MultRowWFctr(&MTXAugRow(0), AugmentedMat.NumCols, MTX1(1,0));
+				retVal |= MultRowWFctr(&MTXAugRow(1), AugmentedMat.NumCols, MTX1(0,0));
+				retVal |= SbtrctRow1frmRow2(&MTXAugRow(0), &MTXAugRow(1), AugmentedMat.NumCols);
+			}
 
 			retVal |= DvdBySmllstValInRow(&MTXAugRow(0), AugmentedMat.NumCols);
 			retVal |= DvdBySmllstValInRow(&MTXAugRow(1), AugmentedMat.NumCols);
 
-			VECRes(1,0) = ( MTXAug(1,2) << nScale_ ) / MTXAug(1,1);
-			VECRes(0,0) = ( ( MTXAug(0,2) << nScale_ ) - MTXAug(0,1) * VECRes(1,0) ) / MTXAug(0,0);
+			VECRes(1,0) = 	(MTXAug(1,2) << nScale_) / MTXAug(1,1);
+			VECRes(0,0) = ( (MTXAug(0,2) << nScale_) - MTXAug(0,1) * VECRes(1,0) ) / MTXAug(0,0);
 		}
 		else
 		{
@@ -308,7 +312,7 @@ static inline StdRtn_t MtxCalc(const MTX_t *mtx1_, const MTX_t *mtx2_, MTX_Op_t 
 					break;
 				case MTX_SCALE_UP:
 				case MTX_SCALE_DOWN:
-					retVal |= opFctHdls[op_](0, (int32_t)nScale_, &MTXRes(i,j) );
+					retVal |= opFctHdls[op_](0, (int32_t)nScale_, &(MTXRes(i,j)) );
 					break;
 				default:
 					retVal |= ERR_PARAM_DATA;
