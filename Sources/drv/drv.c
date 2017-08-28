@@ -307,7 +307,7 @@ bool DRV_HasTurned(void) {
 		return FALSE; /* still messages in command queue, so there is something pending */
 	}
 	if (DRV_Status.mode==DRV_MODE_POS) {
-		int32_t speedL, speedR;
+		int16_t speedL, speedR;
 
 		TACHO_Read_SpdLft(&speedL);
 		TACHO_Read_SpdRght(&speedR);
