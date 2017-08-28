@@ -31,7 +31,9 @@
 
 
 /*======================================= >> #DEFINES << =========================================*/
-
+// TODO
+// remove FILTER ID work with index  and names/ short names instead
+// order of table shall be priority
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
@@ -45,9 +47,9 @@
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 static TACHO_FltrItm_t fltrItms[] =
 {
-		{TACHO_FLTR_MOV_AVR,    FALSE, MAF_FILTER_STRING, MAF_Init, MAF_Main,   MAF_Deinit, MAF_Get_Speed},
-		{TACHO_FLTR_KALMAN,     TRUE,  KF_FILTER_STRING,  KF_Init,  KF_Main,    KF_Deinit,  KF_Get_Speed},
-		{TACHO_FLTR_TRACK_LOOP, FALSE, TL_FILTER_STRING,  TL_RunStartup, TL_CalcSpd, TL_RunStartup,   TL_Get_Speed},
+		{KF_FILTER_STRING, TRUE,  KF_Init,  KF_Main,    KF_Deinit,  NULL, KF_Get_Speed},
+		{TL_FILTER_STRING, FALSE, TL_RunStartup, TL_CalcSpd, TL_RunStartup, NULL,  TL_Get_Speed},
+		{MAF_FILTER_STRING,FALSE, MAF_Init, MAF_Main,   MAF_Deinit, MAF_UpdateRingBuffer, MAF_Get_Speed},
 };
 
 

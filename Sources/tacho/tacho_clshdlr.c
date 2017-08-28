@@ -98,8 +98,8 @@ static uint8_t Parse_TachoParam(TACHO_FltrItmTbl_t* config_, const unsigned char
 	}
 	if(ERR_OK != retVal)
 	{
-		CLS1_SendStr((unsigned char*)"Wrong argument\r\n ->Using Moving Average Filter\r\n", io_->stdErr);
-		TACHO_Set_FltrReq(TACHO_FLTR_MOV_AVR);
+		CLS1_SendStr((unsigned char*)"Wrong argument\r\n ->Using Kalman Filter\r\n", io_->stdErr);
+		TACHO_Set_FltrReq(0);
 	}
 	return retVal;
 }

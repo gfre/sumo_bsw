@@ -53,12 +53,12 @@ typedef int32_t ApiFct_t(bool);
  */
 typedef struct TACHO_FltrItm_s
 {
-    TACHO_FltrID_t fltrID;
+    const uchar_t *aFltrName;
     bool reqRawSpd;
-	const uchar_t *aFltrName;
 	FltrRtFct_t *initFct;
 	FltrRtFct_t *mainFct;
 	FltrRtFct_t *deinitFct;
+	FltrRtFct_t *sampleCbFct;
     ApiFct_t *apiSpeedFct;
 } TACHO_FltrItm_t;
 
@@ -73,12 +73,7 @@ typedef struct TACHO_FltrItmTbl_s
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 EXTERNAL_ TACHO_FltrItmTbl_t* Get_pFltrTbl(void);
-/**
- *
- * @param type_
- * @return
- */
-EXTERNAL_ StdRtn_t TACHO_Req_FltrChange(TACHO_FltrID_t type_);
+
 
 #ifdef EXTERNAL_
 #undef EXTERNAL_

@@ -48,14 +48,10 @@
 
 #define TACHO_SPEED_VALUE_INVALID (0xFFFF)
 
+
+
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-typedef enum TACHO_FltrID_e
-{
-	 TACHO_FLTR_MOV_AVR = 0
-	,TACHO_FLTR_KALMAN
-	,TACHO_FLTR_TRACK_LOOP
-	,TACHO_FLTR_CNT
-} TACHO_FltrID_t;
+
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
@@ -106,7 +102,7 @@ EXTERNAL_ StdRtn_t TACHO_Read_SpdRght(int32_t* spd_);
  * @param type_
  * @return
  */
-EXTERNAL_ StdRtn_t TACHO_Set_FltrReq(TACHO_FltrID_t type_);
+EXTERNAL_ StdRtn_t TACHO_Set_FltrReq(uint8_t idx_);
 
 
 
