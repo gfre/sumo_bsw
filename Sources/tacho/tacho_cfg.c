@@ -27,13 +27,11 @@
 #include "maf_api.h"
 #include "tl.h"
 #include "tl_api.h"
-#include "tl_cfg.h"
+
 
 
 /*======================================= >> #DEFINES << =========================================*/
-// TODO
-// remove FILTER ID work with index  and names/ short names instead
-// order of table shall be priority
+
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
@@ -47,9 +45,9 @@
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 static TACHO_FltrItm_t fltrItms[] =
 {
-		{KF_FILTER_STRING, TRUE,  KF_Init,  KF_Main,    KF_Deinit,  NULL, KF_Get_Speed},
-		{TL_FILTER_STRING, FALSE, TL_RunStartup, TL_CalcSpd, TL_RunStartup, NULL,  TL_Get_Speed},
-		{MAF_FILTER_STRING,FALSE, MAF_Init, MAF_Main,   MAF_Deinit, MAF_UpdateRingBuffer, MAF_Get_Speed},
+		{KF_SWC_STRING,  TRUE,  KF_Init,  KF_Main,    KF_Deinit,  NULL, KF_Get_Speed},
+		{TL_SWC_STRING,  FALSE, TL_RunStartup, TL_CalcSpd, TL_RunStartup, NULL,  TL_Get_Speed},
+		{MAF_SWC_STRING, FALSE, MAF_Init, MAF_Main,   MAF_Deinit, MAF_UpdateRingBuffer, MAF_Get_Speed},
 };
 
 

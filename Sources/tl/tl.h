@@ -32,10 +32,6 @@
  * @{
  */
 /*======================================= >> #DEFINES << =========================================*/
-/**
- * String identification of the SWC @ref tl
- */
-#define TL_FILTER_STRING ("tracking loop")
 
 
 
