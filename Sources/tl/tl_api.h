@@ -37,11 +37,13 @@
 #define TL_SWC_STRING ("tracking loop")
 
 
+
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 typedef struct TL_vReadVal_s{
 	int32_t val;
 	const uint8_t idx;
 }TL_vReadVal_t;
+
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
@@ -51,7 +53,7 @@ typedef struct TL_vReadVal_s{
  * @param idx_
  * @return
  */
-StdRtn_t TL_Read_i32FltrdVal(int32_t* sig_, uint8_t idx_);
+EXTERNAL_ StdRtn_t TL_Read_i32FltrdVal(int32_t* sig_, uint8_t idx_);
 
 /**
  *
@@ -59,21 +61,21 @@ StdRtn_t TL_Read_i32FltrdVal(int32_t* sig_, uint8_t idx_);
  * @param idx_
  * @return
  */
-StdRtn_t TL_Read_i32dFltrdValdt(int32_t* sig_, uint8_t idx_);
+EXTERNAL_ StdRtn_t TL_Read_i32dFltrdValdt(int32_t* sig_, uint8_t idx_);
 
 /**
  *
  * @param pSig_
  * @return
  */
-StdRtn_t TL_Read_vFltrdVal(void* pSig_);
+EXTERNAL_ StdRtn_t TL_Read_vFltrdVal(void* pSig_);
 
 /**
  *
  * @param pSig_
  * @return
  */
-StdRtn_t TL_Read_vdFltrdValdt(void* pSig_);
+EXTERNAL_ StdRtn_t TL_Read_vdFltrdValdt(void* pSig_);
 
 
 /**

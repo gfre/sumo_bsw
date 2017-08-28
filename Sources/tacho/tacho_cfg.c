@@ -39,15 +39,15 @@
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-int32_t TL_Get_Speed(bool isLeft_);
+static int32_t TL_Get_Speed(bool isLeft_);
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 static TACHO_FltrItm_t fltrItms[] =
 {
-		{KF_SWC_STRING,  TRUE,  KF_Init,  KF_Main,    KF_Deinit,  NULL, KF_Get_Speed},
-		{TL_SWC_STRING,  FALSE, TL_RunStartup, TL_CalcSpd, TL_RunStartup, NULL,  TL_Get_Speed},
-		{MAF_SWC_STRING, FALSE, MAF_Init, MAF_Main,   MAF_Deinit, MAF_UpdateRingBuffer, MAF_Get_Speed},
+		{KF_SWC_STRING,  TRUE,  KF_Init,  KF_Main,  KF_Deinit,  NULL, KF_Get_Speed},
+		{TL_SWC_STRING,  FALSE, TL_Init,  TL_Main,  TL_DeInit,  NULL, TL_Get_Speed},
+		{MAF_SWC_STRING, FALSE, MAF_Init, MAF_Main, MAF_Deinit, MAF_UpdateRingBuffer, MAF_Get_Speed},
 };
 
 
@@ -60,16 +60,16 @@ static TACHO_FltrItmTbl_t ftlrTbl =
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-int32_t TL_Get_Speed(bool isLeft_)
+static int32_t TL_Get_Speed(bool isLeft_)
 {
 	int32_t tmp = 0;
 	if( TRUE == isLeft_)
 	{
-		(void)TL_Read_i32dFltrdValdt(&tmp, TACHO_LEFT);
+		(void)TL_Read_i32dFltrdValdt(&tmp, 0);
 	}
 	else
 	{
-		(void)TL_Read_i32dFltrdValdt(&tmp, TACHO_RIGHT);
+		(void)TL_Read_i32dFltrdValdt(&tmp, 1);
 	}
 
 	return tmp;

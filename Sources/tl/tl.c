@@ -158,7 +158,7 @@ void TL_DeInit(void)
 }
 
 
-StdRtn_t TL_Read_i32FltrdSig(int32_t* pSig_, const uint8_t idx_)
+StdRtn_t TL_Read_i32FltrdVal(int32_t* pSig_, const uint8_t idx_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if( ( NULL != pSig_ ) && (NULL != pTbl) && ( NULL != pTbl->aTls) )
