@@ -82,13 +82,13 @@ static TL_ItmTbl_t itemTable =
 /* Quick and Dirty workaround */
 static StdRtn_t TL_Read_EstdLftPos(int32_t* sig_)
 {
-	return TL_Read_i32dFltrdValdt(sig_, TACHO_LEFT);
+	return TL_Read_i32FltrdVal(sig_, TACHO_LEFT);
 }
 
 
 static StdRtn_t TL_Read_EstdRghtPos(int32_t* sig_)
 {
-	return TL_Read_i32dFltrdValdt(sig_, TACHO_RIGHT);
+	return TL_Read_i32FltrdVal(sig_, TACHO_RIGHT);
 }
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
