@@ -50,7 +50,6 @@ typedef struct TACHO_Data_s
 {
 	TACHO_FltrItm_t *pActFltr;
 	uint8_t actFltrIdx;
-	bool flagFltrReq;
 	int16_t rawSpd[TACHO_ID_CNT];
 	int16_t fltrdSpd[TACHO_ID_CNT];
 	int32_t curPos[TACHO_ID_CNT];
@@ -61,19 +60,28 @@ typedef struct TACHO_Data_s
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 static StdRtn_t Calc_RawSpd(TACHO_ID_t id_);
-
+static StdRtn_t Set_TachoFltr(uint8_t idx_);
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 static TACHO_Data_t data ={0};
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-static void TACHO_Set_FltrType(uint8_t type_)
+static StdRtn_t Set_TachoFltr(uint8_t idx_)
 {
+	StdRtn_t retVal = ERR_OK;
 	TACHO_FltrItmTbl_t *pFltrTbl = NULL;
 
-	if( (NULL != data.pActFltr) && (NULL != data.pActFltr->deinitFct) )
+
+	if( idx_ != data.actFltrIdx )
 	{
+		pFltrTbl = Get_pFltrTbl();
+		if( (NULL != data.pActFltr) && (NULL != data.pActFltr->deinitFct) &&
+			(NULL != pFltrTbl) && (NULL != pFltrTbl->aFltrs ) &&
+			(NULL != &(pFltrTbl->aFltrs[idx_])) && (NULL != pFltrTbl->aFltrs[idx_].initFct))
+
+		{
+			/* De-initialise old filter type */
 			data.pActFltr->deinitFct();
 			if(TRUE == data.pActFltr->reqRawSpd)
 			{
@@ -81,23 +89,17 @@ static void TACHO_Set_FltrType(uint8_t type_)
 				data.rawSpd[TACHO_ID_RIGHT] = 0;
 			}
 
-
+			/* Initialise new filter tpye */
+			data.pActFltr = &(pFltrTbl->aFltrs[idx_]);
+			data.actFltrIdx = idx_;
+			data.pActFltr->initFct();
+		}
+		else
+		{
+			retVal |= ERR_PARAM_ADDRESS;
+		}
 	}
-
-	pFltrTbl = Get_pFltrTbl();
-	if( (NULL != pFltrTbl) && (NULL != pFltrTbl->aFltrs ) )
-	{
-
-	}
-	data.pActFltr = &(pFltrTbl->aFltrs[type_]);
-	if( (NULL != data.pActFltr) && (NULL != data.pActFltr->initFct) )
-	{
-		data.pActFltr->initFct();
-	}
-	else
-	{
-		/* error handling */
-	}
+	return retVal;
 }
 
 
@@ -183,7 +185,6 @@ void TACHO_Init(void)
 
 		data.pActFltr = &(pFltrTbl->aFltrs[0]);
 		data.actFltrIdx = 0;
-		data.flagFltrReq = FALSE;
 		if( NULL != data.pActFltr->initFct)
 		{
 			data.pActFltr->initFct();
@@ -224,7 +225,7 @@ void TACHO_Deinit(void)
 
 StdRtn_t TACHO_Set_FltrReq(uint8_t idx_)
 {
-	data.flagFltrReq = TRUE;
+	return Set_TachoFltr(idx_);
 }
 
 StdRtn_t TACHO_Read_PosLft(int32_t* pos_)
@@ -249,7 +250,7 @@ StdRtn_t TACHO_Read_PosRght(int32_t* pos_)
 	return retVal;
 }
 
-StdRtn_t TACHO_Read_RawSpdLft(int32_t* spd_)
+StdRtn_t TACHO_Read_RawSpdLft(int16_t* spd_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != spd_)
@@ -260,7 +261,7 @@ StdRtn_t TACHO_Read_RawSpdLft(int32_t* spd_)
 	return retVal;
 }
 
-StdRtn_t TACHO_Read_RawSpdRght(int32_t* spd_)
+StdRtn_t TACHO_Read_RawSpdRght(int16_t* spd_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != spd_)
@@ -271,7 +272,7 @@ StdRtn_t TACHO_Read_RawSpdRght(int32_t* spd_)
 	return retVal;
 }
 
-StdRtn_t TACHO_Read_SpdLft(int32_t* spd_)
+StdRtn_t TACHO_Read_SpdLft(int16_t* spd_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if (NULL != spd_)
@@ -282,7 +283,7 @@ StdRtn_t TACHO_Read_SpdLft(int32_t* spd_)
 	return retVal;
 }
 
-StdRtn_t TACHO_Read_SpdRght(int32_t* spd_)
+StdRtn_t TACHO_Read_SpdRght(int16_t* spd_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if (NULL != spd_)

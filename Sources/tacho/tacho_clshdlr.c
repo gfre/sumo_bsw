@@ -50,37 +50,44 @@ static void Print_TachoStatus(const CLS1_StdIOType *io_)
 {
 	uint8_t i = 0u;
 	int16_t spdTmp = 0;
-	uchar_t buf[13] = {"        \0"};
+	uchar_t buf[13] = {""};
+	uchar_t idxBuf[sizeof("255")] = {""};
 	TACHO_FltrItmTbl_t *pFltrTbl = Get_pFltrTbl();
 
 	CLS1_SendStatusStr((uchar_t*)TACHO_SWC_STRING, (uchar_t*)"\r\n", io_->stdOut);
 	CLS1_SendStatusStr((uchar_t*)" speeds", (uchar_t *)"\r\n", io_->stdOut);
 
 	CLS1_SendStatusStr((uchar_t*)"   L speed", (uchar_t*)"", io_->stdOut);
-	(void)TACHO_Read_SpdLft((int32_t *)&spdTmp);
+	(void)TACHO_Read_SpdLft(&spdTmp);
 	CLS1_SendNum32s(spdTmp, io_->stdOut);
 	CLS1_SendStr((uchar_t*)" steps/sec\r\n", io_->stdOut);
 
 	CLS1_SendStatusStr((uchar_t*)"   R speed", (uchar_t*)"", io_->stdOut);
-	(void)TACHO_Read_SpdRght((int32_t *)&spdTmp);
+	(void)TACHO_Read_SpdRght(&spdTmp);
 	CLS1_SendNum32s(spdTmp, io_->stdOut);
 	CLS1_SendStr((uchar_t*)" steps/sec\r\n", io_->stdOut);
 
-	CLS1_SendStatusStr((uchar_t*)" Filters", (uchar_t*)"\r\n", io_->stdOut);
+	CLS1_SendStatusStr((uchar_t*)" filters  #ID", (uchar_t*)"\r\n", io_->stdOut);
 	for(i = 0; i < Get_pFltrTbl()->numFltrs; i++)
 	{
 		if( ( NULL != pFltrTbl ) && ( NULL != pFltrTbl->aFltrs ) )
 		{
 			for( i = 0u; i < pFltrTbl->numFltrs; i++)
 			{
+				UTIL1_Num8uToStr(idxBuf, sizeof(idxBuf), i);
 				if( i == TACHO_Get_ActFltrIdx() )
 				{
-					UTIL1_strcat(buf, sizeof(buf), (const uchar_t *)"-->");
-					CLS1_SendStatusStr((uchar_t*)buf, (uchar_t*)pFltrTbl->aFltrs[i].aFltrName, io_->stdOut);
+					buf[0]='\0';
+					UTIL1_strcat(buf, sizeof(buf), (const uchar_t *)"       --> ");
+					UTIL1_strcat(buf, sizeof(buf), idxBuf);
+					CLS1_SendStatusStr(buf, (uchar_t*)pFltrTbl->aFltrs[i].aFltrName, io_->stdOut);
 				}
 				else
 				{
-					CLS1_SendStatusStr((uchar_t*)"", (uchar_t*)pFltrTbl->aFltrs[i].aFltrName, io_->stdOut);
+					buf[0]='\0';
+					UTIL1_strcat(buf, sizeof(buf), (const uchar_t *)"           ");
+					UTIL1_strcat(buf, sizeof(buf), idxBuf);
+					CLS1_SendStatusStr(buf, (uchar_t*)pFltrTbl->aFltrs[i].aFltrName, io_->stdOut);
 				}
 				CLS1_SendStr((uchar_t*)"\r\n", io_->stdOut);
 			}
@@ -101,30 +108,37 @@ static void Print_TachoHelp(const CLS1_StdIOType *io_)
 	uint8_t i = 0u;
 	CLS1_SendHelpStr((uchar_t*)"TACHO", (uchar_t*)"Group of tacho commands\r\n", io_->stdOut);
 	CLS1_SendHelpStr((uchar_t*)"  help|status", (uchar_t*)"Shows tacho help or status\r\n", io_->stdOut);
-	CLS1_SendHelpStr((uchar_t*)"  filter", (uchar_t*)"Change filter type for tacho component\r\n", io_->stdOut);
-	for(i = 0; i < Get_pFltrTbl()->numFltrs; i++){
-		CLS1_SendHelpStr((uchar_t*)Get_pFltrTbl()->aFltrs[i].aFltrName, (uchar_t*)"Enables this filter to calculate speed\r\n", io_->stdOut);
-	}
+	CLS1_SendHelpStr((uchar_t*)"  set filter #ID", (uchar_t*)"Set filter type by #ID for speed determination\r\n", io_->stdOut);
 }
 
 static uint8_t Parse_TachoParam(TACHO_FltrItmTbl_t* config_, const uchar_t* cmd_, bool* handled_, const CLS1_StdIOType* io_)
 {
 	int8_t retVal = ERR_FAILED;
 	uint8_t i = 0u;
-	for(i = 0u; i < config_->numFltrs; i++)
+	uchar_t buf[sizeof("255")] = {""};
+
+
+	for(i = 0u; i < config_->numFltrs && TRUE != *handled_; i++)
 	{
-		if(UTIL1_strcmp((char*)cmd_, config_->aFltrs[i].aFltrName) == 0)
+		UTIL1_Num8uToStr(buf, sizeof(buf), i);
+		if( ERR_OK== UTIL1_strcmp(cmd_,buf) )
 		{
-			TACHO_Set_FltrReq(i);
 			*handled_ = TRUE;
 			retVal = ERR_OK;
-			break;
+			if( ERR_OK == TACHO_Set_FltrReq(i) )
+			{
+				CLS1_SendStr((uchar_t*)"Filter type was set successfully...\r\n", io_->stdOut);
+			}
+			else
+			{
+				CLS1_SendStr((uchar_t*)"*** ERROR: Filter type was not set. Invalid filter configuration ***\r\n", io_->stdErr);
+			}
 		}
 	}
+
 	if(ERR_OK != retVal)
 	{
-		CLS1_SendStr((uchar_t*)"Wrong argument\r\n ->Using Kalman Filter\r\n", io_->stdErr);
-		TACHO_Set_FltrReq(0);
+		CLS1_SendStr((uchar_t*)"*** ERROR: Filter type was not set. Invalid filter #ID ***\r\n", io_->stdErr);
 	}
 	return retVal;
 }
@@ -143,13 +157,13 @@ uint8_t TACHO_ParseCommand(const uchar_t *cmd, bool *handled, const CLS1_StdIOTy
 		Print_TachoStatus(io_);
 		*handled = TRUE;
 	}
-	else if(UTIL1_strncmp((char*)cmd, (char*)"tacho filter ", sizeof("tacho filter ")-1) == 0)
+	else if(UTIL1_strncmp((char*)cmd, (char*)"tacho set filter ", sizeof("tacho set filter ")-1) == 0)
 	{
-		Parse_TachoParam(Get_pFltrTbl(), cmd+sizeof("tacho filter ")-1, handled, io_);
+		Parse_TachoParam(Get_pFltrTbl(), cmd+sizeof("tacho set filter ")-1, handled, io_);
 	}
 	else
 	{
-
+		/* error handling */
 	}
 	return ERR_OK;
 }

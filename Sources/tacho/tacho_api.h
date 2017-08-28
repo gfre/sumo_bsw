@@ -80,28 +80,28 @@ EXTERNAL_ StdRtn_t TACHO_Read_PosRght(int32_t* pos_);
  * @param spd_
  * @return
  */
-EXTERNAL_ StdRtn_t TACHO_Read_RawSpdLft(int32_t* spd_);
+EXTERNAL_ StdRtn_t TACHO_Read_RawSpdLft(int16_t* spd_);
 
 /**
  *
  * @param spd_
  * @return
  */
-EXTERNAL_ StdRtn_t TACHO_Read_RawSpdRght(int32_t* spd_);
+EXTERNAL_ StdRtn_t TACHO_Read_RawSpdRght(int16_t* spd_);
 
 /**
  *
  * @param spd_
  * @return
  */
-EXTERNAL_ StdRtn_t TACHO_Read_SpdLft(int32_t* spd_);
+EXTERNAL_ StdRtn_t TACHO_Read_SpdLft(int16_t* spd_);
 
 /**
  *
  * @param spd_
  * @return
  */
-EXTERNAL_ StdRtn_t TACHO_Read_SpdRght(int32_t* spd_);
+EXTERNAL_ StdRtn_t TACHO_Read_SpdRght(int16_t* spd_);
 
 /**
  *
