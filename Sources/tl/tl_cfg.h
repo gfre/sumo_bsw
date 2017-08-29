@@ -34,7 +34,22 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-typedef PID_Itm_t TL_Cfg_t;
+/**
+ *
+ * @param
+ * @return
+ */
+typedef StdRtn_t TL_readFct_t(int32_t*);
+
+/**
+ *
+ */
+typedef struct TL_Cfg_s
+{
+	const uchar_t   *pItmName;
+	PID_Gain_t gain;
+	TL_readFct_t *measValFct;
+}TL_Cfg_t;
 
 /**
  *
@@ -42,6 +57,7 @@ typedef PID_Itm_t TL_Cfg_t;
 typedef struct TL_Data_s{
 	int32_t fltrdVal;
 	int16_t dfltrdValdt;
+	PID_Data_t pid;
 } TL_Data_t;
 
 /**

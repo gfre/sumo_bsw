@@ -16,11 +16,11 @@
  *
  ***************************************************************************************************/
 
-
 #define MASTER_pid_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "pid.h"
+#include "pid_cfg.h"
 #include "pid_api.h"
 #include "mot_api.h"
 #include "nvm_api.h"
@@ -39,116 +39,157 @@
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
+static PID_ItmTbl_t *pPidTbl = NULL;
+
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 
 
+
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-StdRtn_t PID(PID_Itm_t* itm_, int32_t* result_)
+StdRtn_t PIDext(int32_t setVal_, int32_t actVal_, const PID_Gain_t *gain_, PID_Data_t *data_, int32_t* ctrlVal_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	int32_t pTerm = 0, dTerm = 0, u = 0, error = 0, trgt = 0, cur = 0;
-	if(NULL != result_)
+	int32_t err = 0, pTerm = 0, dTerm = 0, u = 0;
+
+	if( ( NULL != ctrlVal_ ) && ( NULL != data_) )
 	{
 		retVal = ERR_OK;
-		retVal |= itm_->pTrgtValFct(&trgt);
-		retVal |= itm_->pCurValFct(&cur);
-		error = trgt - cur;
 
-	/* Integration and anti windup part */
-		if( (PID_LFT_MTR_POS == itm_->ItmType) || (PID_RGHT_MTR_POS == itm_->ItmType) ) // TODO could be part of itm_: "bool avoidJitter" and "int32_t JitterVal"?
+		/* Calculate current error value */
+		err = setVal_ - actVal_;
+
+		/* Integration part and anti windup part */
+		if ( (err > -10) && (err < 10) )  /* avoid jitter around zero */
 		{
-			if ( (error > -10) && (error < 10) )  /* avoid jitter around zero */
-			{
-				error = 0;
-			}
+			err = 0;
 		}
 
-		if( ( (itm_->Saturation <= PID_NEG_SAT)  && (error < 0) ) || ( (itm_->Saturation >= PID_POS_SAT) && (error > 0) ) )
+		if( ( (data_->sat <= PID_NEG_SAT)  && (err < 0) ) || ( (data_->sat >= PID_POS_SAT) && (err > 0) ) )
 		{
 			/* don't allow integrating in direction of saturation -> do nothing */
 		}
 		else //allow integrating in opposite direction to saturation
 		{
-			itm_->integralVal += ( (((int32_t)itm_->Config->Factor_KI_scld)*error)/((int32_t)itm_->Config->Scale) );
+			data_->intVal += ( ( ((int32_t)gain_->kI_scld)*err ) / ( (int32_t)gain_->nScale ) );
 		}
 
-		if( (itm_->integralVal > -((int32_t)itm_->Config->SaturationVal)) && (itm_->integralVal < (int32_t)itm_->Config->SaturationVal) )
+		if( data_->intVal < -((int32_t)gain_->intSatVal))
 		{
-			itm_->Saturation = PID_NO_SAT;
+			data_->intVal = -((int32_t)gain_->intSatVal);
+			data_->sat  = PID_NEG_SAT;
 		}
-		else if(itm_->integralVal < -((int32_t)itm_->Config->SaturationVal))
+		else if(data_->intVal > ((int32_t)gain_->intSatVal) )
 		{
-			itm_->integralVal = -((int32_t)itm_->Config->SaturationVal);
-			itm_->Saturation  = PID_NEG_SAT;
+			data_->intVal = ((int32_t)gain_->intSatVal);
+			data_->sat  = PID_POS_SAT;
 		}
-		else if(itm_->integralVal > ((int32_t)itm_->Config->SaturationVal) )
+		else
 		{
-			itm_->integralVal = ((int32_t)itm_->Config->SaturationVal);
-			itm_->Saturation  = PID_POS_SAT;
+			data_->sat = PID_NO_SAT;
 		}
 
-	/* Proportional part */
-		pTerm = ( (((int32_t)itm_->Config->Factor_KP_scld)*error)/((int32_t)itm_->Config->Scale) );
+		/* Proportional part */
+		pTerm = ( ((int32_t)gain_->kP_scld)*err ) / ( (int32_t)gain_->nScale );
 
-		if(pTerm < -((int32_t)itm_->Config->SaturationVal))     pTerm = -((int32_t)itm_->Config->SaturationVal);
-		else if(pTerm > (int32_t)(itm_->Config->SaturationVal)) pTerm =  ((int32_t)itm_->Config->SaturationVal);
+		if( pTerm < -((int32_t)gain_->intSatVal) )
+		{
+			pTerm = -((int32_t)gain_->intSatVal);
+		}
+		else if( pTerm > (int32_t)(gain_->intSatVal) )
+		{
+			pTerm =  (int32_t)gain_->intSatVal;
+		}
 
-	/* Derivative part */
-		dTerm = ( (error - (int32_t)itm_->lastError) * (int32_t)itm_->Config->Factor_KD_scld ) / ( (int32_t)itm_->Config->Scale );
-		itm_->lastError = error;
+		/* Derivative part */
+		dTerm = ( (err - data_->prevErr) * (int32_t)gain_->kD_scld ) / ( (int32_t)gain_->nScale );
+		data_->prevErr = err;
 
-	/* Calculate and bound output */
-		u = pTerm + dTerm + itm_->integralVal;
-		if(u < -((int32_t)itm_->Config->SaturationVal))     u = -((int32_t)itm_->Config->SaturationVal);
-		else if(u > ((int32_t)itm_->Config->SaturationVal)) u =  ((int32_t)itm_->Config->SaturationVal);
 
-		*result_ = u;
+		/* Calculate and bound output */
+		u = pTerm + dTerm + data_->intVal;
+		if(u < -((int32_t)gain_->intSatVal))     u = -((int32_t)gain_->intSatVal);
+		else if(u > ((int32_t)gain_->intSatVal)) u =  ((int32_t)gain_->intSatVal);
+
+		*ctrlVal_ = u;
 	}
 	return retVal;
 }
 
+StdRtn_t PID(int32_t setVal_, int32_t actVal_, uint8_t idx_, int32_t* ctrlVal_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+
+	if( ( NULL != ctrlVal_ ) && ( NULL != pPidTbl ) && ( NULL != pPidTbl->aPids )  )
+	{
+		retVal = ERR_PARAM_INDEX;
+
+		if(idx_ < pPidTbl->numPids)
+		{
+			retVal = PIDext(setVal_, actVal_, &pPidTbl->aPids[idx_].cfg.gain, &pPidTbl->aPids[idx_].data, ctrlVal_);
+		}
+	}
+	return retVal;
+}
+
+StdRtn_t PID_Reset(uint8_t idx_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+
+	if( ( NULL != pPidTbl ) && ( NULL != pPidTbl->aPids )  )
+	{
+		retVal = ERR_PARAM_INDEX;
+
+		if(idx_ < pPidTbl->numPids)
+		{
+			pPidTbl->aPids[idx_].data.intVal = 0;
+			pPidTbl->aPids[idx_].data.prevErr = 0;
+			pPidTbl->aPids[idx_].data.sat = PID_NO_SAT;
+		}
+	}
+}
 
 void PID_Init(void)
 {
 	uint8_t i = 0u;
-	PID_Cfg_t* pidCfg = NULL;
-	NVM_PidCfg_t pidPrm = {0u};
-	StdRtn_t retVal = ERR_VALUE;
+	NVM_PidCfg_t nvmPid = {0};
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 
-	pidCfg = Get_pPidCfg();
-	if(NULL != pidCfg)
+	pPidTbl = Get_pPidItmTbl();
+
+	if( NULL != pPidTbl )
 	{
-		for(i = 0; i < pidCfg->NumOfItms; i++)
+		for(i = 0u; i < pPidTbl->numPids; i++)
 		{
-			if(NULL != &pidCfg->pItmTbl[i])
+			if(NULL != &pPidTbl->aPids[i])
 			{
-				if(NULL != pidCfg->pItmTbl[i].pNVMReadValFct)
+				if(NULL != pPidTbl->aPids[i].cfg.nvm.readFct)
 				{
-					retVal = pidCfg->pItmTbl[i].pNVMReadValFct(&pidPrm);
-					pidCfg->pItmTbl[i].Config->Factor_KP_scld = (uint32_t)pidPrm.KP_scld;
-					pidCfg->pItmTbl[i].Config->Factor_KI_scld = (uint32_t)pidPrm.KI_scld;
-					pidCfg->pItmTbl[i].Config->Factor_KD_scld = (uint32_t)pidPrm.KD_scld;
-					pidCfg->pItmTbl[i].Config->Scale		  = (uint16_t)pidPrm.Scale;
-					pidCfg->pItmTbl[i].Config->SaturationVal  = (uint32_t)pidPrm.SaturationVal;
+					retVal = ERR_VALUE;
+					retVal = pPidTbl->aPids[i].cfg.nvm.readFct(&nvmPid);
+					pPidTbl->aPids[i].cfg.gain.kP_scld = nvmPid.KP_scld;
+					pPidTbl->aPids[i].cfg.gain.kI_scld = nvmPid.KI_scld;
+					pPidTbl->aPids[i].cfg.gain.kD_scld = nvmPid.KD_scld;
+					pPidTbl->aPids[i].cfg.gain.nScale  = nvmPid.Scale;
+					pPidTbl->aPids[i].cfg.gain.intSatVal  = nvmPid.SaturationVal;
 				}
-				if ( (NULL != pidCfg->pItmTbl[i].pNVMReadDfltValFct) && (ERR_OK != retVal) )
+				if ( (NULL != pPidTbl->aPids[i].cfg.nvm.readDfltFct) && (ERR_OK != retVal) )
 				{
-					pidCfg->pItmTbl[i].pNVMReadDfltValFct(&pidPrm);
-					pidCfg->pItmTbl[i].Config->Factor_KP_scld = (uint32_t)pidPrm.KP_scld;
-					pidCfg->pItmTbl[i].Config->Factor_KI_scld = (uint32_t)pidPrm.KI_scld;
-					pidCfg->pItmTbl[i].Config->Factor_KD_scld = (uint32_t)pidPrm.KD_scld;
-					pidCfg->pItmTbl[i].Config->Scale		  = (uint16_t)pidPrm.Scale;
-					pidCfg->pItmTbl[i].Config->SaturationVal  = (uint32_t)pidPrm.SaturationVal;
+					retVal = pPidTbl->aPids[i].cfg.nvm.readFct(&nvmPid);
+					pPidTbl->aPids[i].cfg.gain.kP_scld = nvmPid.KP_scld;
+					pPidTbl->aPids[i].cfg.gain.kI_scld = nvmPid.KI_scld;
+					pPidTbl->aPids[i].cfg.gain.kD_scld = nvmPid.KD_scld;
+					pPidTbl->aPids[i].cfg.gain.nScale  = nvmPid.Scale;
+					pPidTbl->aPids[i].cfg.gain.intSatVal  = nvmPid.SaturationVal;
 				}
 				else
 				{
 					/* take initialized values from pid_cfg.c */
 				}
-				pidCfg->pItmTbl[i].Saturation  = PID_NO_SAT;
-				pidCfg->pItmTbl[i].integralVal = 0;
-				pidCfg->pItmTbl[i].lastError   = 0;
+				pPidTbl->aPids[i].data.sat = PID_NO_SAT;
+				pPidTbl->aPids[i].data.intVal  = 0;
+				pPidTbl->aPids[i].data.prevErr = 0;
 			}
 		}
 	}
@@ -158,7 +199,10 @@ void PID_Init(void)
 	}
 }
 
-
+void PID_DeInit(void)
+{
+	pPidTbl = NULL;
+}
 
 #ifdef MASTER_pid_C_
 #undef MASTER_pid_C_

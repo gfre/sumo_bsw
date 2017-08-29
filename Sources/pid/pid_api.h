@@ -36,62 +36,68 @@
 /*======================================= >> #DEFINES << =========================================*/
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-typedef  StdRtn_t ReadValFct_t(int32_t*);
-typedef  StdRtn_t NVMReadFct_t(NVM_PidCfg_t*);
-typedef  StdRtn_t NVMSaveValFct_t(const NVM_PidCfg_t *);
-
-typedef enum PID_ItmType_e
+/**
+ *
+ */
+typedef struct PID_Gain_s
 {
-	PID_LFT_MTR_SPD = 0,
-	PID_RGHT_MTR_SPD,
-	PID_LFT_MTR_POS,
-	PID_RGHT_MTR_POS,
-	PID_NUM_OF_ITMS,
-}PID_ItmType_t;
+	uint16_t kP_scld;
+	uint16_t kI_scld;
+	uint16_t kD_scld;
+	uint16_t nScale; // TODO change to uint8_t
+	uint32_t intSatVal;
+}PID_Gain_t;
 
-typedef enum PID_SatType_e
+/**
+ *
+ */
+typedef enum PID_Sat_e
 {
-	PID_NEG_SAT = -1,
-	PID_NO_SAT,
-	PID_POS_SAT,
-}PID_SatType_t;
+	 PID_NEG_SAT = -1
+	,PID_NO_SAT = 0
+	,PID_POS_SAT = 1
+}PID_Sat_t;
 
-typedef struct PID_PrmCfg_s
+/**
+ *
+ */
+typedef struct PID_Data_s
 {
-	uint32_t Factor_KP_scld;
-	uint32_t Factor_KI_scld;
-	uint32_t Factor_KD_scld;
-	uint16_t Scale;
-	uint32_t SaturationVal;
-}PID_PrmCfg_t;
+	PID_Sat_t sat;
+	int32_t	prevErr;
+	int32_t	intVal;
+}PID_Data_t;
 
-typedef struct PID_Itm_s
-{
-	char_t          *pItmName;
-	PID_ItmType_t   ItmType;
-	PID_PrmCfg_t    *Config;
-	PID_SatType_t	Saturation;
-	int32_t 		lastError;
-	int32_t 		integralVal;
-	ReadValFct_t    *pCurValFct;
-	ReadValFct_t    *pTrgtValFct;
-	NVMReadFct_t 	*pNVMReadValFct;
-	NVMReadFct_t	*pNVMReadDfltValFct;
-	NVMSaveValFct_t *pNVMSaveValFct;
-}PID_Itm_t;
-
-typedef struct PID_Cfg_s
-{
-	PID_Itm_t    *pItmTbl;
-	int8_t       NumOfItms;
-}PID_Cfg_t;
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
+/**
+ *
+ * @param gain_
+ * @param setVal_
+ * @param actVal_
+ * @param rtData_
+ * @param ctrlVal_
+ * @return
+ */
+EXTERNAL_ StdRtn_t PID(int32_t setVal_, int32_t actVal_, uint8_t idx_, int32_t* ctrlVal_);
 
-EXTERNAL_ StdRtn_t PID(PID_Itm_t* plant_, int32_t* result_);
+/**
+ *
+ * @param setVal_
+ * @param actVal_
+ * @param gain_
+ * @param data_
+ * @param ctrlVal_
+ * @return
+ */
+EXTERNAL_ StdRtn_t PIDext(int32_t setVal_, int32_t actVal_, const PID_Gain_t *gain_, PID_Data_t *data_, int32_t* ctrlVal_);
 
-EXTERNAL_ PID_Cfg_t* Get_pPidCfg(void);
-
+/**
+ *
+ * @param idx_
+ * @return
+ */
+EXTERNAL_ StdRtn_t PID_Reset(uint8_t idx_);
 /**
  * @}
  */

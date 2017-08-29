@@ -50,7 +50,7 @@ static void Print_TLStatus(uint8_t id_, const CLS1_StdIOType *io_);
 static void Print_TLItmStatus(const TL_Itm_t* itm_, const uchar_t *kindStr_, uint8_t id_, const CLS1_StdIOType *io_);
 static void Restore_TLItmCfg(uint8_t id_, const CLS1_StdIOType *io_);
 static void Set_TLItmCfg(uint8_t id_, const uchar_t *cmd_, bool *handled_, const CLS1_StdIOType *io_);
-static uint8_t Parse_TLParam(PID_PrmCfg_t *itm_, const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
+static uint8_t Parse_TLParam(PID_Gain_t *itm_, const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
 
 
 
@@ -110,7 +110,7 @@ static void Print_TLItmStatus(const TL_Itm_t* itm_, const uchar_t *kindStr_, uin
 
 	CLS1_SendStatusStr((uchar_t*)"  Assigned to", (uchar_t*)kindStr_, io_->stdOut);
 	CLS1_SendStr((uchar_t*)"\r\n", io_->stdOut);
-
+#if 0
 	buf[0] = '\0';
 	UTIL1_strcpy(buf, sizeof(buf), (uchar_t*)"p: ");
 	UTIL1_strcatNum32s(buf, sizeof(buf), itm_->cfg.Config->Factor_KP_scld);
@@ -140,7 +140,7 @@ static void Print_TLItmStatus(const TL_Itm_t* itm_, const uchar_t *kindStr_, uin
 	UTIL1_Num8uToStr(buf, sizeof(buf), itm_->cfg.Config->Scale);
 	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)"\r\n");
 	CLS1_SendStatusStr("  PI Scaling", buf, io_->stdOut);
-
+#endif
 }
 
 static void Restore_TLItmCfg(uint8_t id_, const CLS1_StdIOType *io_)
@@ -153,6 +153,7 @@ static void Restore_TLItmCfg(uint8_t id_, const CLS1_StdIOType *io_)
 	{
 		if ( id_ < pTbl->numTls )
 		{
+#if 0
 			if ( (NULL != pTbl->aTls[id_].cfg.pNVMReadDfltValFct) && (NULL != pTbl->aTls[id_].cfg.pNVMSaveValFct) )
 			{
 				if ( ERR_OK == pTbl->aTls[id_].cfg.pNVMReadDfltValFct(&tmp) )
@@ -178,6 +179,7 @@ static void Restore_TLItmCfg(uint8_t id_, const CLS1_StdIOType *io_)
 			{
 				CLS1_SendStr((uchar_t*)"*** ERROR: Restoring failed - Invalid READ and/or WRITE Function(s) ***\r\n", io_->stdErr);
 			}
+#endif
 		}
 		else
 		{
@@ -199,6 +201,7 @@ static void Set_TLItmCfg(uint8_t id_, const uchar_t *cmd_, bool *handled_, const
 	{
 		if ( id_ < pTbl->numTls )
 		{
+#if 0
 			if( ERR_OK == Parse_TLParam( pTbl->aTls[id_].cfg.Config, cmd_, handled_, io_ ) )
 			{
 				CLS1_SendStr((uchar_t*)">>> Setting new parameters successful...\r\n", io_->stdOut);
@@ -223,6 +226,7 @@ static void Set_TLItmCfg(uint8_t id_, const uchar_t *cmd_, bool *handled_, const
 					CLS1_SendStr((uchar_t*)"*** ERROR: Saving to NVM failed - Invalid WRITE Function ***\r\n", io_->stdErr);
 				}
 			}
+#endif
 
 		}
 		else
@@ -236,13 +240,13 @@ static void Set_TLItmCfg(uint8_t id_, const uchar_t *cmd_, bool *handled_, const
 	}
 }
 
-static uint8_t Parse_TLParam(PID_PrmCfg_t* itm_, const uchar_t *cmd_, bool *handled_, const CLS1_StdIOType *io_)
+static uint8_t Parse_TLParam(PID_Gain_t* itm_, const uchar_t *cmd_, bool *handled_, const CLS1_StdIOType *io_)
 {
 	const uchar_t *p;
 	uint32_t val32u;
 	uint8_t val8u;
 	uint8_t res = ERR_OK;
-
+#if 0
 	if (UTIL1_strncmp((char*)cmd_, (char*)"p ", sizeof("p ")-1)==0)
 	{
 		p = cmd_+sizeof("p");
@@ -305,6 +309,7 @@ static uint8_t Parse_TLParam(PID_PrmCfg_t* itm_, const uchar_t *cmd_, bool *hand
 		res = ERR_FAILED;
 	}
 	return res;
+#endif
 }
 
 
@@ -317,6 +322,7 @@ uint8_t TL_ParseCommand(const uchar_t *cmd_, bool *handled_, const CLS1_StdIOTyp
 	uint8_t tlID = 0u;
 	const uchar_t *p = NULL;
 	uchar_t buf[sizeof("tl #ID set scaling 65535")]={'\0'};
+#if 0
 	PID_PrmCfg_t tmpCfg = {0};
 
 	p = cmd_+sizeof("tl")-1u;
@@ -349,7 +355,7 @@ uint8_t TL_ParseCommand(const uchar_t *cmd_, bool *handled_, const CLS1_StdIOTyp
 	{
 
 	}
-
+#endif
 	return res;
 }
 

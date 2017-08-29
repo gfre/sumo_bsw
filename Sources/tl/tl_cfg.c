@@ -46,7 +46,7 @@
 #define TL_TACHO_RIGHT_STRING		("TACHO Right")
 
 #define TL_DFLT_PID_SATURATION_VALUE	(0xFFFFu)
-#define TL_DFLT_DATA_INIT  				{0,0}
+#define TL_DFLT_DATA_INIT  				{0}
 #define TL_DFLT_D_GAIN					(0x0u)
 
 
@@ -60,15 +60,14 @@ static StdRtn_t TL_Read_EstdLftPos(int32_t* sig_);
 static StdRtn_t TL_Read_EstdRghtPos(int32_t* sig_);
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-							     /* KP   |  KI  |       KD        | Scale |  PI Output Limit  */
-static PID_PrmCfg_t pidCfgLeft  = {3500u,  25u,   TL_DFLT_D_GAIN,    100u, 	TL_DFLT_PID_SATURATION_VALUE,};  //output of PI must not be bounded so 'PI Output Limit' value...
-static PID_PrmCfg_t pidCfgRight = {3500u,  25u,   TL_DFLT_D_GAIN,    100u, 	TL_DFLT_PID_SATURATION_VALUE,};  //...should be at least the possible output value for the tracked state!
-
-
 static TL_Itm_t items[] =
 {
-		{ {TL_TACHO_LEFT_STRING,  0, &pidCfgLeft,  PID_NO_SAT, 0, 0, TL_Read_EstdLftPos,  TACHO_Read_PosLft,  NULL, NULL, NULL}, TL_DFLT_DATA_INIT },
-		{ {TL_TACHO_RIGHT_STRING, 1, &pidCfgRight, PID_NO_SAT, 0, 0, TL_Read_EstdRghtPos, TACHO_Read_PosRght, NULL, NULL, NULL}, TL_DFLT_DATA_INIT }
+		{	{TL_TACHO_LEFT_STRING,  {3500u, 25u, TL_DFLT_D_GAIN, 100u, TL_DFLT_PID_SATURATION_VALUE},
+			TACHO_Read_PosLft},  TL_DFLT_DATA_INIT
+		},
+		{ 	{TL_TACHO_RIGHT_STRING, {3500u, 25u, TL_DFLT_D_GAIN, 100u, TL_DFLT_PID_SATURATION_VALUE},
+			TACHO_Read_PosRght}, TL_DFLT_DATA_INIT
+		},
 };
 
 static TL_ItmTbl_t itemTable =

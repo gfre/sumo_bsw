@@ -51,13 +51,13 @@ static inline void TL_Reset(TL_Itm_t *tl_)
 {
 	if( NULL != tl_ )
 	{
-		tl_->cfg.Saturation  = PID_NO_SAT;
-		tl_->cfg.integralVal = 0;
-		tl_->cfg.lastError   = 0;
+		tl_->data.pid.sat  = PID_NO_SAT;
+		tl_->data.pid.intVal = 0;
+		tl_->data.pid.prevErr = 0;
 		tl_->data.dfltrdValdt= 0;
-		if( NULL != tl_->cfg.pCurValFct )
+//		if( NULL != tl_->cfg.pCurValFct )
 		{
-			tl_->cfg.pCurValFct(&tl_->data.fltrdVal);
+			//tl_->cfg.pCurValFct(&tl_->data.fltrdVal);
 			tl_->data.fltrdVal  = TL_UPSACLE(tl_->data.fltrdVal);
 		}
 	}
@@ -83,6 +83,7 @@ void TL_Init(void)
 	{
 		for(i = 0u; i < pTbl->numTls; i++)
 		{
+#if 0
 			if(NULL != pTbl->aTls[i].cfg.pNVMReadValFct)
 			{
 				if( ERR_OK == pTbl->aTls[i].cfg.pNVMReadValFct(&pidPrm) )
@@ -114,7 +115,7 @@ void TL_Init(void)
 			{
 				/* error handling */
 			}
-
+#endif
 			TL_Reset(&pTbl->aTls[i]);
 		}
 	}
@@ -122,8 +123,6 @@ void TL_Init(void)
 	{
 		/* error handling */
 	}
-
-
 }
 
 void TL_Main(void)
@@ -135,12 +134,12 @@ void TL_Main(void)
 		for(i = 0u; i < pTbl->numTls; i++)
 		{
 			/* Get the filtered derivative of the signal value */
-			if( ERR_OK == TL_CALC_FILTERED_SIGNAL(&pTbl->aTls[i].cfg,  &pTbl->aTls[i].data.dfltrdValdt) )
+//			if( ERR_OK == TL_CALC_FILTERED_SIGNAL(&pTbl->aTls[i].cfg,  &pTbl->aTls[i].data.dfltrdValdt) )
 			{
 				/* Euler forward integration of the filtered derivative to get the filtered signal value*/
 				pTbl->aTls[i].data.fltrdVal  += pTbl->aTls[i].data.dfltrdValdt * TL_SAMPLE_TIME;
 			}
-			else
+			//else
 			{
 				/* error handling */
 			}
