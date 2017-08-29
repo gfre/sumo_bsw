@@ -188,27 +188,26 @@ static inline StdRtn_t DvdBySmllstValInRow(int32_t *row1_, uint8_t rowLen_)
 	return retVal;
 }
 
-//static inline StdRtn_t FindPivotCoeffInRow(MTX_t *mtx1_, uint8_t row_, uint8_t *pivot_)
-//{
-//	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-//	uint8_t j = 0u;
-//
-//	if(NULL != pivot_)
-//	{
-//		retVal = ERR_OK;
-//		*pivot_ = 0u;
-//		bool hasPivot = FALSE;
-//		for(j = 0u; (j < mtx1_->NumCols) && (FALSE == hasPivot); j++)
-//		{
-//			if( 0 != MTX1(row_, j) )
-//			{
-//				*pivot_ = j;
-//				hasPivot = TRUE;
-//			}
-//		}
-//	}
-//	return retVal;
-//}
+static inline StdRtn_t FindLeadingCoeffIdxInRow(int32_t *row_, uint8_t rowLen_, uint8_t *res_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	uint8_t j = 0u;
+	if(NULL != res_)
+	{
+		retVal = ERR_OK;
+		*res_ = 0u;
+		bool hasPivot = FALSE;
+		for(j = 0u; (j < rowLen_) && (FALSE == hasPivot); j++)
+		{
+			if( 0 != row_[j] )
+			{
+				*res_ = j;
+				hasPivot = TRUE;
+			}
+		}
+	}
+	return retVal;
+}
 
 static inline StdRtn_t MultRowWFctr(int32_t *row_, uint8_t rowLen_, int32_t fac_)
 {
@@ -240,34 +239,72 @@ static inline StdRtn_t SbtrctRow1frmRow2(int32_t *row1_, int32_t *row2_, uint8_t
 	return retVal;
 }
 
+static inline StdRtn_t bSortRow(uint8_t *row_, uint8_t rowLen_)
+{
+	uint8_t i = 0u, j = 0u;
+	int32_t temp = 0;
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if(NULL != row_)
+	{
+		retVal = ERR_OK;
+		for (i = 0u ;  i < (rowLen_-1); i++)
+		{
+			for (j = 0u ; j < (rowLen_-i-1); j++)
+			{
+				if (row_[j] < row_[j+1])
+				{
+					temp      = row_[j];
+					row_[j]   = row_[j+1];
+					row_[j+1] = temp;
+				}
+			}
+		}
+	}
+}
+
 static inline StdRtn_t SlvSystmOfLnrEqtns(const MTX_t *mtx1_ , const MTX_t *vec1_, MTX_t *vecRes_, uint8_t nScale_)
 {
 	uint8_t i = 0u;
+	uint8_t aLeadCoeff[mtx1_->NumRows];
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	int32_t tempMat[mtx1_->NumRows][mtx1_->NumCols + 1];
 	MTX_t AugmentedMat = {tempMat[0], mtx1_->NumRows, (mtx1_->NumCols + 1)};
 
 	if(NULL != vecRes_)
 	{
-		if( (mtx1_->NumCols == vec1_->NumRows) && (vec1_->NumRows == vecRes_->NumRows) && (vec1_->NumCols == vecRes_->NumCols) )
+		retVal = ERR_OK;
+		if( (mtx1_->NumCols == vec1_->NumRows) && (vec1_->NumRows == vecRes_->NumRows) && (vec1_->NumCols == vecRes_->NumCols) ) //dimensions of inputs must fit
 		{
-			retVal = ERR_OK;
 			retVal |= AppndColVecToMat(mtx1_, vec1_, &AugmentedMat);
-
-			if(0 != MTX1(1,0) )
+			for(i = 0u; (i < AugmentedMat.NumCols) && (ERR_OK == retVal); i++)
 			{
-				retVal |= MultRowWFctr(&MTXAugRow(0), AugmentedMat.NumCols, MTX1(1,0));
-				retVal |= MultRowWFctr(&MTXAugRow(1), AugmentedMat.NumCols, MTX1(0,0));
-				retVal |= SbtrctRow1frmRow2(&MTXAugRow(0), &MTXAugRow(1), AugmentedMat.NumCols);
+				retVal |= FindLeadingCoeffIdxInRow(&MTXAugRow(i), AugmentedMat.NumCols, &aLeadCoeff[i]);
 			}
+			retVal |= bSortRow(aLeadCoeff, AugmentedMat.NumCols);
+			switch(mtx1_->NumRows)
+			{
+				case 2:
+					if(aLeadCoeff[0] >= aLeadCoeff[1])
+					{
+						retVal |= MultRowWFctr(&MTXAugRow(0), AugmentedMat.NumCols, MTX1(1,0));
+						retVal |= MultRowWFctr(&MTXAugRow(1), AugmentedMat.NumCols, MTX1(0,0));
+						retVal |= SbtrctRow1frmRow2(&MTXAugRow(0), &MTXAugRow(1), AugmentedMat.NumCols);
+					}
+					retVal |= DvdBySmllstValInRow(&MTXAugRow(0), AugmentedMat.NumCols);
+					retVal |= DvdBySmllstValInRow(&MTXAugRow(1), AugmentedMat.NumCols);
 
-			retVal |= DvdBySmllstValInRow(&MTXAugRow(0), AugmentedMat.NumCols);
-			retVal |= DvdBySmllstValInRow(&MTXAugRow(1), AugmentedMat.NumCols);
+					VECRes(1,0) = 	(MTXAug(1,2) << nScale_) / MTXAug(1,1);
+					VECRes(0,0) = ( (MTXAug(0,2) << nScale_) - MTXAug(0,1) * VECRes(1,0) ) / MTXAug(0,0);
 
-			VECRes(1,0) = 	(MTXAug(1,2) << nScale_) / MTXAug(1,1);
-			VECRes(0,0) = ( (MTXAug(0,2) << nScale_) - MTXAug(0,1) * VECRes(1,0) ) / MTXAug(0,0);
-		}
-		else
+					break;
+				case 3:
+
+					break;
+				default:
+					retVal = ERR_PARAM_SIZE;
+					break;
+			}
+		}else
 		{
 			retVal = ERR_PARAM_SIZE;
 		}
