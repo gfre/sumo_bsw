@@ -337,13 +337,13 @@ StdRtn_t RTE_Play_BuzBeep(uint16 freqHz_, uint16 durMs_)
  */
 StdRtn_t RTE_Read_SpdoVelLe(int16_t *vel_)
 {
-	return TACHO_Read_SpdLft(vel_);
+	return TACHO_Read_SpdLe(vel_);
 }
 
 
 StdRtn_t RTE_Read_SpdoVelRi(int16_t *vel_)
 {
-	return TACHO_Read_SpdRght(vel_);
+	return TACHO_Read_SpdRi(vel_);
 }
 
 /*================================================================================================*/
