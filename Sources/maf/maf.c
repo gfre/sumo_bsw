@@ -53,8 +53,8 @@ int32_t MAF_Get_Speed(bool isLeft_)
 void MAF_UpdateRingBuffer(void)
 {
 	Q4CLeft_QuadCntrType leftVal_ = 0, rightVal_ = 0;
-	(void)TACHO_Read_PosLft((Q4CLeft_QuadCntrType *)&leftVal_);
-	(void)TACHO_Read_PosRght((Q4CLeft_QuadCntrType *)&rightVal_);
+	(void)TACHO_Read_PosLe((Q4CLeft_QuadCntrType *)&leftVal_);
+	(void)TACHO_Read_PosRi((Q4CLeft_QuadCntrType *)&rightVal_);
 
 	MAF_LeftPosHistory[MAF_PosHistory_Index]  = leftVal_;
 	MAF_RightPosHistory[MAF_PosHistory_Index] = rightVal_;

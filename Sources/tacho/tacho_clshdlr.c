@@ -58,12 +58,12 @@ static void Print_TachoStatus(const CLS1_StdIOType *io_)
 	CLS1_SendStatusStr((uchar_t*)" speeds", (uchar_t *)"\r\n", io_->stdOut);
 
 	CLS1_SendStatusStr((uchar_t*)"   L speed", (uchar_t*)"", io_->stdOut);
-	(void)TACHO_Read_SpdLft(&spdTmp);
+	(void)TACHO_Read_SpdLe(&spdTmp);
 	CLS1_SendNum32s(spdTmp, io_->stdOut);
 	CLS1_SendStr((uchar_t*)" steps/sec\r\n", io_->stdOut);
 
 	CLS1_SendStatusStr((uchar_t*)"   R speed", (uchar_t*)"", io_->stdOut);
-	(void)TACHO_Read_SpdRght(&spdTmp);
+	(void)TACHO_Read_SpdRi(&spdTmp);
 	CLS1_SendNum32s(spdTmp, io_->stdOut);
 	CLS1_SendStr((uchar_t*)" steps/sec\r\n", io_->stdOut);
 

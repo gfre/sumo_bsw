@@ -63,10 +63,10 @@ static StdRtn_t TL_Read_EstdRghtPos(int32_t* sig_);
 static TL_Itm_t items[] =
 {
 		{	{TL_TACHO_LEFT_STRING,  {3500u, 25u, TL_DFLT_D_GAIN, 100u, TL_DFLT_PID_SATURATION_VALUE},
-			TACHO_Read_PosLft},  TL_DFLT_DATA_INIT
+			TACHO_Read_PosLe},  TL_DFLT_DATA_INIT
 		},
 		{ 	{TL_TACHO_RIGHT_STRING, {3500u, 25u, TL_DFLT_D_GAIN, 100u, TL_DFLT_PID_SATURATION_VALUE},
-			TACHO_Read_PosRght}, TL_DFLT_DATA_INIT
+			TACHO_Read_PosRi}, TL_DFLT_DATA_INIT
 		},
 };
 

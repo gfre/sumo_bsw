@@ -237,7 +237,7 @@ StdRtn_t TACHO_Set_FltrReq(uint8_t idx_)
 	return Set_TachoFltr(idx_);
 }
 
-StdRtn_t TACHO_Read_PosLft(int32_t* pos_)
+StdRtn_t TACHO_Read_PosLe(int32_t* pos_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != pos_)
@@ -248,7 +248,7 @@ StdRtn_t TACHO_Read_PosLft(int32_t* pos_)
 	return retVal;
 }
 
-StdRtn_t TACHO_Read_PosRght(int32_t* pos_)
+StdRtn_t TACHO_Read_PosRi(int32_t* pos_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != pos_)
@@ -259,7 +259,7 @@ StdRtn_t TACHO_Read_PosRght(int32_t* pos_)
 	return retVal;
 }
 
-StdRtn_t TACHO_Read_RawSpdLft(int16_t* spd_)
+StdRtn_t TACHO_Read_RawSpdLe(int16_t* spd_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != spd_)
@@ -270,7 +270,7 @@ StdRtn_t TACHO_Read_RawSpdLft(int16_t* spd_)
 	return retVal;
 }
 
-StdRtn_t TACHO_Read_RawSpdRght(int16_t* spd_)
+StdRtn_t TACHO_Read_RawSpdRi(int16_t* spd_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if(NULL != spd_)
@@ -281,7 +281,7 @@ StdRtn_t TACHO_Read_RawSpdRght(int16_t* spd_)
 	return retVal;
 }
 
-StdRtn_t TACHO_Read_SpdLft(int16_t* spd_)
+StdRtn_t TACHO_Read_SpdLe(int16_t* spd_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if (NULL != spd_)
@@ -292,7 +292,7 @@ StdRtn_t TACHO_Read_SpdLft(int16_t* spd_)
 	return retVal;
 }
 
-StdRtn_t TACHO_Read_SpdRght(int16_t* spd_)
+StdRtn_t TACHO_Read_SpdRi(int16_t* spd_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if (NULL != spd_)

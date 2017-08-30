@@ -66,42 +66,42 @@
  * @param isLeft TRUE for left speed, FALSE for right speed.
  * @return Actual speed value
  */
-EXTERNAL_ StdRtn_t TACHO_Read_PosLft(int32_t* pos_);
+EXTERNAL_ StdRtn_t TACHO_Read_PosLe(int32_t* pos_);
 
 /**
  *
  * @param pos_
  * @return
  */
-EXTERNAL_ StdRtn_t TACHO_Read_PosRght(int32_t* pos_);
+EXTERNAL_ StdRtn_t TACHO_Read_PosRi(int32_t* pos_);
 
 /**
  *
  * @param spd_
  * @return
  */
-EXTERNAL_ StdRtn_t TACHO_Read_RawSpdLft(int16_t* spd_);
+EXTERNAL_ StdRtn_t TACHO_Read_RawSpdLe(int16_t* spd_);
 
 /**
  *
  * @param spd_
  * @return
  */
-EXTERNAL_ StdRtn_t TACHO_Read_RawSpdRght(int16_t* spd_);
+EXTERNAL_ StdRtn_t TACHO_Read_RawSpdRi(int16_t* spd_);
 
 /**
  *
  * @param spd_
  * @return
  */
-EXTERNAL_ StdRtn_t TACHO_Read_SpdLft(int16_t* spd_);
+EXTERNAL_ StdRtn_t TACHO_Read_SpdLe(int16_t* spd_);
 
 /**
  *
  * @param spd_
  * @return
  */
-EXTERNAL_ StdRtn_t TACHO_Read_SpdRght(int16_t* spd_);
+EXTERNAL_ StdRtn_t TACHO_Read_SpdRi(int16_t* spd_);
 
 /**
  *
