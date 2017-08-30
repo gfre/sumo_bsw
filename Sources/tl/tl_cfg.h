@@ -57,7 +57,7 @@ typedef struct TL_Cfg_s
  */
 typedef struct TL_Data_s{
 	int32_t fltrdVal;
-	int32_t dfltrdValdt;
+	int16_t dfltrdValdt;
 	PID_Data_t pid;
 } TL_Data_t;
 

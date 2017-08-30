@@ -25,14 +25,22 @@
 
 
 /*======================================= >> #DEFINES << =========================================*/
-#define TL_CONDITIONAL_RETURN(condVar_, trueVal_, falseVal_) \
-	( (TRUE == condVar_)?(trueVal_) : (falseVal_) )
-
+/**
+ *
+ * @param tl_
+ */
 #define TL_CALC_FILTERED_SIGNAL( measVal_, fltrdVal_, pPidGain_, pPidData_, pCtrlVal_ )  \
 	( PIDext( measVal_,  fltrdVal_, pPidGain_, pPidData_, pCtrlVal_) )
 
+/**
+ *
+ * @param tl_
+ */
 #define TL_DOWNSACLE(val_) ( (val_)/(1000) )
-
+ /**
+  *
+  * @param tl_
+  */
 #define TL_UPSACLE(val_) ( (val_)*(1000) )
 
 
@@ -137,20 +145,27 @@ void TL_Main(void)
 	StdRtn_t retVal = ERR_OK;
 	uint8_t i = 0u;
 	int32_t measVal = 0;
+	int32_t fltrdVal = 0;
+	int32_t dfltrdVal = 0;
+
 	if( (NULL != pTbl) && ( NULL != pTbl->aTls) )
 	{
 		for(i = 0u; i < pTbl->numTls; i++)
 		{
-			/* Get the filtered derivative of the signal value */
+			/* Down-scale internal filtered value */
+			fltrdVal = TL_DOWNSACLE(pTbl->aTls[i].data.fltrdVal);
+			/* Read measured value */
 			retVal |= pTbl->aTls[i].cfg.measValFct(&measVal);
-			measVal = TL_UPSACLE(measVal);
-
-			retVal |= TL_CALC_FILTERED_SIGNAL(measVal, pTbl->aTls[i].data.fltrdVal,
-					&pTbl->aTls[i].cfg.pid, &pTbl->aTls[i].data.pid, &pTbl->aTls[i].data.dfltrdValdt);
+			/* Get the filtered derivative of the signal value */
+			retVal |= TL_CALC_FILTERED_SIGNAL(measVal, fltrdVal, &pTbl->aTls[i].cfg.pid,
+					&pTbl->aTls[i].data.pid, &dfltrdVal);
 			if( ERR_OK == retVal )
 			{
+				pTbl->aTls[i].data.dfltrdValdt = (int16_t)dfltrdVal;
+
 				/* Euler forward integration of the filtered derivative to get the filtered signal value*/
-				pTbl->aTls[i].data.fltrdVal  += TL_DOWNSACLE(pTbl->aTls[i].data.dfltrdValdt * (int32_t)pTbl->aTls[i].cfg.smplTimeMS);
+				/* Filtered values is up-scaled due integer multiplication with sample time in MS. */
+				pTbl->aTls[i].data.fltrdVal  += dfltrdVal * (int32_t)pTbl->aTls[i].cfg.smplTimeMS;
 			}
 			else
 			{
@@ -193,7 +208,7 @@ StdRtn_t TL_Read_i16dFltrdValdt(int16_t* pVal_, const uint8_t idx_)
 		retVal = ERR_PARAM_VALUE;
 		if( idx_< pTbl->numTls )
 		{
-			*pVal_ = (int16_t)TL_DOWNSACLE(pTbl->aTls[idx_].data.dfltrdValdt);
+			*pVal_ = pTbl->aTls[idx_].data.dfltrdValdt;
 			retVal 	= ERR_OK;
 		}
 	}
@@ -210,7 +225,7 @@ StdRtn_t TL_Read_vFltrdVal(void* pVal_)
 		TL_vReadVal_t *pVal = (TL_vReadVal_t *)pVal_;
 		if( pVal->idx < pTbl->numTls )
 		{
-			pVal->val = (int16_t)TL_DOWNSACLE(pTbl->aTls[pVal->idx].data.fltrdVal);
+			pVal->val = TL_DOWNSACLE(pTbl->aTls[pVal->idx].data.fltrdVal);
 			retVal 	= ERR_OK;
 		}
 	}
@@ -229,7 +244,7 @@ StdRtn_t TL_Read_vdFltrdValdt(void* pVal_)
 		TL_vReadVal_t *pVal = (TL_vReadVal_t *)pVal_;
 		if( pVal->idx < pTbl->numTls )
 		{
-			pVal->val = TL_DOWNSACLE(pTbl->aTls[pVal->idx].data.dfltrdValdt);
+			pVal->val = pTbl->aTls[pVal->idx].data.dfltrdValdt;
 			retVal 	= ERR_OK;
 		}
 	}
