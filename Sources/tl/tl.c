@@ -143,7 +143,7 @@ void TL_Main(void)
 		{
 			/* Get the filtered derivative of the signal value */
 			retVal |= pTbl->aTls[i].cfg.measValFct(&measVal);
-			retVal |= TL_CALC_FILTERED_SIGNAL(pTbl->aTls[i].data.dfltrdValdt, measVal,
+			retVal |= TL_CALC_FILTERED_SIGNAL(measVal, pTbl->aTls[i].data.fltrdVal,
 					&pTbl->aTls[i].cfg.pid, &pTbl->aTls[i].data.pid,
 					(int32_t *)&pTbl->aTls[i].data.dfltrdValdt);
 			if( ERR_OK == retVal )
