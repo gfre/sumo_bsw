@@ -302,8 +302,8 @@ bool DRV_HasTurned(void) {
 	if (DRV_Status.mode==DRV_MODE_POS) {
 		int16_t speedL, speedR;
 
-		TACHO_Read_SpdLft(&speedL);
-		TACHO_Read_SpdRght(&speedR);
+		TACHO_Read_SpdLe(&speedL);
+		TACHO_Read_SpdRi(&speedR);
 		if (speedL>-DRV_TURN_SPEED_LOW && speedL<DRV_TURN_SPEED_LOW && speedR>-DRV_TURN_SPEED_LOW && speedR<DRV_TURN_SPEED_LOW) { /* speed close to zero */
 			pos = Q4CLeft_GetPos();
 			if (match(pos, DRV_Status.pos.left)) {
@@ -324,7 +324,6 @@ void DRV_DeInit(void) {
 }
 
 void DRV_Init(void) {
-	uint8_t i = 0u;
 	MOT_Init();
 
 	DRV_Status.mode = DRV_MODE_NONE;
@@ -386,10 +385,11 @@ void DRV_MainFct(void)
 		PIDVal = PIDVal*50;
 		DRV_ParsePIValToMotor(PIDVal, FALSE);
 	}
-	else if (DRV_Status.mode==DRV_MODE_NONE)
+	else
 	{
 		/* do nothing */
 	}
+
 	return;
 }
 
