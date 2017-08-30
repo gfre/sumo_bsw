@@ -30,7 +30,7 @@
  * @{
  */
 /*======================================= >> #DEFINES << =========================================*/
-
+#define TL_USES_NVM (FALSE)
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
@@ -47,7 +47,8 @@ typedef StdRtn_t TL_readFct_t(int32_t*);
 typedef struct TL_Cfg_s
 {
 	const uchar_t   *pItmName;
-	PID_Gain_t gain;
+	const uint8_t smplTimeMS;
+	PID_Gain_t pid;
 	TL_readFct_t *measValFct;
 }TL_Cfg_t;
 

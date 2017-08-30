@@ -18,8 +18,8 @@
 #define TL_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "ACon_Types.h"
-#include "Platform.h"
+
+
 
 #ifdef MASTER_tl_C_
 #define EXTERNAL_

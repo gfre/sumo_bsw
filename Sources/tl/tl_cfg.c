@@ -25,6 +25,7 @@
  *Note that 'KP' and 'KI' can be evaluated using e.g. MATLABs control system toolbox. KI must be adjusted
  *by multiplying the sampling time 'Ta' on to it to work in the expected (simulated) manner.
  *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @author 	S. Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	17.08.2017
  *
@@ -34,19 +35,27 @@
 
 #define MASTER_tl_cfg_C_
 
+//TODO
+// - decouple sample time from calling task period and runtime calls
+// - Move strings to parent component
+// - Connect PID gain setting to NVM
 /*======================================= >> #INCLUDES << ========================================*/
 #include "tl_cfg.h"
 
 /** Application APIs */
 #include "tacho_api.h"
-#include "tl_api.h"
+
+
 
 /*======================================= >> #DEFINES << =========================================*/
 #define TL_TACHO_LEFT_STRING		("TACHO Left")
+
 #define TL_TACHO_RIGHT_STRING		("TACHO Right")
 
 #define TL_DFLT_PID_SATURATION_VALUE	(0xFFFFu)
+
 #define TL_DFLT_DATA_INIT  				{0}
+
 #define TL_DFLT_D_GAIN					(0x0u)
 
 
@@ -56,16 +65,16 @@
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-static StdRtn_t TL_Read_EstdLftPos(int32_t* sig_);
-static StdRtn_t TL_Read_EstdRghtPos(int32_t* sig_);
+
+
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 static TL_Itm_t items[] =
 {
-		{	{TL_TACHO_LEFT_STRING,  {3500u, 25u, TL_DFLT_D_GAIN, 100u, TL_DFLT_PID_SATURATION_VALUE},
+		{	{TL_TACHO_LEFT_STRING,  TACHO_SAMPLE_PERIOD_MS, {3500u, 25u, TL_DFLT_D_GAIN, 100u, TL_DFLT_PID_SATURATION_VALUE},
 			TACHO_Read_PosLe},  TL_DFLT_DATA_INIT
 		},
-		{ 	{TL_TACHO_RIGHT_STRING, {3500u, 25u, TL_DFLT_D_GAIN, 100u, TL_DFLT_PID_SATURATION_VALUE},
+		{ 	{TL_TACHO_RIGHT_STRING, TACHO_SAMPLE_PERIOD_MS, {3500u, 25u, TL_DFLT_D_GAIN, 100u, TL_DFLT_PID_SATURATION_VALUE},
 			TACHO_Read_PosRi}, TL_DFLT_DATA_INIT
 		},
 };
@@ -77,18 +86,8 @@ static TL_ItmTbl_t itemTable =
 };
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-/* TODO */
-/* Quick and Dirty workaround */
-static StdRtn_t TL_Read_EstdLftPos(int32_t* sig_)
-{
-	return TL_Read_i32FltrdVal(sig_, 0);
-}
 
 
-static StdRtn_t TL_Read_EstdRghtPos(int32_t* sig_)
-{
-	return TL_Read_i32FltrdVal(sig_, 1);
-}
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 TL_ItmTbl_t *Get_pTlItmTbl(void) {return &itemTable;}
