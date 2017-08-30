@@ -239,7 +239,7 @@ EXTERNAL_ StdRtn_t RTE_Write_BuzBeep(uint16_t freqHz_, uint16_t durMs_);
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-EXTERNAL_ StdRtn_t RTE_Read_SpdoVelLe(uint16_t *vel_);
+EXTERNAL_ StdRtn_t RTE_Read_SpdoVelLe(int16_t *vel_);
 
 
 /**
@@ -248,7 +248,7 @@ EXTERNAL_ StdRtn_t RTE_Read_SpdoVelLe(uint16_t *vel_);
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-EXTERNAL_ StdRtn_t RTE_Read_SpdoVelRi(uint16_t *vel_);
+EXTERNAL_ StdRtn_t RTE_Read_SpdoVelRi(int16_t *vel_);
 
 
 /*================================================================================================*/
@@ -261,7 +261,7 @@ EXTERNAL_ StdRtn_t RTE_Read_SpdoVelRi(uint16_t *vel_);
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_FAILED otherwise
  */
-EXTERNAL_ StdRtn_t RTE_Write_DrvVel(int32_t velLe_, int32_t velRi_);
+EXTERNAL_ StdRtn_t RTE_Write_DrvVel(int16_t velLe_, int16_t velRi_);
 
 /**
  * @brief RTE interface to write the target postion in position mode
