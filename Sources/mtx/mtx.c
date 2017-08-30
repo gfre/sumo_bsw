@@ -209,6 +209,29 @@ static inline StdRtn_t FindLeadingCoeffIdxInRow(int32_t *row_, uint8_t rowLen_, 
 	return retVal;
 }
 
+static inline StdRtn_t FindLargestValInRow(int32_t *row_, uint8_t rowLen_, int32_t* largestValInRow_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	uint8_t j = 0u;
+	int32_t largestNeg = 0, largestPos = 0;
+	if(NULL != largestValInRow_)
+	{
+		retVal = ERR_OK;
+		for(j = 0u; j < rowLen_; j++)
+		{
+			if(row_[j] > largestPos)
+				largestPos = row_[j];
+			if(row_[j] < largestNeg)
+				largestNeg = row_[j];
+		}
+	if( (-largestNeg) > largestPos )
+		*largestValInRow_ = -largestNeg;
+	else
+		*largestValInRow_ = largestPos;
+	}
+	return retVal;
+}
+
 static inline StdRtn_t MultRowWFctr(int32_t *row_, uint8_t rowLen_, int32_t fac_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
@@ -273,6 +296,7 @@ static inline StdRtn_t SlvSystmOfLnrEqtns(const MTX_t *mtx1_ , const MTX_t *vec1
 	uint8_t aIdx[mtx1_->NumRows];
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	int32_t tempMat[mtx1_->NumRows][mtx1_->NumCols + 1];
+	int32_t	largestValInRow = 0;
 	MTX_t AugmentedMat = {tempMat[0], mtx1_->NumRows, (mtx1_->NumCols + 1)};
 
 	if(NULL != vecRes_)
@@ -280,29 +304,44 @@ static inline StdRtn_t SlvSystmOfLnrEqtns(const MTX_t *mtx1_ , const MTX_t *vec1
 		retVal = ERR_OK;
 		if( (mtx1_->NumCols == vec1_->NumRows) && (vec1_->NumRows == vecRes_->NumRows) && (vec1_->NumCols == vecRes_->NumCols) ) //dimensions of inputs must fit
 		{
+			/* Initialisation */
 			retVal |= AppndColVecToMat(mtx1_, vec1_, &AugmentedMat);
-			for(i = 0u; i < mtx1_->NumRows; i++)
+			for(i = 0u; i < (mtx1_->NumRows) && (ERR_OK == retVal); i++)
 			{
 				aIdx[i] = i;
-			}
-			for(j = 0u; (j < AugmentedMat.NumRows) && (ERR_OK == retVal); j++)
-			{
-				retVal |= FindLeadingCoeffIdxInRow(&MTXAugRow(j), AugmentedMat.NumCols, &aLeadCoeff[j]);
+				retVal |= FindLeadingCoeffIdxInRow(&MTXAugRow(i), AugmentedMat.NumCols, &aLeadCoeff[i]);
 			}
 			retVal |= bSortRow(aLeadCoeff, aIdx, AugmentedMat.NumRows);
-			for(i = 0u; (aLeadCoeff[i] == aLeadCoeff[i+1]); i++)
+
+			/* Gauss algorithm */
+			while( aLeadCoeff[AugmentedMat.NumRows-1] != (AugmentedMat.NumRows-1) )
 			{
-				retVal |= MultRowWFctr(&MTXAugRow(aIdx[i]), AugmentedMat.NumCols, MTX1(aIdx[i+1],0));
-				retVal |= MultRowWFctr(&MTXAugRow(aIdx[i+1]), AugmentedMat.NumCols, MTX1(aIdx[i],0));
-				retVal |= SbtrctRow1frmRow2(&MTXAugRow(aIdx[0]), &MTXAugRow(aIdx[1]), AugmentedMat.NumCols);
-				retVal |= DvdBySmllstValInRow(&MTXAugRow(aIdx[0]), AugmentedMat.NumCols);
-				retVal |= DvdBySmllstValInRow(&MTXAugRow(aIdx[1]), AugmentedMat.NumCols);
-				for(j = 0u; (j < AugmentedMat.NumRows) && (ERR_OK == retVal); j++)
+				for(i = 0u; i < (AugmentedMat.NumRows-1); i++)
 				{
-					retVal |= FindLeadingCoeffIdxInRow(&MTXAugRow(j), AugmentedMat.NumCols, &aLeadCoeff[j]);
+					if(aLeadCoeff[i] == aLeadCoeff[i+1])
+					{
+						int32_t a = MTXAug(aIdx[i], aLeadCoeff[i]);
+						int32_t b = MTXAug(aIdx[i+1], aLeadCoeff[i+1]);
+
+						retVal |= MultRowWFctr(&MTXAugRow(aIdx[i]), AugmentedMat.NumCols, b);
+						retVal |= MultRowWFctr(&MTXAugRow(aIdx[i+1]), AugmentedMat.NumCols, a);
+						retVal |= SbtrctRow1frmRow2(&MTXAugRow(aIdx[i]), &MTXAugRow(aIdx[i+1]), AugmentedMat.NumCols);
+						for(j = 0u; (j < AugmentedMat.NumRows) && (ERR_OK == retVal); j++)
+						{
+
+							retVal |= FindLeadingCoeffIdxInRow(&MTXAugRow(aIdx[j]), AugmentedMat.NumCols, &aLeadCoeff[j]);
+							retVal |= FindLargestValInRow(&MTXAugRow(j), AugmentedMat.NumCols, &largestValInRow);
+							if(largestValInRow > 500000)
+							{
+								retVal |= DvdBySmllstValInRow(&MTXAugRow(j), AugmentedMat.NumCols);
+							}
+						}
+						retVal |= bSortRow(aLeadCoeff, aIdx, AugmentedMat.NumCols);
+					}
 				}
-				retVal |= bSortRow(aLeadCoeff, aIdx, AugmentedMat.NumCols);
 			}
+			/* Backstepping */
+
 		}else
 		{
 			retVal = ERR_PARAM_SIZE;
