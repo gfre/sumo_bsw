@@ -75,12 +75,12 @@ StdRtn_t PIDext(int32_t setVal_, int32_t actVal_, const PID_Gain_t *gain_, PID_D
 			data_->intVal += ( ( ((int32_t)gain_->kI_scld)*err ) / ( (int32_t)gain_->nScale ) );
 		}
 
-		if( data_->intVal < -((int32_t)gain_->intSatVal))
+		if( data_->intVal <= -((int32_t)gain_->intSatVal))
 		{
 			data_->intVal = -((int32_t)gain_->intSatVal);
 			data_->sat  = PID_NEG_SAT;
 		}
-		else if(data_->intVal > ((int32_t)gain_->intSatVal) )
+		else if(data_->intVal >= ((int32_t)gain_->intSatVal) )
 		{
 			data_->intVal = ((int32_t)gain_->intSatVal);
 			data_->sat  = PID_POS_SAT;

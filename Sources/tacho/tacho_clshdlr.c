@@ -50,6 +50,7 @@ static void Print_TachoStatus(const CLS1_StdIOType *io_)
 {
 	uint8_t i = 0u;
 	int16_t spdTmp = 0;
+	int32_t posTmp = 0;
 	uchar_t buf[13] = {""};
 	uchar_t idxBuf[sizeof("255")] = {""};
 	TACHO_FltrItmTbl_t *pFltrTbl = Get_pFltrTbl();
@@ -59,13 +60,26 @@ static void Print_TachoStatus(const CLS1_StdIOType *io_)
 
 	CLS1_SendStatusStr((uchar_t*)"   L speed", (uchar_t*)"", io_->stdOut);
 	(void)TACHO_Read_SpdLe(&spdTmp);
-	CLS1_SendNum32s(spdTmp, io_->stdOut);
+	CLS1_SendNum16s(spdTmp, io_->stdOut);
 	CLS1_SendStr((uchar_t*)" steps/sec\r\n", io_->stdOut);
 
 	CLS1_SendStatusStr((uchar_t*)"   R speed", (uchar_t*)"", io_->stdOut);
 	(void)TACHO_Read_SpdRi(&spdTmp);
-	CLS1_SendNum32s(spdTmp, io_->stdOut);
+	CLS1_SendNum16s(spdTmp, io_->stdOut);
 	CLS1_SendStr((uchar_t*)" steps/sec\r\n", io_->stdOut);
+
+	CLS1_SendStatusStr((uchar_t*)" pos   ", (uchar_t *)"\r\n", io_->stdOut);
+
+	CLS1_SendStatusStr((uchar_t*)"   L pos  ", (uchar_t*)"", io_->stdOut);
+	(void)TACHO_Read_PosLe(&posTmp);
+	CLS1_SendNum32s(posTmp, io_->stdOut);
+	CLS1_SendStr((uchar_t*)" steps\r\n", io_->stdOut);
+
+	CLS1_SendStatusStr((uchar_t*)"   R pos  ", (uchar_t*)"", io_->stdOut);
+	(void)TACHO_Read_PosRi(&posTmp);
+	CLS1_SendNum32s(posTmp, io_->stdOut);
+	CLS1_SendStr((uchar_t*)" steps\r\n", io_->stdOut);
+
 
 	CLS1_SendStatusStr((uchar_t*)" filters  #ID", (uchar_t*)"\r\n", io_->stdOut);
 	for(i = 0; i < Get_pFltrTbl()->numFltrs; i++)

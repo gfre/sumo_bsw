@@ -343,7 +343,9 @@ void DRV_MainFct(void)
 {
 	StdRtn_t retVal = ERR_OK;
 	int32_t PIDVal = 0;
-	int32_t actVal = 0;
+	int32_t i32ActVal = 0;
+	int16_t i16ActVal = 0;
+
 	while (GetCmd()==ERR_OK)  /* returns ERR_RXEMPTY if queue is empty */
 	{
 		/* process incoming commands */
@@ -351,36 +353,36 @@ void DRV_MainFct(void)
 
 	if (DRV_Status.mode==DRV_MODE_SPEED)
 	{
-		retVal |= TACHO_Read_SpdLe((int16_t *)&actVal);
-		retVal |= PID(DRV_Status.speed.left, actVal ,DRV_PID_SPEED_LEFT, &PIDVal);
+		retVal |= TACHO_Read_SpdLe(&i16ActVal);
+		retVal |= PID(DRV_Status.speed.left, (int32_t)i16ActVal ,DRV_PID_SPEED_LEFT, &PIDVal);
 		Parse_CtrlValToMotor(PIDVal, TRUE);
 
-		retVal |= TACHO_Read_SpdRi((int16_t *)&actVal);
-		retVal |= PID(DRV_Status.speed.right, actVal ,DRV_PID_SPEED_RIGHT, &PIDVal);
+		retVal |= TACHO_Read_SpdRi(&i16ActVal);
+		retVal |= PID(DRV_Status.speed.right, (int32_t)i16ActVal ,DRV_PID_SPEED_RIGHT, &PIDVal);
 		Parse_CtrlValToMotor(PIDVal, FALSE);
 	}
 	else if (DRV_Status.mode==DRV_MODE_STOP)
 	{
 		DRV_SetSpeed(0, 0);
 
-		retVal |= TACHO_Read_SpdLe((int16_t *)&actVal);
-		retVal |= PID(DRV_Status.speed.left, actVal ,DRV_PID_SPEED_LEFT, &PIDVal);
+		retVal |= TACHO_Read_SpdLe(&i16ActVal);
+		retVal |= PID(DRV_Status.speed.left, (int32_t)i16ActVal ,DRV_PID_SPEED_LEFT, &PIDVal);
 		Parse_CtrlValToMotor(PIDVal, TRUE);
 
-		retVal |= TACHO_Read_SpdRi((int16_t *)&actVal);
-		retVal |= PID(DRV_Status.speed.right, actVal ,DRV_PID_SPEED_RIGHT, &PIDVal);
+		retVal |= TACHO_Read_SpdRi(&i16ActVal);
+		retVal |= PID(DRV_Status.speed.right, (int32_t)i16ActVal ,DRV_PID_SPEED_RIGHT, &PIDVal);
 		Parse_CtrlValToMotor(PIDVal, FALSE);
 	}
 	else if (DRV_Status.mode==DRV_MODE_POS)
 	{
-		retVal |= TACHO_Read_PosLe(&actVal);
-		retVal |= PID(DRV_Status.pos.left, actVal ,DRV_PID_POS_LEFT, &PIDVal);
+		retVal |= TACHO_Read_PosLe(&i32ActVal);
+		retVal |= PID(DRV_Status.pos.left, i32ActVal ,DRV_PID_POS_LEFT, &PIDVal);
 		//TODO
 		PIDVal = PIDVal*50;
 		Parse_CtrlValToMotor(PIDVal, TRUE);
 
-		retVal |= TACHO_Read_PosRi(&actVal);
-		retVal |= PID(DRV_Status.pos.right, actVal ,DRV_PID_POS_RIGHT, &PIDVal);
+		retVal |= TACHO_Read_PosRi(&i32ActVal);
+		retVal |= PID(DRV_Status.pos.right, i32ActVal ,DRV_PID_POS_RIGHT, &PIDVal);
 		//TODO
 		PIDVal = PIDVal*50;
 		Parse_CtrlValToMotor(PIDVal, FALSE);

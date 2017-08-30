@@ -13,7 +13,7 @@
  *  
  * @copyright @LGPL2_1
  *
- ***************************************************************************************************/
+ **************************************************************************************************/
 
 #define MASTER_pid_clshdlr_C_
 
@@ -30,9 +30,19 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
+/**
+ *
+ * @param
+ * @return
+ */
 typedef StdRtn_t ReadPIDCfg_t(NVM_PidCfg_t *);
+
+/**
+ *
+ * @param
+ * @return
+ */
 typedef StdRtn_t SavePIDCfg_t(const NVM_PidCfg_t *);
-//typedef PID_Config_t *GetPIDConfig_t(void);
 
 
 
@@ -68,45 +78,34 @@ static void PrintPIDstatus(const PID_Gain_t *gain_, const PID_Data_t *rtData_, c
 	uchar_t buf[48];
 	uchar_t kindBuf[16];
 
-	UTIL1_strcpy(kindBuf, sizeof(buf), (uchar_t*)"  ");
+	UTIL1_strcpy(kindBuf, sizeof(buf), (uchar_t *)"  ");
 	UTIL1_strcat(kindBuf, sizeof(buf), kindStr);
-	UTIL1_strcat(kindBuf, sizeof(buf), (uchar_t*)" PID");
-	UTIL1_strcpy(buf, sizeof(buf), (uchar_t*)"p: ");
+	UTIL1_strcat(kindBuf, sizeof(buf), (uchar_t *)" PID");
+
+	UTIL1_strcpy(buf, sizeof(buf), (uchar_t *)"p: ");
 	UTIL1_strcatNum16u(buf, sizeof(buf), gain_->kP_scld);
-	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)" i: ");
+	UTIL1_strcat(buf, sizeof(buf), (uchar_t *)" i: ");
 	UTIL1_strcatNum16u(buf, sizeof(buf), gain_->kI_scld);
-	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)" d: ");
+	UTIL1_strcat(buf, sizeof(buf), (uchar_t *)" d: ");
 	UTIL1_strcatNum16u(buf, sizeof(buf), gain_->kD_scld);
-	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)"\r\n");
+	UTIL1_strcat(buf, sizeof(buf), (uchar_t *)"\r\n");
 	CLS1_SendStatusStr(kindBuf, buf, io_->stdOut);
 
-	UTIL1_strcpy(kindBuf, sizeof(buf), (uchar_t*)"  ");
-	UTIL1_strcat(kindBuf, sizeof(buf), kindStr);
-	UTIL1_strcat(kindBuf, sizeof(buf), (uchar_t*)" saturation");
 	UTIL1_Num32uToStr(buf, sizeof(buf), gain_->intSatVal);
-	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)"\r\n");
-	CLS1_SendStatusStr(kindBuf, buf, io_->stdOut);
+	UTIL1_strcat(buf, sizeof(buf), (uchar_t *)"\r\n");
+	CLS1_SendStatusStr((uchar_t *)"         sat", buf, io_->stdOut);
 
-	UTIL1_strcpy(kindBuf, sizeof(buf), (uchar_t*)"  ");
-	UTIL1_strcat(kindBuf, sizeof(buf), kindStr);
-	UTIL1_strcat(kindBuf, sizeof(buf), (uchar_t*)" scale");
 	UTIL1_Num16uToStr(buf, sizeof(buf), gain_->nScale);
-	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)"\r\n");
-	CLS1_SendStatusStr(kindBuf, buf, io_->stdOut);
+	UTIL1_strcat(buf, sizeof(buf), (uchar_t *)"\r\n");
+	CLS1_SendStatusStr((uchar_t *)"     scaling", buf, io_->stdOut);
 
-	UTIL1_strcpy(kindBuf, sizeof(buf), (uchar_t*)"  ");
-	UTIL1_strcat(kindBuf, sizeof(buf), kindStr);
-	UTIL1_strcat(kindBuf, sizeof(buf), (uchar_t*)" error");
 	UTIL1_Num32sToStr(buf, sizeof(buf), rtData_->prevErr);
-	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)"\r\n");
-	CLS1_SendStatusStr(kindBuf, buf, io_->stdOut);
+	UTIL1_strcat(buf, sizeof(buf), (uchar_t *)"\r\n");
+	CLS1_SendStatusStr((uchar_t *)"  prev error", buf, io_->stdOut);
 
-	UTIL1_strcpy(kindBuf, sizeof(buf), (uchar_t*)"  ");
-	UTIL1_strcat(kindBuf, sizeof(buf), kindStr);
-	UTIL1_strcat(kindBuf, sizeof(buf), (uchar_t*)" integral");
 	UTIL1_Num32sToStr(buf, sizeof(buf), rtData_->intVal);
-	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)"\r\n");
-	CLS1_SendStatusStr(kindBuf, buf, io_->stdOut);
+	UTIL1_strcat(buf, sizeof(buf), (uchar_t *)"\r\n");
+	CLS1_SendStatusStr((uchar_t *)"     I value", buf, io_->stdOut);
 }
 
 static void PID_PrintStatus(const CLS1_StdIOType *io_)
