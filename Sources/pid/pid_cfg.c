@@ -5,10 +5,11 @@
  *
  * <This is a detailed description.>
  *
- * @author 	<I>. <Surname>, Simon Helling@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	G. Freudenthaler, Simon Helling@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	S. Helling, Simon Helling@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	11.08.2017
  *
- * @copyright @<LGPLx_x>
+ * @copyright @LGPL2_1
  *
  ***************************************************************************************************/
 
@@ -67,11 +68,15 @@ static PID_ItmTbl_t itemTable =
 	sizeof(items)/sizeof(items[0]),
 };
 
+
+
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
+
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 PID_ItmTbl_t *Get_pPidItmTbl(void) {return &itemTable;}
+
 
 
 #ifdef MASTER_pid_cfg_C_
