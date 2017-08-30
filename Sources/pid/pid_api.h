@@ -70,8 +70,8 @@ typedef enum PID_Sat_e
 typedef struct PID_Data_s
 {
 	PID_Sat_t sat;
-	int32_t	prevErr;
 	int32_t	intVal;
+	int32_t	prevErr;
 }PID_Data_t;
 
 

@@ -30,6 +30,8 @@
 
 #define TL_ID_DUMP (0xFEu)
 
+#define TL_SHORT_STRING ("tl")
+
 #define CLS_SEND_ERR_ID \
 	( CLS1_SendStr((uchar_t*)"*** ERROR: Invalid or non existing #ID ***\r\n", io_->stdErr) )
 
@@ -67,8 +69,8 @@ static uint8_t Parse_TLParam(PID_Gain_t *itm_, const unsigned char *cmd, bool *h
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 static void Print_TLHelp(const CLS1_StdIOType *io_)
 {
-	CLS1_SendHelpStr((unsigned char*)"TL", (unsigned char*)"Group of Tracking Loop commands\r\n", io_->stdOut);
-	CLS1_SendHelpStr((unsigned char*)"  [#ID] help|status", (unsigned char*)"Shows TL help or status\r\n", io_->stdOut);
+	CLS1_SendHelpStr((unsigned char*)TL_SHORT_STRING, (unsigned char*)"Group of Tracking Loop commands\r\n", io_->stdOut);
+	CLS1_SendHelpStr((unsigned char*)" [#ID] help|status", (unsigned char*)"Shows TL help or status\r\n", io_->stdOut);
 #if TL_USES_NVM
 	CLS1_SendHelpStr((unsigned char*)"  #ID set (p|i|w) <value>", (unsigned char*)"Sets new P, I or Anti-Windup value for TL #ID and saves it to the NVM\r\n", io_->stdOut);
 	CLS1_SendHelpStr((unsigned char*)"  #ID set scaling <value>", (unsigned char*)"Sets new scaling value for TL #ID and saves it to the NVM\r\n", io_->stdOut);
@@ -115,41 +117,42 @@ static void Print_TLItmStatus(const PID_Gain_t* gain_, const PID_Data_t *data_,
 {
 	uchar_t buf[48];
 
-	UTIL1_strcpy(buf,sizeof(buf),(uchar_t*)"TL ");
+	UTIL1_strcpy(buf,sizeof(buf),(uchar_t*)TL_SHORT_STRING);
+	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)" #");
 	UTIL1_strcatNum8u(buf,sizeof(buf),id_);
 	CLS1_SendStatusStr(buf, (uchar_t*)"\r\n", io_->stdOut);
 
-	CLS1_SendStatusStr((uchar_t*)"  Assigned to", (uchar_t*)kindStr_, io_->stdOut);
+	CLS1_SendStatusStr((uchar_t*)"  assigned to", (uchar_t*)kindStr_, io_->stdOut);
 	CLS1_SendStr((uchar_t*)"\r\n", io_->stdOut);
 
 	buf[0] = '\0';
-	UTIL1_strcpy(buf, sizeof(buf), (uchar_t*)"p: ");
+	UTIL1_strcpy(buf, sizeof(buf), (uchar_t*)"kp: ");
 	UTIL1_strcatNum32s(buf, sizeof(buf), gain_->kP_scld);
-	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)"; i: ");
+	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)"  ki: ");
 	UTIL1_strcatNum32s(buf, sizeof(buf), gain_->kI_scld);
 	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)"\r\n");
-	CLS1_SendStatusStr((uchar_t*)"  PI Gains", buf, io_->stdOut);
+	CLS1_SendStatusStr((uchar_t*)"  pi gain", buf, io_->stdOut);
 
 	buf[0] = '\0';
 	UTIL1_strcpy(buf, sizeof(buf), (uchar_t*)"0x");
 	UTIL1_strcatNum16Hex(buf, sizeof(buf), gain_->intSatVal);
 	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)"u\r\n");
-	CLS1_SendStatusStr("  PI SatVal", buf, io_->stdOut);
+	CLS1_SendStatusStr("  pi satVal", buf, io_->stdOut);
 
 	buf[0] = '\0';
 	UTIL1_Num8uToStr(buf, sizeof(buf), gain_->nScale);
 	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)"\r\n");
-	CLS1_SendStatusStr("  PI Scaling", buf, io_->stdOut);
+	CLS1_SendStatusStr("  pi scaling", buf, io_->stdOut);
 
 	buf[0] = '\0';
 	UTIL1_Num32sToStr(buf, sizeof(buf), data_->prevErr);
 	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)"\r\n");
-	CLS1_SendStatusStr("  PI LastErr", buf, io_->stdOut);
+	CLS1_SendStatusStr("  pi prevErr", buf, io_->stdOut);
 
 	buf[0] = '\0';
 	UTIL1_Num32sToStr(buf, sizeof(buf), data_->intVal);
 	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)"\r\n");
-	CLS1_SendStatusStr("  PI IntVal", buf, io_->stdOut);
+	CLS1_SendStatusStr("  pi intVal", buf, io_->stdOut);
 
 	return;
 }
@@ -340,11 +343,11 @@ uint8_t TL_ParseCommand(const uchar_t *cmd_, bool *handled_, const CLS1_StdIOTyp
 	UTIL1_strcpy(buf,sizeof("tl"),cmd_);
 	UTIL1_strcat(buf,sizeof(buf),p);
 
-	if ( ERR_OK == UTIL1_strcmp((char*)cmd_, (char*)CLS1_CMD_HELP) || ERR_OK == UTIL1_strcmp((const char*)buf, (const char*)"tl help") ) {
+	if ( ERR_OK == UTIL1_strcmp((const char_t*)cmd_, (uchar_t*)CLS1_CMD_HELP) || ERR_OK == UTIL1_strcmp((const char_t*)buf, (const char*)"tl help") ) {
 		Print_TLHelp(io_);
 		*handled_ = TRUE;
 	}
-	else if (ERR_OK == UTIL1_strcmp((const char*)cmd_, (const char*)CLS1_CMD_STATUS) || ERR_OK == UTIL1_strcmp((const char*)buf, (const char*)"tl status") )
+	else if (ERR_OK == UTIL1_strcmp((const char_t*)cmd_, (const char_t*)CLS1_CMD_STATUS) || ERR_OK == UTIL1_strcmp((const char_t*)buf, (const char_t*)"tl status") )
 	{
 		*handled_ = TRUE;
 		Print_TLStatus(tlID, io_);

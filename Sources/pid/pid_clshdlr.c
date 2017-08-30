@@ -26,7 +26,22 @@
 
 
 /*======================================= >> #DEFINES << =========================================*/
+#define PID_ID_INVALID (0xFFu)
 
+#define PID_ID_DUMP (0xFEu)
+
+#define PID_SHORT_STRING ("pid")
+
+#define PID_ID_PREFIX ('#')
+
+#define CLS_SEND_ERR_ID \
+	( CLS1_SendStr((uchar_t*)"*** ERROR: Invalid or non existing #ID ***\r\n", io_->stdErr) )
+
+#define CLS_SEND_ERR_TBL \
+	( CLS1_SendStr((uchar_t*)"*** ERROR: Invalid or non existing PID item table ***\r\n", io_->stdErr) )
+
+#define CLS_SEND_ERR_NVM_DATATYPE \
+	( CLS1_SendStr((uchar_t*)"*** ERROR: Writing to NVM failed - NVM configuration data type invalid ***\r\n", io_->stdErr) )
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
@@ -47,12 +62,15 @@ typedef StdRtn_t SavePIDCfg_t(const NVM_PidCfg_t *);
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-static void PID_PrintHelp(const CLS1_StdIOType *io_);
-static void PID_PrintStatus(const CLS1_StdIOType *io_);
-static void PrintPIDstatus(const PID_Gain_t *gain_, const PID_Data_t *rtData_, const uchar_t *kindStr, const CLS1_StdIOType *io_);
-static uint8_t ParsePidParameter(PID_Gain_t* gain_, const uchar_t *cmd_, bool *handled_, const CLS1_StdIOType *io_);
+static void Print_PidHelp(const CLS1_StdIOType *io_);
+static void Print_PidStatus(uint8_t id_, const CLS1_StdIOType *io_);
+static void Print_PidItmStatus(const PID_Gain_t* gain_, const PID_Data_t *data_,
+		const uchar_t *kindStr_, uint8_t id_, const CLS1_StdIOType *io_);
+static uint8_t Parse_PidParam(PID_Gain_t* gain_, const uchar_t *cmd_, bool *handled_, const CLS1_StdIOType *io_);
+
 static StdRtn_t PID_restoreCfg(ReadPIDCfg_t *readDfltCfg_, SavePIDCfg_t *saveCfg_, PID_Gain_t* gain_);
 static StdRtn_t PID_saveCfg(SavePIDCfg_t *saveCfg_, PID_Gain_t *gain_);
+
 
 
 
@@ -61,75 +79,106 @@ static StdRtn_t PID_saveCfg(SavePIDCfg_t *saveCfg_, PID_Gain_t *gain_);
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-static void PID_PrintHelp(const CLS1_StdIOType *io_)
+static void Print_PidHelp(const CLS1_StdIOType *io_)
 {
-	CLS1_SendHelpStr((uchar_t*)"pid", (uchar_t*)"Group of PID commands\r\n", io_->stdOut);
-	CLS1_SendHelpStr((uchar_t*)"  help|status", (uchar_t*)"Shows PID help or status\r\n", io_->stdOut);
-	CLS1_SendHelpStr((uchar_t*)"  pos (p|i|d|w) <value>", (uchar_t*)"Sets P, I, D or anti-Windup position value\r\n", io_->stdOut);
-	CLS1_SendHelpStr((uchar_t*)"  pos scale <value>", (uchar_t*)"Scaling value\r\n", io_->stdOut);
-	CLS1_SendHelpStr((uchar_t*)"  speed (L|R) (p|i|d|w) <value>", (uchar_t*)"Sets P, I, D or anti-Windup speed value\r\n", io_->stdOut);
-	CLS1_SendHelpStr((uchar_t*)"  speed (L|R) scale <value>", (uchar_t*)"Scaling value\r\n", io_->stdOut);
-	CLS1_SendHelpStr((uchar_t*)"  pos restore", (uchar_t*)"Restores and saves default parameters for position control to NVM\r\n", io_->stdOut);
-	CLS1_SendHelpStr((uchar_t*)"  speed (L|R) restore", (uchar_t*)"Restores and saves default parameters for (L|R) speed control to NVM\r\n", io_->stdOut);
+	CLS1_SendHelpStr((uchar_t*)PID_SHORT_STRING, (uchar_t*)"Group of PID commands\r\n", io_->stdOut);
+	CLS1_SendHelpStr((unsigned char*)" [#ID] help|status", (unsigned char*)"Shows PID help or status\r\n", io_->stdOut);
+	CLS1_SendHelpStr((unsigned char*)"  #ID set (p|i|d) <value>", (unsigned char*)"Sets new P-, I-, or D-gain PID #ID and saves it to the NVM\r\n", io_->stdOut);
+	CLS1_SendHelpStr((unsigned char*)"  #ID set aw-up <value>", (unsigned char*)"Sets new Anti-Windup value for PID #ID and saves it to the NVM\r\n", io_->stdOut);
+	CLS1_SendHelpStr((unsigned char*)"  #ID set N <value>", (unsigned char*)"Sets new 2^N scaling for PID #ID and saves it to the NVM\r\n", io_->stdOut);
+	CLS1_SendHelpStr((unsigned char*)"  #ID restore", (unsigned char*)"Restores default parameters for PID #ID and saves them to the NVM\r\n", io_->stdOut);
 }
 
-static void PrintPIDstatus(const PID_Gain_t *gain_, const PID_Data_t *rtData_, const uchar_t *kindStr, const CLS1_StdIOType *io_)
-{
-	uchar_t buf[48];
-	uchar_t kindBuf[16];
 
-	UTIL1_strcpy(kindBuf, sizeof(buf), (uchar_t *)"  ");
-	UTIL1_strcat(kindBuf, sizeof(buf), kindStr);
-	UTIL1_strcat(kindBuf, sizeof(buf), (uchar_t *)" PID");
 
-	UTIL1_strcpy(buf, sizeof(buf), (uchar_t *)"p: ");
-	UTIL1_strcatNum16u(buf, sizeof(buf), gain_->kP_scld);
-	UTIL1_strcat(buf, sizeof(buf), (uchar_t *)" i: ");
-	UTIL1_strcatNum16u(buf, sizeof(buf), gain_->kI_scld);
-	UTIL1_strcat(buf, sizeof(buf), (uchar_t *)" d: ");
-	UTIL1_strcatNum16u(buf, sizeof(buf), gain_->kD_scld);
-	UTIL1_strcat(buf, sizeof(buf), (uchar_t *)"\r\n");
-	CLS1_SendStatusStr(kindBuf, buf, io_->stdOut);
-
-	UTIL1_Num32uToStr(buf, sizeof(buf), gain_->intSatVal);
-	UTIL1_strcat(buf, sizeof(buf), (uchar_t *)"\r\n");
-	CLS1_SendStatusStr((uchar_t *)"         sat", buf, io_->stdOut);
-
-	UTIL1_Num16uToStr(buf, sizeof(buf), gain_->nScale);
-	UTIL1_strcat(buf, sizeof(buf), (uchar_t *)"\r\n");
-	CLS1_SendStatusStr((uchar_t *)"     scaling", buf, io_->stdOut);
-
-	UTIL1_Num32sToStr(buf, sizeof(buf), rtData_->prevErr);
-	UTIL1_strcat(buf, sizeof(buf), (uchar_t *)"\r\n");
-	CLS1_SendStatusStr((uchar_t *)"  prev error", buf, io_->stdOut);
-
-	UTIL1_Num32sToStr(buf, sizeof(buf), rtData_->intVal);
-	UTIL1_strcat(buf, sizeof(buf), (uchar_t *)"\r\n");
-	CLS1_SendStatusStr((uchar_t *)"     I value", buf, io_->stdOut);
-}
-
-static void PID_PrintStatus(const CLS1_StdIOType *io_)
+static void Print_PidStatus(uint8_t id_, const CLS1_StdIOType *io_)
 {
 	uint8_t i = 0u;
-	PID_ItmTbl_t *pPidTbl = Get_pPidItmTbl();
+	PID_ItmTbl_t *pTbl = Get_pPidItmTbl();
 
-	if( ( NULL != pPidTbl ) && ( NULL != pPidTbl->aPids ) )
+	if( (NULL != pTbl) && ( NULL != pTbl->aPids) )
 	{
-		CLS1_SendStatusStr((uchar_t*)"pid", (uchar_t*)"\r\n", io_->stdOut);
-		for(i = 0u; i < pPidTbl->numPids; i++)
+		if (PID_ID_DUMP == id_ )
 		{
-			PrintPIDstatus(&pPidTbl->aPids[i].cfg.gain, &pPidTbl->aPids[i].data, pPidTbl->aPids[i].cfg.pItmName, io_);
+				for(i = 0u; i < pTbl->numPids; i++)
+				{
+					Print_PidItmStatus(&(pTbl->aPids[i].cfg.gain), &(pTbl->aPids[i].data),
+							pTbl->aPids[i].cfg.pItmName, i, io_);
+				}
+		}
+		else
+		{
+			if(id_ < pTbl->numPids)
+			{
+				Print_PidItmStatus(&(pTbl->aPids[id_].cfg.gain), &(pTbl->aPids[id_].data),
+						pTbl->aPids[id_].cfg.pItmName, id_, io_);
+			}
+			else
+			{
+				CLS_SEND_ERR_ID;
+			}
 		}
 	}
 	else
 	{
-		/* error handling */
+		CLS_SEND_ERR_TBL;
 	}
-
-
 }
 
-static uint8_t ParsePidParameter(PID_Gain_t* gain_, const uchar_t *cmd_, bool *handled_, const CLS1_StdIOType *io_)
+static void Print_PidItmStatus(const PID_Gain_t* gain_, const PID_Data_t *data_,
+		const uchar_t *kindStr_, uint8_t id_, const CLS1_StdIOType *io_)
+{
+	uchar_t buf[48];
+
+	UTIL1_strcpy(buf,sizeof(buf),(uchar_t*)PID_SHORT_STRING);
+	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)" #");
+	UTIL1_strcatNum8u(buf,sizeof(buf),id_);
+	CLS1_SendStatusStr(buf, (uchar_t*)"\r\n", io_->stdOut);
+
+	CLS1_SendStatusStr((uchar_t*)"  assign. to", (uchar_t*)kindStr_, io_->stdOut);
+	CLS1_SendStr((uchar_t*)"\r\n", io_->stdOut);
+
+	buf[0] = '\0';
+	UTIL1_strcpy(buf, sizeof(buf), (uchar_t*)"kp: ");
+	UTIL1_strcatNum16u(buf, sizeof(buf), gain_->kP_scld);
+	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)"  ki: ");
+	UTIL1_strcatNum16u(buf, sizeof(buf), gain_->kI_scld);
+	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)"  kd: ");
+	UTIL1_strcatNum16u(buf, sizeof(buf), gain_->kD_scld);
+	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)"\r\n");
+	CLS1_SendStatusStr((uchar_t*)"  gains", buf, io_->stdOut);
+
+	buf[0] = '\0';
+	UTIL1_Num8uToStr(buf, sizeof(buf), gain_->nScale);
+	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)"\r\n");
+	CLS1_SendStatusStr("  2^N scale", buf, io_->stdOut);
+
+	buf[0] = '\0';
+	UTIL1_strcpy(buf, sizeof(buf), (uchar_t*)"0x");
+	UTIL1_strcatNum32Hex(buf, sizeof(buf), gain_->intSatVal);
+	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)"u\r\n");
+	CLS1_SendStatusStr("  aw-up val", buf, io_->stdOut);
+
+	buf[0] = '\0';
+	UTIL1_strcatNum32s(buf, sizeof(buf), data_->sat);
+	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)"u\r\n");
+	CLS1_SendStatusStr("  sat. st", buf, io_->stdOut);
+
+	buf[0] = '\0';
+	UTIL1_Num32sToStr(buf, sizeof(buf), data_->intVal);
+	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)"\r\n");
+	CLS1_SendStatusStr("  int. val", buf, io_->stdOut);
+
+	buf[0] = '\0';
+	UTIL1_Num32sToStr(buf, sizeof(buf), data_->prevErr);
+	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)"\r\n");
+	CLS1_SendStatusStr("  err. val", buf, io_->stdOut);
+
+	return;
+}
+
+
+static uint8_t Parse_PidParam(PID_Gain_t* gain_, const uchar_t *cmd_, bool *handled_, const CLS1_StdIOType *io_)
 {
 	const uchar_t *p;
 	uint16_t val16u;
@@ -235,20 +284,39 @@ static StdRtn_t PID_saveCfg(SavePIDCfg_t *saveCfg_, PID_Gain_t *gain_)
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 uint8_t PID_ParseCommand(const uchar_t *cmd_, bool *handled_, const CLS1_StdIOType *io_)
 {
-	uint8_t res = ERR_OK;
+	uint8_t retVal = ERR_OK;
 	PID_ItmTbl_t *pPidTbl = Get_pPidItmTbl();
+	uint8_t pidID = 0u;
+	const uchar_t *p = NULL;
+	uchar_t buf[sizeof("pid #ID set aw-up 0xFFFFFFFFu")]={'\0'};
 
+	p = cmd_+sizeof(PID_SHORT_STRING)-1u;
+
+	while(' ' == *p || PID_ID_PREFIX == *p)
+	{
+		p++;
+	}
+	if(ERR_FAILED == UTIL1_ScanDecimal8uNumber(&p,&pidID))
+	{
+		pidID = PID_ID_DUMP;
+	}
+	while(' ' == *p )
+	{
+		p++;
+	}
+
+	UTIL1_strcpy(buf,sizeof(buf),p);
 	if( ( NULL != pPidTbl ) && ( NULL != pPidTbl->aPids ) )
 	{
 
-		if (ERR_OK == UTIL1_strcmp((char*)cmd_, (char*)CLS1_CMD_HELP) || ERR_OK == UTIL1_strcmp((char*)cmd_, (char*)"pid help") )
+		if (ERR_OK == UTIL1_strcmp((const char_t *)cmd_, (const char_t *)CLS1_CMD_HELP) || ERR_OK == UTIL1_strcmp((const char_t *)buf, (const char_t *)CLS1_CMD_HELP) )
 		{
-			PID_PrintHelp(io_);
+			Print_PidHelp(io_);
 			*handled_ = TRUE;
 		}
-		else if (ERR_OK == UTIL1_strcmp((char*)cmd_, (char*)CLS1_CMD_STATUS) || ERR_OK == UTIL1_strcmp((char*)cmd_, (char*)"pid status") )
+		else if (ERR_OK == UTIL1_strcmp((const char_t *)cmd_, (const char_t *)CLS1_CMD_STATUS) || ERR_OK == UTIL1_strcmp((const char_t *)buf, (const char_t *)CLS1_CMD_STATUS) )
 		{
-			PID_PrintStatus(io_);
+			Print_PidStatus(pidID, io_);
 			*handled_ = TRUE;
 		}
 		else if (ERR_OK == UTIL1_strcmp((char*)cmd_, (char*)"pid pos restore") )
@@ -275,13 +343,13 @@ uint8_t PID_ParseCommand(const uchar_t *cmd_, bool *handled_, const CLS1_StdIOTy
 		}
 		else if ( ERR_OK == UTIL1_strncmp((char*)cmd_, (char*)"pid pos ", sizeof("pid pos ")-1) )
 		{
-			res = ParsePidParameter( &pPidTbl->aPids[2].cfg.gain, cmd_+sizeof("pid pos ")-1, handled_, io_);
-			if (res==ERR_OK)
+			retVal = Parse_PidParam( &pPidTbl->aPids[2].cfg.gain, cmd_+sizeof("pid pos ")-1, handled_, io_);
+			if (retVal==ERR_OK)
 			{
-				res = ParsePidParameter( &pPidTbl->aPids[3].cfg.gain, cmd_+sizeof("pid pos ")-1, handled_, io_);
+				retVal = Parse_PidParam( &pPidTbl->aPids[3].cfg.gain, cmd_+sizeof("pid pos ")-1, handled_, io_);
 			}
 
-			if (res==ERR_OK)
+			if (retVal==ERR_OK)
 			{
 				if( ( ERR_OK != PID_saveCfg(pPidTbl->aPids[2].cfg.nvm.saveFct, &pPidTbl->aPids[2].cfg.gain) )
 				||	( ERR_OK != PID_saveCfg(pPidTbl->aPids[3].cfg.nvm.saveFct, &pPidTbl->aPids[3].cfg.gain) ) )
@@ -292,7 +360,7 @@ uint8_t PID_ParseCommand(const uchar_t *cmd_, bool *handled_, const CLS1_StdIOTy
 		}
 		else if (UTIL1_strncmp((char*)cmd_, (char*)"pid speed L ", sizeof("pid speed L ")-1)==0)
 		{
-			res = ParsePidParameter( &pPidTbl->aPids[0].cfg.gain, cmd_+sizeof("pid speed L ")-1, handled_, io_);
+			retVal = Parse_PidParam( &pPidTbl->aPids[0].cfg.gain, cmd_+sizeof("pid speed L ")-1, handled_, io_);
 
 			if( ERR_OK != PID_saveCfg(pPidTbl->aPids[0].cfg.nvm.saveFct, &pPidTbl->aPids[0].cfg.gain) )
 			{
@@ -301,7 +369,7 @@ uint8_t PID_ParseCommand(const uchar_t *cmd_, bool *handled_, const CLS1_StdIOTy
 		}
 		else if (UTIL1_strncmp((char*)cmd_, (char*)"pid speed R ", sizeof("pid speed R ")-1)==0)
 		{
-			res = ParsePidParameter( &pPidTbl->aPids[1].cfg.gain, cmd_+sizeof("pid speed R ")-1, handled_, io_);
+			retVal = Parse_PidParam( &pPidTbl->aPids[1].cfg.gain, cmd_+sizeof("pid speed R ")-1, handled_, io_);
 
 			if( ERR_OK != PID_saveCfg(pPidTbl->aPids[1].cfg.nvm.saveFct, &pPidTbl->aPids[1].cfg.gain) )
 			{
@@ -313,7 +381,7 @@ uint8_t PID_ParseCommand(const uchar_t *cmd_, bool *handled_, const CLS1_StdIOTy
 			/* error handling */
 		}
 	}
-	return res;
+	return retVal;
 }
 
 

@@ -56,32 +56,32 @@ static void Print_TachoStatus(const CLS1_StdIOType *io_)
 	TACHO_FltrItmTbl_t *pFltrTbl = Get_pFltrTbl();
 
 	CLS1_SendStatusStr((uchar_t*)TACHO_SWC_STRING, (uchar_t*)"\r\n", io_->stdOut);
-	CLS1_SendStatusStr((uchar_t*)" speeds", (uchar_t *)"\r\n", io_->stdOut);
+	CLS1_SendStatusStr((uchar_t*)"  speed", (uchar_t *)"\r\n", io_->stdOut);
 
-	CLS1_SendStatusStr((uchar_t*)"   L speed", (uchar_t*)"", io_->stdOut);
+	CLS1_SendStatusStr((uchar_t*)"    left", (uchar_t*)"", io_->stdOut);
 	(void)TACHO_Read_SpdLe(&spdTmp);
 	CLS1_SendNum16s(spdTmp, io_->stdOut);
 	CLS1_SendStr((uchar_t*)" steps/sec\r\n", io_->stdOut);
 
-	CLS1_SendStatusStr((uchar_t*)"   R speed", (uchar_t*)"", io_->stdOut);
+	CLS1_SendStatusStr((uchar_t*)"    right", (uchar_t*)"", io_->stdOut);
 	(void)TACHO_Read_SpdRi(&spdTmp);
 	CLS1_SendNum16s(spdTmp, io_->stdOut);
 	CLS1_SendStr((uchar_t*)" steps/sec\r\n", io_->stdOut);
 
-	CLS1_SendStatusStr((uchar_t*)" pos   ", (uchar_t *)"\r\n", io_->stdOut);
+	CLS1_SendStatusStr((uchar_t*)"  position", (uchar_t *)"\r\n", io_->stdOut);
 
-	CLS1_SendStatusStr((uchar_t*)"   L pos  ", (uchar_t*)"", io_->stdOut);
+	CLS1_SendStatusStr((uchar_t*)"    left", (uchar_t*)"", io_->stdOut);
 	(void)TACHO_Read_PosLe(&posTmp);
 	CLS1_SendNum32s(posTmp, io_->stdOut);
 	CLS1_SendStr((uchar_t*)" steps\r\n", io_->stdOut);
 
-	CLS1_SendStatusStr((uchar_t*)"   R pos  ", (uchar_t*)"", io_->stdOut);
+	CLS1_SendStatusStr((uchar_t*)"    right", (uchar_t*)"", io_->stdOut);
 	(void)TACHO_Read_PosRi(&posTmp);
 	CLS1_SendNum32s(posTmp, io_->stdOut);
 	CLS1_SendStr((uchar_t*)" steps\r\n", io_->stdOut);
 
 
-	CLS1_SendStatusStr((uchar_t*)" filters  #ID", (uchar_t*)"\r\n", io_->stdOut);
+	CLS1_SendStatusStr((uchar_t*)"  filter  #ID", (uchar_t*)"\r\n", io_->stdOut);
 	for(i = 0; i < Get_pFltrTbl()->numFltrs; i++)
 	{
 		if( ( NULL != pFltrTbl ) && ( NULL != pFltrTbl->aFltrs ) )
