@@ -85,7 +85,7 @@ typedef struct DRV_Command_s {
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 static uint8_t GetCmd(void);
 static bool match(int16_t pos, int16_t target);
-static void DRV_ParsePIValToMotor(int32_t PIVal_, bool isLeft_);
+static void Parse_CtrlValToMotor(int32_t ctrlVal_, bool isLeft_);
 
 
 
@@ -152,7 +152,6 @@ static StdRtn_t GetCmd(void) {
 			}
 		#endif
 	}
-
 	return retVal;
 }
 
@@ -164,24 +163,24 @@ static bool match(int16_t pos, int16_t target) {
 	return pos==target;
 #endif
 }
-static void DRV_ParsePIValToMotor(int32_t PIVal_, bool isLeft_)
+static void Parse_CtrlValToMotor(int32_t ctrlVal_, bool isLeft_)
 {
 	MOT_Direction_t direction = MOT_DIR_FORWARD;
 	MOT_MotorDevice_t *motHandle;
-	if (PIVal_ >= 0)
+	if (ctrlVal_ >= 0)
 	{
 		direction = MOT_DIR_FORWARD;
 	}
 	else /* negative, make it positive */
 	{
-		PIVal_ = -PIVal_; /* make positive */
+		ctrlVal_ = -ctrlVal_; /* make positive */
 		direction = MOT_DIR_BACKWARD;
 	}
 	if(TRUE == isLeft_) motHandle = MOT_GetMotorHandle(MOT_MOTOR_LEFT);
 	else				motHandle = MOT_GetMotorHandle(MOT_MOTOR_RIGHT);
 	if(NULL != motHandle)
 	{
-		MOT_SetVal(motHandle, 0xFFFF-PIVal_); /* PWM is low active */
+		MOT_SetVal(motHandle, 0xFFFF-ctrlVal_); /* PWM is low active */
 		MOT_SetDirection(motHandle, direction);
 		MOT_UpdatePercent(motHandle, direction);
 	}
@@ -189,6 +188,7 @@ static void DRV_ParsePIValToMotor(int32_t PIVal_, bool isLeft_)
 	{
 		/* error handling */
 	}
+	return;
 }
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 uint8_t DRV_SetMode(DRV_Mode_t mode) {
@@ -286,9 +286,7 @@ uint8_t DRV_Stop(int32_t timeoutMs) {
 }
 
 bool DRV_IsDrivingBackward(void) {
-	return DRV_Status.mode==DRV_MODE_SPEED
-			&& DRV_Status.speed.left<0
-			&& DRV_Status.speed.right<0;
+	return DRV_Status.mode==DRV_MODE_SPEED 	&& DRV_Status.speed.left<0 	&& DRV_Status.speed.right<0;
 }
 
 
@@ -321,6 +319,7 @@ bool DRV_HasTurned(void) {
 
 void DRV_DeInit(void) {
 	FRTOS1_vQueueDelete(DRV_Queue);
+	return;
 }
 
 void DRV_Init(void) {
@@ -337,6 +336,7 @@ void DRV_Init(void) {
 		for(;;){} /* out of memory? */
 	}
 	FRTOS1_vQueueAddToRegistry(DRV_Queue, "Drive");
+	return;
 }
 
 void DRV_MainFct(void)
@@ -353,11 +353,11 @@ void DRV_MainFct(void)
 	{
 		retVal |= TACHO_Read_SpdLe((int16_t *)&actVal);
 		retVal |= PID(DRV_Status.speed.left, actVal ,DRV_PID_SPEED_LEFT, &PIDVal);
-		DRV_ParsePIValToMotor(PIDVal, TRUE);
+		Parse_CtrlValToMotor(PIDVal, TRUE);
 
 		retVal |= TACHO_Read_SpdRi((int16_t *)&actVal);
 		retVal |= PID(DRV_Status.speed.right, actVal ,DRV_PID_SPEED_RIGHT, &PIDVal);
-		DRV_ParsePIValToMotor(PIDVal, FALSE);
+		Parse_CtrlValToMotor(PIDVal, FALSE);
 	}
 	else if (DRV_Status.mode==DRV_MODE_STOP)
 	{
@@ -365,11 +365,11 @@ void DRV_MainFct(void)
 
 		retVal |= TACHO_Read_SpdLe((int16_t *)&actVal);
 		retVal |= PID(DRV_Status.speed.left, actVal ,DRV_PID_SPEED_LEFT, &PIDVal);
-		DRV_ParsePIValToMotor(PIDVal, TRUE);
+		Parse_CtrlValToMotor(PIDVal, TRUE);
 
 		retVal |= TACHO_Read_SpdRi((int16_t *)&actVal);
 		retVal |= PID(DRV_Status.speed.right, actVal ,DRV_PID_SPEED_RIGHT, &PIDVal);
-		DRV_ParsePIValToMotor(PIDVal, FALSE);
+		Parse_CtrlValToMotor(PIDVal, FALSE);
 	}
 	else if (DRV_Status.mode==DRV_MODE_POS)
 	{
@@ -377,19 +377,18 @@ void DRV_MainFct(void)
 		retVal |= PID(DRV_Status.pos.left, actVal ,DRV_PID_POS_LEFT, &PIDVal);
 		//TODO
 		PIDVal = PIDVal*50;
-		DRV_ParsePIValToMotor(PIDVal, TRUE);
+		Parse_CtrlValToMotor(PIDVal, TRUE);
 
 		retVal |= TACHO_Read_PosRi(&actVal);
 		retVal |= PID(DRV_Status.pos.right, actVal ,DRV_PID_POS_RIGHT, &PIDVal);
 		//TODO
 		PIDVal = PIDVal*50;
-		DRV_ParsePIValToMotor(PIDVal, FALSE);
+		Parse_CtrlValToMotor(PIDVal, FALSE);
 	}
 	else
 	{
 		/* do nothing */
 	}
-
 	return;
 }
 
