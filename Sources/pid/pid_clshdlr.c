@@ -34,9 +34,6 @@
 
 #define PID_ID_PREFIX ('#')
 
-#define CLS_SEND_ERR_TBL \
-	( CLS1_SendStr((uchar_t*)"*** ERROR: Invalid or non existing tracking loop table ***\r\n", io_->stdErr) )
-
 #define CLS_SEND_ERR_ID_NOT_SPECIFIED \
 	( CLS1_SendStr((uchar_t*)"*** ERROR: Invalid argument - #ID not specified ***\r\n", io_->stdErr) )
 
@@ -121,11 +118,11 @@ static StdRtn_t Parse_PidID(const uchar_t *cmd_, const uchar_t **p_, uint8_t *id
 
 static void Print_PidHelp(const CLS1_StdIOType *io_)
 {
-	CLS1_SendHelpStr((uchar_t*)PID_SHORT_STRING, (uchar_t*)"Group of PID commands\r\n", io_->stdOut);
-	CLS1_SendHelpStr((unsigned char*)" [#ID] help|status", (unsigned char*)"Shows PID help or status\r\n", io_->stdOut);
+	CLS1_SendHelpStr((uchar_t*)PID_SHORT_STRING, (uchar_t*)"Group of pid commands\r\n", io_->stdOut);
+	CLS1_SendHelpStr((unsigned char*)" [#ID] help|status", (unsigned char*)"Shows pid help or status\r\n", io_->stdOut);
 	CLS1_SendHelpStr((unsigned char*)"  #ID set (p|i|d) <value>", (unsigned char*)"Sets a new P-, I-, or D-gain value for #ID and saves it to the NVM\r\n", io_->stdOut);
 	CLS1_SendHelpStr((unsigned char*)"  #ID set bp <0...15>", (unsigned char*)"Sets a new binary point for the gains of #ID and saves it to the NVM\r\n", io_->stdOut);
-	CLS1_SendHelpStr((unsigned char*)"  #ID set a-wup <value>", (unsigned char*)"Sets a new anti-windup value for #ID and saves it to the NVM\r\n", io_->stdOut);
+	CLS1_SendHelpStr((unsigned char*)"  #ID set a-wup <value>", (unsigned char*)"Sets a new anti-windup bound for #ID and saves it to the NVM\r\n", io_->stdOut);
 	CLS1_SendHelpStr((unsigned char*)"  #ID restore", (unsigned char*)"Restores default parameters for #ID and saves them to the NVM\r\n", io_->stdOut);
 	CLS1_SendHelpStr((unsigned char*)"  restore all", (unsigned char*)"Restores default parameters for all #IDs and saves them to the NVM\r\n", io_->stdOut);
 }
@@ -157,28 +154,28 @@ static void Print_PidItmStatus(const PID_Gain_t* gain_, const PID_Data_t *data_,
 	buf[0] = '\0';
 	UTIL1_Num8uToStr(buf, sizeof(buf), gain_->nScale);
 	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)"\r\n");
-	CLS1_SendStatusStr("  bin. point", buf, io_->stdOut);
+	CLS1_SendStatusStr("  bin point", buf, io_->stdOut);
 
 	buf[0] = '\0';
 	UTIL1_strcpy(buf, sizeof(buf), (uchar_t*)"0x");
 	UTIL1_strcatNum32Hex(buf, sizeof(buf), gain_->intSatVal);
 	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)"u\r\n");
-	CLS1_SendStatusStr("  a-wup value", buf, io_->stdOut);
+	CLS1_SendStatusStr("  a-wup bound", buf, io_->stdOut);
 
 	buf[0] = '\0';
 	UTIL1_strcatNum32s(buf, sizeof(buf), data_->sat);
 	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)"u\r\n");
-	CLS1_SendStatusStr("  sat. state", buf, io_->stdOut);
+	CLS1_SendStatusStr("  sat state", buf, io_->stdOut);
 
 	buf[0] = '\0';
 	UTIL1_Num32sToStr(buf, sizeof(buf), data_->intVal);
 	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)"\r\n");
-	CLS1_SendStatusStr("  int. value", buf, io_->stdOut);
+	CLS1_SendStatusStr("  int value", buf, io_->stdOut);
 
 	buf[0] = '\0';
 	UTIL1_Num32sToStr(buf, sizeof(buf), data_->prevErr);
 	UTIL1_strcat(buf, sizeof(buf), (uchar_t*)"\r\n");
-	CLS1_SendStatusStr("  err. value", buf, io_->stdOut);
+	CLS1_SendStatusStr("  ctrl error", buf, io_->stdOut);
 
 	return;
 }
@@ -214,7 +211,7 @@ static void Print_PidStatus(uint8_t id_, const CLS1_StdIOType *io_)
 	}
 	else
 	{
-		CLS_SEND_ERR_TBL;
+		CLS1_SendStr((uchar_t*)"*** ERROR: Invalid or non existing tracking loop table ***\r\n", io_->stdErr);
 	}
 }
 

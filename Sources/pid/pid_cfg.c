@@ -19,6 +19,7 @@
 // - rework scaling of gains from decimal point to binary point
 // - Add #ID in error message in cls handler
 // - Implement PID for ramps/trajectories
+// - Move strings to parent component DRV
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "pid_cfg.h"
