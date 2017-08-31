@@ -17,6 +17,9 @@
 
 #define MASTER_tacho_cfg_C_
 
+// TODO
+// - TEST: Move TACHO to a separate task and run it faster than DRV
+
 /*======================================= >> #INCLUDES << ========================================*/
 #include "tacho_cfg.h"
 

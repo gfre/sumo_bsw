@@ -15,6 +15,11 @@
 
 #define MASTER_pid_cfg_C_
 
+// TODO
+// - rework scaling of gains from decimal point to binary point
+// - Add #ID in error message in cls handler
+// - Implement PID for ramps/trajectories
+
 /*======================================= >> #INCLUDES << ========================================*/
 #include "pid_cfg.h"
 #include "pid_api.h"

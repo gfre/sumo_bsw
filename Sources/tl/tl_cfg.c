@@ -37,8 +37,10 @@
 
 //TODO
 // - decouple sample time from calling task period and runtime calls
-// - Move strings to parent component
-// - Connect PID gain setting to NVM
+// - Move strings to parent component TACHO
+// - Connect PID gain cfg to NVM
+// - Adapt cls handler similar to handler of PID
+
 /*======================================= >> #INCLUDES << ========================================*/
 #include "tl_cfg.h"
 
