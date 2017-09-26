@@ -61,10 +61,13 @@ StdRtn_t PIDext(int32_t setVal_, int32_t actVal_, const PID_Gain_t *gain_, PID_D
 		err = setVal_ - actVal_;
 
 		/* Integration part and anti windup part */
-		if ( (err > -10) && (err < 10) )  /* avoid jitter around zero */
-		{
-			err = 0;
-		}
+
+/*	if this is in code, then Tracking loop behaves awkward!
+ * if ( (err > -10) && (err < 10) )
+ *		{
+ *			err = 0;
+ *		}
+ */
 
 		if( ( (data_->sat <= PID_NEG_SAT)  && (err < 0) ) || ( (data_->sat >= PID_POS_SAT) && (err > 0) ) )
 		{
