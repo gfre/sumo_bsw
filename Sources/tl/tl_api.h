@@ -45,7 +45,7 @@ typedef struct TL_vReadVal_s{
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 /**
  *
- * @param sig_
+ * @param pVal_
  * @param idx_
  * @return
  */
@@ -53,7 +53,7 @@ EXTERNAL_ StdRtn_t TL_Read_i32FltrdVal(int32_t* pVal_, uint8_t idx_);
 
 /**
  *
- * @param sig_
+ * @param pVal_
  * @param idx_
  * @return
  */
