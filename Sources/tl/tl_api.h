@@ -1,7 +1,7 @@
 /***********************************************************************************************//**
  * @file		tl.h
  * @ingroup		tl
- * @brief 		tracking loop filter
+ * @brief 		Tracking loop filter
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @author 	S. Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel

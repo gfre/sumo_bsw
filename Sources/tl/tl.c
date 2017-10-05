@@ -1,9 +1,20 @@
 /***********************************************************************************************//**
  * @file		tl.c
  * @ingroup		tl
- * @brief 		<This is a brief description.>
+ * @brief 		Implementation of a tracking loop filter algorithm
  *
- * <This is a detailed description.>
+ * This component implements an estimation algorithm for two states X1 and X2. For this it must be
+ * assumed that X1 is measured and the two states are modelled by a simple integrator according to
+ * d/dt (X1) = X2. Moreover, the algorithm implements a PI controller which drives the error between
+ * the measured value X1_meas and its estimation X1_est to zero. Therefore X1_est is considered as
+ * the output of the plant and X1_meas as the reference signal. The PI controller calculates a control
+ * value which represents an estimation of for X2.
+ *
+ *   X1_meas					   X2_est				  X1_est
+ * ----->(+)---->[PI-Controller]----------->[Integrator]----------
+ * 		  ^(-)												     '
+ * 	      '			  										     '
+ *		  '------------------------------------------------------'
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @author 	S. Helling stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
@@ -27,17 +38,17 @@
 
 /*======================================= >> #DEFINES << =========================================*/
 /*
- *
+ * Macro for abstraction of the function which calculates the filtered signal
  */
 #define TL_CALC_FILTERED_SIGNAL( measVal_, fltrdVal_, pPidGain_, pPidData_, pCtrlVal_ )  \
 	( PIDext( measVal_,  fltrdVal_, pPidGain_, pPidData_, pCtrlVal_) )
 /*
- *
+ * Macro to scale a value down
  */
 #define TL_DOWNSACLE(val_) ( (val_)/(1000) )
 
 /*
- *
+ * Macro to scale a value up
  */
 #define TL_UPSACLE(val_) ( (val_)*(1000) )
 
@@ -48,7 +59,7 @@
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-static inline void TL_Reset(TL_Itm_t *tl_);
+static void TL_Reset(TL_Itm_t *tl_);
 
 
 
@@ -58,7 +69,7 @@ TL_ItmTbl_t* pTbl = NULL;
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-static inline void TL_Reset(TL_Itm_t *tl_)
+static void TL_Reset(TL_Itm_t *tl_)
 {
 	if( NULL != tl_ )
 	{

@@ -1,9 +1,7 @@
 /***********************************************************************************************//**
  * @file		tl.h
  * @ingroup		tl
- * @brief 		Implements a tracking loop filter to estimate velocity
- *
-
+ * @brief 		Interface of the SWC @ref tl for initialisation- and runtime-calls.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @author 	S. Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel

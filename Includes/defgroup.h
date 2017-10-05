@@ -341,6 +341,18 @@
  * @defgroup	tl Tracking loop filter
  * @brief		Tracking loop filter
  *
+ * This component implements an estimation algorithm for two states X1 and X2. For this it must be
+ * assumed that X1 is measured and the two states are modelled by a simple integrator according to
+ * d/dt (X1) = X2. Moreover, the algorithm implements a PI controller which drives the error between
+ * the measured value X1_meas and its estimation X1_est to zero. Therefore X1_est is considered as
+ * the output of the plant and X1_meas as the reference signal. The PI controller calculates a control
+ * value which represents an estimation of for X2.
+ *
+ *   X1_meas					   X2_est				  X1_est
+ * ----->(+)---->[PI-Controller]----------->[Integrator]----------
+ * 		  ^(-)												     '
+ * 	      '			  										     '
+ *		  '------------------------------------------------------'
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	05.10.2017
