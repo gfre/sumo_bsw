@@ -1,6 +1,6 @@
 /***********************************************************************************************//**
- * @file		tacho_cfg.h
- * @ingroup		tacho
+ * @file		tl_cfg.h
+ * @ingroup		tl
  * @brief 		<This is a brief description.>
  *
  * <This is a detailed description.>

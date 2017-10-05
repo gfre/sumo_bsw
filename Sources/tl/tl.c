@@ -1,14 +1,15 @@
 /***********************************************************************************************//**
  * @file		tl.c
- * @ingroup		<group label>
+ * @ingroup		tl
  * @brief 		<This is a brief description.>
  *
  * <This is a detailed description.>
  *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @author 	S. Helling stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	11.08.2017
  *
- * @copyright @<LGPL2_1>
+ * @copyright @LGPL2_1
  *
  ***************************************************************************************************/
 
@@ -19,28 +20,25 @@
 #include "tl_cfg.h"
 #include "tl_api.h"
 
+/* Application APIs */
 #include "pid_api.h"
 
 
 
-
 /*======================================= >> #DEFINES << =========================================*/
-/**
+/*
  *
- * @param tl_
  */
 #define TL_CALC_FILTERED_SIGNAL( measVal_, fltrdVal_, pPidGain_, pPidData_, pCtrlVal_ )  \
 	( PIDext( measVal_,  fltrdVal_, pPidGain_, pPidData_, pCtrlVal_) )
-
-/**
+/*
  *
- * @param tl_
  */
 #define TL_DOWNSACLE(val_) ( (val_)/(1000) )
- /**
-  *
-  * @param tl_
-  */
+
+/*
+ *
+ */
 #define TL_UPSACLE(val_) ( (val_)*(1000) )
 
 

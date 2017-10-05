@@ -3,8 +3,9 @@
  * @ingroup		tl
  * @brief 		tracking loop filter
  *
- * @author 		S. Helling, stu112498@tf.uni-kiel.de
- * @date		11.08.17
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	S. Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date	11.08.17
  *
  * @note Interface for BSW-specific use only
  *

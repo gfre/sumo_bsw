@@ -8,6 +8,7 @@
  * changing TL PID controller parameters, or restoring them from NVM via command line shell (@b CLS).
  * The changed parameters are immediately saved to the @ref nvm.
  *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @author 	S. Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	18.08.2017
  *  
@@ -46,11 +47,11 @@
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 /**
  * @brief Shell command line parser.
- * @param cmd Pointer to command string
- * @param handled If command is handled by the parser
- * @param io Std I/O handler of shell
+ * @param cmd_ Pointer to command string
+ * @param handled_ If command is handled by the parser
+ * @param io_ Std I/O handler of shell
  */
-EXTERNAL_ uint8_t TL_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
+EXTERNAL_ uint8_t  TL_ParseCommand(const unsigned char *cmd_, bool *handled_, const CLS1_StdIOType *io_);
 
 
 

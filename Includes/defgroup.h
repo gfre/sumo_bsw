@@ -334,3 +334,16 @@
  *
  * @copyright	@LGPL2_1
  */
+
+
+
+/**
+ * @defgroup	tl Tracking loop filter
+ * @brief		Tracking loop filter
+ *
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	05.10.2017
+ *
+ * @copyright	@LGPL2_1
+ */

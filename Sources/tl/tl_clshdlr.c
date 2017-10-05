@@ -8,8 +8,8 @@
  * changing PID controller parameters for the Tracking loop, or restoring them from NVM via command line shell (@b CLS).
  * The changed parameters are immediately saved to the @ref nvm.
  *
- * @author 	S. Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	S. Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	18.08.2017
  *  
  * @copyright @LGPL2_1
@@ -328,7 +328,7 @@ static uint8_t Parse_TLParam(PID_Gain_t* itm_, const uchar_t *cmd_, bool *handle
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-uint8_t TL_ParseCommand(const uchar_t *cmd_, bool *handled_, const CLS1_StdIOType *io_)
+uint8_t TL_ParseCommand(const unsigned char *cmd_, bool *handled_, const CLS1_StdIOType *io_)
 {
 	uint8_t res = ERR_OK;
 	uint8_t tlID = 0u;
