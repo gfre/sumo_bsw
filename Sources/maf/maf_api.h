@@ -31,10 +31,7 @@
  * @{
  */
 /*======================================= >> #DEFINES << =========================================*/
-/**
- * String identification of the SWC @ref maf
- */
-#define MAF_SWC_STRING ("moving average filter")
+
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/

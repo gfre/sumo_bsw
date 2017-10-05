@@ -25,6 +25,10 @@
 #endif
 
 /*======================================= >> #DEFINES << =========================================*/
+/**
+ * String identification of the SWC @ref kf
+ */
+#define KF_SWC_STRING	("kalman filter")
 
 
 
