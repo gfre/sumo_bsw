@@ -37,7 +37,6 @@
 
 //TODO
 // - decouple sample time from calling task period and runtime calls
-// - Move strings to parent component TACHO
 // - Connect PID gain cfg to NVM
 // - Adapt cls handler similar to handler of PID
 
@@ -50,14 +49,19 @@
 
 
 /*======================================= >> #DEFINES << =========================================*/
-#define TL_TACHO_LEFT_STRING		("TACHO Left")
-
-#define TL_TACHO_RIGHT_STRING		("TACHO Right")
-
+/**
+ * Default saturation value for the underlying PID controller
+ */
 #define TL_DFLT_PID_SATURATION_VALUE	(0xFFFFu)
 
+/**
+ * Initialisation of runtime data
+ */
 #define TL_DFLT_DATA_INIT  				{0}
 
+/**
+ * Default D-gain for the PID controller must be zero for PI control only
+ */
 #define TL_DFLT_D_GAIN					(0x0u)
 
 
@@ -73,10 +77,10 @@
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 static TL_Itm_t items[] =
 {
-		{	{TL_TACHO_LEFT_STRING,  TACHO_SAMPLE_PERIOD_MS, {3500u, 25u, TL_DFLT_D_GAIN, 100u, TL_DFLT_PID_SATURATION_VALUE},
+		{	{TACHO_OBJECT_STRING(TACHO_ID_LEFT),  TACHO_SAMPLE_PERIOD_MS, {3500u, 25u, TL_DFLT_D_GAIN, 100u, TL_DFLT_PID_SATURATION_VALUE},
 			TACHO_Read_PosLe},  TL_DFLT_DATA_INIT
 		},
-		{ 	{TL_TACHO_RIGHT_STRING, TACHO_SAMPLE_PERIOD_MS, {3500u, 25u, TL_DFLT_D_GAIN, 100u, TL_DFLT_PID_SATURATION_VALUE},
+		{ 	{TACHO_OBJECT_STRING(TACHO_ID_RIGHT), TACHO_SAMPLE_PERIOD_MS, {3500u, 25u, TL_DFLT_D_GAIN, 100u, TL_DFLT_PID_SATURATION_VALUE},
 			TACHO_Read_PosRi}, TL_DFLT_DATA_INIT
 		},
 };

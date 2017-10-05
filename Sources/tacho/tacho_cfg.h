@@ -17,7 +17,8 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "Platform.h"
-#include "tacho_api.h"
+#include "ACon_Types.h"
+
 
 
 #ifdef MASTER_tacho_cfg_C_

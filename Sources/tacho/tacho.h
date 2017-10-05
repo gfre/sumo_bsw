@@ -34,6 +34,10 @@
  * @{
  */
 /*======================================= >> #DEFINES << =========================================*/
+/**
+ * String identification of the SWC @ref tacho
+ */
+#define TACHO_SWC_STRING ("tacho")
 
 
 

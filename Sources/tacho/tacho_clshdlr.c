@@ -20,8 +20,8 @@
 /*======================================= >> #INCLUDES << ========================================*/
 #include "tacho_clshdlr.h"
 #include "tacho_cfg.h"
-
-
+#include "tacho_api.h"
+#include "tacho.h"
 
 /*======================================= >> #DEFINES << =========================================*/
 
@@ -120,7 +120,7 @@ static void Print_TachoStatus(const CLS1_StdIOType *io_)
 static void Print_TachoHelp(const CLS1_StdIOType *io_)
 {
 	uint8_t i = 0u;
-	CLS1_SendHelpStr((uchar_t*)"TACHO", (uchar_t*)"Group of tacho commands\r\n", io_->stdOut);
+	CLS1_SendHelpStr((uchar_t*)TACHO_SWC_STRING, (uchar_t*)"Group of tacho commands\r\n", io_->stdOut);
 	CLS1_SendHelpStr((uchar_t*)"  help|status", (uchar_t*)"Shows tacho help or status\r\n", io_->stdOut);
 	CLS1_SendHelpStr((uchar_t*)"  set filter #ID", (uchar_t*)"Set filter type by #ID for speed determination\r\n", io_->stdOut);
 }

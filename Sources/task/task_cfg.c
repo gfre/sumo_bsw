@@ -19,7 +19,6 @@
 /*======================================= >> #INCLUDES << ========================================*/
 #include "task_cfg.h"
 #include "tacho.h"
-#include "tacho_api.h"
 #include "appl.h"
 #include "sh.h"
 #include "rnet.h"

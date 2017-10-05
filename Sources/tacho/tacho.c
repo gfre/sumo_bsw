@@ -38,13 +38,6 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-typedef enum TACHO_ID_e
-{
-	 TACHO_ID_LEFT = 0
-	,TACHO_ID_RIGHT
-	,TACHO_ID_CNT
-} TACHO_ID_t;
-
 typedef struct TACHO_Data_s
 {
 	TACHO_FltrItm_t *pActFltr;

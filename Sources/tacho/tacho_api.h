@@ -34,10 +34,7 @@
  * @{
  */
 /*======================================= >> #DEFINES << =========================================*/
-/**
- * String identification of the SWC @ref tacho
- */
-#define TACHO_SWC_STRING ("tacho")
+#define TACHO_OBJECT_STRING( _id )		( _id == TACHO_ID_LEFT ? ("tacho left") : (_id == TACHO_ID_RIGHT ? ("tacho right") : ("") ) )
 
 /**
  *  Speed sample period in ms. Make sure that speed is sampled at the given rate.
@@ -57,7 +54,12 @@
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-
+typedef enum TACHO_ID_e
+{
+	 TACHO_ID_LEFT = 0
+	,TACHO_ID_RIGHT
+	,TACHO_ID_CNT
+} TACHO_ID_t;
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
