@@ -44,7 +44,7 @@
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 /**
- * @brief Init function of the software component 'application'
+ * @brief Init function of the software component @ref appl
  *
  * Initialises the state machine which handles the application software
  */
@@ -52,7 +52,7 @@ EXTERNAL_ void APPL_Init(void);
 
 
 /**
- * @brief Main function of the software component 'state'
+ * @brief Main function of the software component @ref appl
  *
  * Runs the state machine of the main state
  */

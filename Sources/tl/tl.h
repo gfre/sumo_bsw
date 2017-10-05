@@ -44,21 +44,27 @@
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 /**
+ * @brief Initialisation function of the software component @ref tl
  *
+ * This function initialises the configured objects of the software component
  */
 EXTERNAL_ void TL_Init(void);
 
 
 
 /**
+ * @brief Main function of the software component  @ref tl
  *
+ *  This function runs the implementation of the tracking loop.
  */
 EXTERNAL_ void TL_Main(void);
 
 
 
 /**
+ * @brief De-Initialisation function of the software component @ref tl
  *
+ * This function de-initialises the configured objects of the software component
  */
 EXTERNAL_ void TL_DeInit(void);
 

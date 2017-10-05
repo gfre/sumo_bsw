@@ -61,6 +61,9 @@ void TACHO_Deinit(void);
  */
 void TACHO_Init(void);
 
+/**
+ *
+ */
 void TACHO_Main(void);
 
 
