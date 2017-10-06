@@ -4,9 +4,8 @@
  * @brief 		Implementation of the command line shell handler for the SWC @a TL
  *
  * This module implements the interface of the SWC @ref tl which is addressed to
- * the SWC @ref sh. It introduces application specific commands for requests of status information,
- * changing PID controller parameters for the Tracking loop, or restoring them from NVM via command line shell (@b CLS).
- * The changed parameters are immediately saved to the @ref nvm.
+ * the SWC @ref sh. It introduces application specific commands for requests of status and help
+ * information.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @author 	S. Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
