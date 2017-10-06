@@ -1,9 +1,11 @@
 /***********************************************************************************************//**
  * @file		tl_cfg.h
  * @ingroup		tl
- * @brief 		<This is a brief description.>
+ * @brief 		SWC-internal configuration interface of the SWC @a tl
  *
- * <This is a detailed description.>
+ * This header file provides an internal interface within the software component SWC @ref tl
+ * for the configuration of tracking loop filters, which implements an estimation algorithm
+ * for dynamical system with two states.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	13.06.2017

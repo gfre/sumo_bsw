@@ -3,27 +3,9 @@
  * @ingroup		tl
  * @brief 		Filter component to estimate system state using a PI tracking loop
  *
- *This component can estimate states from a system of the form
- *	d/dt (X1) = X2
- *with given measurements of the state X1 (see diagram below). The estimate X1_hat is given by integrating
- *the estimate X2_hat. Afterward X1_hat is fed back to a PI controller that is driven by the error
- *between X1 (measurement) and X1_hat. By regulating the error to zero, X1_hat approaches X1 and thus X2_hat
- *must approach X2.
- *The open loop is approximated in the Laplace domain by
- *	l(s) = g_PI(s) * 1/s = KP/s + KI/s^2
- *and thus
- *	t_{X1, X1_hat}(s) = X1_hat(s)/X1(s) = l(s)/(1+l(s)) = (KP/KI * s + 1) / (1/KI * s^2 + KP/KI * s + 1),
- *which is a 2nd order low pass filter and thus has no offset to neither a step nor to a ramp
- *input signal.
- *
- *   X1 						   X2_hat				  X1_hat
- * ----->(+)---->[PI-Controller]----------->[Integrator]----------
- * 		  ^(-)												     '
- * 	      '			  										     '
- *		  '------------------------------------------------------'
- *
- *Note that 'KP' and 'KI' can be evaluated using e.g. MATLABs control system toolbox. KI must be adjusted
- *by multiplying the sampling time 'Ta' on to it to work in the expected (simulated) manner.
+ * This file implements the configuration of tracking loop filters, which which implements an
+ * estimation algorithm for dynamical system with two states and an internal interface for the
+ * tracking loop configuration.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @author 	S. Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
