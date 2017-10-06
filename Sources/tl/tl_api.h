@@ -1,7 +1,10 @@
 /***********************************************************************************************//**
  * @file		tl.h
  * @ingroup		tl
- * @brief 		Tracking loop filter
+ * @brief 		API of the SWC @a tl
+ *
+ * This API provides a BSW-internal interface of the SWC @ref tl. It is supposed to be
+ * available to all other Basic Software Components.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @author 	S. Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
