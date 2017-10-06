@@ -4,9 +4,7 @@
  * @brief		Interface for the command line shell handler of the SWC @a TL
  *
  * This header files provides the interface from the SWC @ref tl to the SWC @ref sh.
- * It introduces application specific commands for requests of status information,
- * changing TL PID controller parameters, or restoring them from NVM via command line shell (@b CLS).
- * The changed parameters are immediately saved to the @ref nvm.
+ * It introduces application specific commands for requests of status and help information.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @author 	S. Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
