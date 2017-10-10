@@ -53,9 +53,9 @@ static RAPP_RxMsg_CbFct *rteRxMsgCbFct = NULL;
 
 static const RAPP_MsgHandler handlerTable[] =
 {
-  RNET_HandleDataRxMessage,
-  RNET_HdlRTERxMsgCbFct,
-  NULL /* sentinel */
+		RNET_HdlRTERxMsgCbFct,
+		RNET_HandleDataRxMessage,
+		NULL /* sentinel */
 };
 
 
