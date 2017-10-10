@@ -106,7 +106,7 @@ static void PrintGoodByeMsg(const CLS1_StdIOType *io_)
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-void SH_Init(void)
+void SH_Init(const void *pvPar_)
 {
 	uint8 i = 0u;
 

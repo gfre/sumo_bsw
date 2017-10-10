@@ -72,8 +72,9 @@ typedef void (TASK_MainFct_t)(void);
 
 /**
  * @brief Data type definition of an initialisation function of a basic software component
+ * @param
  */
-typedef void (TASK_InitFct_t)(void);
+typedef void (TASK_InitFct_t)(const void *);
 
 /**
  * @typedef TASK_SwcCfg_t

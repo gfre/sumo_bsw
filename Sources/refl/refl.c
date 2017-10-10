@@ -705,7 +705,7 @@ void REFL_Give_Smphr4CalibStartStop(void)
 	}
 }
 
-void REFL_Init(void)
+void REFL_Init(const void *pvPar_)
 {
 	cfgData.pCfg = Get_pReflCfg();
 

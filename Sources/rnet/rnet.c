@@ -125,7 +125,7 @@ static void RNET_RadioPowerUp(void) {
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-void RNET_Init(void) {
+void RNET_Init(const void *pvPar_) {
   RNET1_Init(); /* initialize stack */
   if (RAPP_SetMessageHandlerTable(handlerTable)!=ERR_OK)
   {

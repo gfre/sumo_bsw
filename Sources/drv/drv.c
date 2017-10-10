@@ -322,7 +322,7 @@ void DRV_DeInit(void) {
 	return;
 }
 
-void DRV_Init(void) {
+void DRV_Init(const void *pvPar_) {
 	MOT_Init();
 
 	DRV_Status.mode = DRV_MODE_NONE;

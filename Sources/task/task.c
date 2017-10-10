@@ -143,9 +143,9 @@ void TASK_PerdTaskFct(void * pvParameters_)
 	{
 		for(i = 0u; i < pvPar->numSwc; i++)
 		{
-			if(NULL != pvPar->swcCfg[i].initFct)
+			if( NULL != pvPar->swcCfg[i].initFct )
 			{
-				pvPar->swcCfg[i].initFct();
+				pvPar->swcCfg[i].initFct((const void *)&pvPar->taskPeriod);
 			}
 		}
 	}
@@ -185,9 +185,9 @@ void TASK_NonPerdTaskFct(void *pvParameters_)
 	{
 		for(i = 0u; i < pvPar->numSwc; i++)
 		{
-			if(NULL != pvPar->swcCfg[i].initFct)
+			if( NULL != pvPar->swcCfg[i].initFct )
 			{
-				pvPar->swcCfg[i].initFct();
+				pvPar->swcCfg[i].initFct((const void *)&pvPar->taskDelay);
 			}
 		}
 	}

@@ -43,7 +43,7 @@
 /**
  * @brief Driver initialisation
  */
-EXTERNAL_ void REFL_Init(void);
+EXTERNAL_ void REFL_Init(const void *pvPar_);
 
 /**
  * @brief Main function of the SWC @ref refl

@@ -47,8 +47,8 @@
 #define DRV_TASKFCT			(TASK_PerdTaskFct)
 
 /* Task functions for non-periodic tasks */
-#define  DBG_TASKFCT		(TASK_NonPerdTaskFct)
-#define	 REFL_TASKFCT		(TASK_NonPerdTaskFct)
+#define DBG_TASKFCT			(TASK_NonPerdTaskFct)
+#define	REFL_TASKFCT		(TASK_NonPerdTaskFct)
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/

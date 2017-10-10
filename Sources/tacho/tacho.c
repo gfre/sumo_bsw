@@ -169,7 +169,7 @@ void TACHO_Sample(void) {
 }
 
 
-void TACHO_Init(void)
+void TACHO_Init(const void *pvPar_)
 {
 	TACHO_FltrItmTbl_t *pFltrTbl = NULL;
 

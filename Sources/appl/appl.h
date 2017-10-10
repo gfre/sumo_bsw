@@ -48,7 +48,7 @@
  *
  * Initialises the state machine which handles the application software
  */
-EXTERNAL_ void APPL_Init(void);
+EXTERNAL_ void APPL_Init(const void *pvPar_);
 
 
 /**

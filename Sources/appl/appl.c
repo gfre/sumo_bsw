@@ -326,7 +326,7 @@ static StdRtn_t enterDEBUG(void)
 {
 	StdRtn_t retVal = ERR_OK;
 
-	SH_Init();
+	SH_Init(NULL);
 	FRTOS1_vTaskResume((TaskHandle_t)dbgTaskHdl);
 	retVal |= RTE_Write_BuzPlayTune(BUZ_TUNE_ACCEPT);
 	retVal |= IND_Flash_LED1WithPerMS(DEBUG_IND_FLASH_PERIOD);
@@ -436,7 +436,7 @@ StdRtn_t Set_ReleaseExit(const APPL_State_t state_)
 	return Set_HoldOnMask(&releaseExit, state_,TRUE);
 }
 
-void APPL_Init(void)
+void APPL_Init(const void *pvPar_)
 {
 	sm.state = APPL_STATE_STARTUP;
 	sm.cmd = APPL_Cmd_Enter;

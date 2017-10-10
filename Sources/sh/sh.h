@@ -47,7 +47,7 @@
 /**
  * @brief Shell initialization
  */
-EXTERNAL_ void SH_Init(void);
+EXTERNAL_ void SH_Init(const void *pvPar_);
 
 /**
  * @brief Shell main function

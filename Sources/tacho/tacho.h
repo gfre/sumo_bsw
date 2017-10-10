@@ -59,7 +59,7 @@ void TACHO_Deinit(void);
 /**
  * @brief Initialization of the module
  */
-void TACHO_Init(void);
+void TACHO_Init(const void *pvPar_);
 
 /**
  *
