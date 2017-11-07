@@ -42,7 +42,6 @@
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-static StdRtn_t KF_Read_i16EstdVal(int16_t *pVal_, uint8_t idx_);
 static StdRtn_t MAF_Read_i16FltrdVal(int16_t *pVal_, uint8_t idx_);
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
@@ -64,24 +63,6 @@ static TACHO_FltrItmTbl_t ftlrTbl =
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 // TODO Workaround - Read API needs to be provided from KF and MAF
-StdRtn_t KF_Read_i16EstdVal(int16_t *pVal_, uint8_t idx_)
-{
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if( NULL != pVal_)
-	{
-		if(0 == idx_)
-		{
-			*pVal_ = KF_Get_Speed(TRUE);
-		}
-		else
-		{
-			*pVal_ = KF_Get_Speed(FALSE);
-		}
-		retVal = ERR_OK;
-	}
-	return retVal;
-}
-
 StdRtn_t MAF_Read_i16FltrdVal(int16_t *pVal_, uint8_t idx_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;

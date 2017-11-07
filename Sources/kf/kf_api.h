@@ -45,7 +45,7 @@
  * @param isLeft TRUE for left speed, FALSE for right speed.
  * @return Actual speed value
  */
-EXTERNAL_ int32_t KF_Get_Speed(bool isLeft_);
+EXTERNAL_ StdRtn_t KF_Read_i16EstdVal(int16_t *pVal_, const uint8_t idx_);
 
 EXTERNAL_ int32_t KF_GetPosition(bool isLeft_);
 
