@@ -62,9 +62,9 @@
  *  Defines system dimension 'n' and if system is SISO ('m'=1, 'l'=1), SIMO ('m'>1, 'l'=1),
  *  MISO ('m'=1, 'l'>1), MIMO ('m'>1, 'l'>1) or autonomous ('m'=__, 'l'=0)
  */
-#define KF_NOF_STS (2)
-#define KF_NOF_MSRD_STS (2)
-#define KF_NOF_INPTS (0)
+#define KF_NOF_STS (2) 		/* 'n' */
+#define KF_NOF_MSRD_STS (2) /* 'm' */
+#define KF_NOF_INPTS (0) 	/* 'l' */
 
 /**
  * Defines the maximum modulo value for measured values
@@ -104,21 +104,32 @@ static int32_t CT[2][2] = MTX_INIT_IDENT;
 static int32_t R[2][2]  = MTX_INIT_R(3, 0, 0, 20000);
 static int32_t Q[2][2]  = MTX_INIT_Q(10, 0, 0, 2500);
 
-/**
- *
- */
-static KF_MtxCfg_t mtxCfgLe = {{A[0], 2, 2}, {AT[0], 2, 2}, {B[0], 2, 2}, {C[0], 2, 2}, {CT[0], 2, 2}, {R[0], 2, 2}, {Q[0], 2, 2}};
-static KF_SclCfg_t sclCfgLe = {KF_DFLT_SCL_A, KF_DFLT_SCL_ERR, KF_DFLT_SCL_X, KF_MAX_POS_VAL};
-static KF_DimCfg_t dimCfgLe = {KF_NOF_INPTS, KF_NOF_MSRD_STS};
-static KF_ReadFct_t KF_MeasValFctHdlsLe[KF_NOF_MSRD_STS] = {TACHO_Read_PosLe, KF_Read_Rawi32SpdLe};
+static int32_t vPrvStEstLe[2][1]    = {0};
+static int32_t mPrvErrCoVarLe[2][2] = {0};
+
+static int32_t vPrvStEstRi[2][1]    = {0};
+static int32_t mPrvErrCoVarRi[2][2] = {0};
 
 /**
  *
  */
-static KF_MtxCfg_t mtxCfgRi = {{A[0], 2, 2}, {AT[0], 2, 2}, {B[0], 2, 2}, {C[0], 2, 2}, {CT[0], 2, 2}, {R[0], 2, 2}, {Q[0], 2, 2}};
-static KF_SclCfg_t sclCfgRi = {KF_DFLT_SCL_A, KF_DFLT_SCL_ERR, KF_DFLT_SCL_X, KF_MAX_POS_VAL};
+static KF_MtxCfg_t mtxCfgLe = {{A[0], 2, 2}, {AT[0], 2, 2}, {B[0], 2, 2}, {C[0], 2, 2}, {CT[0], 2, 2},
+							   {R[0], 2, 2}, { Q[0], 2, 2}};
+static KF_SclCfg_t sclCfgLe = {KF_DFLT_SCL_A, KF_DFLT_SCL_ERR, KF_DFLT_SCL_X, KF_DFLT_MAX_MOD_VAL};
+static KF_DimCfg_t dimCfgLe = {KF_NOF_INPTS, KF_NOF_MSRD_STS};
+static KF_ReadFct_t KF_MeasValFctHdlsLe[KF_NOF_MSRD_STS] = {TACHO_Read_PosLe, KF_Read_Rawi32SpdLe};
+static KF_Data_t dataLe = { {vPrvStEstLe[0], 2, 1}, {mPrvErrCoVarLe[0], 2, 2}, 0 };
+
+/**
+ *
+ */
+static KF_MtxCfg_t mtxCfgRi = {{A[0], 2, 2}, {AT[0], 2, 2}, {B[0], 2, 2}, {C[0], 2, 2}, {CT[0], 2, 2},
+							   {R[0], 2, 2}, { Q[0], 2, 2}};
+static KF_SclCfg_t sclCfgRi = {KF_DFLT_SCL_A, KF_DFLT_SCL_ERR, KF_DFLT_SCL_X, KF_DFLT_MAX_MOD_VAL};
 static KF_DimCfg_t dimCfgRi = {KF_NOF_INPTS, KF_NOF_MSRD_STS};
 static KF_ReadFct_t KF_MeasValFctHdlsRi[KF_NOF_MSRD_STS] = {TACHO_Read_PosRi, KF_Read_Rawi32SpdRi};
+static KF_Data_t dataRi = { {vPrvStEstRi[0], 2, 1}, {mPrvErrCoVarRi[0], 2, 2}, 0 };
+
 
 /**
  *
@@ -149,6 +160,10 @@ static KF_ItmTbl_t KF_ItemTable =
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 KF_ItmTbl_t *Get_pKfItmTbl(void) {return &KF_ItemTable;}
 
+
+/**
+ * wrapper function definitions
+ */
 StdRtn_t KF_Read_Rawi32SpdLe(int32_t *spd_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
