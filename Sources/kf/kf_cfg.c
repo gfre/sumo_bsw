@@ -66,7 +66,7 @@
 
 
 /**
- *	macros to initialize matrices careful with 'A' and 'AT' (division with '1000')
+ *	macros to initialize matrices. careful with 'A' and 'AT' (division with '1000')
  */
 #define MTX_INIT_IDENT {{1, 0}, {0, 1}}
 #define MTX_INIT_A(a11_, a12_, a21_, a22_) {{a11_<<KF_DFLT_SCL_A, (a12_<<KF_DFLT_SCL_A)/1000}, {a21_<<KF_DFLT_SCL_A, a22_<<KF_DFLT_SCL_A}}
@@ -96,9 +96,11 @@ static int32_t Q[2][2]  = MTX_INIT_Q(10, 0, 0, 2500);
  *  runtime data matrices
  */
 static int32_t vPrvStEstLe[2][1]    = {0};
+static int32_t vOptStEstLe[2][1]    = {0};
 static int32_t mPrvErrCoVarLe[2][2] = {0};
 
 static int32_t vPrvStEstRi[2][1]    = {0};
+static int32_t vOptStEstRi[2][1]    = {0};
 static int32_t mPrvErrCoVarRi[2][2] = {0};
 
 /**
@@ -109,7 +111,7 @@ static KF_MtxCfg_t mtxCfgLe = {{A[0], 2, 2}, {AT[0], 2, 2}, {B[0], 2, 2}, {C[0],
 static KF_SclCfg_t sclCfgLe = {KF_DFLT_SCL_A, KF_DFLT_SCL_ERR, KF_DFLT_SCL_X, KF_DFLT_MAX_MOD_VAL};
 static KF_DimCfg_t dimCfgLe = {0, 2};
 static KF_ReadFct_t KF_MeasValFctHdlsLe[2] = {TACHO_Read_PosLe, KF_Read_Rawi32SpdLe};
-static KF_Data_t dataLe = { {vPrvStEstLe[0], 2, 1}, {mPrvErrCoVarLe[0], 2, 2}, 0 };
+static KF_Data_t dataLe = { {vPrvStEstLe[0], 2, 1}, {vOptStEstLe[0], 2, 1}, {mPrvErrCoVarLe[0], 2, 2}, 0 };
 
 /**
  * tacho right
@@ -119,7 +121,7 @@ static KF_MtxCfg_t mtxCfgRi = {{A[0], 2, 2}, {AT[0], 2, 2}, {B[0], 2, 2}, {C[0],
 static KF_SclCfg_t sclCfgRi = {KF_DFLT_SCL_A, KF_DFLT_SCL_ERR, KF_DFLT_SCL_X, KF_DFLT_MAX_MOD_VAL};
 static KF_DimCfg_t dimCfgRi = {0, 2};
 static KF_ReadFct_t KF_MeasValFctHdlsRi[2] = {TACHO_Read_PosRi, KF_Read_Rawi32SpdRi};
-static KF_Data_t dataRi = { {vPrvStEstRi[0], 2, 1}, {mPrvErrCoVarRi[0], 2, 2}, 0 };
+static KF_Data_t dataRi = { {vPrvStEstRi[0], 2, 1}, {vOptStEstRi[0], 2, 1}, {mPrvErrCoVarRi[0], 2, 2}, 0 };
 
 
 /**

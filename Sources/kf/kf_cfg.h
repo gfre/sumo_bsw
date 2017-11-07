@@ -49,6 +49,7 @@ typedef struct KF_SclCfg_s
 typedef struct KF_Data_s
 {
 	MTX_t  vPrvStEst;
+	MTX_t  vOptStEst;
 	MTX_t  mPrvErrCoVar;
 	int8_t nMdCntr;
 }KF_Data_t;
@@ -105,7 +106,7 @@ typedef struct KF_Itm_s
 typedef struct KF_ItmTbl_s
 {
 	KF_Itm_t *aTls;
-	const uint8_t numTls;
+	const uint8_t numKfs;
 } KF_ItmTbl_t;
 
 
