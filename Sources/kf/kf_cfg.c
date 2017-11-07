@@ -34,7 +34,8 @@
  * are x(0|-1) = x0 = 0 and P(0|-1) = P0 = alpha*eye(n) with alpha >> 1.
  *
  * *
- * @author 	S. Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author S. Helling,  stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	26.06.2017
  *
  * @copyright @<LGPL2_1>
@@ -92,7 +93,9 @@
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-
+/**
+ * matrices for initialization process
+ */
 static int32_t A[2][2]  = MTX_INIT_A(1, TACHO_SAMPLE_PERIOD_MS, 0, 1);
 static int32_t AT[2][2] = MTX_INIT_AT(1, 0, TACHO_SAMPLE_PERIOD_MS, 1);
 static int32_t B[2][2]  = MTX_INIT_B(0, 0, 0, 0);
@@ -101,28 +104,40 @@ static int32_t CT[2][2] = MTX_INIT_IDENT;
 static int32_t R[2][2]  = MTX_INIT_R(3, 0, 0, 20000);
 static int32_t Q[2][2]  = MTX_INIT_Q(10, 0, 0, 2500);
 
+/**
+ *
+ */
 static KF_MtxCfg_t mtxCfgLe = {{A[0], 2, 2}, {AT[0], 2, 2}, {B[0], 2, 2}, {C[0], 2, 2}, {CT[0], 2, 2}, {R[0], 2, 2}, {Q[0], 2, 2}};
 static KF_SclCfg_t sclCfgLe = {KF_DFLT_SCL_A, KF_DFLT_SCL_ERR, KF_DFLT_SCL_X, KF_MAX_POS_VAL};
 static KF_DimCfg_t dimCfgLe = {KF_NOF_INPTS, KF_NOF_MSRD_STS};
-static KF_ReadFct_t KF_ReadFctHdlsLe[KF_NOF_MSRD_STS] = {TACHO_Read_PosLe, TACHO_Read_RawSpdLe};
+static KF_ReadFct_t KF_MeasValFctHdlsLe[KF_NOF_MSRD_STS] = {TACHO_Read_PosLe, KF_Read_Rawi32SpdLe};
 
+/**
+ *
+ */
 static KF_MtxCfg_t mtxCfgRi = {{A[0], 2, 2}, {AT[0], 2, 2}, {B[0], 2, 2}, {C[0], 2, 2}, {CT[0], 2, 2}, {R[0], 2, 2}, {Q[0], 2, 2}};
 static KF_SclCfg_t sclCfgRi = {KF_DFLT_SCL_A, KF_DFLT_SCL_ERR, KF_DFLT_SCL_X, KF_MAX_POS_VAL};
 static KF_DimCfg_t dimCfgRi = {KF_NOF_INPTS, KF_NOF_MSRD_STS};
-static KF_ReadFct_t KF_ReadFctHdlsRi[KF_NOF_MSRD_STS] = {TACHO_Read_PosRi, TACHO_Read_RawSpdRi};
+static KF_ReadFct_t KF_MeasValFctHdlsRi[KF_NOF_MSRD_STS] = {TACHO_Read_PosRi, KF_Read_Rawi32SpdRi};
 
+/**
+ *
+ */
 static KF_Itm_t KF_Items[] =
 {
 		{
 				{TACHO_OBJECT_STRING(TACHO_ID_LEFT), TACHO_SAMPLE_PERIOD_MS, &mtxCfgLe,
-				&sclCfgLe, &dimCfgLe, KF_ReadFctHdlsLe, NULL}, KF_DFLT_DATA_INIT
+				&sclCfgLe, &dimCfgLe, KF_MeasValFctHdlsLe, NULL}, KF_DFLT_DATA_INIT
 		},
 		{
 				{TACHO_OBJECT_STRING(TACHO_ID_RIGHT), TACHO_SAMPLE_PERIOD_MS, &mtxCfgRi,
-				&sclCfgRi, &dimCfgRi, KF_ReadFctHdlsRi, NULL}, KF_DFLT_DATA_INIT
+				&sclCfgRi, &dimCfgRi, KF_MeasValFctHdlsRi, NULL}, KF_DFLT_DATA_INIT
 		},
 };
 
+/**
+ *
+ */
 static KF_ItmTbl_t KF_ItemTable =
 {
 	KF_Items,
@@ -134,6 +149,39 @@ static KF_ItmTbl_t KF_ItemTable =
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 KF_ItmTbl_t *Get_pKfItmTbl(void) {return &KF_ItemTable;}
 
+StdRtn_t KF_Read_Rawi32SpdLe(int32_t *spd_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	int16_t tempSpd = 0;
+	if(NULL != spd_)
+	{
+		retVal  = ERR_OK;
+		retVal |= TACHO_Read_RawSpdLe(&tempSpd);
+		*spd_   = (int32_t)tempSpd;
+	}
+	else
+	{
+		/* error handling */
+	}
+	return retVal;
+}
+
+StdRtn_t KF_Read_Rawi32SpdRi(int32_t *spd_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	int16_t tempSpd = 0;
+	if(NULL != spd_)
+	{
+		retVal  = ERR_OK;
+		retVal |= TACHO_Read_RawSpdRi(&tempSpd);
+		*spd_   = (int32_t)tempSpd;
+	}
+	else
+	{
+		/* error handling */
+	}
+	return retVal;
+}
 
 #ifdef MASTER_KF_CFG_C_
 #undef MASTER_KF_CFG_C_

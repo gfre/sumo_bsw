@@ -48,7 +48,7 @@ typedef struct KF_SclCfg_s
  */
 typedef struct KF_Data_s
 {
-	MTX_t  vPrvStEst; 	//all int32_t -> problem?
+	MTX_t  vPrvStEst;
 	MTX_t  mPrvErrCoVar;
 	int8_t nMdCntr;
 }KF_Data_t;
@@ -111,6 +111,14 @@ typedef struct KF_ItmTbl_s
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 EXTERNAL_ KF_ItmTbl_t *Get_pKfItmTbl(void);
+
+
+
+/**
+ * wrapper functions to fit data type for KF_ReadFct_t
+ */
+EXTERNAL_ StdRtn_t KF_Read_Rawi32SpdLe(int32_t *spd_);
+EXTERNAL_ StdRtn_t KF_Read_Rawi32SpdRi(int32_t *spd_);
 
 
 #ifdef EXTERNAL_
