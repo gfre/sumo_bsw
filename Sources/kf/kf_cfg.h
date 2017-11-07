@@ -96,7 +96,7 @@ typedef struct KF_Cfg_s
 typedef struct KF_Itm_s
 {
 	KF_Cfg_t cfg;
-	KF_Data_t data;
+	KF_Data_t *data;
 }KF_Itm_t;
 
 /**
