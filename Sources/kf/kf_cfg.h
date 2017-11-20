@@ -73,6 +73,7 @@ typedef struct KF_MtxCfg_s
  */
 typedef struct KF_DimCfg_s
 {
+	const uint8_t nSys;
 	const uint8_t nInpts;
 	const uint8_t nMsrdSts;
 }KF_DimCfg_t;
@@ -105,7 +106,7 @@ typedef struct KF_Itm_s
  */
 typedef struct KF_ItmTbl_s
 {
-	KF_Itm_t *aTls;
+	KF_Itm_t *aKfs;
 	const uint8_t numKfs;
 } KF_ItmTbl_t;
 

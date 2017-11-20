@@ -1,10 +1,10 @@
 /***********************************************************************************************//**
  * @file		kf.h
  * @ingroup		kf Kalman Filter
- * @brief 		This header file contains the init and main function declarations as part of the task
- * 				component drive
+ * @brief 		Interface of the SWC @ref kf for the initialization- and runtime calls
  *
- * @author 	S. Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	S. Helling,  stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	23.06.2017
  *
  * @copyright @<LGPL2_1>
@@ -48,10 +48,32 @@
 
 
 
-/*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-void KF_Init(void);
-void KF_Main(void);
-void KF_Deinit(void);
+/*============================= >> GLOBAL FUNCTION Declarations << ================================*/
+/**
+ * @brief Initialisation function of the software component @ref kf
+ *
+ * This function initializes the configured objects from kf_cfg.c
+ */
+EXTERNAL_ void KF_Init(void);
+
+
+
+
+/**
+ * @brief Main function of the software component @ref kf
+ *
+ * This function runs the implementation of the kalman filter
+ */
+EXTERNAL_ void KF_Main(void);
+
+
+
+/**
+ * @brief De-Initialisation function of the software component @ref kf
+ *
+ * This function de-initializes the configured objects from kf_cfg.c
+ */
+EXTERNAL_ void KF_Deinit(void);
 
 
 #ifdef EXTERNAL_

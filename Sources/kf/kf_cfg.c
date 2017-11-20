@@ -11,7 +11,7 @@
  * y(k)		= C*x(k|k-1) + v(k) .
  *
  * In this, 'A' is the n-by-n system matrix, 'B' is the n-by-l input matrix (l being the number of inputs),
- * 'C' is the n-by-m measurement matrix ('m' being the number of measured states). Additionally,
+ * 'C' is the m-by-n measurement matrix ('m' being the number of measured states). Additionally,
  * 'u(k)' describes the input to the system, 'w(k)' describes the disturbances to the system
  * and should be normally distributed with zero mean and standard deviation 'sigma_w'. The measured
  * states are described by 'y(k)'. Disturbances of the measurement are expressed with 'v(k)', which
@@ -19,8 +19,8 @@
  *
  * The optimal state estimate x_hat_(k+1|k) is then calculated according to the following algorithm:
  *
- * x_hat(k+1|k) = A*x_hat(k|k-1)  + B*u(k) ,
- * P(k+1|k)	    = A*P_(k|k-1)*A^T + Q ,
+ * x_hat(k+1|k) = A*x_hat(k|k)  + B*u(k) ,
+ * P(k+1|k)	    = A*P_(k|k)*A^T + Q ,
  *
  * with
  *
@@ -99,9 +99,12 @@ static int32_t vPrvStEstLe[2][1]    = {0};
 static int32_t vOptStEstLe[2][1]    = {0};
 static int32_t mPrvErrCoVarLe[2][2] = {0};
 
+
 static int32_t vPrvStEstRi[2][1]    = {0};
 static int32_t vOptStEstRi[2][1]    = {0};
 static int32_t mPrvErrCoVarRi[2][2] = {0};
+
+
 
 /**
  *	tacho left
@@ -109,7 +112,7 @@ static int32_t mPrvErrCoVarRi[2][2] = {0};
 static KF_MtxCfg_t mtxCfgLe = {{A[0], 2, 2}, {AT[0], 2, 2}, {B[0], 2, 2}, {C[0], 2, 2}, {CT[0], 2, 2},
 							   {R[0], 2, 2}, { Q[0], 2, 2}};
 static KF_SclCfg_t sclCfgLe = {KF_DFLT_SCL_A, KF_DFLT_SCL_ERR, KF_DFLT_SCL_X, KF_DFLT_MAX_MOD_VAL};
-static KF_DimCfg_t dimCfgLe = {0, 2};
+static KF_DimCfg_t dimCfgLe = {2, 0, 2};
 static KF_ReadFct_t KF_MeasValFctHdlsLe[2] = {TACHO_Read_PosLe, KF_Read_Rawi32SpdLe};
 static KF_Data_t dataLe = { {vPrvStEstLe[0], 2, 1}, {vOptStEstLe[0], 2, 1}, {mPrvErrCoVarLe[0], 2, 2}, 0 };
 
@@ -119,7 +122,7 @@ static KF_Data_t dataLe = { {vPrvStEstLe[0], 2, 1}, {vOptStEstLe[0], 2, 1}, {mPr
 static KF_MtxCfg_t mtxCfgRi = {{A[0], 2, 2}, {AT[0], 2, 2}, {B[0], 2, 2}, {C[0], 2, 2}, {CT[0], 2, 2},
 							   {R[0], 2, 2}, { Q[0], 2, 2}};
 static KF_SclCfg_t sclCfgRi = {KF_DFLT_SCL_A, KF_DFLT_SCL_ERR, KF_DFLT_SCL_X, KF_DFLT_MAX_MOD_VAL};
-static KF_DimCfg_t dimCfgRi = {0, 2};
+static KF_DimCfg_t dimCfgRi = {2, 0, 2};
 static KF_ReadFct_t KF_MeasValFctHdlsRi[2] = {TACHO_Read_PosRi, KF_Read_Rawi32SpdRi};
 static KF_Data_t dataRi = { {vPrvStEstRi[0], 2, 1}, {vOptStEstRi[0], 2, 1}, {mPrvErrCoVarRi[0], 2, 2}, 0 };
 
