@@ -409,7 +409,39 @@ static inline StdRtn_t MtxCalc(const MTX_t *mtx1_, const MTX_t *mtx2_, MTX_Op_t 
 	return retVal;
 }
 
+static inline StdRtn_t MTXUdDecomp(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_, const uint8_t nScale_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	uint8_t i = 0u, j = 0u, k = 0u;
+	int32_t sigma = 0;
+	uint8_t m = mtx_->NumCols;
 
+	if( (NULL != mtxu_) && (NULL != mtxd_) )
+	{
+		retVal = ERR_OK;
+		for(j = (m-1); j >= 0; j--)
+		{
+			for(i = j; i >= 0; i--)
+			{
+				sigma = (MTX_ij(mtx_, i, j))<<nScale_;
+				for(k = j; k < (m-1); k++)
+				{
+					sigma = sigma - ( ( ( (MTX_ij(mtxu_, i, k) * MTX_ij(mtxd_, k, k)) >> nScale_ ) * MTX_ij(mtxu_, j, k) ) >> nScale_);
+				}
+				if( i == j )
+				{
+					MTX_ij(mtxd_, j, j) = sigma << nScale_;
+					MTX_ij(mtxu_, j, j) = 1 << nScale_;
+				}
+				else
+				{
+					MTX_ij(mtxu_, i, j) = (sigma << nScale_) / MTX_ij(mtxd_, j, j);
+				}
+			}
+		}
+	}
+	return retVal;
+}
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 StdRtn_t MTX_Add(const MTX_t *smd1_, const MTX_t *smd2_, MTX_t *sum_)
@@ -440,6 +472,11 @@ StdRtn_t MTX_ScaleDown(MTX_t *mtx_, const uint8_t nScale_)
 StdRtn_t MTX_MultInv(const MTX_t *mat_,const MTX_t *vec_, MTX_t *vecRes_, uint8_t nScale_)
 {
 	return MTXSolveSLE(mat_, vec_, vecRes_, nScale_);
+}
+
+StdRtn_t MTX_UdDecomp(const MTX_t * mtx_, MTX_t *mtxu_, MTX_t *mtxd_, const uint8_t nScale_)
+{
+	return MTXUdDecomp(mtx_, mtxu_, mtxd_, nScale_);
 }
 
 
