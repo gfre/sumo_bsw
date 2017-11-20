@@ -51,7 +51,8 @@ EXTERNAL_ StdRtn_t MTX_Mult(const MTX_t *fac1_, const MTX_t *fac2_, MTX_t *prod_
 EXTERNAL_ StdRtn_t MTX_MultInv(const MTX_t *mtx_, const MTX_t *vec_, MTX_t *vecRes_, uint8_t nScale_);
 EXTERNAL_ StdRtn_t MTX_ScaleUp(MTX_t *mtx_, const uint8_t nScale);
 EXTERNAL_ StdRtn_t MTX_ScaleDown(MTX_t *mtx_, const uint8_t nScale);
-EXTERNAL_ StdRtn_t MTX_Reset(MTX_t *mtx);
+EXTERNAL_ StdRtn_t MTX_Fill(MTX_t *mtx1_, const uint8_t val_);
+EXTERNAL_ StdRtn_t MTX_Fill_Diag(MTX_t *mtx1_, const uint8_t val_);
 /**
  * @}
  */

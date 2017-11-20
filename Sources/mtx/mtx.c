@@ -46,9 +46,8 @@ typedef enum MTX_Op_e
 	,MTX_MULT
 	,MTX_SCALE_UP
 	,MTX_SCALE_DOWN
-	,MTX_RESET
-//	,MTX_INV
-//	,MTX_ADJ
+	,MTX_FILL
+	,MTX_FILL_DIAG
 	,MTX_CNT_OF_OPS
 }MTX_Op_t;
 
@@ -59,15 +58,14 @@ typedef StdRtn_t MTX_OpFct_t(int32_t x1_,  int32_t x2_, int32_t *res_);
 static inline StdRtn_t Add(int32_t x1_,  int32_t x2_, int32_t *res_);
 static inline StdRtn_t Sub(int32_t x1_,  int32_t x2_, int32_t *res_);
 static inline StdRtn_t Mult(int32_t x1_, int32_t x2_, int32_t *res_);
-static inline StdRtn_t ScaleUp(int32_t x1_, int32_t nScale_, int32_t *res_);
-static inline StdRtn_t ScaleDown(int32_t x1_, int32_t nScale_, int32_t *res_);
-static inline StdRtn_t Reset(int32_t x1_, int32_t x2, int32_t* res_);
-
+static inline StdRtn_t ScaleUp(int32_t ignored_, int32_t nScale_, int32_t *res_);
+static inline StdRtn_t ScaleDown(int32_t ignored_, int32_t nScale_, int32_t *res_);
+static inline StdRtn_t Set(int32_t ignored_, int32_t setVal_, int32_t *res_);
 
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-static MTX_OpFct_t *opFctHdls[MTX_CNT_OF_OPS] = {Add, Sub, Mult, ScaleUp, ScaleDown, Reset};
+static MTX_OpFct_t *opFctHdls[MTX_CNT_OF_OPS] = {Add, Sub, Mult, ScaleUp, ScaleDown, Set, Set};
 
 
 
@@ -105,7 +103,7 @@ static inline StdRtn_t Mult(int32_t x1_,  int32_t x2_, int32_t *res_)
 	return retVal;
 }
 
-static inline StdRtn_t ScaleUp(int32_t x1_, int32_t nScale_, int32_t *res_)
+static inline StdRtn_t ScaleUp(int32_t ignored_, int32_t nScale_, int32_t *res_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	nScale_ = (uint8_t)nScale_; //dangerous?
@@ -117,7 +115,7 @@ static inline StdRtn_t ScaleUp(int32_t x1_, int32_t nScale_, int32_t *res_)
 	return retVal;
 }
 
-static inline StdRtn_t ScaleDown(int32_t x1_, int32_t nScale_, int32_t *res_)
+static inline StdRtn_t ScaleDown(int32_t ignored_, int32_t nScale_, int32_t *res_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	nScale_ = (uint8_t)nScale_; //dangerous?
@@ -129,13 +127,13 @@ static inline StdRtn_t ScaleDown(int32_t x1_, int32_t nScale_, int32_t *res_)
 	return retVal;
 }
 
-static inline StdRtn_t Reset(int32_t x1_, int32_t x2_, int32_t *res_)
+static inline StdRtn_t Set(int32_t ignored_, int32_t setVal_, int32_t *res_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if (NULL != res_)
 	{
 		retVal = ERR_OK;
-		*res_ = 0;
+		*res_ = setVal_;
 	}
 	return retVal;
 }
@@ -406,10 +404,20 @@ static inline StdRtn_t MtxCalc(const MTX_t *mtx1_, const MTX_t *mtx2_, MTX_Op_t 
 					break;
 				case MTX_SCALE_UP:
 				case MTX_SCALE_DOWN:
-					retVal |= opFctHdls[op_](0, (int32_t)nScale_, &(MTXRes(i,j)) );
+					retVal |= opFctHdls[op_]( 0, (int32_t)nScale_, &(MTXRes(i,j)) );
 					break;
-				case MTX_RESET:
-					retVal|= opFctHdls[op_](0, 0, &MTX1(i,j));
+				case MTX_FILL:
+					retVal |= opFctHdls[op_]( 0 , (int32_t)nScale_, &(MTXRes(i,j)));
+					break;
+				case MTX_FILL_DIAG:
+					if( i == j )
+					{
+						retVal |= opFctHdls[op_]( 0, (int32_t)nScale_, &(MTXRes(i,j)) );
+					}
+					else
+					{
+						retVal |= opFctHdls[op_]( 0, 0, &(MTXRes(i,j)) );
+					}
 					break;
 				default:
 					retVal |= ERR_PARAM_DATA;
@@ -453,9 +461,15 @@ StdRtn_t MTX_MultInv(const MTX_t *mat_,const MTX_t *vec_, MTX_t *vecRes_, uint8_
 {
 	return MTXSolveSLE(mat_, vec_, vecRes_, nScale_);
 }
-StdRtn_t MTX_Reset(MTX_t *mtx_)
+
+StdRtn_t MTX_Fill(MTX_t *mtx1_, const uint8_t val_)
 {
-	return MtxCalc(mtx_, NULL, MTX_RESET, mtx_, 0);
+	return MtxCalc(mtx1_, mtx1_, MTX_FILL, mtx1_, val_);
+}
+
+StdRtn_t MTX_Fill_Diag(MTX_t *mtx1_, const uint8_t val_)
+{
+	return MtxCalc(mtx1_, mtx1_, MTX_FILL_DIAG, mtx1_, val_);
 }
 
 
