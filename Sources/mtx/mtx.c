@@ -412,7 +412,7 @@ static inline StdRtn_t MtxCalc(const MTX_t *mtx1_, const MTX_t *mtx2_, MTX_Op_t 
 static inline StdRtn_t MTXUdDecomp(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_, const uint8_t nScale_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	uint8_t i = 0u, j = 0u, k = 0u;
+	int8_t i = 0u, j = 0u, k = 0u;
 	int32_t sigma = 0;
 	uint8_t m = mtx_->NumCols;
 
@@ -424,18 +424,18 @@ static inline StdRtn_t MTXUdDecomp(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_
 			for(i = j; i >= 0; i--)
 			{
 				sigma = (MTX_ij(mtx_, i, j))<<nScale_;
-				for(k = j; k < (m-1); k++)
+				for(k = (j+1); k < m; k++)
 				{
 					sigma = sigma - ( ( ( (MTX_ij(mtxu_, i, k) * MTX_ij(mtxd_, k, k)) >> nScale_ ) * MTX_ij(mtxu_, j, k) ) >> nScale_);
 				}
 				if( i == j )
 				{
-					MTX_ij(mtxd_, j, j) = sigma << nScale_;
+					MTX_ij(mtxd_, j, j) = sigma;
 					MTX_ij(mtxu_, j, j) = 1 << nScale_;
 				}
 				else
 				{
-					MTX_ij(mtxu_, i, j) = (sigma << nScale_) / MTX_ij(mtxd_, j, j);
+					MTX_ij(mtxu_, i, j) = ( (sigma<<nScale_) / MTX_ij(mtxd_, j, j) );
 				}
 			}
 		}
