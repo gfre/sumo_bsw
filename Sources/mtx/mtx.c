@@ -18,7 +18,6 @@
 #include "mtx.h"
 #include "mtx_api.h"
 
-
 /*======================================= >> #DEFINES << =========================================*/
 #define MTX_ij(mtx_, i_, j_) ( mtx_->pData[i_*mtx_->NumCols + j_] )
 #define MTXLOC_ij(mtx_, i_, j_) ( mtx_.pData[i_*mtx_.NumCols + j_] )
@@ -49,7 +48,7 @@ typedef enum MTX_Op_e
 	,MTX_MULT
 	,MTX_SCALE_UP
 	,MTX_SCALE_DOWN
-//	,MTX_TRNS
+	,MTX_TRNS
 //	,MTX_INV
 //	,MTX_ADJ
 	,MTX_CNT_OF_OPS
@@ -64,12 +63,13 @@ static inline StdRtn_t Sub(int32_t x1_,  int32_t x2_, int32_t *res_);
 static inline StdRtn_t Mult(int32_t x1_, int32_t x2_, int32_t *res_);
 static inline StdRtn_t ScaleUp(int32_t x1_, int32_t nScale_, int32_t *res_);
 static inline StdRtn_t ScaleDown(int32_t x1_, int32_t nScale_, int32_t *res_);
+static inline StdRtn_t Transpose(int32_t x1_, int32_t ignored_, int32_t *res_);
 
 
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-static MTX_OpFct_t *opFctHdls[MTX_CNT_OF_OPS] = {Add, Sub, Mult, ScaleUp, ScaleDown};
+static MTX_OpFct_t *opFctHdls[MTX_CNT_OF_OPS] = {Add, Sub, Mult, ScaleUp, ScaleDown, Transpose};
 
 
 
@@ -126,6 +126,17 @@ static inline StdRtn_t ScaleDown(int32_t x1_, int32_t nScale_, int32_t *res_)
 	if (NULL != res_)
 	{
 		*res_ = *res_ >> nScale_;
+		retVal = ERR_OK;
+	}
+	return retVal;
+}
+
+static inline StdRtn_t Transpose(int32_t x1_, int32_t ignored_, int32_t *res_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if( NULL != res_ )
+	{
+		*res_ = x1_;
 		retVal = ERR_OK;
 	}
 	return retVal;
@@ -399,6 +410,16 @@ static inline StdRtn_t MtxCalc(const MTX_t *mtx1_, const MTX_t *mtx2_, MTX_Op_t 
 				case MTX_SCALE_DOWN:
 					retVal |= opFctHdls[op_](0, (int32_t)nScale_, &(MTXRes(i,j)) );
 					break;
+				case MTX_TRNS:
+					if( i == j )
+					{
+						MTXRes(i,j) = MTX1(i,j);
+					}
+					else
+					{
+						retVal |= opFctHdls[op_]( MTX1(i, j), 0, &(MTXRes(j, i)));
+					}
+					break;
 				default:
 					retVal |= ERR_PARAM_DATA;
 					break;
@@ -423,10 +444,10 @@ static inline StdRtn_t MTXUdDecomp(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_
 		{
 			for(i = j; i >= 0; i--)
 			{
-				sigma = (MTX_ij(mtx_, i, j))<<nScale_;
+				sigma = MTX_ij(mtx_, i, j) << nScale_;
 				for(k = (j+1); k < m; k++)
 				{
-					sigma = sigma - ( ( ( (MTX_ij(mtxu_, i, k) * MTX_ij(mtxd_, k, k)) >> nScale_ ) * MTX_ij(mtxu_, j, k) ) >> nScale_);
+					sigma = sigma - ( ( ( (MTX_ij(mtxu_, i, k) * MTX_ij(mtxd_, k, k)) >> nScale_ ) * MTX_ij(mtxu_, j, k) ) >> nScale_ );
 				}
 				if( i == j )
 				{
@@ -435,10 +456,36 @@ static inline StdRtn_t MTXUdDecomp(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_
 				}
 				else
 				{
-					MTX_ij(mtxu_, i, j) = ( (sigma<<nScale_) / MTX_ij(mtxd_, j, j) );
+					MTX_ij(mtxu_, i, j) = (sigma<<nScale_) / MTX_ij(mtxd_, j, j);
 				}
 			}
 		}
+	}
+	return retVal;
+}
+
+static inline StdRtn_t MtxFindScl(const MTX_t *mtx_, uint8_t *optScale_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	uint8_t i = 0u, j = 0u;
+	uint8_t tmpScale = 0xFFu;
+	uint8_t nZeros = 0u;
+
+	if( NULL != optScale_ )
+	{
+		retVal = ERR_OK;
+		for(i = 0u; i < mtx_->NumRows; i++)
+		{
+			for(j = 0u; j < mtx_->NumCols; j++)
+			{
+				nZeros = clz( MTX_ij(mtx_, i, j) );
+				if( nZeros < tmpScale )
+				{
+					tmpScale = nZeros;
+				}
+			}
+		}
+		*optScale_ = tmpScale;
 	}
 	return retVal;
 }
@@ -477,6 +524,16 @@ StdRtn_t MTX_MultInv(const MTX_t *mat_,const MTX_t *vec_, MTX_t *vecRes_, uint8_
 StdRtn_t MTX_UdDecomp(const MTX_t * mtx_, MTX_t *mtxu_, MTX_t *mtxd_, const uint8_t nScale_)
 {
 	return MTXUdDecomp(mtx_, mtxu_, mtxd_, nScale_);
+}
+
+StdRtn_t MTX_Transpose(const MTX_t *mtx_, MTX_t *mtxRes_)
+{
+	return MtxCalc(mtx_, mtx_, MTX_TRNS, mtxRes_, 0);
+}
+
+StdRtn_t MTX_FindOptScl(const MTX_t *mtx_, uint8_t *optScale_)
+{
+	return MtxFindScl(mtx_, optScale_);
 }
 
 

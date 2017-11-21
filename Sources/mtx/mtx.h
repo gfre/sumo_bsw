@@ -35,9 +35,12 @@
  * @brief
  *
  */
-/* #define TMPL_MACRO (0xFFu) */
-
-
+#ifdef __GNUC__
+	#define clz(x_) (__builtin_clz(x_))
+	#define ctz(x_) (__builtin_ctz(x_))
+#else
+	/* TODO */
+#endif
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 /*/**
