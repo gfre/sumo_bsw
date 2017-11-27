@@ -433,7 +433,7 @@ static inline StdRtn_t MtxCalc(const MTX_t *mtx1_, const MTX_t *mtx2_, MTX_Op_t 
 static inline StdRtn_t MTXUdDecomp(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_, const uint8_t nScale_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	int8_t i = 0u, j = 0u, k = 0u;
+	int16_t i = 0u, j = 0u, k = 0u;
 	int32_t sigma = 0;
 	uint8_t m = mtx_->NumCols;
 
@@ -444,7 +444,7 @@ static inline StdRtn_t MTXUdDecomp(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_
 		{
 			for(i = j; i >= 0; i--)
 			{
-				sigma = MTX_ij(mtx_, i, j) << nScale_;
+				sigma = MTX_ij(mtx_, i, j) << nScale_; /* TODO Scaling sigma here has no effect on resolution? */
 				for(k = (j+1); k < m; k++)
 				{
 					sigma = sigma - ( ( ( (MTX_ij(mtxu_, i, k) * MTX_ij(mtxd_, k, k)) >> nScale_ ) * MTX_ij(mtxu_, j, k) ) >> nScale_ );
@@ -456,7 +456,7 @@ static inline StdRtn_t MTXUdDecomp(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_
 				}
 				else
 				{
-					MTX_ij(mtxu_, i, j) = (sigma<<nScale_) / MTX_ij(mtxd_, j, j);
+					MTX_ij(mtxu_, i, j) = (sigma << nScale_) / MTX_ij(mtxd_, j, j);
 				}
 			}
 		}
@@ -464,14 +464,14 @@ static inline StdRtn_t MTXUdDecomp(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_
 	return retVal;
 }
 
-static inline StdRtn_t MtxFindScl(const MTX_t *mtx_, uint8_t *optScale_)
+static inline StdRtn_t MtxCntLdngZrs(const MTX_t *mtx_, uint8_t *nLdngZrs_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	uint8_t i = 0u, j = 0u;
-	uint8_t tmpScale = 0xFFu;
+	uint8_t tmpCnt = 0xFFu;
 	uint8_t nZeros = 0u;
 
-	if( NULL != optScale_ )
+	if( NULL != nLdngZrs_ )
 	{
 		retVal = ERR_OK;
 		for(i = 0u; i < mtx_->NumRows; i++)
@@ -479,13 +479,13 @@ static inline StdRtn_t MtxFindScl(const MTX_t *mtx_, uint8_t *optScale_)
 			for(j = 0u; j < mtx_->NumCols; j++)
 			{
 				nZeros = clz( MTX_ij(mtx_, i, j) );
-				if( nZeros < tmpScale )
+				if( nZeros < tmpCnt )
 				{
-					tmpScale = nZeros;
+					tmpCnt = nZeros;
 				}
 			}
 		}
-		*optScale_ = tmpScale;
+		*nLdngZrs_ = tmpCnt;
 	}
 	return retVal;
 }
@@ -531,9 +531,9 @@ StdRtn_t MTX_Transpose(const MTX_t *mtx_, MTX_t *mtxRes_)
 	return MtxCalc(mtx_, mtx_, MTX_TRNS, mtxRes_, 0);
 }
 
-StdRtn_t MTX_FindOptScl(const MTX_t *mtx_, uint8_t *optScale_)
+StdRtn_t MTX_CountLeadingZeros(const MTX_t *mtx_, uint8_t *nLeadingZeros_)
 {
-	return MtxFindScl(mtx_, optScale_);
+	return MtxCntLdngZrs(mtx_, nLeadingZeros_);
 }
 
 

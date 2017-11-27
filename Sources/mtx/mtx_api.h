@@ -51,7 +51,7 @@ EXTERNAL_ StdRtn_t MTX_MultInv(const MTX_t *mtx_, const MTX_t *vec_, MTX_t *vecR
 EXTERNAL_ StdRtn_t MTX_ScaleUp(MTX_t *mtx_, const uint8_t nScale);
 EXTERNAL_ StdRtn_t MTX_ScaleDown(MTX_t *mtx_, const uint8_t nScale);
 EXTERNAL_ StdRtn_t MTX_UdDecomp(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_, const uint8_t nScale_);
-EXTERNAL_ StdRtn_t MTX_FindOptScl(const MTX_t *mtx_, uint8_t *optScale_);
+EXTERNAL_ StdRtn_t MTX_CountLeadingZeros(const MTX_t *mtx_, uint8_t *nLeadingZeros_);
 EXTERNAL_ StdRtn_t MTX_Transpose(const MTX_t *mtx_, MTX_t *mtxRes_);
 
 /**
