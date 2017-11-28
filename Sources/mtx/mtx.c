@@ -128,8 +128,9 @@ static inline StdRtn_t MtxCalc(const MTX_t *mtx1_, const MTX_t *mtx2_, MTX_Op_t 
 		}
 	}
 	return retVal;
-}
 
+
+#define DFLT_U_SCALING (16)
 static inline StdRtn_t MTXUdDecomp(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_, const uint8_t nScale_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
@@ -182,7 +183,7 @@ static inline StdRtn_t MTXUdDecomp(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_
 					}
 					else
 					{
-						/* shift further to the right?! */
+						/* TODO shift further to the right?! */
 					}
 
 					tz_tempProd = ctz(tempProd);
@@ -195,10 +196,10 @@ static inline StdRtn_t MTXUdDecomp(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_
 					}
 					else
 					{
-						/* shift further to the right?! */
+						/* TODO shift further to the right?! */
 					}
 
-					sigma_hat = sigma_hat >> (50 - (tz_maguik + tz_magdkk + tz_tempProd + tz_magujk));
+					sigma_hat = sigma_hat >> ( (2*DFLT_U_SCALING) - (tz_maguik + tz_magdkk + tz_tempProd + tz_magujk));  /* TODO equation might be wrong */
 
 					if( 1 == (sig_uik * sig_dkk * sig_ujk) )
 					{
@@ -212,11 +213,11 @@ static inline StdRtn_t MTXUdDecomp(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_
 				if( i == j )
 				{
 					MTX_ij(mtxd_, j, j) = sigma;
-					MTX_ij(mtxu_, j, j) = 1 << 16;
+					MTX_ij(mtxu_, j, j) = 1 << DFLT_U_SCALING;
 				}
 				else
 				{
-					MTX_ij(mtxu_, i, j) = (sigma << 16) / MTX_ij(mtxd_, j, j);
+					MTX_ij(mtxu_, i, j) = (sigma << DFLT_U_SCALING) / MTX_ij(mtxd_, j, j);
 				}
 			}
 		}
