@@ -23,6 +23,9 @@
 #define MTX2(i_, j_) ( MTX_ij(mtx2_, i_, j_) )
 #define MTXRes(i_, j_) ( MTX_ij(mtxRes_, i_, j_) )
 
+#define SIGN(x_) ( (x_ > 0) ? (1) : ( (x_ < 0) ? (-1) : (0) ) )
+
+
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 typedef enum MTX_Op_e
 {
@@ -130,9 +133,18 @@ static inline StdRtn_t MtxCalc(const MTX_t *mtx1_, const MTX_t *mtx2_, MTX_Op_t 
 static inline StdRtn_t MTXUdDecomp(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_, const uint8_t nScale_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	int16_t i = 0u, j = 0u, k = 0u;
+	int16_t i = 0, j = 0, k = 0;
 	int32_t sigma = 0;
 	uint8_t m = mtx_->NumCols;
+
+	int8_t  sig_uik = 0u, sig_dkk = 0u, sig_ujk = 0u;
+	int32_t mag_uik = 0,  mag_dkk = 0,  mag_ujk = 0;
+	uint8_t tz_maguik = 0u, tz_magdkk=0u, tz_magujk=0u;
+	uint8_t lz_maguik = 0u, lz_magdkk=0u, lz_magujk=0u;
+	int32_t tempProd = 0;
+	uint8_t lz_tempProd = 0;
+	uint8_t tz_tempProd = 0;
+	int32_t sigma_hat = 0;
 
 	if( (NULL != mtxu_) && (NULL != mtxd_) )
 	{
@@ -141,19 +153,70 @@ static inline StdRtn_t MTXUdDecomp(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_
 		{
 			for(i = j; i >= 0; i--)
 			{
-				sigma = MTX_ij(mtx_, i, j) << nScale_; /* TODO Scaling sigma here has no effect on resolution? */
+				sigma = MTX_ij(mtx_, i, j);
 				for(k = (j+1); k < m; k++)
 				{
-					sigma = sigma - ( ( ( (MTX_ij(mtxu_, i, k) * MTX_ij(mtxd_, k, k)) >> nScale_ ) * MTX_ij(mtxu_, j, k) ) >> nScale_ );
+					sig_uik = (int8_t) SIGN( MTX_ij(mtxu_, i, k) );
+					sig_dkk = (int8_t) SIGN( MTX_ij(mtxd_, k, k) );
+					sig_ujk = (int8_t) SIGN( MTX_ij(mtxu_, j, k) );
+
+					mag_uik = (int32_t) sig_uik * MTX_ij(mtxu_, i, k);
+					mag_dkk = (int32_t) sig_dkk * MTX_ij(mtxd_, k, k);
+					mag_ujk = (int32_t) sig_ujk * MTX_ij(mtxu_, j, k);
+
+					tz_maguik = ctz(mag_uik);
+					tz_magdkk = ctz(mag_dkk);
+					tz_magujk = ctz(mag_ujk);
+
+					mag_uik = mag_uik >> tz_maguik;
+					mag_dkk = mag_dkk >> tz_magdkk;
+					mag_ujk = mag_ujk >> tz_magujk;
+
+					lz_maguik = clz(mag_uik);
+					lz_magdkk = clz(mag_dkk);
+					lz_magujk = clz(mag_ujk);
+
+					if( 32 < (lz_maguik + lz_magdkk) )
+					{
+						tempProd = mag_uik *  mag_dkk;
+					}
+					else
+					{
+						/* shift further to the right?! */
+					}
+
+					tz_tempProd = ctz(tempProd);
+					tempProd = tempProd >> tz_tempProd;
+					lz_tempProd = clz(tempProd);
+
+					if( 32 < (lz_tempProd + lz_magujk) )
+					{
+						sigma_hat = tempProd * mag_ujk;
+					}
+					else
+					{
+						/* shift further to the right?! */
+					}
+
+					sigma_hat = sigma_hat >> (50 - (tz_maguik + tz_magdkk + tz_tempProd + tz_magujk));
+
+					if( 1 == (sig_uik * sig_dkk * sig_ujk) )
+					{
+						sigma -= sigma_hat;
+					}
+					else
+					{
+						sigma += sigma_hat;
+					}
 				}
 				if( i == j )
 				{
 					MTX_ij(mtxd_, j, j) = sigma;
-					MTX_ij(mtxu_, j, j) = 1 << nScale_;
+					MTX_ij(mtxu_, j, j) = 1 << 16;
 				}
 				else
 				{
-					MTX_ij(mtxu_, i, j) = (sigma << nScale_) / MTX_ij(mtxd_, j, j);
+					MTX_ij(mtxu_, i, j) = (sigma << 16) / MTX_ij(mtxd_, j, j);
 				}
 			}
 		}
