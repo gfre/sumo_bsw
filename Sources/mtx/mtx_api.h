@@ -36,7 +36,6 @@
 #define MTXLOC_ij(mtx_, i_, j_) ( mtx_.pData[i_*mtx_.NumCols + j_] )
 
 
-
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 typedef struct MTX_s
 {
@@ -49,17 +48,11 @@ typedef struct MTX_s
 EXTERNAL_ StdRtn_t MTX_Add(const MTX_t *smd1_, const MTX_t *smd2_, MTX_t *sum_);
 EXTERNAL_ StdRtn_t MTX_Sub(const MTX_t *min_, const MTX_t *sub_, MTX_t *diff_);
 EXTERNAL_ StdRtn_t MTX_Mult(const MTX_t *fac1_, const MTX_t *fac2_, MTX_t *prod_);
+EXTERNAL_ StdRtn_t MTX_MultInv(const MTX_t *mtx_, const MTX_t *vec_, MTX_t *vecRes_, uint8_t nScale_);
 EXTERNAL_ StdRtn_t MTX_ScaleUp(MTX_t *mtx_, const uint8_t nScale);
 EXTERNAL_ StdRtn_t MTX_ScaleDown(MTX_t *mtx_, const uint8_t nScale);
-EXTERNAL_ StdRtn_t MTX_Transpose(const MTX_t *mtx_, MTX_t *mtxTrnspsd_);
-EXTERNAL_ StdRtn_t MTX_Fill(MTX_t *mtx_, const uint8_t val_);
-EXTERNAL_ StdRtn_t MTX_FillDiag(MTX_t *mtx_, const uint8_t val_);
-
-EXTERNAL_ StdRtn_t MTX_UdDecomp(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_, const uint8_t nScale_);
-EXTERNAL_ StdRtn_t MTX_CountLeadingZeros(const MTX_t *mtx_, uint8_t *nLeadingZeros_);
-
-
-
+EXTERNAL_ StdRtn_t MTX_Fill(MTX_t *mtx1_, const uint8_t val_);
+EXTERNAL_ StdRtn_t MTX_Fill_Diag(MTX_t *mtx1_, const uint8_t val_);
 /**
  * @}
  */

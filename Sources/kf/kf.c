@@ -39,7 +39,7 @@ static void KF_Reset(KF_Itm_t *kf_)
 	uint8_t i = 0u;
 	if(NULL != kf_)
 	{
-		MTX_FillDiag( &(kf_->data->mPrvErrCoVar), (uint8_t)100 );
+		MTX_Fill_Diag( &(kf_->data->mPrvErrCoVar), (uint8_t)100 );
 		MTX_ScaleUp( &(kf_->data->mPrvErrCoVar), kf_->cfg.scl->nErrMtx );
 		kf_->data->nMdCntr = 0;
 		for(i = 0u; i < kf_->cfg.dim->nMsrdSts; i++)
@@ -54,21 +54,6 @@ static void KF_Reset(KF_Itm_t *kf_)
 	}
 }
 
-static void KF_BiermanObservationUpdate( int32_t yj_, int32_t rjj_, MTX_t *cj_, MTX_t *mtxu_, MTX_t *mtxd_, MTX_t *x_, KF_Cfg_t *pCfg_)
-{
-	uint8_t i = 0u, j = 0u;
-	int32_t delta = yj_;
-	int32_t CjT_m_xj[1][1];
-
-	MTX_t sCjT_m_cj = { CjT_m_xj[0], 1, 1 };
-
-	for(j = 0u; j < pCfg_->dim->nMsrdSts; j++)
-	{
-		MTX_Mult(cj_, x_, &sCjT_m_cj);
-		delta -= CjT_m_xj[1][1];
-	}
-
-}
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 void KF_Init(void)
@@ -92,7 +77,8 @@ void KF_Init(void)
 void KF_Main(void)
 {
 	StdRtn_t retVal = ERR_OK;
-	uint8_t i = 0u, j = 0u, k = 0u;
+	uint8_t i = 0u;
+	uint8_t j = 0u;
 
 	if( (NULL != KF_pTbl) && (NULL != KF_pTbl->aKfs) )
 	{
@@ -145,7 +131,7 @@ void KF_Main(void)
 			MTX_Add( &(vAxkk), &(vBuk), &(vXk1k) );
 
 			//P(k+1|k)
-			MTX_Mult( &(pCfg->mtx->mSys), &(pData->mPrvErrCoVar), &(mAPkk) );
+			MTX_Mult( &(pCfg->mtx->mSys), &(pData->mPrvErrCoVar), &(mPkk) );
 			MTX_ScaleDown( &(mAPkk), pCfg->scl->nSysMtx );
 			MTX_Mult( &(mAPkk), &(pCfg->mtx->mSysTrnsp), &(mAPkkAT) );
 			MTX_ScaleDown( &(mAPkkAT), pCfg->scl->nSysMtx );
@@ -153,26 +139,32 @@ void KF_Main(void)
 
 
 			/**
-			 *  bierman observational update according to "Mohinder S. Grewal, Angus P. Andrews: Kalman Filtering
-			 *  Theory and Practice using MATLAB, 3rd Edition, 2008, p270 table 6.15"
+			 *  temporarily used matrices/vectors for correction
 			 */
-			int32_t U[pCfg->dim->nMsrdSts][pCfg->dim->nMsrdSts];
-			int32_t D[pCfg->dim->nMsrdSts][pCfg->dim->nMsrdSts];
-			int32_t cjT[1][pCfg->dim->nMsrdSts];
-			int32_t yj;
-			int32_t cjT_m_xj;
+			int32_t Cxkj[pCfg->dim->nMsrdSts][1];
+			int32_t Ykj[pCfg->dim->nMsrdSts][1];
+			int32_t Ykj_m_Cxkj[pCfg->dim->nMsrdSts][1];
+			int32_t PkCj[pCfg->dim->nSys][1];
+			int32_t Kj[pCfg->dim->nSys][1];
+			int32_t xkkquer[pCfg->dim->nSys][1];
 
-			MTX_t mU	= { U[0],  pCfg->dim->nMsrdSts, pCfg->dim->nMsrdSts };
-			MTX_t mD	= { D[0],  pCfg->dim->nMsrdSts, pCfg->dim->nMsrdSts };
-			MTX_t vCjT	= { cjT[0], 1,					pCfg->dim->nMsrdSts };
+			int32_t CjTPkCj;
+			int32_t CjTPkCj_p_rj;
 
+			MTX_t vC_xkj      = { Cxkj[0],       pCfg->dim->nMsrdSts, 1 };
+			MTX_t vYkj 	      = { Ykj[0],        pCfg->dim->nMsrdSts, 1 };
+			MTX_t vYkj_m_Cxkj = { Ykj_m_Cxkj[0], pCfg->dim->nMsrdSts, 1 };
+			MTX_t vPkCj       = { PkCj[0],       pCfg->dim->nSys,     1 };
+			MTX_t vKj		  = { Kj[0],		 pCfg->dim->nSys,     1 };
+			MTX_t vXkkquer    = { xkkquer[0],	 pCfg->dim->nSys,	  1 };
 
-			MTX_UdDecomp(&mPk1k, &mU, &mD, 10);
-
-			for(k = 0u; k < pCfg->dim->nMsrdSts; k++)
+			/**
+			 *  measurement update / 'correct'
+			 */
+			for(j = 0u; j < pCfg->dim->nMsrdSts; j++)
 			{
-				pCfg->aMeasValFct[k]( &yj );
-				KF_BiermanObservationUpdate( yj, MTX_ij(pCfg->mtx->mMeasNsCov, k, k), &vCjT, &mU, &mD, &vXk1k, pCfg);
+				MTX_Mult( (&mPk1k), fac2_, prod_);
+				pCfg->aMeasValFct[j]( &MTXLOC_ij(vYk, j, 0) );
 			}
 
 
