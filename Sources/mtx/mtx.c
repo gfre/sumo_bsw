@@ -130,23 +130,27 @@ static inline StdRtn_t MtxCalc(const MTX_t *mtx1_, const MTX_t *mtx2_, MTX_Op_t 
 	return retVal;
 }
 
-#define DFLT_U_SCALING (16)
+#define DFLT_U_SCALING (16) /* TODO value might be higher depending on largest value in mtx_? */
 static inline StdRtn_t MTXUdDecomp(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_, const uint8_t nScale_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+
+	/* Loop variables   ATTENTION: i,j,k need to be of signed data type */
 	int16_t i = 0, j = 0, k = 0;
-	uint8_t l = 0u, m = 0u;
-	int32_t sigma = 0;
 	uint8_t dim = mtx_->NumCols;
 
+	/* Value information */
 	int8_t  sig_uik = 0u, sig_dkk = 0u, sig_ujk = 0u;
 	int32_t mag_uik = 0,  mag_dkk = 0,  mag_ujk = 0;
-	uint8_t tz_maguik = 0u, tz_magdkk=0u, tz_magujk=0u;
-	uint8_t lz_maguik = 0u, lz_magdkk=0u, lz_magujk=0u;
-	int32_t tempProd = 0;
-	uint8_t lz_tempProd = 0;
-	uint8_t tz_tempProd = 0;
+
+	/* Shifts */
+	uint8_t tz_maguik = 0u, tz_magdkk=0u, tz_magujk=0u, tz_tempProd = 0u;
+	uint8_t lz_maguik = 0u, lz_magdkk=0u, lz_magujk=0u, lz_tempProd = 0u;
+	uint8_t extraShift1 = 0u, extraShift2 = 0u;
+
+	int32_t sigma = 0;
 	int32_t sigma_hat = 0;
+	int32_t tempProd = 0;
 
 	if( (NULL != mtxu_) && (NULL != mtxd_) )
 	{
@@ -178,7 +182,7 @@ static inline StdRtn_t MTXUdDecomp(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_
 					lz_magdkk = clz(mag_dkk);
 					lz_magujk = clz(mag_ujk);
 
-					for(l = 0u; 32 >= (lz_maguik + lz_magdkk); l++)
+					for(extraShift1 = 0u; 32 >= (lz_maguik + lz_magdkk); extraShift1++)
 					{
 						if(mag_uik > mag_dkk)
 						{
@@ -197,7 +201,7 @@ static inline StdRtn_t MTXUdDecomp(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_
 					tempProd = tempProd >> tz_tempProd;
 					lz_tempProd = clz(tempProd);
 
-					for(m = 0u; 32 >= (lz_tempProd + lz_magujk); m++)
+					for(extraShift2 = 0u; 32 >= (lz_tempProd + lz_magujk); extraShift2++)
 					{
 						if(tempProd > mag_ujk)
 						{
@@ -210,7 +214,7 @@ static inline StdRtn_t MTXUdDecomp(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_
 							lz_magujk++;
 						}
 					}
-					sigma_hat = (tempProd * mag_ujk) >> ( (2*DFLT_U_SCALING) - (l + tz_maguik + tz_magdkk + tz_tempProd + m + tz_magujk));  /* TODO equation might be wrong */
+					sigma_hat = (tempProd * mag_ujk) >> ( (2*DFLT_U_SCALING) - (l + tz_maguik + tz_magdkk + tz_tempProd + m + tz_magujk));
 
 					if( 0 < (sig_uik * sig_dkk * sig_ujk) )
 					{
