@@ -128,15 +128,16 @@ static inline StdRtn_t MtxCalc(const MTX_t *mtx1_, const MTX_t *mtx2_, MTX_Op_t 
 		}
 	}
 	return retVal;
-
+}
 
 #define DFLT_U_SCALING (16)
 static inline StdRtn_t MTXUdDecomp(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_, const uint8_t nScale_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	int16_t i = 0, j = 0, k = 0;
+	uint8_t l = 0u, m = 0u;
 	int32_t sigma = 0;
-	uint8_t m = mtx_->NumCols;
+	uint8_t dim = mtx_->NumCols;
 
 	int8_t  sig_uik = 0u, sig_dkk = 0u, sig_ujk = 0u;
 	int32_t mag_uik = 0,  mag_dkk = 0,  mag_ujk = 0;
@@ -150,12 +151,12 @@ static inline StdRtn_t MTXUdDecomp(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_
 	if( (NULL != mtxu_) && (NULL != mtxd_) )
 	{
 		retVal = ERR_OK;
-		for(j = (m-1); j >= 0; j--)
+		for(j = (dim-1); j >= 0; j--)
 		{
 			for(i = j; i >= 0; i--)
 			{
 				sigma = MTX_ij(mtx_, i, j);
-				for(k = (j+1); k < m; k++)
+				for(k = (j+1); k < dim; k++)
 				{
 					sig_uik = (int8_t) SIGN( MTX_ij(mtxu_, i, k) );
 					sig_dkk = (int8_t) SIGN( MTX_ij(mtxd_, k, k) );
@@ -177,31 +178,41 @@ static inline StdRtn_t MTXUdDecomp(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_
 					lz_magdkk = clz(mag_dkk);
 					lz_magujk = clz(mag_ujk);
 
-					if( 32 < (lz_maguik + lz_magdkk) )
+					for(l = 0u; 32 >= (lz_maguik + lz_magdkk); l++)
 					{
-						tempProd = mag_uik *  mag_dkk;
+						if(mag_uik > mag_dkk)
+						{
+							mag_uik = mag_uik >> 1;
+							lz_maguik++;
+						}
+						else
+						{
+							mag_dkk = mag_dkk >> 1;
+							lz_magdkk++;
+						}
 					}
-					else
-					{
-						/* TODO shift further to the right?! */
-					}
+					tempProd = mag_uik * mag_dkk;
 
 					tz_tempProd = ctz(tempProd);
 					tempProd = tempProd >> tz_tempProd;
 					lz_tempProd = clz(tempProd);
 
-					if( 32 < (lz_tempProd + lz_magujk) )
+					for(m = 0u; 32 >= (lz_tempProd + lz_magujk); m++)
 					{
-						sigma_hat = tempProd * mag_ujk;
+						if(tempProd > mag_ujk)
+						{
+							tempProd = tempProd >> 1;
+							lz_tempProd++;
+						}
+						else
+						{
+							mag_ujk = mag_ujk >> 1;
+							lz_magujk++;
+						}
 					}
-					else
-					{
-						/* TODO shift further to the right?! */
-					}
+					sigma_hat = (tempProd * mag_ujk) >> ( (2*DFLT_U_SCALING) - (l + tz_maguik + tz_magdkk + tz_tempProd + m + tz_magujk));  /* TODO equation might be wrong */
 
-					sigma_hat = sigma_hat >> ( (2*DFLT_U_SCALING) - (tz_maguik + tz_magdkk + tz_tempProd + tz_magujk));  /* TODO equation might be wrong */
-
-					if( 1 == (sig_uik * sig_dkk * sig_ujk) )
+					if( 0 < (sig_uik * sig_dkk * sig_ujk) )
 					{
 						sigma -= sigma_hat;
 					}
