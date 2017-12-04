@@ -233,6 +233,7 @@ static inline StdRtn_t MTXUdDecomposition(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t
 				else
 				{
 					MTX_ij(mtxu_, i, j) = (sigma << nScaleU_) / MTX_ij(mtxd_, j, j);
+					MTX_ij(mtxu_, j, i) = 0;
 				}
 			}
 		}
