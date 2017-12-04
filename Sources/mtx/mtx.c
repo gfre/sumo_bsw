@@ -130,8 +130,8 @@ static inline StdRtn_t MtxCalc(const MTX_t *mtx1_, const MTX_t *mtx2_, MTX_Op_t 
 	return retVal;
 }
 
-#define DFLT_U_SCALING (16) /* TODO value might be higher depending on largest value in mtx_? */
-static inline StdRtn_t MTXUdDecomp(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_, const uint8_t nScale_)
+/* nScaleU_ should be as high as possible (use MTX_CntLeadingZeros */
+static inline StdRtn_t MTXUdDecomposition(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_, const uint8_t nScaleU_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 
@@ -214,7 +214,7 @@ static inline StdRtn_t MTXUdDecomp(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_
 							lz_magujk++;
 						}
 					}
-					sigma_hat = (tempProd * mag_ujk) >> ( (2*DFLT_U_SCALING) - (l + tz_maguik + tz_magdkk + tz_tempProd + m + tz_magujk));
+					sigma_hat = (tempProd * mag_ujk) >> ( (2*nScaleU_) - (extraShift1 + tz_maguik + tz_magdkk + tz_tempProd + extraShift2 + tz_magujk));
 
 					if( 0 < (sig_uik * sig_dkk * sig_ujk) )
 					{
@@ -228,11 +228,11 @@ static inline StdRtn_t MTXUdDecomp(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_
 				if( i == j )
 				{
 					MTX_ij(mtxd_, j, j) = sigma;
-					MTX_ij(mtxu_, j, j) = 1 << DFLT_U_SCALING;
+					MTX_ij(mtxu_, j, j) = 1 << nScaleU_;
 				}
 				else
 				{
-					MTX_ij(mtxu_, i, j) = (sigma << DFLT_U_SCALING) / MTX_ij(mtxd_, j, j);
+					MTX_ij(mtxu_, i, j) = (sigma << nScaleU_) / MTX_ij(mtxd_, j, j);
 				}
 			}
 		}
@@ -240,7 +240,7 @@ static inline StdRtn_t MTXUdDecomp(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_
 	return retVal;
 }
 
-static inline StdRtn_t MtxCntLdngZrs(const MTX_t *mtx_, uint8_t *nLdngZrs_)
+static inline StdRtn_t MtxCountLeadingZeros(const MTX_t *mtx_, uint8_t *nLdngZrs_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	uint8_t i = 0u, j = 0u;
@@ -302,19 +302,19 @@ StdRtn_t MTX_Fill(MTX_t *mtx_, const uint8_t val_)
 	return MtxCalc(mtx_, mtx_, MTX_FILL, mtx_, val_);
 }
 
-StdRtn_t MTX_FillDiag(MTX_t *mtx_, const uint8_t val_)
+StdRtn_t MTX_FillDiagonal(MTX_t *mtx_, const uint8_t val_)
 {
 	return MtxCalc(mtx_, mtx_, MTX_FILL_DIAG, mtx_, val_);
 }
 
-StdRtn_t MTX_UdDecomp(const MTX_t * mtx_, MTX_t *mtxu_, MTX_t *mtxd_, const uint8_t nScale_)
+StdRtn_t MTX_UdDecomposition(const MTX_t * mtx_, MTX_t *mtxu_, MTX_t *mtxd_, const uint8_t nScale_)
 {
-	return MTXUdDecomp(mtx_, mtxu_, mtxd_, nScale_);
+	return MTXUdDecomposition(mtx_, mtxu_, mtxd_, nScale_);
 }
 
 StdRtn_t MTX_CountLeadingZeros(const MTX_t *mtx_, uint8_t *nLeadingZeros_)
 {
-	return MtxCntLdngZrs(mtx_, nLeadingZeros_);
+	return MtxCountLeadingZeros(mtx_, nLeadingZeros_);
 }
 
 
