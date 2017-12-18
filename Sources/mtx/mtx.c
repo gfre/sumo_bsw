@@ -43,7 +43,7 @@ typedef enum MTX_Op_e
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-
+static inline void MtxOverFlowMult(const int32_t fac1_, const int32_t fac2_, int32_t *prod_, uint8_t *nRightShift_);
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
@@ -141,27 +141,74 @@ static inline StdRtn_t MtxCalc(const MTX_t *mtx1_, const MTX_t *mtx2_, MTX_Op_t 
 	return retVal;
 }
 
-/* nScaleU_ should be as high as possible (use MTX_CntLeadingZeros */
+static inline void MtxOverFlowMult(const int32_t fac1_, const int32_t fac2_, int32_t *prod_, uint8_t *nRightShift_)
+{
+	/* Value information */
+	int8_t  sig_a = 0u, sig_b = 0u;
+	int32_t mag_a = 0,  mag_b = 0;
+
+	/* Shifts */
+	uint8_t tz_maga = 0u, tz_magb=0u;
+	uint8_t lz_maga = 0u, lz_magb=0u;
+	uint8_t extraShift = 0u;
+
+	sig_a = (int8_t) SIGN( fac1_ );
+	sig_b = (int8_t) SIGN( fac2_ );
+
+	mag_a = (int32_t) sig_a * fac1_;
+	mag_b = (int32_t) sig_b * fac2_;
+
+	tz_maga = ctz(mag_a);
+	tz_magb = ctz(mag_b);
+
+	mag_a = mag_a >> tz_maga;
+	mag_b = mag_b >> tz_magb;
+
+	lz_maga = clz(mag_a);
+	lz_magb = clz(mag_b);
+
+	for(extraShift = 0u; 32 >= (lz_maga + lz_magb); extraShift++)
+	{
+		if(mag_a > mag_b)
+		{
+			mag_a = mag_a >> 1;
+			lz_maga++;
+		}
+		else
+		{
+			mag_b = mag_b >> 1;
+			lz_magb++;
+		}
+	}
+
+	if( 0 > (sig_a * sig_b) )
+	{
+		*prod_ = -(mag_a * mag_b);
+	}
+	else
+	{
+		*prod_ = (mag_a * mag_b);
+	}
+	*nRightShift_ = (tz_maga + tz_magb + extraShift);
+}
+
+
+/* nScaleU_  determines precision of U... 16 seems reasonable */
 static inline StdRtn_t MTXUdDecomposition(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_, const uint8_t nScaleU_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 
-	/* Loop variables   ATTENTION: i,j,k need to be of signed data type */
+	/* Loop variables   ATTENTION: i,j need to be of signed data type */
 	int16_t i = 0, j = 0, k = 0;
 	uint8_t dim = mtx_->NumCols;
 
-	/* Value information */
-	int8_t  sig_uik = 0u, sig_dkk = 0u, sig_ujk = 0u;
-	int32_t mag_uik = 0,  mag_dkk = 0,  mag_ujk = 0;
-
-	/* Shifts */
-	uint8_t tz_maguik = 0u, tz_magdkk=0u, tz_magujk=0u, tz_tempProd = 0u;
-	uint8_t lz_maguik = 0u, lz_magdkk=0u, lz_magujk=0u, lz_tempProd = 0u;
-	uint8_t extraShift1 = 0u, extraShift2 = 0u;
+	uint8_t rightShiftuikdkk = 0u;
+	uint8_t rightShiftuikdkkujk = 0u;
 
 	int32_t sigma = 0;
-	int32_t sigma_hat = 0;
-	int32_t tempProd = 0;
+	int32_t uikdkk = 0;
+	int32_t uikdkkujk = 0;
+
 
 	if( (NULL != mtxu_) && (NULL != mtxd_) )
 	{
@@ -173,68 +220,11 @@ static inline StdRtn_t MTXUdDecomposition(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t
 				sigma = MTX_ij(mtx_, i, j);
 				for(k = (j+1); k < dim; k++)
 				{
-					sig_uik = (int8_t) SIGN( MTX_ij(mtxu_, i, k) );
-					sig_dkk = (int8_t) SIGN( MTX_ij(mtxd_, k, k) );
-					sig_ujk = (int8_t) SIGN( MTX_ij(mtxu_, j, k) );
+					MtxOverFlowMult( MTX_ij(mtxu_, i, k), MTX_ij(mtxd_, k, k), &uikdkk,    &rightShiftuikdkk );
+					MtxOverFlowMult( uikdkk,              MTX_ij(mtxu_, j, k), &uikdkkujk, &rightShiftuikdkkujk);
 
-					mag_uik = (int32_t) sig_uik * MTX_ij(mtxu_, i, k);
-					mag_dkk = (int32_t) sig_dkk * MTX_ij(mtxd_, k, k);
-					mag_ujk = (int32_t) sig_ujk * MTX_ij(mtxu_, j, k);
-
-					tz_maguik = ctz(mag_uik);
-					tz_magdkk = ctz(mag_dkk);
-					tz_magujk = ctz(mag_ujk);
-
-					mag_uik = mag_uik >> tz_maguik;
-					mag_dkk = mag_dkk >> tz_magdkk;
-					mag_ujk = mag_ujk >> tz_magujk;
-
-					lz_maguik = clz(mag_uik);
-					lz_magdkk = clz(mag_dkk);
-					lz_magujk = clz(mag_ujk);
-
-					for(extraShift1 = 0u; 32 >= (lz_maguik + lz_magdkk); extraShift1++)
-					{
-						if(mag_uik > mag_dkk)
-						{
-							mag_uik = mag_uik >> 1;
-							lz_maguik++;
-						}
-						else
-						{
-							mag_dkk = mag_dkk >> 1;
-							lz_magdkk++;
-						}
-					}
-					tempProd = mag_uik * mag_dkk;
-
-					tz_tempProd = ctz(tempProd);
-					tempProd = tempProd >> tz_tempProd;
-					lz_tempProd = clz(tempProd);
-
-					for(extraShift2 = 0u; 32 >= (lz_tempProd + lz_magujk); extraShift2++)
-					{
-						if(tempProd > mag_ujk)
-						{
-							tempProd = tempProd >> 1;
-							lz_tempProd++;
-						}
-						else
-						{
-							mag_ujk = mag_ujk >> 1;
-							lz_magujk++;
-						}
-					}
-					sigma_hat = (tempProd * mag_ujk) >> ( (2*nScaleU_) - (extraShift1 + tz_maguik + tz_magdkk + tz_tempProd + extraShift2 + tz_magujk));
-
-					if( 0 < (sig_uik * sig_dkk * sig_ujk) )
-					{
-						sigma -= sigma_hat;
-					}
-					else
-					{
-						sigma += sigma_hat;
-					}
+					uikdkkujk = uikdkkujk >> ( (2 * nScaleU_) - (rightShiftuikdkk + rightShiftuikdkkujk) );
+					sigma -= uikdkkujk;
 				}
 				if( i == j )
 				{
