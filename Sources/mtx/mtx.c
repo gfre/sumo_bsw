@@ -37,6 +37,7 @@ typedef enum MTX_Op_e
 	,MTX_TRNS
 	,MTX_FILL
 	,MTX_FILL_DIAG
+	,MTX_COPY
 	,MTX_CNT_OF_OPS
 }MTX_Op_t;
 
@@ -118,6 +119,16 @@ static inline StdRtn_t MtxCalc(const MTX_t *mtx1_, const MTX_t *mtx2_, MTX_Op_t 
 					else
 					{
 						MTXRes(i,j) = 0;
+					}
+					break;
+				case MTX_COPY:
+					if( (mtx1_->NumCols == mtxRes_->NumCols) && (mtx1_->NumRows == mtxRes_->NumRows) )
+					{
+						MTXRes(i,j) = MTX1(i,j);
+					}
+					else
+					{
+						retVal = ERR_PARAM_SIZE;
 					}
 					break;
 				default:
@@ -306,6 +317,11 @@ StdRtn_t MTX_Fill(MTX_t *mtx_, const uint8_t val_)
 StdRtn_t MTX_FillDiagonal(MTX_t *mtx_, const uint8_t val_)
 {
 	return MtxCalc(mtx_, mtx_, MTX_FILL_DIAG, mtx_, val_);
+}
+
+StdRtn_t MTX_Copy(const MTX_t *mtx1_, MTX_t *mtx2_)
+{
+	return MtxCalc(mtx1_, mtx2_, MTX_COPY, mtx2_, 0);
 }
 
 StdRtn_t MTX_UdDecomposition(const MTX_t * mtx_, MTX_t *mtxu_, MTX_t *mtxd_, const uint8_t nScale_)

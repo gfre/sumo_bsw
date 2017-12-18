@@ -56,6 +56,8 @@ EXTERNAL_ StdRtn_t MTX_ScaleDown(MTX_t *mtx_, const uint8_t nScale);
 EXTERNAL_ StdRtn_t MTX_Transpose(const MTX_t *mtx_, MTX_t *mtxTrnspsd_);
 EXTERNAL_ StdRtn_t MTX_Fill(MTX_t *mtx_, const uint8_t val_);
 EXTERNAL_ StdRtn_t MTX_FillDiagonal(MTX_t *mtx_, const uint8_t val_);
+EXTERNAL_ StdRtn_t MTX_Copy(const MTX_t *mtx1_, MTX_t *mtx2_);
+
 
 EXTERNAL_ StdRtn_t MTX_UdDecomposition(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_, const uint8_t nScale_);
 EXTERNAL_ StdRtn_t MTX_CountLeadingZeros(const MTX_t *mtx_, uint8_t *nLeadingZeros_);
