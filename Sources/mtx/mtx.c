@@ -43,20 +43,25 @@ typedef enum MTX_Op_e
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
+static inline StdRtn_t MtxCalc(const MTX_t *mtx1_, const MTX_t *mtx2_, MTX_Op_t op_, MTX_t *mtxRes_, uint8_t nScale_);
 static inline void MtxOverFlowMult(const int32_t fac1_, const int32_t fac2_, int32_t *prod_, uint8_t *nRightShift_);
+static inline StdRtn_t MTXUdDecomposition(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_, const uint8_t nScaleU_);
+static inline StdRtn_t MtxCountLeadingZeros(const MTX_t *mtx_, uint8_t *nLdngZrs_);
 static inline StdRtn_t MtxPrepareAddSub(MTX_t *mtx1_, MTX_t *mtx2_, MTX_t *mtxRes_);
 static inline StdRtn_t MtxPrepareMult(MTX_t *fac1_, MTX_t *fac2_, MTX_t *prod_);
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-static const uint8_t log2lookup[32] =
+static const uint8_t log2lookup[33] =
 {
-/* dim  0  1  2  3  4  5  6  7 */
-		0, 1, 1, 2, 2, 3, 3, 3,
-/* dim  8  9 10 11 12 13 14 15 */
-		3, 4, 4, 4, 4, 4, 4, 4,
-/* dim 16 17 18 19 20 21 22 23 */
-		4, 5, 5, 5, 5, 5, 5, 5,
-/* dim 24 25 26 27 28 29 30 31 */
+/* dim  0 */
+		0,
+/* dim  1  2  3  4  5  6  7  8*/
+		1, 1, 2, 2, 3, 3, 3, 3,
+/* dim  9 10 11 12 13 14 15 16*/
+		4, 4, 4, 4, 4, 4, 4, 4,
+/* dim 17 18 19 20 21 22 23 24*/
+	    5, 5, 5, 5, 5, 5, 5, 5,
+/* dim 25 26 27 28 29 30 31 32*/
 		5, 5, 5, 5, 5, 5, 5, 5
 };
 
@@ -301,7 +306,7 @@ static inline StdRtn_t MtxPrepareMult(MTX_t *mtx1_, MTX_t *mtx2_, MTX_t *mtxRes_
 			/* determine #integer bits for mtxRes_ */
 			if( (mtx1_->NumRows == mtx2_->NumCols) && (mtx1_->NumCols < mtx1_->NumRows) )
 			{
-				mtxRes_->NumIntegerBits = (mtx1_->NumIntegerBits + mtx2_->NumIntegerBits);
+				mtxRes_->NumIntegerBits = (mtx1_->NumIntegerBits + mtx2_->NumIntegerBits + 1);
 			}
 			else
 			{
@@ -399,7 +404,7 @@ StdRtn_t MTX_ScaleDown(MTX_t *mtx_, const uint8_t nScale_)
 			if( 0 >= diff )
 			{
 				mtx_->NumFractionalBits = 0;
-				mtx_->NumIntegerBits += diff;
+				mtx_->NumIntegerBits   += diff;
 			}
 			else
 			{
@@ -479,6 +484,3 @@ StdRtn_t MTX_CountLeadingZeros(const MTX_t *mtx_, uint8_t *nLeadingZeros_)
 #ifdef MASTER_mtx_C_
 #undef MASTER_mtx_C_
 #endif /* !MASTER_mtx_C_ */
-
-
-
