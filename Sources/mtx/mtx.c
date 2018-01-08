@@ -43,12 +43,27 @@ typedef enum MTX_Op_e
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
+static inline StdRtn_t MtxCalc(const MTX_t *mtx1_, const MTX_t *mtx2_, MTX_Op_t op_, MTX_t *mtxRes_, uint8_t nScale_);
 static inline void MtxOverFlowMult(const int32_t fac1_, const int32_t fac2_, int32_t *prod_, uint8_t *nRightShift_);
-
+static inline StdRtn_t MTXUdDecomposition(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_, const uint8_t nScaleU_);
+static inline StdRtn_t MtxCountLeadingZeros(const MTX_t *mtx_, uint8_t *nLdngZrs_);
+static inline StdRtn_t MtxPrepareAddSub(MTX_t *mtx1_, MTX_t *mtx2_, MTX_t *mtxRes_);
+static inline StdRtn_t MtxPrepareMult(MTX_t *fac1_, MTX_t *fac2_, MTX_t *prod_);
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-
-
+static const uint8_t log2lookup[33] =
+{
+/* dim  0 */
+		0,
+/* dim  1  2  3  4  5  6  7  8*/
+		1, 1, 2, 2, 3, 3, 3, 3,
+/* dim  9 10 11 12 13 14 15 16*/
+		4, 4, 4, 4, 4, 4, 4, 4,
+/* dim 17 18 19 20 21 22 23 24*/
+	    5, 5, 5, 5, 5, 5, 5, 5,
+/* dim 25 26 27 28 29 30 31 32*/
+		5, 5, 5, 5, 5, 5, 5, 5
+};
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 static inline StdRtn_t MtxCalc(const MTX_t *mtx1_, const MTX_t *mtx2_, MTX_Op_t op_, MTX_t *mtxRes_, uint8_t nScale_)
@@ -66,50 +81,29 @@ static inline StdRtn_t MtxCalc(const MTX_t *mtx1_, const MTX_t *mtx2_, MTX_Op_t 
 				switch(op_)
 				{
 				case MTX_ADD:
-					if( ((mtx1_->NumRows == mtx2_->NumRows) && (mtx1_->NumCols == mtx2_->NumCols)) && ((mtxRes_->NumRows == mtx1_->NumRows) && (mtxRes_->NumCols == mtx1_->NumCols))  )  //dimensions must agree
-					{
-						MTXRes(i,j) = MTX1(i,j) + MTX2(i,j);
-					}
-					else
-					{
-						retVal = ERR_PARAM_SIZE;
-					}
+					MTXRes(i,j) = MTX1(i,j) + MTX2(i,j);
 					break;
 				case MTX_SUB:
-					if( ((mtx1_->NumRows == mtx2_->NumRows) && (mtx1_->NumCols == mtx2_->NumCols)) && ((mtxRes_->NumRows == mtx1_->NumRows) && (mtxRes_->NumCols == mtx1_->NumCols))  )  //dimensions must agree
-					{
-						MTXRes(i,j) = MTX1(i,j) - MTX2(i,j);
-					}
-					else
-					{
-						retVal = ERR_PARAM_SIZE;
-					}
+					MTXRes(i,j) = MTX1(i,j) - MTX2(i,j);
 					break;
 				case MTX_MULT:
-					if( mtx1_->NumCols == mtx2_->NumRows ) //dimensions must agree
+					MTXRes(i,j) = 0;  //to avoid overwriting
+					for(k = 0u; k < mtx1_->NumCols; k++)
 					{
-						MTXRes(i,j) = 0;  //to avoid overwriting
-						for(k = 0u; k < mtx1_->NumCols; k++)
-						{
-							MTXRes(i,j) += MTX1(i,k) * MTX2(k,j);
-						}
-					}
-					else
-					{
-						retVal = ERR_PARAM_SIZE;
+						MTXRes(i,j) += MTX1(i,k) * MTX2(k,j);
 					}
 					break;
 				case MTX_SCALE_UP:
-						MTXRes(i,j) = MTXRes(i,j) << nScale_;
+					MTXRes(i,j) = (MTXRes(i,j) << nScale_);
 					break;
 				case MTX_SCALE_DOWN:
-						MTXRes(i,j) = MTXRes(i,j) >> nScale_;
+					MTXRes(i,j) = (MTXRes(i,j) >> nScale_);
 					break;
 				case MTX_TRNS:
-						MTXRes(j,i) = MTX1(i,j);
+					MTXRes(j,i) = MTX1(i,j);
 					break;
 				case MTX_FILL:
-						MTXRes(i,j) = (int32_t)nScale_;
+					MTXRes(i,j) = (int32_t)nScale_;
 					break;
 				case MTX_FILL_DIAG:
 					if( i == j )
@@ -122,14 +116,7 @@ static inline StdRtn_t MtxCalc(const MTX_t *mtx1_, const MTX_t *mtx2_, MTX_Op_t 
 					}
 					break;
 				case MTX_COPY:
-					if( (mtx1_->NumCols == mtxRes_->NumCols) && (mtx1_->NumRows == mtxRes_->NumRows) )
-					{
-						MTXRes(i,j) = MTX1(i,j);
-					}
-					else
-					{
-						retVal = ERR_PARAM_SIZE;
-					}
+					MTXRes(i,j) = MTX1(i,j);
 					break;
 				default:
 					retVal |= ERR_PARAM_DATA;
@@ -268,53 +255,221 @@ static inline StdRtn_t MtxCountLeadingZeros(const MTX_t *mtx_, uint8_t *nLdngZrs
 	return retVal;
 }
 
+static inline StdRtn_t MtxPrepareAddSub(MTX_t *mtx1_, MTX_t *mtx2_, MTX_t *mtxRes_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if( (NULL != mtx1_) && (NULL != mtx2_) && (NULL != mtxRes_ ) )
+	{
+		retVal = ERR_PARAM_SIZE;
+		if(    (   (mtx1_->NumRows == mtx2_->NumRows)
+				&& (mtx1_->NumCols == mtx2_->NumCols) )
+			&& (   (mtx1_->NumRows == mtxRes_->NumRows)
+				&& (mtx1_->NumCols == mtxRes_->NumCols) ) )
+		{
+			retVal = ERR_OK;
+			/* determine #fractional bits for sum_ and scale smd1 or smd2 to same scaling */
+			if(mtx1_->NumFractionalBits >= mtx2_->NumFractionalBits )
+		    {
+		    	retVal |= MTX_ScaleUp(mtx2_, (mtx1_->NumFractionalBits - mtx2_->NumFractionalBits));
+		    	mtxRes_->NumFractionalBits  = mtx1_->NumFractionalBits;
+		    }
+		    else
+			{
+		    	retVal |= MTX_ScaleUp(mtx1_, (mtx2_->NumFractionalBits - mtx1_->NumFractionalBits));
+		    	mtxRes_->NumFractionalBits  = mtx2_->NumFractionalBits;
+			}
+			/* determine #integer bits used for mtxRes_ */
+			if(mtx1_->NumIntegerBits >= mtx2_->NumIntegerBits)
+			{
+				mtxRes_->NumIntegerBits = (mtx1_->NumIntegerBits + 1);
+			}
+			else
+			{
+				mtxRes_->NumIntegerBits = (mtx2_->NumIntegerBits + 1);
+			}
+		}
+	}
+	return retVal;
+}
+
+static inline StdRtn_t MtxPrepareMult(MTX_t *mtx1_, MTX_t *mtx2_, MTX_t *mtxRes_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if(NULL != mtxRes_)
+	{
+		retVal = ERR_PARAM_SIZE;
+		if(    (mtx1_->NumCols   == mtx2_->NumRows)
+			&& (mtxRes_->NumRows == mtx1_->NumRows)
+			&& (mtxRes_->NumCols == mtx2_->NumCols) )
+		{
+			retVal = ERR_OK;
+			/* determine #integer bits for mtxRes_ */
+			if( (mtx1_->NumRows == mtx2_->NumCols) && (mtx1_->NumCols < mtx1_->NumRows) )
+			{
+				mtxRes_->NumIntegerBits = (mtx1_->NumIntegerBits + mtx2_->NumIntegerBits + 1);
+			}
+			else
+			{
+				mtxRes_->NumIntegerBits = (mtx1_->NumIntegerBits + mtx2_->NumIntegerBits
+											+ log2lookup[MAX(mtx1_->NumRows, mtx1_->NumCols)]);
+			}
+		    /* determine #fractional bits for mtxRes_ */
+			mtxRes_->NumFractionalBits = (mtx1_->NumFractionalBits + mtx2_->NumFractionalBits);
+
+			while( (mtxRes_->NumIntegerBits + mtxRes_->NumFractionalBits) > 31 )
+			{
+				switch( mtxRes_->NumFractionalBits )
+				{
+				case 0:
+					if(mtx1_->NumIntegerBits > mtx2_->NumIntegerBits)
+					{
+						retVal |= MTX_ScaleDown(mtx1_, (1u));
+					}
+					else
+					{
+						retVal |= MTX_ScaleDown(mtx2_, (1u));
+					}
+					mtxRes_->NumIntegerBits--;
+					break;
+				default:
+					if(mtx1_->NumFractionalBits > mtx2_->NumFractionalBits)
+					{
+						retVal |= MTX_ScaleDown(mtx1_, (1u));
+					}
+					else
+					{
+						retVal |= MTX_ScaleDown(mtx2_, (1u));
+					}
+					mtxRes_->NumFractionalBits--;
+					break;
+				}
+			}
+		}
+	}
+	return retVal;
+}
+
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-StdRtn_t MTX_Add(const MTX_t *smd1_, const MTX_t *smd2_, MTX_t *sum_)
+StdRtn_t MTX_Add(MTX_t *smd1_, MTX_t *smd2_, MTX_t *sum_)
 {
-	return MtxCalc(smd1_, smd2_, MTX_ADD, sum_, 0);
+	StdRtn_t retVal = ERR_OK;
+	retVal |= MtxPrepareAddSub(smd1_, smd2_, sum_);
+	retVal |= MtxCalc(smd1_, smd2_, MTX_ADD, sum_, 0);
+	return retVal;
 }
 
-StdRtn_t MTX_Sub(const MTX_t *min_, const MTX_t *sub_, MTX_t *diff_)
+StdRtn_t MTX_Sub(MTX_t *min_, MTX_t *sub_, MTX_t *diff_)
 {
-	return MtxCalc(min_, sub_, MTX_SUB, diff_, 0);
+	StdRtn_t retVal = ERR_OK;
+	retVal |= MtxPrepareAddSub(min_, sub_, diff_);
+	retVal |= MtxCalc(min_, sub_, MTX_SUB, diff_, 0);
+	return retVal;
 }
 
-StdRtn_t MTX_Mult(const MTX_t *fac1_, const MTX_t *fac2_, MTX_t *prod_)
+StdRtn_t MTX_Mult(MTX_t *fac1_, MTX_t *fac2_, MTX_t *prod_)
 {
-	return MtxCalc(fac1_, fac2_, MTX_MULT, prod_, 0);
+	StdRtn_t retVal = ERR_OK;
+	retVal |= MtxPrepareMult(fac1_, fac2_, prod_);
+	retVal |= MtxCalc(fac1_, fac2_, MTX_MULT, prod_, 0);
+	return retVal;
 }
 
 StdRtn_t MTX_ScaleUp(MTX_t *mtx_, const uint8_t nScale_)
 {
-	return MtxCalc(mtx_, mtx_, MTX_SCALE_UP, mtx_, nScale_);
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if( NULL != mtx_ )
+	{
+		retVal  = ERR_PARAM_SIZE;
+		if( (mtx_->NumIntegerBits + mtx_->NumFractionalBits + nScale_) <= 31)
+		{
+			retVal  = ERR_OK;
+			mtx_->NumFractionalBits += nScale_;
+			retVal |= MtxCalc(mtx_, mtx_, MTX_SCALE_UP, mtx_, nScale_);
+		}
+	}
+	return retVal;
 }
 
 StdRtn_t MTX_ScaleDown(MTX_t *mtx_, const uint8_t nScale_)
 {
-	return MtxCalc(mtx_, mtx_, MTX_SCALE_DOWN, mtx_, nScale_);
+	int16_t diff = 0;
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if( NULL != mtx_ )
+	{
+		retVal  = ERR_PARAM_SIZE;
+		if( (mtx_->NumIntegerBits + mtx_->NumFractionalBits) > nScale_)
+		{
+			retVal  = ERR_OK;
+			diff    = (int16_t)(mtx_->NumFractionalBits - nScale_);
+			if( 0 >= diff )
+			{
+				mtx_->NumFractionalBits = 0;
+				mtx_->NumIntegerBits   += diff;
+			}
+			else
+			{
+				mtx_->NumFractionalBits -= nScale_;
+			}
+			retVal |= MtxCalc(mtx_, mtx_, MTX_SCALE_DOWN, mtx_, nScale_);
+		}
+	}
+	return retVal;
 }
 
 StdRtn_t MTX_Transpose(const MTX_t *mtx_, MTX_t *mtxTrnspsd_)
 {
-	return MtxCalc(mtx_, mtx_, MTX_TRNS, mtxTrnspsd_, 0);
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if( NULL != mtxTrnspsd_ )
+	{
+		retVal = ERR_PARAM_SIZE;
+		if( (mtx_->NumRows == mtxTrnspsd_->NumRows)
+			&& (mtx_->NumCols == mtxTrnspsd_->NumCols) )
+		{
+			retVal  = ERR_OK;
+			retVal |= MtxCalc(mtx_, mtx_, MTX_TRNS, mtxTrnspsd_, 0);
+		}
+	}
+	return retVal;
 }
 
 StdRtn_t MTX_Fill(MTX_t *mtx_, const uint8_t val_)
 {
-	return MtxCalc(mtx_, mtx_, MTX_FILL, mtx_, val_);
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if( NULL != mtx_ )
+	{
+		retVal = ERR_OK;
+		retVal |= MtxCalc(mtx_, mtx_, MTX_FILL, mtx_, val_);
+	}
+	return retVal;
 }
 
 StdRtn_t MTX_FillDiagonal(MTX_t *mtx_, const uint8_t val_)
 {
-	return MtxCalc(mtx_, mtx_, MTX_FILL_DIAG, mtx_, val_);
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if( NULL != mtx_ )
+	{
+		retVal = ERR_OK;
+		retVal |= MtxCalc(mtx_, mtx_, MTX_FILL_DIAG, mtx_, val_);
+	}
+	return retVal;
 }
 
 StdRtn_t MTX_Copy(const MTX_t *mtx1_, MTX_t *mtx2_)
 {
-	return MtxCalc(mtx1_, mtx2_, MTX_COPY, mtx2_, 0);
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if( NULL != mtx2_ )
+	{
+		retVal = ERR_PARAM_SIZE;
+		if( (mtx1_->NumCols == mtx2_->NumCols) && (mtx1_->NumRows == mtx2_->NumRows) )
+		{
+			retVal  = ERR_OK;
+			retVal |= MtxCalc(mtx1_, mtx2_, MTX_COPY, mtx2_, 0);
+		}
+	}
+	return retVal;
 }
 
-StdRtn_t MTX_UdDecomposition(const MTX_t * mtx_, MTX_t *mtxu_, MTX_t *mtxd_, const uint8_t nScale_)
+StdRtn_t MTX_UdDecomposition(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_, const uint8_t nScale_)
 {
 	return MTXUdDecomposition(mtx_, mtxu_, mtxd_, nScale_);
 }
@@ -329,6 +484,3 @@ StdRtn_t MTX_CountLeadingZeros(const MTX_t *mtx_, uint8_t *nLeadingZeros_)
 #ifdef MASTER_mtx_C_
 #undef MASTER_mtx_C_
 #endif /* !MASTER_mtx_C_ */
-
-
-
