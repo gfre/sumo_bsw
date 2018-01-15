@@ -140,6 +140,8 @@ EXTERNAL_ StdRtn_t MTX_UdDecomposition(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *m
 
 EXTERNAL_ StdRtn_t MTX_OverFlowMult(const int32_t fac1_, const int32_t fac2_, int32_t *prod_, uint8_t *nRightShift);
 
+EXTERNAL_ StdRtn_t MTX_CountLeadingZeros(MTX_t *mtx_, uint8_t *nLdngZrs_);
+
 /**
  * @}
  */

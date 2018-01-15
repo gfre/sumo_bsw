@@ -25,14 +25,6 @@
 
 #define SIGN(x_) ( (x_ > 0) ? (1) : ( (x_ < 0) ? (-1) : (0) ) )
 
-#define CEILINGLOG2(dim_) (   (dim_ < 2)  ? (0) : \
-						    ( (dim_ < 3)  ? (1) : \
-						    ( (dim_ < 5)  ? (2) : \
-						    ( (dim_ < 9)  ? (3) : \
-						    ( (dim_ < 17) ? (4) : \
-						    ( (dim_ < 33) ? (5) : \
-								 	 	    (0xFF) ) ) ) ) ) )
-
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 typedef enum MTX_Op_e
@@ -53,10 +45,8 @@ typedef enum MTX_Op_e
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 static inline StdRtn_t MtxCalc(const MTX_t *mtx1_, const MTX_t *mtx2_, MTX_Op_t op_, MTX_t *mtxRes_, uint8_t nScale_);
 static inline StdRtn_t MtxOverFlowMult(const int32_t fac1_, const int32_t fac2_, int32_t *prod_, uint8_t *nRightShifts_);
-static inline StdRtn_t MTXUdDecomposition(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_, const uint8_t nScaleU_);
-static inline StdRtn_t MtxUpdateIntegerBits(MTX_t *mtx_, uint8_t *nIntegerBits_);
-static inline StdRtn_t MtxPrepareAddSub(MTX_t *mtx1_, MTX_t *mtx2_, const uint8_t nIntegerBitsMtx1_, const uint8_t nIntegerBitsMtx2_, MTX_t *mtxRes_);
-static inline StdRtn_t MtxPrepareMult(MTX_t *fac1_, MTX_t *fac2_, const uint8_t nIntegerBitsMtx1_, const uint8_t nIntegerBitsMtx2_, MTX_t *prod_);
+static inline StdRtn_t MtxUdDecomposition(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_, const uint8_t nScaleU_);
+static inline StdRtn_t MtxCountLeadingZeros(MTX_t *mtx_, uint8_t *nLdngZrs_);
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 
@@ -182,7 +172,7 @@ static inline StdRtn_t MtxOverFlowMult(const int32_t fac1_, const int32_t fac2_,
 }
 
 /* nScaleU_  determines precision of U... 16 seems reasonable */
-static inline StdRtn_t MTXUdDecomposition(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_, const uint8_t nScaleU_)
+static inline StdRtn_t MtxUdDecomposition(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_, const uint8_t nScaleU_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 
@@ -226,13 +216,11 @@ static inline StdRtn_t MTXUdDecomposition(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t
 				}
 			}
 		}
-		mtxu_->NumFractionalBits = nScaleU_;
-		mtxd_->NumFractionalBits = 0;
 	}
 	return retVal;
 }
 
-static inline StdRtn_t MtxUpdateIntegerBits(MTX_t *mtx_, uint8_t *nIntegerBits_)
+static inline StdRtn_t MtxCountLeadingZeros(MTX_t *mtx_, uint8_t *nLdngZrs_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	uint8_t i = 0u, j = 0u;
@@ -241,7 +229,6 @@ static inline StdRtn_t MtxUpdateIntegerBits(MTX_t *mtx_, uint8_t *nIntegerBits_)
 
 	int8_t  sig = 0u;
 	int32_t mag = 0;
-	uint8_t lz_mag = 0u;
 
 	if( NULL != mtx_ )
 	{
@@ -259,122 +246,27 @@ static inline StdRtn_t MtxUpdateIntegerBits(MTX_t *mtx_, uint8_t *nIntegerBits_)
 				}
 			}
 		}
-		*nIntegerBits_ = (32 - mtx_->NumFractionalBits - tmpCnt);
+		*nLdngZrs_ = tmpCnt;
 	}
 	return retVal;
 }
 
-static inline StdRtn_t MtxPrepareAddSub(MTX_t *mtx1_, MTX_t *mtx2_, const uint8_t nIntegerBitsMtx1_, const uint8_t nIntegerBitsMtx2_, MTX_t *mtxRes_)
-{
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	uint8_t nIntegerBitsMtxRes = 0u;
-	if( (NULL != mtx1_) && (NULL != mtx2_) && (NULL != mtxRes_ ) )
-	{
-		retVal = ERR_PARAM_SIZE;
-		if(    (   (mtx1_->NumRows == mtx2_->NumRows)
-				&& (mtx1_->NumCols == mtx2_->NumCols) )
-			&& (   (mtx1_->NumRows == mtxRes_->NumRows)
-				&& (mtx1_->NumCols == mtxRes_->NumCols) ) )
-		{
-			retVal = ERR_OK;
-			/* determine #fractional bits for sum_ and scale smd1 or smd2 to same scaling */
-			if(mtx1_->NumFractionalBits >= mtx2_->NumFractionalBits )
-		    {
-		    	retVal |= MTX_ScaleUp(mtx2_, (mtx1_->NumFractionalBits - mtx2_->NumFractionalBits));
-		    	mtxRes_->NumFractionalBits  = mtx1_->NumFractionalBits;
-		    }
-		    else
-			{
-		    	retVal |= MTX_ScaleUp(mtx1_, (mtx2_->NumFractionalBits - mtx1_->NumFractionalBits));
-		    	mtxRes_->NumFractionalBits  = mtx2_->NumFractionalBits;
-			}
-			/* determine #integer bits used for mtxRes_ */
-			nIntegerBitsMtxRes = (MAX(nIntegerBitsMtx1_, nIntegerBitsMtx2_) + 1);
-			while( ((nIntegerBitsMtxRes + mtxRes_->NumFractionalBits) > 31)
-					&& (ERR_OK == retVal) )
-			{
-				retVal |= MTX_ScaleDown(mtx1_, (1u));
-				retVal |= MTX_ScaleDown(mtx2_, (1u));
-				if( mtxRes_->NumFractionalBits > 0 )
-				{
-					mtxRes_->NumFractionalBits--;
-				}
-			}
-		}
-	}
-	return retVal;
-}
-
-static inline StdRtn_t MtxPrepareMult(MTX_t *mtx1_, MTX_t *mtx2_, const uint8_t nIntegerBitsMtx1_, const uint8_t nIntegerBitsMtx2_, MTX_t *mtxRes_)
-{
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	uint8_t nIntegerBitsMtxRes = 0u;
-	if(NULL != mtxRes_)
-	{
-		retVal = ERR_PARAM_SIZE;
-		if(    (mtx1_->NumCols   == mtx2_->NumRows)
-			&& (mtxRes_->NumRows == mtx1_->NumRows)
-			&& (mtxRes_->NumCols == mtx2_->NumCols) )
-		{
-			retVal = ERR_OK;
-			/* determine #integer bits for mtxRes_ */
-			if( (mtx1_->NumRows == mtx2_->NumCols) && (mtx1_->NumCols < mtx1_->NumRows) )
-			{
-				nIntegerBitsMtxRes = (nIntegerBitsMtx1_ + nIntegerBitsMtx2_ + 1);
-			}
-			else
-			{
-				nIntegerBitsMtxRes = (nIntegerBitsMtx1_ + nIntegerBitsMtx2_
-											+ CEILINGLOG2( MAX(mtx1_->NumRows, mtx1_->NumCols) ) );
-			}
-		    /* determine #fractional bits for mtxRes_ */
-			mtxRes_->NumFractionalBits = (mtx1_->NumFractionalBits + mtx2_->NumFractionalBits);
-
-			while( ((nIntegerBitsMtxRes + mtxRes_->NumFractionalBits) > 31) && (ERR_OK == retVal) )
-			{
-				switch( mtxRes_->NumFractionalBits )
-				{
-				case 0:
-					if(nIntegerBitsMtx1_ > nIntegerBitsMtx2_)
-					{
-						retVal |= MTX_ScaleDown(mtx1_, (1u));
-					}
-					else
-					{
-						retVal |= MTX_ScaleDown(mtx2_, (1u));
-					}
-					nIntegerBitsMtxRes--;
-					break;
-				default:
-					if(mtx1_->NumFractionalBits > mtx2_->NumFractionalBits)
-					{
-						retVal |= MTX_ScaleDown(mtx1_, (1u));
-					}
-					else
-					{
-						retVal |= MTX_ScaleDown(mtx2_, (1u));
-					}
-					mtxRes_->NumFractionalBits--;
-					break;
-				}
-			}
-		}
-	}
-	return retVal;
-}
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 StdRtn_t MTX_Add(MTX_t *smd1_, MTX_t *smd2_, MTX_t *sum_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	uint8_t nIntegerBitsSmd1 = 0u, nIntegerBitsSmd2 = 0u;
 	if( NULL != sum_ )
 	{
-		retVal = ERR_OK;
-		retVal |= MtxUpdateIntegerBits(smd1_, &nIntegerBitsSmd1);
-		retVal |= MtxUpdateIntegerBits(smd2_, &nIntegerBitsSmd2);
-		retVal |= MtxPrepareAddSub(smd1_, smd2_, nIntegerBitsSmd1, nIntegerBitsSmd2, sum_);
-		retVal |= MtxCalc(smd1_, smd2_, MTX_ADD, sum_, 0);
+		retVal = ERR_PARAM_SIZE;
+		if(    (   (smd1_->NumRows == smd2_->NumRows)
+				&& (smd1_->NumCols == smd2_->NumCols) )
+			&& (   (smd1_->NumRows == sum_->NumRows)
+				&& (smd1_->NumCols == sum_->NumCols) ) )
+		{
+			retVal  = ERR_OK;
+			retVal |= MtxCalc(smd1_, smd2_, MTX_ADD, sum_, 0);
+		}
 	}
 	return retVal;
 }
@@ -382,14 +274,17 @@ StdRtn_t MTX_Add(MTX_t *smd1_, MTX_t *smd2_, MTX_t *sum_)
 StdRtn_t MTX_Sub(MTX_t *min_, MTX_t *sub_, MTX_t *diff_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	uint8_t nIntegerBitsMin = 0u, nIntegerBitsSub = 0u;
 	if( NULL != diff_ )
 	{
-		retVal = ERR_OK;
-		retVal |= MtxUpdateIntegerBits(min_, &nIntegerBitsMin);
-		retVal |= MtxUpdateIntegerBits(sub_, &nIntegerBitsSub);
-		retVal |= MtxPrepareAddSub(min_, sub_, nIntegerBitsMin, nIntegerBitsSub, diff_);
-		retVal |= MtxCalc(min_, sub_, MTX_SUB, diff_, 0);
+		retVal = ERR_PARAM_SIZE;
+		if(    (   (min_->NumRows == sub_->NumRows)
+				&& (min_->NumCols == sub_->NumCols) )
+			&& (   (min_->NumRows == diff_->NumRows)
+				&& (min_->NumCols == diff_->NumCols) ) )
+		{
+			retVal  = ERR_OK;
+			retVal |= MtxCalc(smd1_, smd2_, MTX_SUB, sum_, 0);
+		}
 	}
 	return retVal;
 }
@@ -397,14 +292,16 @@ StdRtn_t MTX_Sub(MTX_t *min_, MTX_t *sub_, MTX_t *diff_)
 StdRtn_t MTX_Mult(MTX_t *fac1_, MTX_t *fac2_, MTX_t *prod_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	uint8_t nIntegerBitsFac1 = 0u, nIntegerBitsFac2 = 0u;
 	if( NULL != prod_ )
 	{
-		retVal = ERR_OK;
-		retVal |= MtxUpdateIntegerBits(fac1_, &nIntegerBitsFac1);
-		retVal |= MtxUpdateIntegerBits(fac2_, &nIntegerBitsFac2);
-		retVal |= MtxPrepareMult(fac1_, fac2_, nIntegerBitsFac1, nIntegerBitsFac2, prod_);
-		retVal |= MtxCalc(fac1_, fac2_, MTX_MULT, prod_, 0);
+		retVal = ERR_PARAM_SIZE;
+		if(    (fac1_->NumCols == fac2_->NumRows)
+			&& (prod_->NumRows == fac1_->NumRows)
+			&& (prod_->NumCols == fac2_->NumCols)   )
+		{
+			retVal = ERR_OK;
+			retVal |= MtxCalc(fac1_, fac2_, MTX_MULT, prod_, 0);
+		}
 	}
 	return retVal;
 }
@@ -412,17 +309,10 @@ StdRtn_t MTX_Mult(MTX_t *fac1_, MTX_t *fac2_, MTX_t *prod_)
 StdRtn_t MTX_ShiftLeft(MTX_t *mtx_, const uint8_t nScale_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	uint8_t nIntegerBitsMtx = 0u;
 	if( NULL != mtx_ )
 	{
-		retVal  = ERR_PARAM_SIZE;
-		retVal |= MtxUpdateIntegerBits(mtx_, &nIntegerBitsMtx);
-		if( (nIntegerBitsMtx + mtx_->NumFractionalBits + nScale_) <= 31)
-		{
-			retVal  = ERR_OK;
-			mtx_->NumFractionalBits += nScale_;
-			retVal |= MtxCalc(mtx_, mtx_, MTX_SHIFT_LEFT, mtx_, nScale_);
-		}
+		retVal  = ERR_OK;
+		retVal |= MtxCalc(mtx_, mtx_, MTX_SHIFT_LEFT, mtx_, nScale_);
 	}
 	return retVal;
 }
@@ -430,26 +320,10 @@ StdRtn_t MTX_ShiftLeft(MTX_t *mtx_, const uint8_t nScale_)
 StdRtn_t MTX_ShiftRight(MTX_t *mtx_, const uint8_t nScale_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	uint8_t nIntegerBitsMtx = 0u;
-	int16_t diff = 0;
 	if( NULL != mtx_ )
 	{
-		retVal  = ERR_PARAM_SIZE;
-		retVal |= MtxUpdateIntegerBits(mtx_, &nIntegerBitsMtx);
-		if( (nIntegerBitsMtx + mtx_->NumFractionalBits) > nScale_ )
-		{
-			retVal  = ERR_OK;
-			diff    = (int16_t)(mtx_->NumFractionalBits - nScale_);
-			if( 0 >= diff )
-			{
-				mtx_->NumFractionalBits = 0;
-			}
-			else
-			{
-				mtx_->NumFractionalBits -= nScale_;
-			}
-			retVal |= MtxCalc(mtx_, mtx_, MTX_SHIFT_RIGHT, mtx_, nScale_);
-		}
+		retVal  = ERR_OK;
+		retVal |= MtxCalc(mtx_, mtx_, MTX_SHIFT_RIGHT, mtx_, nScale_);
 	}
 	return retVal;
 }
@@ -470,25 +344,23 @@ StdRtn_t MTX_Transpose(const MTX_t *mtx_, MTX_t *mtxTrnspsd_)
 	return retVal;
 }
 
-StdRtn_t MTX_Fill(MTX_t *mtx_, const uint8_t val_, const uint8_t nFractionalBits_)
+StdRtn_t MTX_Fill(MTX_t *mtx_, const uint8_t val_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if( NULL != mtx_ )
 	{
 		retVal = ERR_OK;
-		mtx_->NumFractionalBits = nFractionalBits_;
 		retVal |= MtxCalc(mtx_, mtx_, MTX_FILL, mtx_, val_);
 	}
 	return retVal;
 }
 
-StdRtn_t MTX_FillDiagonal(MTX_t *mtx_, const uint8_t val_, const uint8_t nFractionalBits_)
+StdRtn_t MTX_FillDiagonal(MTX_t *mtx_, const uint8_t val_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if( NULL != mtx_ )
 	{
 		retVal = ERR_OK;
-		mtx_->NumFractionalBits = nFractionalBits_;
 		retVal |= MtxCalc(mtx_, mtx_, MTX_FILL_DIAG, mtx_, val_);
 	}
 	return retVal;
@@ -504,7 +376,6 @@ StdRtn_t MTX_Copy(MTX_t *mtx1_, MTX_t *mtx2_)
 		{
 			retVal  = ERR_OK;
 			retVal |= MtxCalc(mtx1_, mtx2_, MTX_COPY, mtx2_, 0);
-			mtx2_->NumFractionalBits = mtx1_->NumFractionalBits;
 		}
 	}
 	return retVal;
@@ -528,6 +399,17 @@ StdRtn_t MTX_OverFlowMult(const int32_t fac1_, const int32_t fac2_, int32_t *pro
 	{
 		retVal  = ERR_OK;
 		retVal |= MtxOverFlowMult(fac1_, fac2_, prod_, nRightShifts_);
+	}
+	return retVal;
+}
+
+StdRtn_t MTX_CountLeadingZeros(MTX_t *mtx_, uint8_t *nLdngZrs_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	if( (NULL != mtx_) && (NULL != nLdngZrs_) )
+	{
+		retVal  = ERR_OK;
+		retVal |= MtxCountLeadingZeros(mtx_, nLdngZrs_);
 	}
 	return retVal;
 }
