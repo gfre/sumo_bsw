@@ -20,13 +20,15 @@
 #include "kf_api.h"
 
 
-
 /*======================================= >> #DEFINES << =========================================*/
+
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 
+
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 static void KF_Reset(KF_Itm_t *kf_);
+
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 static KF_ItmTbl_t *KF_pTbl  = NULL;
@@ -41,6 +43,7 @@ static MTX_t KF_mEye = {FIXMATRIX_MAX_SIZE, FIXMATRIX_MAX_SIZE, 0, {{1<<16,0,0,0
 																	{0,0,0,0,0,1<<16,0,0},
 																	{0,0,0,0,0,0,1<<16,0},
 																	{0,0,0,0,0,0,0,1<<16}}};
+
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 static void KF_Reset(KF_Itm_t *kf_)
@@ -70,6 +73,7 @@ static void KF_BiermanObservationUpdate( int32_t yj_, int32_t rjj_, MTX_t *cj_, 
 
 }
 
+
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 void KF_Init(void)
 {
@@ -98,39 +102,36 @@ void KF_Main(void)
 	{
 		for(i = 0u; i < KF_pTbl->numKfs; i++)
 		{
+			/* Update matrix dimension information for current KF */
 			KF_MtxCfg = KF_pTbl->aKfs[i].cfg.mtx;
 			KF_Dim    = KF_pTbl->aKfs[i].cfg.dim;
 			KF_Data   = &(KF_pTbl->aKfs[i].data);
 			KF_mEye.rows    = KF_Dim.nSys;
 			KF_mEye.columns = KF_Dim.nSys;
 
-			/**
-			 *  temporarily used matrices/vectors for prediction
-			 */
+			/* temporarily used matrices/vectors */
 			MTX_t vPhixkk  = { KF_Dim.nMsrdSts, 1,                      			 0, {0} };
 			MTX_t mUPT	   = { KF_Dim.nMsrdSts, KF_Dim.nMsrdSts,        			 0, {0} };
 			MTX_t mUPTPhiT = { KF_Dim.nMsrdSts, KF_Dim.nMsrdSts,         			 0, {0} };
 			MTX_t mA       = { KF_Dim.nMsrdSts+KF_Dim.nSys, KF_Dim.nSys,             0, {0} };
 			MTX_t mDw	   = { KF_Dim.nMsrdSts+KF_Dim.nSys, KF_Dim.nSys+KF_Dim.nSys, 0, {0} };
 			MTX_t mB	   = { KF_Dim.nMsrdSts+KF_Dim.nSys, KF_Dim.nSys,             0, {0} };
-			MTX_t mR       = { KF_Dim.nMsrdSts, KF_Dim.nMsrdSts,         			 0, {0} };
+			MTX_t mL       = { KF_Dim.nMsrdSts, KF_Dim.nMsrdSts,         			 0, {0} };
+
 			/**
-			 * time update / 'predict'
+			 * Temporal update
 			 */
+				/* x(k+1|k) */
+				MTX_Mult( &(vPhixkk), &(KF_MtxCfg.mSys), &(KF_Data->vPrvStEst) );
+				/* P(k+1|k) using modified weighted Gram-Schmidt-Orthonogonalization according to C. Thornton */
+				MTX_Transpose( &mUPT, &(KF_Data->mPrvUP) );
+				MTX_MultBt( &mUPTPhiT, &mUPT, &(KF_MtxCfg.mSys) );
+				MTX_AppendRow( &mA, &mUPTPhiT, &KF_mEye );
+				MTX_QlDecomposition(&mB, &mL, &mA, 0);
 
-			// x(k+1|k)
-			MTX_Mult( &(vPhixkk), &(KF_MtxCfg.mSys), &(KF_Data->vPrvStEst) );
-
-
-			//P(k+1|k) with modified weighted Gram Schmidt Orthonogonalization (Thornton Temporal Update)
-			MTX_Transpose( &mUPT, &(KF_Data->mPrvUP) );
-			MTX_MultBt( &mUPTPhiT, &mUPT, &(KF_MtxCfg.mSys) );
-			MTX_AppendRow( &mA, &mUPTPhiT, &KF_mEye );
-
-			MTX_t TestA = {2,3,0,{{4<<16,2<<16,1<<16},{1<<16,2<<16,3<<16}}};
-			MTX_t TestQ = {2,3,0,{0}};
-			MTX_t TestL = {3,3,0,{0}};
-			MTX_QlDecomposition(&TestQ, &TestL, &TestA, 0);
+			/**
+			 * Measurement update
+			 */
 		}
 	}
 }

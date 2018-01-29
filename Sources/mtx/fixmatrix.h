@@ -114,6 +114,8 @@ void mf16_div_s(mf16 *dest, const mf16 *matrix, fix16_t scalar);
 // In mf16_qr_decomposition, q and matrix, or alternatively, r and matrix
 // may alias i.e. point to the same memory location.
 void mf16_qr_decomposition(mf16 *q, mf16 *r, const mf16 *matrix, int reorthogonalize);
+
+/* Same as QR decomposition but returns a unit lower triangular matrix L */
 void mf16_ql_decomposition(mf16 *q, mf16 *l, const mf16 *matrix, int reorthogonalize);
 
 
