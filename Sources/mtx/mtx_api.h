@@ -34,8 +34,8 @@
 #define MTX_API_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
-#include "Acon_Types.h"
-#include "Platform.h"
+#include "fixmatrix.h"
+
 
 
 
@@ -50,98 +50,28 @@
  * @{
  */
 /*======================================= >> #DEFINES << =========================================*/
-#define MTX_ij(mtx_, i_, j_) ( mtx_->pData[i_*mtx_->NumCols + j_] )
-#define MTXLOC_ij(mtx_, i_, j_) ( mtx_.pData[i_*mtx_.NumCols + j_] )
-
-
+#define MTX_Fill(dest_, val_) (mf16_fill(dest_, val_))
+#define MTX_FillDiagonal(dest_, val_) (mf16_fill_diagonal(dest_, val_))
+#define MTX_Mult(dest_, fac1_, fac2_) (mf16_mul(dest_, fac1_, fac2_))
+#define MTX_MultAt(dest_, fac1T_, fac2_) (mf16_mul_at(dest_, fac1T_, fac2_))
+#define MTX_MultBt(dest_, fac1_, fac2T_) (mf16_mul_bt(dest_, fac1_, fac2T_))
+#define MTX_Add(dest_, sum1_, sum2_) (mf16_add(dest_, sum1_, sum2_))
+#define MTX_Sub(dest_, min_, sub_) (mf16_sub(dest_, min_, sub_))
+#define MTX_Transpose(dest_, mtx_) (mf16_transpose(dest_, mtx_))
+#define MTX_MultScalar(dest_, mtx_, val_) (mf16_mul_s(dest_, mtx_, val_))
+#define MTX_DivScalar(dest_, mtx_, val_) (mf16_div_s(dest_, mtx_, val_))
+#define MTX_QrDecomposition(q_, r_, mtx_, reorthCnt_) (mf16_qr_decomposition(q_, r_, mtx_, reorthCnt_))
+#define MTX_Solve(dest_, q_, r_, mtx_) (mf16_solve(dest_, q_, r_, mtx_))
+#define MTX_Cholesky(dest_, mtx_) (mf16_cholesky(dest_, mtx_))
+#define MTX_InvertLowerTri(dest_, mtx_) (mf16_invert_lt(dest_, mtx_))
 
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
-typedef struct MTX_s
-{
-	int32_t *pData;
-	uint8_t  NumRows;
-	uint8_t	 NumCols;
-	uint8_t	 NumFractionalBits; /* 'scaling' */
-}MTX_t;
+typedef mf16 MTX_t;
+typedef fix16_t int32_t;
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-/**
- * @brief  Adds two matrices which can be of different Q-format.
- * @param  smd1_ is the first and smd2_ the second summand.
- * @return Sum of the two summands
- */
-EXTERNAL_ StdRtn_t MTX_Add(MTX_t *smd1_, MTX_t *smd2_, MTX_t *sum_);
-
-/**
- * @brief  Subtracts two matrices which can be of different Q-format.
- * @param  min_ is the minuend and sub_ subtrahend.
- * @return difference between minuend and subtrahend
- */
-EXTERNAL_ StdRtn_t MTX_Sub(MTX_t *min_,  MTX_t *sub_, MTX_t *diff_);
-
-/**
- * @brief  Multiplicates two matrices which can be of different Q-format.
- * @param  fac1_ is the first and fac2_ the second factor.
- * @return Product of the two matrices
- */
-EXTERNAL_ StdRtn_t MTX_Mult(MTX_t *fac1_, MTX_t *fac2_, MTX_t *prod_);
-
-/**
- * @brief Scales up a matrix by a power of '2'.
- * @param mtx_ is the matrix which contents are leftshifted by nScale_ bits.
- * @return Scaled up matrix
- */
-EXTERNAL_ StdRtn_t MTX_ShiftLeft(MTX_t *mtx_, const uint8_t nScale_);
-
-/**
- * @brief Scales down a matrix by a power of '2'.
- * @param mtx_ is the matrix which contents are rightshifted by nScale_ bits.
- * @return Scaled down matrix
- */
-EXTERNAL_ StdRtn_t MTX_ShiftRight(MTX_t *mtx_, const uint8_t nScale_);
-
-/**
- * @brief  Transposes a matrix.
- * @param  mtx_ is the matrix that is to be transposed.
- * @return Transposed matrix mtxTrnspsd_
- */
-EXTERNAL_ StdRtn_t MTX_Transpose(const MTX_t *mtx_, MTX_t *mtxTrnspsd_);
-
-/**
- * @brief Fills up an entire matrix with values between 0 and 255.
- * @param mtx_ is the matrix which contents will be overwritten with val_.
- * @return Filled matrix
- */
-EXTERNAL_ StdRtn_t MTX_Fill(MTX_t *mtx_, const uint8_t val_, const uint8_t nFractionalBits_);
-
-/**
- * @brief Fills up the diagonal of a matrix with values between 0 and 255.
- * @param mtx_ is the matrix which diagonal will be overwritten with val_.
- * @return Diagonal matrix
- */
-EXTERNAL_ StdRtn_t MTX_FillDiagonal(MTX_t *mtx_, const uint8_t val_, const uint8_t nFractionalBits_);
-
-/**
- * @brief Copies one matrix into another.
- * @param mtx1_ is the matrix which shall be copied.
- * @return mtx2_ is the same matrix as  mtx1_
- */
-EXTERNAL_ StdRtn_t MTX_Copy(MTX_t *mtx1_, MTX_t *mtx2_);
-
-/**
- * @brief Decomposes a symmetric matrix M into a (scaled) upper triangular matrix U
- * 		  and a diagonal matrix D such that M = UDU^T.
- * @param mtx_ is the matrix that will be decomposed, nScaleU_ the scale U will be in (Q1.nScaleU_).
- * @return Scaled upper triangular matrix U and diagonal matrix D
- */
-EXTERNAL_ StdRtn_t MTX_UdDecomposition(const MTX_t *mtx_, MTX_t *mtxu_, MTX_t *mtxd_, const uint8_t nScaleU_);
-
-EXTERNAL_ StdRtn_t MTX_OverFlowMult(const int32_t fac1_, const int32_t fac2_, int32_t *prod_, uint8_t *nRightShift);
-
-EXTERNAL_ StdRtn_t MTX_CountLeadingZeros(MTX_t *mtx_, uint8_t *nLdngZrs_);
-
 /**
  * @}
  */
