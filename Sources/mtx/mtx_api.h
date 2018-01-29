@@ -58,18 +58,21 @@
 #define MTX_Add(dest_, sum1_, sum2_) (mf16_add(dest_, sum1_, sum2_))
 #define MTX_Sub(dest_, min_, sub_) (mf16_sub(dest_, min_, sub_))
 #define MTX_Transpose(dest_, mtx_) (mf16_transpose(dest_, mtx_))
+#define MTX_AppendRow(dest_, mtx_, row_) (mf16_append_row(dest_, mtx_, row_))
+#define MTX_AppendColumn(dest_, mtx_, column_) (mf16_append_column(dest_, mtx_, column_))
 #define MTX_MultScalar(dest_, mtx_, val_) (mf16_mul_s(dest_, mtx_, val_))
 #define MTX_DivScalar(dest_, mtx_, val_) (mf16_div_s(dest_, mtx_, val_))
 #define MTX_QrDecomposition(q_, r_, mtx_, reorthCnt_) (mf16_qr_decomposition(q_, r_, mtx_, reorthCnt_))
+#define MTX_QlDecomposition(q_, l_, mtx_, reorthCnt_) (mf16_ql_decomposition(q_, l_, mtx_, reorthCnt_))
 #define MTX_Solve(dest_, q_, r_, mtx_) (mf16_solve(dest_, q_, r_, mtx_))
 #define MTX_Cholesky(dest_, mtx_) (mf16_cholesky(dest_, mtx_))
+#define MTX_ModifiedCholesky(u_, d_, mtx_) (mf16_modified_cholesky(u_, d_, mtx_))
 #define MTX_InvertLowerTri(dest_, mtx_) (mf16_invert_lt(dest_, mtx_))
 
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 typedef mf16 MTX_t;
-typedef fix16_t int32_t;
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 /**

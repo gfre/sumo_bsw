@@ -33,24 +33,14 @@
 typedef StdRtn_t (*KF_ReadFct_t)(int32_t*);
 
 /**
- *
- */
-typedef struct KF_SclCfg_s
-{
-	const uint8_t nSysMtx;
-	const uint8_t nErrMtx;
-	const uint8_t nStVec;
-	const int32_t nMxMdloVal;
-}KF_SclCfg_t;
-
-/**
  * runtime data
  */
 typedef struct KF_Data_s
 {
 	MTX_t  vPrvStEst;
 	MTX_t  vOptStEst;
-	MTX_t  mPrvErrCoVar;
+	MTX_t  mPrvUP;
+	MTX_t  mPrvDP;
 	int8_t nMdCntr;
 }KF_Data_t;
 
@@ -59,13 +49,12 @@ typedef struct KF_Data_s
  */
 typedef struct KF_MtxCfg_s
 {
-	const MTX_t mSys;
-	const MTX_t mSysTrnsp;
-	const MTX_t mInpt;
-	const MTX_t mMeas;
-	const MTX_t mMeasTrnsp;
-	const MTX_t mMeasNsCov;
-	const MTX_t mPrcsNsCov;
+	 MTX_t mSys;
+	 MTX_t mInpt;
+	 MTX_t mMeas;
+	 MTX_t mMeasTrnsp;
+	 MTX_t mMeasNsCov;
+	 MTX_t mPrcsNsCov;
 }KF_MtxCfg_t;
 
 /**
@@ -73,9 +62,9 @@ typedef struct KF_MtxCfg_s
  */
 typedef struct KF_DimCfg_s
 {
-	const uint8_t nSys;
-	const uint8_t nInpts;
-	const uint8_t nMsrdSts;
+	 uint8_t nSys;
+	 uint8_t nInpts;
+	 uint8_t nMsrdSts;
 }KF_DimCfg_t;
 
 /**
@@ -85,9 +74,8 @@ typedef struct KF_Cfg_s
 {
 	const uchar_t *pItmName;
 	const uint8_t smplTimeMS;
-	const KF_MtxCfg_t *mtx;
-	const KF_SclCfg_t *scl;
-	const KF_DimCfg_t *dim;
+	KF_MtxCfg_t mtx;
+	KF_DimCfg_t dim;
 	KF_ReadFct_t *aMeasValFct;
 	KF_ReadFct_t *aInptValFct;
 }KF_Cfg_t;
@@ -98,7 +86,7 @@ typedef struct KF_Cfg_s
 typedef struct KF_Itm_s
 {
 	KF_Cfg_t cfg;
-	KF_Data_t *data;
+	KF_Data_t data;
 }KF_Itm_t;
 
 /**

@@ -68,6 +68,10 @@ void mf16_fill(mf16 *dest, fix16_t value);
 // Fill the diagonal entries with the given value and everything else with zeroes, and clear error status.
 void mf16_fill_diagonal(mf16 *dest, fix16_t value);
 
+void mf16_append_row(mf16 *dest, const mf16 *a, const mf16 *b);
+void mf16_append_column(mf16 *dest, const mf16 *a, const mf16 *b);
+
+
 // Operations between two matrices
 void mf16_mul(mf16 *dest, const mf16 *a, const mf16 *b);
 
@@ -110,6 +114,8 @@ void mf16_div_s(mf16 *dest, const mf16 *matrix, fix16_t scalar);
 // In mf16_qr_decomposition, q and matrix, or alternatively, r and matrix
 // may alias i.e. point to the same memory location.
 void mf16_qr_decomposition(mf16 *q, mf16 *r, const mf16 *matrix, int reorthogonalize);
+void mf16_ql_decomposition(mf16 *q, mf16 *l, const mf16 *matrix, int reorthogonalize);
+
 
 // Solving a system of linear equations Ax = b, or equivalently,
 // left division A\b, using QR-decomposition.
@@ -137,6 +143,8 @@ void mf16_solve(mf16 *dest, const mf16 *q, const mf16 *r, const mf16 *matrix);
 //
 // Dest and matrix can alias.
 void mf16_cholesky(mf16 *dest, const mf16 *matrix);
+
+void mf16_modified_cholesky(mf16 *u, mf16 *d, const mf16 *matrix);
 
 // Matrix inversion of a matrix through its lower triangular decomposition.
 //
