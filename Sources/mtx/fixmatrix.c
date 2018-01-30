@@ -35,63 +35,35 @@ void mf16_fill_diagonal(mf16 *dest, fix16_t value)
 /*********************************
  * Operations between 2 matrices *
  *********************************/
-void mf16_append_row(mf16 *dest, const mf16 *a, const mf16 *b)
+void mf16_append_matrix(mf16 *dest, const mf16 *a, const mf16 *b, const uint8_t pos_Row, const uint8_t pos_Column)
 {
 	int row, column;
 
-	if(a->columns != b->columns)
-		dest->errors |= FIXMATRIX_DIMERR;
-
-	dest->rows    = a->rows + b->rows;
-	dest->columns = a->columns;
-	dest->errors  = (a->errors | b->errors);
-
-	if(dest->rows > FIXMATRIX_MAX_SIZE)
+	if( (pos_Row < a->rows) || (pos_Column < a->columns))
 		dest->errors |= FIXMATRIX_USEERR;
 
-	for(row = 0; row < dest->rows; row++)
-	{
-		for(column = 0; column < dest->columns; column++)
-		{
-			if(row < a->rows)
-			{
-				dest->data[row][column] = a->data[row][column];
-			}
-			else
-			{
-				dest->data[row][column] = b->data[row-a->rows][column];
-			}
+	if(dest != a)
+		*dest = *a;
 
-		}
-	}
-}
+	if(b->rows < a->rows && (pos_Row < a->rows))
+		dest->rows = a->rows;
+	else
+		dest->rows    = pos_Row + b->rows - 1;
+	if(b->columns < a->columns && pos_Column < a->columns)
+		dest->columns = a->columns;
+	else
+		dest->columns = pos_Column + b->columns - 1;
 
-void mf16_append_column(mf16 *dest, const mf16 *a, const mf16 *b)
-{
-	int row, column;
-
-	if(a->rows != b->rows)
-		dest->errors |= FIXMATRIX_DIMERR;
-
-	dest->rows    = a->rows;
-	dest->columns = a->columns+ b->columns;
 	dest->errors  = (a->errors | b->errors);
 
-	if(dest->columns > FIXMATRIX_MAX_SIZE)
+	if( (dest->rows > FIXMATRIX_MAX_SIZE) || (dest->columns > FIXMATRIX_MAX_SIZE) )
 		dest->errors |= FIXMATRIX_USEERR;
 
-	for(row = 0; row < dest->rows; row++)
+	for(row = (pos_Row-1); row < dest->rows; row++)
 	{
-		for(column = 0; column < dest->columns; column++)
+		for(column = (pos_Column-1); column < dest->columns; column++)
 		{
-			if(column < a->rows)
-			{
-				dest->data[row][column] = dest->data[row][column];
-			}
-			else
-			{
-				dest->data[row][column] = b->data[row][column-a->columns];
-			}
+			dest->data[row][column] = b->data[row-(pos_Row-1)][column-(pos_Column-1)];
 		}
 	}
 }
@@ -339,7 +311,7 @@ static void subtract_projection(fix16_t *v, const fix16_t *u, fix16_t dot, int n
     }
 }
 
-void mf16_qr_decomposition(mf16 *q, mf16 *r, const mf16 *matrix, int reorthogonalize)
+void mf16_qr_decomposition(mf16 *q, mf16 *r, const mf16 *matrix, const int reorthogonalize)
 {
     int i, j, reorth;
     fix16_t dot, norm;
@@ -409,7 +381,7 @@ void mf16_qr_decomposition(mf16 *q, mf16 *r, const mf16 *matrix, int reorthogona
     r->errors = q->errors;
 }
 
-void mf16_ql_decomposition(mf16 *q, mf16 *l, const mf16 *matrix, int reorthogonalize)
+void mf16_ql_decomposition(mf16 *q, mf16 *l, const mf16 *matrix, const int reorthogonalize)
 {
     int i, j, reorth;
     fix16_t dotaiqip1, dotqip1qip1;

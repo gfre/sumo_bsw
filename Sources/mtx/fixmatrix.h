@@ -30,7 +30,7 @@
 
 // Maximum size of matrices.
 #ifndef FIXMATRIX_MAX_SIZE
-#define FIXMATRIX_MAX_SIZE 8
+#define FIXMATRIX_MAX_SIZE 4
 #endif
 
 typedef struct {
@@ -68,9 +68,10 @@ void mf16_fill(mf16 *dest, fix16_t value);
 // Fill the diagonal entries with the given value and everything else with zeroes, and clear error status.
 void mf16_fill_diagonal(mf16 *dest, fix16_t value);
 
-void mf16_append_row(mf16 *dest, const mf16 *a, const mf16 *b);
-void mf16_append_column(mf16 *dest, const mf16 *a, const mf16 *b);
-
+// Appends the matrix b to matrix a such that the upper left element of b is at the position (pos_row, pos_column).
+// b is not allowed to overwrite a.  In that case, dest->error = FIXMATRIX_USEERR. In addition, dest->error =
+// FIXMATRIX_DIMERR, when the new matrix dimensions would exceed FIXMATRIX_MAX_SIZE.
+void mf16_append_matrix(mf16 *dest, const mf16 *a, const mf16 *b, const uint8_t pos_row, const uint8_t pos_column);
 
 // Operations between two matrices
 void mf16_mul(mf16 *dest, const mf16 *a, const mf16 *b);
