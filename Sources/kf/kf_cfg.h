@@ -37,22 +37,21 @@ typedef StdRtn_t (*KF_ReadFct_t)(int32_t*);
  */
 typedef struct KF_Data_s
 {
-	MTX_t  vPrvStEst;
-	MTX_t  vOptStEst;
-	MTX_t  mPrvUP;
-	MTX_t  mPrvDP;
+	MTX_t  vXapri;
+	MTX_t  vXapost;
+	MTX_t  mUPapost;
+	MTX_t  mDPapost;
 	int8_t nMdCntr;
 }KF_Data_t;
 
 /**
- *
+ * System Configuration
  */
 typedef struct KF_MtxCfg_s
 {
 	 MTX_t mSys;
 	 MTX_t mInpt;
 	 MTX_t mMeas;
-	 MTX_t mMeasTrnsp;
 	 MTX_t mMeasNsCov;
 	 MTX_t mPrcsNsCov;
 }KF_MtxCfg_t;

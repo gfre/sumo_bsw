@@ -5,6 +5,7 @@
  *
  *
  *
+ * @author  G. Freudenthaler, gfre@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @author 	S. Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	23.06.2017
  *
@@ -32,17 +33,14 @@ static void KF_Reset(KF_Itm_t *kf_);
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 static KF_ItmTbl_t *KF_pTbl  = NULL;
-static KF_MtxCfg_t KF_MtxCfg = {0};
-static KF_DimCfg_t KF_Dim    = {0};
-static KF_Data_t   *KF_Data  = NULL;
-static MTX_t KF_mEye = {FIXMATRIX_MAX_SIZE, FIXMATRIX_MAX_SIZE, 0, {{1<<16,0,0,0,0,0,0,0},
-																	{0,1<<16,0,0,0,0,0,0},
-																	{0,0,1<<16,0,0,0,0,0},
-																	{0,0,0,1<<16,0,0,0,0},
-																	{0,0,0,0,1<<16,0,0,0},
-																	{0,0,0,0,0,1<<16,0,0},
-																	{0,0,0,0,0,0,1<<16,0},
-																	{0,0,0,0,0,0,0,1<<16}}};
+static KF_MtxCfg_t *KF_MtxCfg = NULL;
+static KF_DimCfg_t *KF_Dim    = NULL;
+static KF_Cfg_t    *KF_Cfg   = NULL;
+static KF_Data_t   *KF_Data   = NULL;
+static MTX_t KF_mEye = { FIXMATRIX_MAX_SIZE, FIXMATRIX_MAX_SIZE, 0, {{1<<16,0,0,0},
+																	{0,1<<16,0,0},
+																	{0,0,1<<16,0},
+																	{0,0,0,1<<16}} };
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
@@ -52,13 +50,13 @@ static void KF_Reset(KF_Itm_t *kf_)
 	int32_t tmp = 0;
 	if(NULL != kf_)
 	{
-		MTX_FillDiagonal( &kf_->data.mPrvDP, fix16_from_int(100) );
-		MTX_FillDiagonal( &kf_->data.mPrvUP, fix16_one);
+//		MTX_FillDiagonal( &kf_->data.mDPapost, fix16_from_int(100) );
+//		MTX_FillDiagonal( &kf_->data.mUPapost, fix16_one);
 		kf_->data.nMdCntr = 0;
 		for(i = 0u; i < kf_->cfg.dim.nMsrdSts; i++)
 		{
 			kf_->cfg.aMeasValFct[i]( &tmp );
-			kf_->data.vPrvStEst.data[i][0] = fix16_from_int(400);
+			kf_->data.vXapost.data[i][0] = fix16_from_int(400);
 		}
 	}
 	else
@@ -67,11 +65,50 @@ static void KF_Reset(KF_Itm_t *kf_)
 	}
 }
 
-static void KF_BiermanObservationUpdate( int32_t yj_, int32_t rjj_, MTX_t *cj_, MTX_t *mtxu_, MTX_t *mtxd_, MTX_t *x_, KF_Cfg_t *pCfg_)
-{
-
-
-}
+//static StdRtn_t KF_BiermanObservationalUpdate(const int32_t yj_, const int32_t rjj_, const MTX_t *vCjT_, MTX_t *vX_post_, MTX_t *mUP_post_, MTX_t *mDP_post_)
+//{
+//	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+//	uint8_t i = 0u, j = 0u;
+//	int32_t delta = 0;
+//	int32_t sigma = 0, nu = 0, tau = 0, epsilon = 0;
+//	MTX_t vV = { V, dim_.nSys, 1, {0} };
+//	MTX_t vW = { W, dim_.nSys, 1, {0} };
+//
+//	if( (NULL != vX_post_) && (NULL != mUP_post_) && (NULL != mDP_post_) )
+//	{
+//		retVal = ERR_OK;
+//		delta = yj_;
+//		for(j = 0u; j < dim_.nMsrdSts; j++)
+//		{
+//			delta = delta - MTXLOC_ij(vCjT_->mtx, 0, j) * MTXLOC_ij(vX_post_->mtx, j, 0);
+//			MTXLOC_ij(vV, j, 0) = MTXLOC_ij(vCjT_->mtx, 0, j);
+//			for(i = 0u; i < (j-1); i++)
+//			{
+//				MTXLOC_ij(vV, j, 0) = MTXLOC_ij(vV, j, 0) + MTXLOC_ij(mUP_post_->mtx, i, j) * MTXLOC_ij(vCjT_->mtx, 0, i);
+//			}
+//		}
+//		sigma = rjj_;
+//		for(j = 0u; j < dim_.nMsrdSts; j++)
+//		{
+//			nu = MTXLOC_ij(vV, j, 0);
+//			MTXLOC_ij(vV, j, 0) = MTXLOC_ij(vV, j, 0) * MTXLOC_ij(mDP_post_->mtx, j , j);
+//			MTXLOC_ij(vW, j, 0) = nu;
+//			for(i = 0u; i < (j-1); i++)
+//			{
+//				tau = MTXLOC_ij(mUP_post_->mtx, i, j) * nu;
+//				MTXLOC_ij(mUP_post_->mtx, i, j) = MTXLOC_ij(mUP_post_->mtx, i, j) - (nu * MTXLOC_ij(vW, i, 0)) / sigma;
+//				MTXLOC_ij(vW, i, 0) = MTXLOC_ij(vW, i, 0) + tau;
+//			}
+//			MTXLOC_ij(mDP_post_->mtx, j, j) = MTXLOC_ij(mDP_post_->mtx, j, j) * sigma;
+//		}
+//		epsilon = delta / sigma;
+//		for(i = 0u; i < dim_.nSys; i++)
+//		{
+//			MTXLOC_ij(vX_post_->mtx, i, 0) = MTXLOC_ij(vX_post_->mtx, i, 0) + MTXLOC_ij(vV, i, 0) * epsilon;
+//		}
+//	}
+//	return retVal;
+//}
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
@@ -97,41 +134,48 @@ void KF_Main(void)
 {
 	StdRtn_t retVal = ERR_OK;
 	uint8_t i = 0u, j = 0u, k = 0u;
+	MTX_t mTmp1 = {0}, mTmp2 = {0}, mTmp3 = {0};
+	int32_t yj     = 0;
 
 	if( (NULL != KF_pTbl) && (NULL != KF_pTbl->aKfs) )
 	{
 		for(i = 0u; i < KF_pTbl->numKfs; i++)
 		{
 			/* Update matrix dimension information for current KF */
-			KF_MtxCfg = KF_pTbl->aKfs[i].cfg.mtx;
-			KF_Dim    = KF_pTbl->aKfs[i].cfg.dim;
-			KF_Data   = &(KF_pTbl->aKfs[i].data);
-			KF_mEye.rows    = KF_Dim.nSys;
-			KF_mEye.columns = KF_Dim.nSys;
-
-			/* temporarily used matrices/vectors */
-			MTX_t vPhixkk  = { KF_Dim.nMsrdSts, 1,                      			 0, {0} };
-			MTX_t mUPT	   = { KF_Dim.nMsrdSts, KF_Dim.nMsrdSts,        			 0, {0} };
-			MTX_t mUPTPhiT = { KF_Dim.nMsrdSts, KF_Dim.nMsrdSts,         			 0, {0} };
-			MTX_t mA       = { KF_Dim.nMsrdSts+KF_Dim.nSys, KF_Dim.nSys,             0, {0} };
-			MTX_t mDw	   = { KF_Dim.nMsrdSts+KF_Dim.nSys, KF_Dim.nSys+KF_Dim.nSys, 0, {0} };
-			MTX_t mB	   = { KF_Dim.nMsrdSts+KF_Dim.nSys, KF_Dim.nSys,             0, {0} };
-			MTX_t mL       = { KF_Dim.nMsrdSts, KF_Dim.nMsrdSts,         			 0, {0} };
+			KF_MtxCfg = &KF_pTbl->aKfs[i].cfg.mtx;
+			KF_Dim    = &KF_pTbl->aKfs[i].cfg.dim;
+			KF_Data   = &KF_pTbl->aKfs[i].data;
+			KF_Cfg    = &(KF_pTbl->aKfs[i].cfg);
+			KF_mEye.rows     = KF_Dim->nSys;
+			KF_mEye.columns  = KF_Dim->nSys;
 
 			/**
 			 * Temporal update
 			 */
-				/* x(k+1|k) */
-				MTX_Mult( &(vPhixkk), &(KF_MtxCfg.mSys), &(KF_Data->vPrvStEst) );
-				/* P(k+1|k) using modified weighted Gram-Schmidt-Orthonogonalization according to C. Thornton */
-				MTX_Transpose( &mUPT, &(KF_Data->mPrvUP) );
-				MTX_MultBt( &mUPTPhiT, &mUPT, &(KF_MtxCfg.mSys) );
-				MTX_AppendRow( &mA, &mUPTPhiT, &KF_mEye );
-				MTX_QlDecomposition(&mB, &mL, &mA, 0);
-
+				/* x_{k}(-) */
+				MTX_Mult( &(KF_Data->vXapri), &(KF_MtxCfg->mSys), &(KF_Data->vXapost) );
+				/* P_{k}(-) using modified weighted Gram-Schmidt-Orthonogonalization according to C. Thornton */
+					/* A = [U_{k-1}(+)'Phi'; (G*UQ)'] */
+				MTX_Transpose( &mTmp1, &(KF_Data->mUPapost) ); //, tmp1 = UPapost'
+				MTX_MultBt( &mTmp1, &mTmp1, &(KF_MtxCfg->mSys) );  // tmp1 = UPapost'*Phi'
+				MTX_AppendMatrix( &mTmp2, &mTmp1, &KF_mEye, (mTmp1.rows+1), 1); // tmp2  = A
+					/* A = BL -> QL-Decomposition, where L' = U_{k}(-), ... */
+				MTX_QlDecomposition(&mTmp2, &mTmp1, &mTmp2, 0);  // tmp2 = B, tmp1 = L = U_{k}(-)'
+					/* ... and B'DwB = D_{k}(-), with Dw = [DP_{k-1}(+) 0; 0 DQ] */
+				MTX_AppendMatrix(&mTmp3, &(KF_Data->mDPapost), &(KF_MtxCfg->mPrcsNsCov), (KF_Data->mDPapost.rows+1), (KF_Data->mDPapost.columns+1)); // tmp3 = Db
+				MTX_MultAt(&mTmp3, &mTmp2, &mTmp3); // tmp3 = B'Db
+				MTX_Mult(&mTmp3, &mTmp3, &mTmp2);   // tmp3 = DP_{k}(-)
 			/**
 			 * Measurement update
 			 */
+				KF_Data->vXapost  = KF_Data->vXapri;
+				MTX_Transpose(&KF_Data->mUPapost, &mTmp1);
+				KF_Data->mDPapost = mTmp3;
+				for(j = 0; j < KF_Dim->nMsrdSts; j++)
+				{
+					KF_Cfg->aMeasValFct[j](&yj);
+//					KF_BiermanObservationalUpdate(yj, KF_MtxCfg.mMeasNsCov.data[j][j], &(KF_MtxCfg.mMeas.data[j][0]), &KF_Data.vXapost, &KF_Data.mUPapost, &KF_Data.mDPapost);
+				}
 		}
 	}
 }
@@ -150,7 +194,7 @@ StdRtn_t KF_Read_i16EstdVal(int16_t *pVal_, const uint8_t idx_)
 		retVal = ERR_PARAM_VALUE;
 		if(idx_ < KF_pTbl->numKfs )
 		{
-			*pVal_ = KF_pTbl->aKfs[idx_].data.vOptStEst.data[2][0];
+			*pVal_ = KF_pTbl->aKfs[idx_].data.vXapost.data[2][0];
 			retVal = ERR_OK;
 		}
 	}
