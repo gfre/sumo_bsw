@@ -22,7 +22,7 @@ fix16_t fix16_sin_parabola(fix16_t inAngle)
 	/* Absolute function */
 	mask = (inAngle >> (sizeof(fix16_t)*CHAR_BIT-1));
 	abs_inAngle = (inAngle + mask) ^ mask;
-
+	
 	/* On 0->PI, sin looks like x² that is :
 	   - centered on PI/2,
 	   - equals 1 on PI/2,

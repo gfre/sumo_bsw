@@ -35,38 +35,6 @@ void mf16_fill_diagonal(mf16 *dest, fix16_t value)
 /*********************************
  * Operations between 2 matrices *
  *********************************/
-void mf16_append_matrix(mf16 *dest, const mf16 *a, const mf16 *b, const uint8_t pos_Row, const uint8_t pos_Column)
-{
-	int row, column;
-
-	if( (pos_Row < a->rows) || (pos_Column < a->columns))
-		dest->errors |= FIXMATRIX_USEERR;
-
-	if(dest != a)
-		*dest = *a;
-
-	if(b->rows < a->rows && (pos_Row < a->rows))
-		dest->rows = a->rows;
-	else
-		dest->rows    = pos_Row + b->rows - 1;
-	if(b->columns < a->columns && pos_Column < a->columns)
-		dest->columns = a->columns;
-	else
-		dest->columns = pos_Column + b->columns - 1;
-
-	dest->errors  = (a->errors | b->errors);
-
-	if( (dest->rows > FIXMATRIX_MAX_SIZE) || (dest->columns > FIXMATRIX_MAX_SIZE) )
-		dest->errors |= FIXMATRIX_USEERR;
-
-	for(row = (pos_Row-1); row < dest->rows; row++)
-	{
-		for(column = (pos_Column-1); column < dest->columns; column++)
-		{
-			dest->data[row][column] = b->data[row-(pos_Row-1)][column-(pos_Column-1)];
-		}
-	}
-}
 
 void mf16_mul(mf16 *dest, const mf16 *a, const mf16 *b)
 {
@@ -311,7 +279,7 @@ static void subtract_projection(fix16_t *v, const fix16_t *u, fix16_t dot, int n
     }
 }
 
-void mf16_qr_decomposition(mf16 *q, mf16 *r, const mf16 *matrix, const int reorthogonalize)
+void mf16_qr_decomposition(mf16 *q, mf16 *r, const mf16 *matrix, int reorthogonalize)
 {
     int i, j, reorth;
     fix16_t dot, norm;
@@ -380,56 +348,6 @@ void mf16_qr_decomposition(mf16 *q, mf16 *r, const mf16 *matrix, const int reort
     
     r->errors = q->errors;
 }
-
-void mf16_ql_decomposition(mf16 *q, mf16 *l, const mf16 *matrix, const int reorthogonalize)
-{
-    int i, j, reorth;
-    fix16_t dotaiqip1, dotqip1qip1;
-
-    uint8_t stride = FIXMATRIX_MAX_SIZE;
-    uint8_t n = matrix->rows;
-
-    // This uses the modified Gram-Schmidt algorithm.
-    // subtract_projection takes advantage of the fact that
-    // previous columns have already been normalized.
-
-    // We start with q = matrix
-    if (q != matrix)
-    {
-        *q = *matrix;
-    }
-
-    // R is initialized to have square size of cols(A) and zeroed.
-    l->columns = matrix->columns;
-    l->rows = matrix->columns;
-    l->errors = 0;
-    mf16_fill_diagonal(l, fix16_one);
-
-    // Now do the actual Gram-Schmidt for the rows.
-    for (j = 1; j < q->columns; j++)
-    {
-        for (reorth = 0; reorth <= reorthogonalize; reorth++)
-        {
-            for (i = 0; i < j; i++)
-            {
-                fix16_t *ai = &q->data[0][(q->columns-1)-j];
-                fix16_t *qip1 = &q->data[0][(q->columns-1)-i];
-
-                dotaiqip1   = fa16_dot(ai, stride, qip1, stride, n);
-                dotqip1qip1 = fa16_dot(qip1, stride, qip1, stride, n);
-                l->data[(q->columns-1)-i][(q->columns-1)-j] = fix16_div(dotaiqip1, dotqip1qip1);
-                subtract_projection(ai, qip1, l->data[(q->columns-1)-i][(q->columns-1)-j], n, &q->errors);
-
-                if ( (dotaiqip1 == fix16_overflow) || (dotqip1qip1 == fix16_overflow))
-                    q->errors |= FIXMATRIX_OVERFLOW;
-            }
-        }
-    }
-
-    l->errors = q->errors;
-}
-
-
 
 void mf16_solve(mf16 *dest, const mf16 *q, const mf16 *r, const mf16 *matrix)
 {
@@ -561,66 +479,6 @@ void mf16_cholesky(mf16 *dest, const mf16 *matrix)
     }
 }
 
-void mf16_modified_cholesky(mf16 *u, mf16 *d, const mf16 *matrix)
-{
-	int i, j, k;
-	fix16_t sigma = 0;
-	fix16_t tmp   = 0;
-	    d->errors = matrix->errors;
-	    u->errors = matrix->errors;
-
-	    if (matrix->rows != matrix->columns)
-	    {
-	    		u->errors |= FIXMATRIX_DIMERR;
-	    		d->errors |= FIXMATRIX_DIMERR;
-	    }
-	    u->rows    = matrix->rows;
-	    u->columns = matrix->rows;
-	    d->rows    = matrix->rows;
-	    d->columns = matrix->rows;
-
-	    for (j = (matrix->rows-1); j >= 0; j--)
-	    {
-	        for (i = j; i >= 0; i--)
-	        {
-	        		sigma = matrix->data[i][j];
-	        		for(k = (j+1); (k < matrix->rows); k++)
-	        		{
-	        			tmp = fix16_mul(u->data[i][k], d->data[k][k]);
-	        			tmp = fix16_mul(tmp,           u->data[j][k]);
-	        			if(fix16_overflow == tmp)
-	        			{
-	        				u->errors |= FIXMATRIX_OVERFLOW;
-	        				d->errors |= FIXMATRIX_OVERFLOW;
-	        				return;
-	        			}
-	        			sigma = fix16_sub(sigma, tmp);
-	        			if(fix16_overflow == sigma)
-	        			{
-	        				u->errors |= FIXMATRIX_OVERFLOW;
-	        				d->errors |= FIXMATRIX_OVERFLOW;
-	        				return;
-	        			}
-	        		}
-	        		if(i == j)
-	        		{
-	        			d->data[j][j] = sigma;
-	        			u->data[j][j] = fix16_from_int(1);
-	        		}
-	        		else
-	        		{
-	        			u->data[i][j] = fix16_div(sigma, d->data[j][j]);
-	        			u->data[j][i] = 0;
-	        			if(fix16_overflow == u->data[i][j])
-	        			{
-	        				u->errors |= FIXMATRIX_OVERFLOW;
-	        				d->errors |= FIXMATRIX_OVERFLOW;
-	        				return;
-	        			}
-	        		}
-	        }
-	    }
-}
 
 
 /***********************************
