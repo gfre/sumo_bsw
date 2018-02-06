@@ -115,8 +115,8 @@ static KF_Itm_t KF_Items[] =
 /* Data */		{
 	/* vXapri  */	{KF_TACHO_SYS_LE, 1, 0, {0u}},
 	/* vXapost */ 	{KF_TACHO_SYS_LE, 1, 0, {0u}},
-	/* mUPapri */	{0},
-	/* mDPapri */	{0},
+	/* mUPapri */	{KF_TACHO_SYS_LE, KF_TACHO_SYS_LE, 0, {0u}},
+	/* mDPapri */	{KF_TACHO_SYS_LE, KF_TACHO_SYS_LE, 0, {0u}},
 	/* mUPapost */	{KF_TACHO_SYS_LE, KF_TACHO_SYS_LE, 0, {{1<<16, 13107},{0 , 1<<16}}},
 	/* mDPapost */	{KF_TACHO_SYS_LE, KF_TACHO_SYS_LE, 0, {{96<<16, 0},{0, 100<<16}}},
 	/* nMdCntr */	0
@@ -141,8 +141,8 @@ static KF_Itm_t KF_Items[] =
 /* Data */		{
 	/* vXapri  */	{KF_TACHO_SYS_RI, 1, 0, {0u}},
 	/* vXapost */ 	{KF_TACHO_SYS_RI, 1, 0, {0u}},
-	/* mUPapri */	{0},
-	/* mDPapri */	{0},
+	/* mUPapri */	{KF_TACHO_SYS_RI, KF_TACHO_SYS_LE, 0, {0u}},
+	/* mDPapri */	{KF_TACHO_SYS_RI, KF_TACHO_SYS_LE, 0, {0u}},
 	/* mUPapost */	{KF_TACHO_SYS_RI, KF_TACHO_SYS_RI, 0, {0u}},
 	/* mDPapost */	{KF_TACHO_SYS_RI, KF_TACHO_SYS_RI, 0, {0u}},
 	/* nMdCntr */	0

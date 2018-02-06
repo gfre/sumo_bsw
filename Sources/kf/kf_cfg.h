@@ -61,6 +61,7 @@ typedef struct KF_MtxCfg_s
 /**
  *
  */
+/* TODO delete dimconfig (unnecessary) */
 typedef struct KF_DimCfg_s
 {
 	 uint8_t nSys;
