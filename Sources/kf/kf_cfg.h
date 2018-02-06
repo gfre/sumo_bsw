@@ -39,6 +39,8 @@ typedef struct KF_Data_s
 {
 	MTX_t  vXapri;
 	MTX_t  vXapost;
+	MTX_t  mUPapri;
+	MTX_t  mDPapri;
 	MTX_t  mUPapost;
 	MTX_t  mDPapost;
 	int8_t nMdCntr;
