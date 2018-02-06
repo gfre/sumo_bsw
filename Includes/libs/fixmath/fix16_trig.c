@@ -1,8 +1,8 @@
+#include <libs/fixmath/fix16.h>
 #include <limits.h>
-#include "fix16.h"
 
 #if defined(FIXMATH_SIN_LUT)
-#include "fix16_trig_sin_lut.h"
+#include <libs/fixmath/fix16_trig_sin_lut.h>
 #elif !defined(FIXMATH_NO_CACHE)
 static fix16_t _fix16_sin_cache_index[4096]  = { 0 };
 static fix16_t _fix16_sin_cache_value[4096]  = { 0 };

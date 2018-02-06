@@ -1,6 +1,6 @@
-#include "fix16.h"
 #include <stdbool.h>
 #include <ctype.h>
+#include <libs/fixmath/fix16.h>
 
 static const uint32_t scales[8] = {
     /* 5 decimals is enough for full fix16_t precision */

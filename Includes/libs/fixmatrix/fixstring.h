@@ -4,11 +4,12 @@
 #define _FIXSTRING_H_
 
 #include <stdio.h>
-#include <fix16.h>
-#include "fixmatrix.h"
-#include "fixquat.h"
-#include "fixvector3d.h"
-#include "fixvector2d.h"
+
+#include "../fixmath/fix16.h"
+#include "../fixmatrix/fixmatrix.h"
+#include "../fixmatrix/fixquat.h"
+#include "../fixmatrix/fixvector2d.h"
+#include "../fixmatrix/fixvector3d.h"
 
 /* All print_*() functions have interface similar to fprintf().
  */

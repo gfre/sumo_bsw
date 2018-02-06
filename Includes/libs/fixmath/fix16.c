@@ -1,5 +1,5 @@
-#include "fix16.h"
-#include "int64.h"
+#include <libs/fixmath/fix16.h>
+#include <libs/fixmath/int64.h>
 
 
 /* Subtraction and addition with overflow detection.

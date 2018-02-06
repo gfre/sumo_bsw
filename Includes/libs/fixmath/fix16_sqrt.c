@@ -1,4 +1,4 @@
-#include "fix16.h"
+#include <libs/fixmath/fix16.h>
 
 /* The square root algorithm is quite directly from
  * http://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Binary_numeral_system_.28base_2.29

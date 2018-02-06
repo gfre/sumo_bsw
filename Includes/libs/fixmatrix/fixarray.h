@@ -3,7 +3,7 @@
 #ifndef _FIXARRAY_H_
 #define _FIXARRAY_H_
 
-#include <fix16.h>
+#include "../fixmath/fix16.h"
 
 // Calculates the dotproduct of two vectors of size n.
 // If overflow happens, returns fix16_overflow.

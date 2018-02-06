@@ -1,5 +1,5 @@
-#include "fixvector2d.h"
-#include "fixarray.h"
+#include <libs/fixmatrix/fixarray.h>
+#include <libs/fixmatrix/fixvector2d.h>
 
 // Basic arithmetic
 void v2d_add(v2d *dest, const v2d *a, const v2d *b)

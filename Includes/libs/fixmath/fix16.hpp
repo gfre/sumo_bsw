@@ -1,7 +1,7 @@
 #ifndef __libfixmath_fix16_hpp__
 #define __libfixmath_fix16_hpp__
 
-#include "fix16.h"
+#include "../fixmath/fix16.h"
 
 class Fix16 {
 	public:

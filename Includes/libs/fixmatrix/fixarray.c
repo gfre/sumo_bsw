@@ -1,4 +1,4 @@
-#include "fixarray.h"
+#include <libs/fixmatrix/fixarray.h>
 #include <string.h> /* For memcpy() */
 
 #ifdef FIXMATH_NO_64BIT

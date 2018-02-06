@@ -3,7 +3,7 @@
 #ifndef _fixvector3d_h_
 #define _fixvector3d_h_
 
-#include <fix16.h>
+#include "../fixmath/fix16.h"
 
 typedef struct {
 	fix16_t x;

@@ -1,4 +1,4 @@
-#include "fix16.h"
+#include <libs/fixmath/fix16.h>
 #include <stdbool.h>
 
 #ifndef FIXMATH_NO_CACHE

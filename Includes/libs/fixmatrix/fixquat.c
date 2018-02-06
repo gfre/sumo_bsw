@@ -1,5 +1,5 @@
-#include "fixquat.h"
-#include "fixarray.h"
+#include <libs/fixmatrix/fixarray.h>
+#include <libs/fixmatrix/fixquat.h>
 
 // Conjugate of quaternion
 void qf16_conj(qf16 *dest, const qf16 *q)

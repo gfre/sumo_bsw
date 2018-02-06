@@ -26,7 +26,8 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <fix16.h>
+
+#include "../fixmath/fix16.h"
 
 // Maximum size of matrices.
 #ifndef FIXMATRIX_MAX_SIZE

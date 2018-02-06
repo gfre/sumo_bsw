@@ -1,5 +1,5 @@
-#include "fixvector3d.h"
-#include "fixarray.h"
+#include <libs/fixmatrix/fixarray.h>
+#include <libs/fixmatrix/fixvector3d.h>
 
 void v3d_add(v3d *dest, const v3d *a, const v3d *b)
 {

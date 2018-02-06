@@ -1,5 +1,5 @@
-#include "fixmatrix.h"
-#include "fixarray.h"
+#include <libs/fixmatrix/fixarray.h>
+#include <libs/fixmatrix/fixmatrix.h>
 
 /****************************
  * Initialization functions *

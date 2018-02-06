@@ -313,7 +313,7 @@ extern fix16_t fix16_from_str(const char *buf);
 
 #ifdef __cplusplus
 }
-#include "fix16.hpp"
+#include "../fixmath/fix16.hpp"
 #endif
 
 #endif

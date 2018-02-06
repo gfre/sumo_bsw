@@ -3,9 +3,9 @@
 #ifndef _FIXQUAT_H_
 #define _FIXQUAT_H_
 
-#include <fix16.h>
-#include "fixmatrix.h"
-#include "fixvector3d.h"
+#include "../fixmath/fix16.h"
+#include "../fixmatrix/fixmatrix.h"
+#include "../fixmatrix/fixvector3d.h"
 
 typedef struct {
     fix16_t a; // Real part
