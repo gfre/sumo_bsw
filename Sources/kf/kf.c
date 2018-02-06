@@ -5,6 +5,7 @@
  *
  *
  *
+ * @author  G. Freudenthaler, gfre@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @author 	S. Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	23.06.2017
  *
@@ -20,33 +21,43 @@
 #include "kf_api.h"
 
 
-
 /*======================================= >> #DEFINES << =========================================*/
-#define KF_UPSCALE(val_, nScl_) (val_<<nScl_)
-#define KF_DOWNSCALE(val_, nScl_) (val_>>nScl_)
+
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
+
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 static void KF_Reset(KF_Itm_t *kf_);
 
+
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-KF_ItmTbl_t *KF_pTbl = NULL;
+static KF_ItmTbl_t *KF_pTbl  = NULL;
+static KF_MtxCfg_t *KF_MtxCfg = NULL;
+static KF_DimCfg_t *KF_Dim    = NULL;
+static KF_Cfg_t    *KF_Cfg   = NULL;
+static KF_Data_t   *KF_Data   = NULL;
+static MTX_t KF_mEye = { FIXMATRIX_MAX_SIZE, FIXMATRIX_MAX_SIZE, 0, {{1<<16,0,0,0},
+																	{0,1<<16,0,0},
+																	{0,0,1<<16,0},
+																	{0,0,0,1<<16}} };
+
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
 static void KF_Reset(KF_Itm_t *kf_)
 {
 	uint8_t i = 0u;
+	int32_t tmp = 0;
 	if(NULL != kf_)
 	{
-		MTX_FillDiag( &(kf_->data->mPrvErrCoVar), (uint8_t)100 );
-		MTX_ScaleUp( &(kf_->data->mPrvErrCoVar), kf_->cfg.scl->nErrMtx );
-		kf_->data->nMdCntr = 0;
-		for(i = 0u; i < kf_->cfg.dim->nMsrdSts; i++)
+//		MTX_FillDiagonal( &kf_->data.mDPapost, fix16_from_int(100) );
+//		MTX_FillDiagonal( &kf_->data.mUPapost, fix16_one);
+		kf_->data.nMdCntr = 0;
+		for(i = 0u; i < kf_->cfg.dim.nMsrdSts; i++)
 		{
-			kf_->cfg.aMeasValFct[i]( &(MTXLOC_ij( (kf_->data->vPrvStEst), i, 0) ) );
+			kf_->cfg.aMeasValFct[i]( &tmp );
+			kf_->data.vXapost.data[i][0] = fix16_from_int(400);
 		}
-		MTX_ScaleUp( &(kf_->data->vPrvStEst), kf_->cfg.scl->nStVec);
 	}
 	else
 	{
@@ -54,21 +65,51 @@ static void KF_Reset(KF_Itm_t *kf_)
 	}
 }
 
-static void KF_BiermanObservationUpdate( int32_t yj_, int32_t rjj_, MTX_t *cj_, MTX_t *mtxu_, MTX_t *mtxd_, MTX_t *x_, KF_Cfg_t *pCfg_)
-{
-	uint8_t i = 0u, j = 0u;
-	int32_t delta = yj_;
-	int32_t CjT_m_xj[1][1];
+//static StdRtn_t KF_BiermanObservationalUpdate(const int32_t yj_, const int32_t rjj_, const MTX_t *vCjT_, MTX_t *vX_post_, MTX_t *mUP_post_, MTX_t *mDP_post_)
+//{
+//	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+//	uint8_t i = 0u, j = 0u;
+//	int32_t delta = 0;
+//	int32_t sigma = 0, nu = 0, tau = 0, epsilon = 0;
+//	MTX_t vV = { V, dim_.nSys, 1, {0} };
+//	MTX_t vW = { W, dim_.nSys, 1, {0} };
+//
+//	if( (NULL != vX_post_) && (NULL != mUP_post_) && (NULL != mDP_post_) )
+//	{
+//		retVal = ERR_OK;
+//		delta = yj_;
+//		for(j = 0u; j < dim_.nMsrdSts; j++)
+//		{
+//			delta = delta - MTXLOC_ij(vCjT_->mtx, 0, j) * MTXLOC_ij(vX_post_->mtx, j, 0);
+//			MTXLOC_ij(vV, j, 0) = MTXLOC_ij(vCjT_->mtx, 0, j);
+//			for(i = 0u; i < (j-1); i++)
+//			{
+//				MTXLOC_ij(vV, j, 0) = MTXLOC_ij(vV, j, 0) + MTXLOC_ij(mUP_post_->mtx, i, j) * MTXLOC_ij(vCjT_->mtx, 0, i);
+//			}
+//		}
+//		sigma = rjj_;
+//		for(j = 0u; j < dim_.nMsrdSts; j++)
+//		{
+//			nu = MTXLOC_ij(vV, j, 0);
+//			MTXLOC_ij(vV, j, 0) = MTXLOC_ij(vV, j, 0) * MTXLOC_ij(mDP_post_->mtx, j , j);
+//			MTXLOC_ij(vW, j, 0) = nu;
+//			for(i = 0u; i < (j-1); i++)
+//			{
+//				tau = MTXLOC_ij(mUP_post_->mtx, i, j) * nu;
+//				MTXLOC_ij(mUP_post_->mtx, i, j) = MTXLOC_ij(mUP_post_->mtx, i, j) - (nu * MTXLOC_ij(vW, i, 0)) / sigma;
+//				MTXLOC_ij(vW, i, 0) = MTXLOC_ij(vW, i, 0) + tau;
+//			}
+//			MTXLOC_ij(mDP_post_->mtx, j, j) = MTXLOC_ij(mDP_post_->mtx, j, j) * sigma;
+//		}
+//		epsilon = delta / sigma;
+//		for(i = 0u; i < dim_.nSys; i++)
+//		{
+//			MTXLOC_ij(vX_post_->mtx, i, 0) = MTXLOC_ij(vX_post_->mtx, i, 0) + MTXLOC_ij(vV, i, 0) * epsilon;
+//		}
+//	}
+//	return retVal;
+//}
 
-	MTX_t sCjT_m_cj = { CjT_m_xj[0], 1, 1 };
-
-	for(j = 0u; j < pCfg_->dim->nMsrdSts; j++)
-	{
-		MTX_Mult(cj_, x_, &sCjT_m_cj);
-		delta -= CjT_m_xj[1][1];
-	}
-
-}
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 void KF_Init(void)
@@ -93,89 +134,48 @@ void KF_Main(void)
 {
 	StdRtn_t retVal = ERR_OK;
 	uint8_t i = 0u, j = 0u, k = 0u;
+	MTX_t mTmp1 = {0}, mTmp2 = {0}, mTmp3 = {0};
+	int32_t yj     = 0;
 
 	if( (NULL != KF_pTbl) && (NULL != KF_pTbl->aKfs) )
 	{
 		for(i = 0u; i < KF_pTbl->numKfs; i++)
 		{
-			KF_Data_t *pData = KF_pTbl->aKfs[i].data;
-			KF_Cfg_t  *pCfg  = &(KF_pTbl->aKfs[i].cfg);
+			/* Update matrix dimension information for current KF */
+			KF_MtxCfg = &KF_pTbl->aKfs[i].cfg.mtx;
+			KF_Dim    = &KF_pTbl->aKfs[i].cfg.dim;
+			KF_Data   = &KF_pTbl->aKfs[i].data;
+			KF_Cfg    = &(KF_pTbl->aKfs[i].cfg);
+			KF_mEye.rows     = KF_Dim->nSys;
+			KF_mEye.columns  = KF_Dim->nSys;
 
 			/**
-			 *  temporarily used matrices/vectors for prediction
+			 * Temporal update
 			 */
-			int32_t Axkk[pCfg->dim->nSys][1];
-			int32_t uk[pCfg->dim->nInpts][1];
-			int32_t Buk[pCfg->dim->nMsrdSts][1];
-			int32_t xk1k[pCfg->dim->nSys][1];
-			int32_t APkk[pCfg->dim->nSys][pCfg->dim->nSys];
-			int32_t APkkAT[pCfg->dim->nSys][pCfg->dim->nSys];
-			int32_t Pk1k[pCfg->dim->nSys][pCfg->dim->nSys];
-
-			MTX_t vAxkk   = { Axkk[0],   pCfg->dim->nSys,   1 };
-			MTX_t vUk 	  = { uk[0],     pCfg->dim->nInpts, 1 };
-			MTX_t vBuk 	  = { Buk[0],    pCfg->dim->nSys,   1 };
-			MTX_t vXk1k	  = { xk1k[0],   pCfg->dim->nSys,   1 };
-			MTX_t mAPkk   = { APkk[0],   pCfg->dim->nSys,   pCfg->dim->nSys};
-			MTX_t mAPkkAT = { APkkAT[0], pCfg->dim->nSys,   pCfg->dim->nSys};
-			MTX_t mPk1k   = { Pk1k[0],   pCfg->dim->nSys,   pCfg->dim->nSys};
-
+				/* x_{k}(-) */
+				MTX_Mult( &(KF_Data->vXapri), &(KF_MtxCfg->mSys), &(KF_Data->vXapost) );
+				/* P_{k}(-) using modified weighted Gram-Schmidt-Orthonogonalization according to C. Thornton */
+					/* A = [U_{k-1}(+)'Phi'; (G*UQ)'] */
+				MTX_Transpose( &mTmp1, &(KF_Data->mUPapost) ); //, tmp1 = UPapost'
+				MTX_MultBt( &mTmp1, &mTmp1, &(KF_MtxCfg->mSys) );  // tmp1 = UPapost'*Phi'
+				MTX_AppendMatrix( &mTmp2, &mTmp1, &KF_mEye, (mTmp1.rows+1), 1); // tmp2  = A
+					/* A = BL -> QL-Decomposition, where L' = U_{k}(-), ... */
+				MTX_QlDecomposition(&mTmp2, &mTmp1, &mTmp2, 0);  // tmp2 = B, tmp1 = L = U_{k}(-)'
+					/* ... and B'DwB = D_{k}(-), with Dw = [DP_{k-1}(+) 0; 0 DQ] */
+				MTX_AppendMatrix(&mTmp3, &(KF_Data->mDPapost), &(KF_MtxCfg->mPrcsNsCov), (KF_Data->mDPapost.rows+1), (KF_Data->mDPapost.columns+1)); // tmp3 = Db
+				MTX_MultAt(&mTmp3, &mTmp2, &mTmp3); // tmp3 = B'Db
+				MTX_Mult(&mTmp3, &mTmp3, &mTmp2);   // tmp3 = DP_{k}(-)
 			/**
-			 * time update / 'predict'
+			 * Measurement update
 			 */
-
-			// x(k+1|k)
-			MTX_Mult( &(pCfg->mtx->mSys), &(pData->vPrvStEst), &(vAxkk));
-			MTX_ScaleDown( &(vAxkk), pCfg->scl->nSysMtx);
-
-			for(j = 0u; j < pCfg->dim->nInpts; j++)
-			{
-				if(NULL != pCfg->aInptValFct[j])
+				KF_Data->vXapost  = KF_Data->vXapri;
+				MTX_Transpose(&KF_Data->mUPapost, &mTmp1);
+				KF_Data->mDPapost = mTmp3;
+				for(j = 0; j < KF_Dim->nMsrdSts; j++)
 				{
-					pCfg->aInptValFct[j]( &(MTXLOC_ij(vUk, j, 0) ) );
+					KF_Cfg->aMeasValFct[j](&yj);
+//					KF_BiermanObservationalUpdate(yj, KF_MtxCfg.mMeasNsCov.data[j][j], &(KF_MtxCfg.mMeas.data[j][0]), &KF_Data.vXapost, &KF_Data.mUPapost, &KF_Data.mDPapost);
 				}
-				else
-				{
-					/* error handling */
-				}
-			}
-
-			MTX_Mult( &(pCfg->mtx->mInpt), &(vUk), &(vBuk) );
-			MTX_ScaleUp( &(vBuk), pCfg->scl->nStVec );
-			MTX_Add( &(vAxkk), &(vBuk), &(vXk1k) );
-
-			//P(k+1|k)
-			MTX_Mult( &(pCfg->mtx->mSys), &(pData->mPrvErrCoVar), &(mAPkk) );
-			MTX_ScaleDown( &(mAPkk), pCfg->scl->nSysMtx );
-			MTX_Mult( &(mAPkk), &(pCfg->mtx->mSysTrnsp), &(mAPkkAT) );
-			MTX_ScaleDown( &(mAPkkAT), pCfg->scl->nSysMtx );
-			MTX_Add( &(mAPkkAT), &(pCfg->mtx->mPrcsNsCov), &(mPk1k) );
-
-
-			/**
-			 *  bierman observational update according to "Mohinder S. Grewal, Angus P. Andrews: Kalman Filtering
-			 *  Theory and Practice using MATLAB, 3rd Edition, 2008, p270 table 6.15"
-			 */
-			int32_t U[pCfg->dim->nMsrdSts][pCfg->dim->nMsrdSts];
-			int32_t D[pCfg->dim->nMsrdSts][pCfg->dim->nMsrdSts];
-			int32_t cjT[1][pCfg->dim->nMsrdSts];
-			int32_t yj;
-			int32_t cjT_m_xj;
-
-			MTX_t mU	= { U[0],  pCfg->dim->nMsrdSts, pCfg->dim->nMsrdSts };
-			MTX_t mD	= { D[0],  pCfg->dim->nMsrdSts, pCfg->dim->nMsrdSts };
-			MTX_t vCjT	= { cjT[0], 1,					pCfg->dim->nMsrdSts };
-
-
-			MTX_UdDecomp(&mPk1k, &mU, &mD, 10);
-
-			for(k = 0u; k < pCfg->dim->nMsrdSts; k++)
-			{
-				pCfg->aMeasValFct[k]( &yj );
-				KF_BiermanObservationUpdate( yj, MTX_ij(pCfg->mtx->mMeasNsCov, k, k), &vCjT, &mU, &mD, &vXk1k, pCfg);
-			}
-
-
 		}
 	}
 }
@@ -194,7 +194,7 @@ StdRtn_t KF_Read_i16EstdVal(int16_t *pVal_, const uint8_t idx_)
 		retVal = ERR_PARAM_VALUE;
 		if(idx_ < KF_pTbl->numKfs )
 		{
-			*pVal_ = MTXLOC_ij( KF_pTbl->aKfs[idx_].data->vOptStEst, idx_, 0 );
+			*pVal_ = KF_pTbl->aKfs[idx_].data.vXapost.data[2][0];
 			retVal = ERR_OK;
 		}
 	}
