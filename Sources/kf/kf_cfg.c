@@ -10,32 +10,42 @@
  * x(k+1|k) = A*x(k|k-1) + B*u(k) + w(k) ,
  * y(k)		= C*x(k|k-1) + v(k) .
  *
- * In this, 'A' is the n-by-n system matrix, 'B' is the n-by-l input matrix (l being the number of inputs),
- * 'C' is the m-by-n measurement matrix ('m' being the number of measured states). Additionally,
- * 'u(k)' describes the input to the system, 'w(k)' describes the disturbances to the system
- * and should be normally distributed with zero mean and standard deviation 'sigma_w'. The measured
- * states are described by 'y(k)'. Disturbances of the measurement are expressed with 'v(k)', which
- * should be normally distributed with zero mean and standard deviation 'sigma_v'.
+ * The optimal state estimate x_hat(k+1|k) is then calculated according to the following  predictor-corrector algorithm,
+ * where x_apri denotes the apriori state estimate prior to taking measurements into account, and x_apost denotes the
+ * state estimate after taking measurements into account. x_apost(-) is the a posteriori estimate from the previous step,
+ * x_apost(+) is the a posteriori estimate from the current step. Same goes for the error covariance matrix P.
  *
- * The optimal state estimate x_hat_(k+1|k) is then calculated according to the following algorithm:
+ * Predictor
+ * x_apri = A*x_apost(-)  + B*u(k) ,
+ * P_apri = A*P_apost(-)*A^T + Q ,
  *
- * x_hat(k+1|k) = A*x_hat(k|k)  + B*u(k) ,
- * P(k+1|k)	    = A*P_(k|k)*A^T + Q ,
+ * Corrector
+ * K(k)       = P_apri*C^T * (C*P_apri*C^T + R)^{-1} ,
+ * x_apost(+) = x_apri + K(k)*( y(k) - C*x_apri ) ,
+ * P_apost(+) = (E - K(k)*C) * P_apri.
  *
- * with
  *
- * K(k)       = P(k|k-1)*C^T * (C*P(k|k-1)*C^T + R)^{-1} ,
- * x_hat(k|k) = x_hat(k|k-1) + K(k)*( y(k) - C*x_hat(k|k-1) ) ,
- * P(k|k)     = (E - K(k)*C) * P(k|k-1).
+ * Dimensions
+ *  x    n-by-1 state vector,
+ *  A    n-by-n system/state transition matrix,
+ *  P(k) n-by-n error covariance matrix,
+ *  u(k) l-by-1 input vector to the system system,
+ *  B    n-by-l input matrix (l being the number of inputs),
+ *  y(k) m-by-1 measurement vector,
+ *  C    m-by-n measurement matrix ('m' being the number of measured states),
+ *  w(k) n-by-1 disturbance vector to the system (normally distributed with zero mean and standard deviation 'sigma_w'),
+ *  Q    n-by-n diagonal matrix containing the variances 'sigma_w^2' of the process disturbances for each state,
+ *  v(k) m-by-1 measurement noise vector (normally distributed with zero mean and standard deviation 'sigma_v',
+ *  R    m-by-m diagonal matrix containing the variances 'sigma_v^2' of the measurement disturbances for each state,
+ *  K(k) n-by-m Kalman gain matrix,
+ *  E    n-by-n identity matrix.
  *
- * 'Q' is a n-by-n diagonal matrix containing the variances 'sigma_w^2' of the process disturbances for each state.
- * 'R' is a m-by-m diagonal matrix containing the variances 'sigma_v^2' of the measurement disturbances for each
- * state. K(k) is the n-by-m Kalman gain matrix and P the n-by-n error covariance matrix. The initial conditions
- * are x(0|-1) = x0 = 0 and P(0|-1) = P0 = alpha*eye(n) with alpha >> 1.
+ * The prediction for the error covariance matrix P_apri is calculated according to C. Thornton, using UD-factors of P_apost(-).
+ * The correction for the error covariance matrix P_apost(+) is calculated according to G. Bierman, using UD-factors of P_apri.
  *
- * *
- * @author G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
- * @author S. Helling,  stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ *
+ * @author G. Freudenthaler, gefr@tf.uni-kiel.de,      Chair of Automatic Control, University Kiel
+ * @author S. Helling,       stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	26.06.2017
  *
  * @copyright @<LGPL2_1>
@@ -105,10 +115,9 @@ static KF_Itm_t KF_Items[] =
 			/* A */		MTX_INIT_2X2(KF_TACHO_SYS_LE,     KF_TACHO_SYS_LE,     1<<16, ((TACHO_SAMPLE_PERIOD_MS<<16)/1000), 0, 1<<16),
 			/* B */		MTX_INIT_2X2(0,                   0,                   0,      0,                                  0, 0),
 			/* C */		MTX_INIT_2X2(KF_TACHO_MSRMNTS_LE, KF_TACHO_SYS_LE,     1<<16,  0,                                  0, 1<<16),
-			/* R */		MTX_INIT_2X2(KF_TACHO_MSRMNTS_LE, KF_TACHO_MSRMNTS_LE, 3<<16,  0, 								   0, 2000<<16),
+			/* R */		MTX_INIT_2X2(KF_TACHO_MSRMNTS_LE, KF_TACHO_MSRMNTS_LE, 3<<16,  0, 								   0, 20000<<16),
 			/* Q */		MTX_INIT_2X2(KF_TACHO_SYS_LE,     KF_TACHO_SYS_LE,     10<<16, 0, 								   0, 2500<<16)
 					  },
-		/* Dim */	  {KF_TACHO_SYS_LE, 0, KF_TACHO_MSRMNTS_LE},
 		/* MeasFcts */KF_MeasValFctHdlsLe,
 		/* InptFcts */NULL
 				},
@@ -134,15 +143,14 @@ static KF_Itm_t KF_Items[] =
 			/* R */		MTX_INIT_2X2(KF_TACHO_MSRMNTS_RI, KF_TACHO_MSRMNTS_RI, 3<<16,  0, 								   0, 20000<<16),
 			/* Q */		MTX_INIT_2X2(KF_TACHO_SYS_RI,     KF_TACHO_SYS_RI,     10<<16, 0, 								   0, 2500<<16)
 					  },
-		/* Dim */	  {KF_TACHO_SYS_RI, 0, KF_TACHO_MSRMNTS_RI},
 		/* MeasFcts */KF_MeasValFctHdlsRi,
 		/* InptFcts */NULL
 				},
 /* Data */		{
 	/* vXapri  */	{KF_TACHO_SYS_RI, 1, 0, {0u}},
 	/* vXapost */ 	{KF_TACHO_SYS_RI, 1, 0, {0u}},
-	/* mUPapri */	{KF_TACHO_SYS_RI, KF_TACHO_SYS_LE, 0, {0u}},
-	/* mDPapri */	{KF_TACHO_SYS_RI, KF_TACHO_SYS_LE, 0, {0u}},
+	/* mUPapri */	{KF_TACHO_SYS_RI, KF_TACHO_SYS_RI, 0, {0u}},
+	/* mDPapri */	{KF_TACHO_SYS_RI, KF_TACHO_SYS_RI, 0, {0u}},
 	/* mUPapost */	{KF_TACHO_SYS_RI, KF_TACHO_SYS_RI, 0, {0u}},
 	/* mDPapost */	{KF_TACHO_SYS_RI, KF_TACHO_SYS_RI, 0, {0u}},
 	/* nMdCntr */	0

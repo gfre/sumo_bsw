@@ -6,7 +6,7 @@
  *
  *
  * @author  G. Freudenthaler, gfre@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
- * @author 	S. Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	S. Helling, stu112498@tf.uni-kiel.de,  Chair of Automatic Control, University Kiel
  * @date 	23.06.2017
  *
  * @copyright @<LGPL2_1>
@@ -47,14 +47,14 @@ static void KF_Reset(KF_Itm_t *kf_)
 {
 	uint8_t i = 0u;
 	int32_t tmp = 0;
-	if(NULL != kf_)
+	if( (NULL != kf_) && (NULL != kf_->cfg.aMeasValFct))
 	{
 		MTX_FillDiagonal( &kf_->data.mDPapost, fix16_one );
 		MTX_FillDiagonal( &kf_->data.mUPapost, fix16_one );
 		kf_->data.nMdCntr = 0;
-		for(i = 0u; i < kf_->cfg.dim.nMsrdSts; i++)
+		for(i = 0u; i < kf_->cfg.mtx.mMeas.rows; i++)
 		{
-			kf_->cfg.aMeasValFct[i]( &tmp );
+			kf_->cfg.aMeasValFct[i](&tmp);
 			kf_->data.vXapost.data[i][0] = fix16_from_int(tmp);
 		}
 	}
@@ -79,10 +79,11 @@ static StdRtn_t KF_Predict_P(KF_Itm_t *kf_)
 	if( NULL != kf_ )
 	{
 		retVal       = ERR_OK;
-		mGUQ.rows    = kf_->cfg.dim.nSys; /* TODO G part of config?! */
-		mGUQ.columns = kf_->cfg.dim.nSys;
+		mGUQ.rows    = kf_->cfg.mtx.mSys.rows; /* TODO G part of config? */
+		mGUQ.columns = kf_->cfg.mtx.mSys.rows;
 		MTX_FillDiagonal(&mGUQ, fix16_one);
-		retVal |= KF_ThorntonTemporalUpdate(&(kf_->data.mUPapri), &(kf_->data.mDPapri), &(kf_->cfg.mtx.mSys), &(kf_->data.mUPapost), &(kf_->data.mDPapost), &(mGUQ), &(kf_->cfg.mtx.mPrcsNsCov));
+		retVal |= KF_ThorntonTemporalUpdate(&(kf_->data.mUPapri),  &(kf_->data.mDPapri),  &(kf_->cfg.mtx.mSys),
+											&(kf_->data.mUPapost), &(kf_->data.mDPapost), &(mGUQ), &(kf_->cfg.mtx.mPrcsNsCov));
 	}
 	return retVal;
 }
@@ -92,17 +93,18 @@ static StdRtn_t KF_Correct(KF_Itm_t *kf_)
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	uint8_t m = 0u;
 	int32_t ym;
-	if( NULL != kf_ )
+	if( (NULL != kf_) && (NULL != kf_->cfg.aMeasValFct) )
 	{
 		retVal             = ERR_OK;
 		kf_->data.vXapost  = kf_->data.vXapri;
 		kf_->data.mUPapost = kf_->data.mUPapri;
 		kf_->data.mDPapost = kf_->data.mDPapri;
-		for(m = 0; m < kf_->cfg.dim.nMsrdSts; m++)
+		for(m = 0; m < kf_->cfg.mtx.mMeas.rows; m++)
 		{
 			kf_->cfg.aMeasValFct[m](&ym);
-			ym = ym<<16;
-			retVal |= KF_BiermanObservationalUpdate(&(kf_->data.vXapost), &(kf_->data.mUPapost), &(kf_->data.mDPapost), ym, kf_->cfg.mtx.mMeasNsCov.data[m][m], &(kf_->cfg.mtx.mMeas), m);
+			ym = fix16_from_int(ym);
+			retVal |= KF_BiermanObservationalUpdate(&(kf_->data.vXapost), &(kf_->data.mUPapost), &(kf_->data.mDPapost),
+													ym, kf_->cfg.mtx.mMeasNsCov.data[m][m], &(kf_->cfg.mtx.mMeas), m);
 		}
 	}
 }
@@ -165,13 +167,13 @@ static StdRtn_t KF_BiermanObservationalUpdate(MTX_t *vXapost_, MTX_t *mUPapost_,
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	uint8_t i = 0u, j = 0u;
-	int32_t dz = 0, alpha = 0, beta = 0, gamma = 0, gammaOld = 0, lambda = 0, tmp = 0;
+	int32_t dz = 0, alpha = 0, beta = 0, gamma = 0, gammaOld = 0, tmp = 0;
 	int32_t a[vXapost_->rows], b[vXapost_->rows];
 
 	if( (NULL != vXapost_) && (NULL != mUPapost_) && (NULL != mDPapost_) )
 	{
 		retVal = ERR_OK;
-		/* a = U'cj', b = Da can be in this loop because D is diagonal matrix */
+		/* a = U'cj', b = Da can be in this loop because D is a diagonal matrix */
 		for(i = 0u; i < mUPapost_->rows; i++)
 		{
 			a[i] = fa16_dot(&(mUPapost_->data[0][i]), FIXMATRIX_MAX_SIZE, &(mC_->data[currRow_][0]), 1, mUPapost_->rows);
@@ -200,7 +202,9 @@ static StdRtn_t KF_BiermanObservationalUpdate(MTX_t *vXapost_, MTX_t *mUPapost_,
 		}
 		for(i = 0; i < vXapost_->rows; i++)
 		{
-			vXapost_->data[i][0] = fix16_add( vXapost_->data[i][0], fix16_div(fix16_mul(dz, b[i]), gamma) );
+			tmp = fix16_mul(dz, b[i]);
+			tmp = fix16_div(tmp, gamma);
+			vXapost_->data[i][0] = fix16_add(vXapost_->data[i][0], tmp);
 		}
 	}
 	return retVal;
@@ -248,7 +252,7 @@ StdRtn_t KF_Read_i16EstdVal(int16_t *pVal_, const uint8_t idx_)
 		retVal = ERR_PARAM_VALUE;
 		if(idx_ < KF_pTbl->numKfs )
 		{
-			*pVal_ = (KF_pTbl->aKfs[idx_].data.vXapost.data[1][0])>>16;
+			*pVal_ = (int16_t)((KF_pTbl->aKfs[idx_].data.vXapost.data[1][0])>>16);
 			retVal = ERR_OK;
 		}
 	}

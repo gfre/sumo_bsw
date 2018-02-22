@@ -4,7 +4,8 @@
  * @brief 		This header file contains the type definitions and type configurations for matrices,
  * 				column and row vectors for the Kalman-Filter.
  *
- * @author 	S. Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	G. Freudenthaler, geft@tf.uni-kiel.de,      Chair of Automatic Control, University Kiel
+ * @author 	S. Helling,       stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	26.06.2017
  *
  * @copyright @<LGPL2_1>
@@ -61,25 +62,13 @@ typedef struct KF_MtxCfg_s
 /**
  *
  */
-/* TODO delete dimconfig (unnecessary) */
-typedef struct KF_DimCfg_s
-{
-	 uint8_t nSys;
-	 uint8_t nInpts;
-	 uint8_t nMsrdSts;
-}KF_DimCfg_t;
-
-/**
- *
- */
 typedef struct KF_Cfg_s
 {
 	const uchar_t *pItmName;
 	const uint8_t smplTimeMS;
-	KF_MtxCfg_t mtx;
-	KF_DimCfg_t dim;
-	KF_ReadFct_t *aMeasValFct;
-	KF_ReadFct_t *aInptValFct;
+	KF_MtxCfg_t   mtx;
+	KF_ReadFct_t  *aMeasValFct;
+	KF_ReadFct_t  *aInptValFct;
 }KF_Cfg_t;
 
 /**
@@ -87,7 +76,7 @@ typedef struct KF_Cfg_s
  */
 typedef struct KF_Itm_s
 {
-	KF_Cfg_t cfg;
+	KF_Cfg_t  cfg;
 	KF_Data_t data;
 }KF_Itm_t;
 
