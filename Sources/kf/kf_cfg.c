@@ -105,7 +105,7 @@ static KF_Itm_t KF_Items[] =
 			/* A */		MTX_INIT_2X2(KF_TACHO_SYS_LE,     KF_TACHO_SYS_LE,     1<<16, ((TACHO_SAMPLE_PERIOD_MS<<16)/1000), 0, 1<<16),
 			/* B */		MTX_INIT_2X2(0,                   0,                   0,      0,                                  0, 0),
 			/* C */		MTX_INIT_2X2(KF_TACHO_MSRMNTS_LE, KF_TACHO_SYS_LE,     1<<16,  0,                                  0, 1<<16),
-			/* R */		MTX_INIT_2X2(KF_TACHO_MSRMNTS_LE, KF_TACHO_MSRMNTS_LE, 3<<16,  0, 								   0, 20000<<16),
+			/* R */		MTX_INIT_2X2(KF_TACHO_MSRMNTS_LE, KF_TACHO_MSRMNTS_LE, 3<<16,  0, 								   0, 2000<<16),
 			/* Q */		MTX_INIT_2X2(KF_TACHO_SYS_LE,     KF_TACHO_SYS_LE,     10<<16, 0, 								   0, 2500<<16)
 					  },
 		/* Dim */	  {KF_TACHO_SYS_LE, 0, KF_TACHO_MSRMNTS_LE},
@@ -117,8 +117,8 @@ static KF_Itm_t KF_Items[] =
 	/* vXapost */ 	{KF_TACHO_SYS_LE, 1, 0, {0u}},
 	/* mUPapri */	{KF_TACHO_SYS_LE, KF_TACHO_SYS_LE, 0, {0u}},
 	/* mDPapri */	{KF_TACHO_SYS_LE, KF_TACHO_SYS_LE, 0, {0u}},
-	/* mUPapost */	{KF_TACHO_SYS_LE, KF_TACHO_SYS_LE, 0, {{1<<16, 13107},{0 , 1<<16}}},
-	/* mDPapost */	{KF_TACHO_SYS_LE, KF_TACHO_SYS_LE, 0, {{96<<16, 0},{0, 100<<16}}},
+	/* mUPapost */	{KF_TACHO_SYS_LE, KF_TACHO_SYS_LE, 0, {0u}},
+	/* mDPapost */	{KF_TACHO_SYS_LE, KF_TACHO_SYS_LE, 0, {0u}},
 	/* nMdCntr */	0
 				}
 			},
