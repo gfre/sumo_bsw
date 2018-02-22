@@ -34,7 +34,7 @@ static StdRtn_t KF_Predict_x(KF_Itm_t *kf_);
 static StdRtn_t KF_Predict_P(KF_Itm_t *kf_);
 static StdRtn_t KF_Correct(KF_Itm_t *kf_);
 static StdRtn_t KF_ThorntonTemporalUpdate(MTX_t *mUPapri_, MTX_t *mDPapri_, const MTX_t *Phi_, const MTX_t *mUPapost_, const MTX_t *mDPapost_, MTX_t *mGUQ_, const MTX_t *mDQ_);
-static StdRtn_t KF_BiermanObservationalUpdate(MTX_t *vXapost_, MTX_t *mUPapost_, MTX_t *mDPapost_, const int32_t yj_, const int32_t rjj_, const MTX_t *mC_, const uint8_t row_);
+static StdRtn_t KF_BiermanObservationalUpdate(MTX_t *vXapost_, MTX_t *mUPapost_, MTX_t *mDPapost_, int32_t yj_, int32_t rjj_, const MTX_t *mC_, uint8_t row_);
 
 
 
@@ -163,7 +163,7 @@ static StdRtn_t KF_ThorntonTemporalUpdate(MTX_t *mUPapri_, MTX_t *mDPapri_, cons
 }
 
 /* TODO overflow handling, reduce number of temp variables with and-logic */
-static StdRtn_t KF_BiermanObservationalUpdate(MTX_t *vXapost_, MTX_t *mUPapost_, MTX_t *mDPapost_, const int32_t y_, const int32_t r_, const MTX_t *mC_, const uint8_t currRow_)
+static StdRtn_t KF_BiermanObservationalUpdate(MTX_t *vXapost_, MTX_t *mUPapost_, MTX_t *mDPapost_, int32_t y_, int32_t r_, const MTX_t *mC_, const uint8_t currRow_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	uint8_t i = 0u, j = 0u;
@@ -202,8 +202,22 @@ static StdRtn_t KF_BiermanObservationalUpdate(MTX_t *vXapost_, MTX_t *mUPapost_,
 		}
 		for(i = 0; i < vXapost_->rows; i++)
 		{
-			tmp = fix16_mul(dz, b[i]);
-			tmp = fix16_div(tmp, gamma);
+			/*TODO why does this not work?*/
+//			if ( (fix16_abs(dz) >= fix16_one) || (fix16_abs(b[i]) >= fix16_one) ) /* dzb + dz~b[i] + ~dzb[i] = b[i] + dz (KV-map) */
+//			{
+//				tmp = fix16_mul(dz, b[i]);
+//				tmp = fix16_div(tmp, gamma);
+//			}
+//			else if(fix16_abs(dz) > fix16_abs(b[i]))
+//			{
+//				tmp = fix16_div(dz, gamma);
+//				tmp = fix16_mul(tmp, b[i]);
+//			}
+//			else
+//			{
+				tmp = fix16_div(b[i], gamma);
+				tmp = fix16_mul(tmp, dz);
+//			}
 			vXapost_->data[i][0] = fix16_add(vXapost_->data[i][0], tmp);
 		}
 	}
