@@ -52,7 +52,7 @@ static void KF_Reset(KF_Itm_t *kf_)
 		MTX_FillDiagonal( &kf_->data.mDPapost, fix16_one );
 		MTX_FillDiagonal( &kf_->data.mUPapost, fix16_one );
 		kf_->data.nMdCntr = 0;
-		for(i = 0u; i < kf_->cfg.mtx.mMeas.rows; i++)
+		for(i = 0u; i < kf_->cfg.mtx.mH.rows; i++)
 		{
 			kf_->cfg.aMeasValFct[i](&tmp);
 			kf_->data.vXapost.data[i][0] = fix16_from_int(tmp);
@@ -63,10 +63,22 @@ static void KF_Reset(KF_Itm_t *kf_)
 static StdRtn_t KF_Predict_x(KF_Itm_t *kf_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	uint8_t l = 0;
+	MTX_t vU = {kf_->cfg.mtx.mGamma.columns, 1, 0, {0u}};
 	if(NULL != kf_)
 	{
 		retVal = ERR_OK;
-		MTX_Mult(&(kf_->data.vXapri), &(kf_->cfg.mtx.mSys), &(kf_->data.vXapost));
+		MTX_Mult(&(kf_->data.vXapri), &(kf_->cfg.mtx.mPhi), &(kf_->data.vXapost));
+		if( (NULL != kf_->cfg.aInptValFct) && (0 != kf_->cfg.mtx.mGamma.columns) )
+		{
+			for(l = 0u; l < kf_->cfg.mtx.mGamma.columns; l++)
+			{
+				kf_->cfg.aInptValFct[l](&vU.data[l][0]);
+				vU.data[l][0] = fix16_from_int(vU.data[l][0]);
+			}
+			MTX_Mult(&(kf_->data.vXapost), &(kf_->cfg.mtx.mGamma), &(vU));
+			MTX_Add(&(kf_->data.vXapri), &(kf_->data.vXapri), &(kf_->data.vXapost));
+		}
 	}
 	return retVal;
 }
@@ -74,16 +86,11 @@ static StdRtn_t KF_Predict_x(KF_Itm_t *kf_)
 static StdRtn_t KF_Predict_P(KF_Itm_t *kf_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	MTX_t mGUQ = {0};
-
 	if( NULL != kf_ )
 	{
 		retVal       = ERR_OK;
-		mGUQ.rows    = kf_->cfg.mtx.mSys.rows; /* TODO G part of config? */
-		mGUQ.columns = kf_->cfg.mtx.mSys.rows;
-		MTX_FillDiagonal(&mGUQ, fix16_one);
-		retVal |= KF_ThorntonTemporalUpdate(&(kf_->data.mUPapri),  &(kf_->data.mDPapri),  &(kf_->cfg.mtx.mSys),
-											&(kf_->data.mUPapost), &(kf_->data.mDPapost), &(mGUQ), &(kf_->cfg.mtx.mPrcsNsCov));
+		retVal |= KF_ThorntonTemporalUpdate(&(kf_->data.mUPapri),  &(kf_->data.mDPapri),  &(kf_->cfg.mtx.mPhi),
+											&(kf_->data.mUPapost), &(kf_->data.mDPapost), &(kf_->cfg.mtx.mG), &(kf_->cfg.mtx.mQ));
 	}
 	return retVal;
 }
@@ -99,12 +106,12 @@ static StdRtn_t KF_Correct(KF_Itm_t *kf_)
 		kf_->data.vXapost  = kf_->data.vXapri;
 		kf_->data.mUPapost = kf_->data.mUPapri;
 		kf_->data.mDPapost = kf_->data.mDPapri;
-		for(m = 0; m < kf_->cfg.mtx.mMeas.rows; m++)
+		for(m = 0; m < kf_->cfg.mtx.mH.rows; m++)
 		{
 			kf_->cfg.aMeasValFct[m](&ym);
 			ym = fix16_from_int(ym);
 			retVal |= KF_BiermanObservationalUpdate(&(kf_->data.vXapost), &(kf_->data.mUPapost), &(kf_->data.mDPapost),
-													ym, kf_->cfg.mtx.mMeasNsCov.data[m][m], &(kf_->cfg.mtx.mMeas), m);
+													ym, kf_->cfg.mtx.mR.data[m][m], &(kf_->cfg.mtx.mH), m);
 		}
 	}
 }
@@ -203,7 +210,6 @@ static StdRtn_t KF_BiermanObservationalUpdate(MTX_t *vXapost_, MTX_t *mUPapost_,
 		}
 		for(i = 0; i < vXapost_->rows; i++)
 		{
-			/*TODO why does this not work?*/
 			if ( (fix16_abs(dz) >= fix16_one) || (fix16_abs(b[i]) >= fix16_one) )
 			{
 				tmp = fix16_mul(dz, b[i]);

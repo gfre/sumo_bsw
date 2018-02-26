@@ -52,11 +52,12 @@ typedef struct KF_Data_s
  */
 typedef struct KF_MtxCfg_s
 {
-	 MTX_t mSys;
-	 MTX_t mInpt;
-	 MTX_t mMeas;
-	 MTX_t mMeasNsCov;
-	 MTX_t mPrcsNsCov;
+	 MTX_t mPhi;
+	 MTX_t mGamma;
+	 MTX_t mH;
+	 MTX_t mR;
+	 MTX_t mG;
+	 MTX_t mQ;
 }KF_MtxCfg_t;
 
 /**
