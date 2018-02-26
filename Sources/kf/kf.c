@@ -30,13 +30,13 @@
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 static void KF_Reset(KF_Itm_t *kf_);
+int64_t KF_48d16Dot(const fix16_t *a, uint_fast8_t a_stride, const fix16_t *b, uint_fast8_t b_stride, uint_fast8_t n);
+static StdRtn_t KF_UpdateModuloCounter(KF_Data_t *data_);
 static StdRtn_t KF_Predict_x(KF_Itm_t *kf_);
 static StdRtn_t KF_Predict_P(KF_Itm_t *kf_);
 static StdRtn_t KF_Correct(KF_Itm_t *kf_);
-static StdRtn_t KF_UpdateModuloCounter(KF_Data_t *data_);
 static StdRtn_t KF_ThorntonTemporalUpdate(MTX_t *mUPapri_, MTX_t *mDPapri_, const MTX_t *Phi_, const MTX_t *mUPapost_, const MTX_t *mDPapost_, MTX_t *mGUQ_, const MTX_t *mDQ_);
 static StdRtn_t KF_BiermanObservationalUpdate(MTX_t *vXapost_, MTX_t *mUPapost_, MTX_t *mDPapost_, int32_t dym_, int32_t rmm_, const MTX_t *mH_, uint8_t m_);
-
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
@@ -44,8 +44,27 @@ static KF_ItmTbl_t *KF_pTbl  = NULL;
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-/* same as fa16_dot but without overflow detection */
-int64_t KF_Dot(const fix16_t *a, uint_fast8_t a_stride,
+static void KF_Reset(KF_Itm_t *kf_)
+{
+	uint8_t i = 0u;
+	int32_t tmp = 0;
+	if(NULL != kf_)
+	{
+		MTX_FillDiagonal( &(kf_->data.mUPapost), fix16_one );
+		MTX_FillDiagonal( &(kf_->data.mDPapost), fix16_from_int(KF_DFLT_ALPHA) );
+		MTX_Fill( &(kf_->data.vXapost), 0 );
+		if( TRUE == kf_->cfg.bModCntrFlag )
+		{
+			for(i = 0u; i < kf_->data.vXapost.rows; i++)
+			{
+				kf_->data.aModCntr[i] = 0;
+			}
+		}
+	}
+}
+
+/* same as fa16_dot but without overflow detection and returns a Q48.16 variable */
+int64_t KF_48d16Dot(const fix16_t *a, uint_fast8_t a_stride,
                  const fix16_t *b, uint_fast8_t b_stride,
                  uint_fast8_t n)
 {
@@ -74,22 +93,6 @@ int64_t KF_Dot(const fix16_t *a, uint_fast8_t a_stride,
     sum += (sum & 0x8000) >> 15;
     #endif
     return sum;
-}
-
-static void KF_Reset(KF_Itm_t *kf_)
-{
-	uint8_t i = 0u;
-	int32_t tmp = 0;
-	if(NULL != kf_)
-	{
-		MTX_FillDiagonal( &(kf_->data.mUPapost), fix16_one );
-		MTX_FillDiagonal( &(kf_->data.mDPapost), fix16_from_int(KF_DFLT_ALPHA) );
-		MTX_Fill( &(kf_->data.vXapost), 0 );
-		if( TRUE == kf_->cfg.bModCntrFlag )
-		{
-			kf_->data.aModCntr[0] = 0;
-		}
-	}
 }
 
 static StdRtn_t KF_UpdateModuloCounter(KF_Data_t *data_)
@@ -142,11 +145,12 @@ static StdRtn_t KF_Predict_x(KF_Itm_t *kf_)
 static StdRtn_t KF_Predict_P(KF_Itm_t *kf_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	MTX_t mG = kf_->cfg.mtx.mG; /* necessary because G is overwritten in thornton update */
 	if( NULL != kf_ )
 	{
 		retVal       = ERR_OK;
 		retVal |= KF_ThorntonTemporalUpdate(&(kf_->data.mUPapri),  &(kf_->data.mDPapri),  &(kf_->cfg.mtx.mPhi),
-											&(kf_->data.mUPapost), &(kf_->data.mDPapost), &(kf_->cfg.mtx.mG), &(kf_->cfg.mtx.mQ));
+											&(kf_->data.mUPapost), &(kf_->data.mDPapost), &(mG), &(kf_->cfg.mtx.mQ));
 	}
 	return retVal;
 }
@@ -168,8 +172,8 @@ static StdRtn_t KF_Correct(KF_Itm_t *kf_)
 			kf_->cfg.aMeasValFct[m](&ym);
 			if(TRUE == kf_->cfg.bModCntrFlag)
 			{
-				ymHat  = KF_Dot( &(kf_->cfg.mtx.mH.data[m][0]), 1, &(kf_->data.vXapost.data[0][0]), FIXMATRIX_MAX_SIZE, kf_->data.vXapost.rows);
-				ymHat += (int64_t)( KF_Dot(&(kf_->cfg.mtx.mH.data[m][0]), 1, kf_->data.aModCntr, 1, kf_->data.vXapost.rows) * (KF_DFLT_MAX_MOD_VAL<<16) );
+				ymHat  = KF_48d16Dot( &(kf_->cfg.mtx.mH.data[m][0]), 1, &(kf_->data.vXapost.data[0][0]), FIXMATRIX_MAX_SIZE, kf_->data.vXapost.rows);
+				ymHat += (int64_t)( KF_48d16Dot(&(kf_->cfg.mtx.mH.data[m][0]), 1, kf_->data.aModCntr, 1, kf_->data.vXapost.rows) * (KF_DFLT_MAX_MOD_VAL<<16) );
 				dy = (int32_t)( (((int64_t)ym)<<16) - ymHat );
 			}
 			else
@@ -274,7 +278,7 @@ static StdRtn_t KF_BiermanObservationalUpdate(MTX_t *vXapost_, MTX_t *mUPapost_,
 				b[i] = fix16_add( b[i], tmp );
 			}
 		}
-		for(i = 0; i < vXapost_->rows; i++)
+		for(i = 0; i < vXapost_->rows; i++) /* update x_apost */
 		{
 			if ( (fix16_abs(dym_) >= fix16_one) || (fix16_abs(b[i]) >= fix16_one) )
 			{

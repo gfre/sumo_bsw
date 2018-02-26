@@ -34,7 +34,7 @@
  */
 #define KF_DFLT_MAX_MOD_VAL (30000u)
 /*
- * Defines the initial/reset value for P0 = diag{alpha}
+ * Defines the initial/reset value for P0 = diag{alpha} (more precisely: UP0 = eye(dim), DP0 = diag{alpha})
  */
 #define KF_DFLT_ALPHA (100u)
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
