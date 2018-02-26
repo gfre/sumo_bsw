@@ -34,7 +34,7 @@ static StdRtn_t KF_Predict_x(KF_Itm_t *kf_);
 static StdRtn_t KF_Predict_P(KF_Itm_t *kf_);
 static StdRtn_t KF_Correct(KF_Itm_t *kf_);
 static StdRtn_t KF_ThorntonTemporalUpdate(MTX_t *mUPapri_, MTX_t *mDPapri_, const MTX_t *Phi_, const MTX_t *mUPapost_, const MTX_t *mDPapost_, MTX_t *mGUQ_, const MTX_t *mDQ_);
-static StdRtn_t KF_BiermanObservationalUpdate(MTX_t *vXapost_, MTX_t *mUPapost_, MTX_t *mDPapost_, int32_t yj_, int32_t rjj_, const MTX_t *mC_, uint8_t row_);
+static StdRtn_t KF_BiermanObservationalUpdate(MTX_t *vXapost_, MTX_t *mUPapost_, MTX_t *mDPapost_, int32_t ym_, int32_t rmm_, const MTX_t *mH_, uint8_t m_);
 
 
 
@@ -109,7 +109,7 @@ static StdRtn_t KF_Correct(KF_Itm_t *kf_)
 		for(m = 0; m < kf_->cfg.mtx.mH.rows; m++)
 		{
 			kf_->cfg.aMeasValFct[m](&ym);
-			ym = fix16_from_int(ym);
+			ym      = fix16_from_int(ym);
 			retVal |= KF_BiermanObservationalUpdate(&(kf_->data.vXapost), &(kf_->data.mUPapost), &(kf_->data.mDPapost),
 													ym, kf_->cfg.mtx.mR.data[m][m], &(kf_->cfg.mtx.mH), m);
 		}
@@ -120,7 +120,7 @@ static StdRtn_t KF_Correct(KF_Itm_t *kf_)
 static StdRtn_t KF_ThorntonTemporalUpdate(MTX_t *mUPapri_, MTX_t *mDPapri_, const MTX_t *Phi_, const MTX_t *mUPapost_, const MTX_t *mDPapost_, MTX_t *mGUQ_, const MTX_t *mDQ_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	int8_t i = 0;
+	int8_t  i = 0;
 	uint8_t j = 0u, k = 0u, dim = 0u;
 	MTX_t tmp = {0};
 	int32_t sigma = 0;
@@ -170,7 +170,7 @@ static StdRtn_t KF_ThorntonTemporalUpdate(MTX_t *mUPapri_, MTX_t *mDPapri_, cons
 }
 
 /* TODO overflow handling, reduce number of temp variables with and-logic */
-static StdRtn_t KF_BiermanObservationalUpdate(MTX_t *vXapost_, MTX_t *mUPapost_, MTX_t *mDPapost_, int32_t y_, int32_t r_, const MTX_t *mC_, const uint8_t currRow_)
+static StdRtn_t KF_BiermanObservationalUpdate(MTX_t *vXapost_, MTX_t *mUPapost_, MTX_t *mDPapost_, int32_t ym_, int32_t rmm_, const MTX_t *mH_, uint8_t m_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	uint8_t i = 0u, j = 0u;
@@ -184,11 +184,11 @@ static StdRtn_t KF_BiermanObservationalUpdate(MTX_t *vXapost_, MTX_t *mUPapost_,
 		/* a = U'cj', b = Da can be in this loop because D is a diagonal matrix */
 		for(i = 0u; i < mUPapost_->rows; i++)
 		{
-			a[i] = fa16_dot(&(mUPapost_->data[0][i]), FIXMATRIX_MAX_SIZE, &(mC_->data[currRow_][0]), 1, mUPapost_->rows);
+			a[i] = fa16_dot(&(mUPapost_->data[0][i]), FIXMATRIX_MAX_SIZE, &(mH_->data[m_][0]), 1, mUPapost_->rows);
 			b[i] = fix16_mul(mDPapost_->data[i][i], a[i]);
 		}
-		dz = fix16_sub(y_, fa16_dot( &(mC_->data[currRow_][0]), 1, &(vXapost_->data[0][0]), FIXMATRIX_MAX_SIZE, vXapost_->rows) );
-		alpha = r_;
+		dz = fix16_sub(ym_, fa16_dot( &(mH_->data[m_][0]), 1, &(vXapost_->data[0][0]), FIXMATRIX_MAX_SIZE, vXapost_->rows) );
+		alpha = rmm_;
 		gamma = alpha;
 		for(j = 0u; j < vXapost_->rows; j++)
 		{

@@ -121,7 +121,8 @@ static KF_Itm_t KF_Items[] =
 			/* Q */		MTX_INIT_2X2(KF_TACHO_SYS_LE,     KF_TACHO_SYS_LE,     10<<16, 0, 								   0, 2500<<16)
 					  },
 		/* MeasFcts */KF_MeasValFctHdlsLe,
-		/* InptFcts */NULL
+		/* InptFcts */NULL,
+  /* Modulo counter */TRUE
 				},
 /* Data */		{
 	/* vXapri  */	{KF_TACHO_SYS_LE, 1, 0, {0u}},
@@ -147,7 +148,8 @@ static KF_Itm_t KF_Items[] =
 			/* Q */		MTX_INIT_2X2(KF_TACHO_SYS_RI,     KF_TACHO_SYS_RI,     10<<16, 0, 								   0, 2500<<16)
 					  },
 		/* MeasFcts */KF_MeasValFctHdlsRi,
-		/* InptFcts */NULL
+		/* InptFcts */NULL,
+  /* Modulo counter */TRUE
 				},
 /* Data */		{
 	/* vXapri  */	{KF_TACHO_SYS_RI, 1, 0, {0u}},

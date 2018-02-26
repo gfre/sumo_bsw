@@ -70,6 +70,7 @@ typedef struct KF_Cfg_s
 	KF_MtxCfg_t   mtx;
 	KF_ReadFct_t  *aMeasValFct;
 	KF_ReadFct_t  *aInptValFct;
+	bool bModCntrFlag;
 }KF_Cfg_t;
 
 /**
@@ -88,7 +89,7 @@ typedef struct KF_ItmTbl_s
 {
 	KF_Itm_t *aKfs;
 	const uint8_t numKfs;
-} KF_ItmTbl_t;
+}KF_ItmTbl_t;
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
