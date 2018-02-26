@@ -168,6 +168,7 @@ static StdRtn_t KF_BiermanObservationalUpdate(MTX_t *vXapost_, MTX_t *mUPapost_,
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	uint8_t i = 0u, j = 0u;
 	int32_t dz = 0, alpha = 0, beta = 0, gamma = 0, gammaOld = 0, tmp = 0;
+	bool overFlowFlag = FALSE;
 	int32_t a[vXapost_->rows], b[vXapost_->rows];
 
 	if( (NULL != vXapost_) && (NULL != mUPapost_) && (NULL != mDPapost_) )
@@ -203,21 +204,30 @@ static StdRtn_t KF_BiermanObservationalUpdate(MTX_t *vXapost_, MTX_t *mUPapost_,
 		for(i = 0; i < vXapost_->rows; i++)
 		{
 			/*TODO why does this not work?*/
-//			if ( (fix16_abs(dz) >= fix16_one) || (fix16_abs(b[i]) >= fix16_one) ) /* dzb + dz~b[i] + ~dzb[i] = b[i] + dz (KV-map) */
-//			{
-//				tmp = fix16_mul(dz, b[i]);
-//				tmp = fix16_div(tmp, gamma);
-//			}
-//			else if(fix16_abs(dz) > fix16_abs(b[i]))
-//			{
-//				tmp = fix16_div(dz, gamma);
-//				tmp = fix16_mul(tmp, b[i]);
-//			}
-//			else
-//			{
+			if ( (fix16_abs(dz) >= fix16_one) || (fix16_abs(b[i]) >= fix16_one) )
+			{
+				tmp = fix16_mul(dz, b[i]);
+				if(fix16_overflow == tmp)
+				{
+					overFlowFlag = TRUE;
+				}
+				else
+				{
+					tmp = fix16_div(tmp, gamma);
+				}
+			}
+			if( (fix16_abs(dz) > fix16_abs(b[i])) && (TRUE == overFlowFlag) )
+			{
+				tmp = fix16_div(dz, gamma);
+				tmp = fix16_mul(tmp, b[i]);
+				overFlowFlag = FALSE;
+			}
+			if(TRUE == overFlowFlag)
+			{
 				tmp = fix16_div(b[i], gamma);
 				tmp = fix16_mul(tmp, dz);
-//			}
+				overFlowFlag = FALSE;
+			}
 			vXapost_->data[i][0] = fix16_add(vXapost_->data[i][0], tmp);
 		}
 	}
