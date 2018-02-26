@@ -3,8 +3,8 @@
  * @ingroup		kf
  * @brief 		API of the SWC @a Kalman Filter
  *
- *
- * @author 	S. Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de,      Chair of Automatic Control, University Kiel
+ * @author 	S. Helling,       stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	14.07.2017
  *
  * @note API for BSW-internal use only
