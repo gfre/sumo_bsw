@@ -29,7 +29,14 @@
 
 
 /*======================================= >> #DEFINES << =========================================*/
-
+/**
+ * Defines the default maximum modulo value for measured values, must be less than 0x7FFF (32767)
+ */
+#define KF_DFLT_MAX_MOD_VAL (30000u)
+/*
+ * Defines the initial/reset value for P0 = diag{alpha} (more precisely: UP0 = eye(dim), DP0 = diag{alpha})
+ */
+#define KF_DFLT_ALPHA (100u)
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 typedef StdRtn_t (*KF_ReadFct_t)(int32_t*);
 
@@ -44,7 +51,7 @@ typedef struct KF_Data_s
 	MTX_t  mDPapri;
 	MTX_t  mUPapost;
 	MTX_t  mDPapost;
-	int8_t nMdCntr;
+	int32_t aModCntr[FIXMATRIX_MAX_SIZE];
 }KF_Data_t;
 
 /**
@@ -70,6 +77,7 @@ typedef struct KF_Cfg_s
 	KF_MtxCfg_t   mtx;
 	KF_ReadFct_t  *aMeasValFct;
 	KF_ReadFct_t  *aInptValFct;
+	bool bModCntrFlag;
 }KF_Cfg_t;
 
 /**
@@ -88,7 +96,7 @@ typedef struct KF_ItmTbl_s
 {
 	KF_Itm_t *aKfs;
 	const uint8_t numKfs;
-} KF_ItmTbl_t;
+}KF_ItmTbl_t;
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
