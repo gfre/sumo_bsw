@@ -33,6 +33,7 @@ static void KF_Reset(KF_Itm_t *kf_);
 static StdRtn_t KF_Predict_x(KF_Itm_t *kf_);
 static StdRtn_t KF_Predict_P(KF_Itm_t *kf_);
 static StdRtn_t KF_Correct(KF_Itm_t *kf_);
+static StdRtn_t KF_UpdateModuloCounter(KF_Data_t *data_);
 static StdRtn_t KF_ThorntonTemporalUpdate(MTX_t *mUPapri_, MTX_t *mDPapri_, const MTX_t *Phi_, const MTX_t *mUPapost_, const MTX_t *mDPapost_, MTX_t *mGUQ_, const MTX_t *mDQ_);
 static StdRtn_t KF_BiermanObservationalUpdate(MTX_t *vXapost_, MTX_t *mUPapost_, MTX_t *mDPapost_, int32_t dym_, int32_t rmm_, const MTX_t *mH_, uint8_t m_);
 
@@ -81,8 +82,8 @@ static void KF_Reset(KF_Itm_t *kf_)
 	int32_t tmp = 0;
 	if(NULL != kf_)
 	{
-		MTX_FillDiagonal( &(kf_->data.mDPapost), fix16_one );
-		MTX_FillDiagonal( &(kf_->data.mUPapost), fix16_from_int(KF_DFLT_ALPHA) );
+		MTX_FillDiagonal( &(kf_->data.mUPapost), fix16_one );
+		MTX_FillDiagonal( &(kf_->data.mDPapost), fix16_from_int(KF_DFLT_ALPHA) );
 		MTX_Fill( &(kf_->data.vXapost), 0 );
 		if( TRUE == kf_->cfg.bModCntrFlag )
 		{
@@ -91,25 +92,24 @@ static void KF_Reset(KF_Itm_t *kf_)
 	}
 }
 
-static StdRtn_t KF_UpdateModuloCounter(KF_Itm_t *kf_)
+static StdRtn_t KF_UpdateModuloCounter(KF_Data_t *data_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	uint8_t i = 0u;
-
-	if(NULL != kf_)
+	if(NULL != data_)
 	{
 		retVal = ERR_OK;
-		for(i = 0u; i < kf_->data.vXapost.rows; i++)
+		for(i = 0u; i < data_->vXapost.rows; i++)
 		{
-			if( KF_DFLT_MAX_MOD_VAL > kf_->data.vXapost.data[i][0] )
+			if( (int32_t)(KF_DFLT_MAX_MOD_VAL<<16) <= data_->vXapost.data[i][0] )
 			{
-				kf_->data.vXapost.data[i][0] %= KF_DFLT_MAX_MOD_VAL;
-				kf_->data.aModCntr[i]++;
+				data_->vXapost.data[i][0] %= KF_DFLT_MAX_MOD_VAL;
+				data_->aModCntr[i]++;
 			}
-			else if( KF_DFLT_MAX_MOD_VAL < kf_->data.vXapost.data[i][0] )
+			else if( -(int32_t)(KF_DFLT_MAX_MOD_VAL<<16) >= data_->vXapost.data[i][0] )
 			{
-				kf_->data.vXapost.data[i][0] %= KF_DFLT_MAX_MOD_VAL;
-				kf_->data.aModCntr[i]--;
+				data_->vXapost.data[i][0] %= KF_DFLT_MAX_MOD_VAL;
+				data_->aModCntr[i]--;
 			}
 		}
 	}
@@ -155,7 +155,7 @@ static StdRtn_t KF_Correct(KF_Itm_t *kf_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	uint8_t m = 0u;
-	int32_t tmp = 0;
+	int32_t dy = 0, ym = 0;
 	int64_t ymHat = 0;
 	if( (NULL != kf_) && (NULL != kf_->cfg.aMeasValFct) )
 	{
@@ -165,19 +165,20 @@ static StdRtn_t KF_Correct(KF_Itm_t *kf_)
 		kf_->data.mDPapost = kf_->data.mDPapri;
 		for(m = 0; m < kf_->cfg.mtx.mH.rows; m++)
 		{
-			kf_->cfg.aMeasValFct[m](&tmp);
+			kf_->cfg.aMeasValFct[m](&ym);
 			if(TRUE == kf_->cfg.bModCntrFlag)
 			{
 				ymHat  = KF_Dot( &(kf_->cfg.mtx.mH.data[m][0]), 1, &(kf_->data.vXapost.data[0][0]), FIXMATRIX_MAX_SIZE, kf_->data.vXapost.rows);
 				ymHat += (int64_t)( KF_Dot(&(kf_->cfg.mtx.mH.data[m][0]), 1, kf_->data.aModCntr, 1, kf_->data.vXapost.rows) * (KF_DFLT_MAX_MOD_VAL<<16) );
-				tmp = (int32_t)( (((int64_t)tmp)<<16) - ymHat );
+				dy = (int32_t)( (((int64_t)ym)<<16) - ymHat );
 			}
 			else
 			{
-				tmp = fix16_sub(tmp, fa16_dot( &(kf_->cfg.mtx.mH.data[m][0]), 1, &(kf_->data.vXapost.data[0][0]), FIXMATRIX_MAX_SIZE, kf_->data.vXapost.rows) );
+				ym <<= 16;
+				dy = fix16_sub(ym, fa16_dot( &(kf_->cfg.mtx.mH.data[m][0]), 1, &(kf_->data.vXapost.data[0][0]), FIXMATRIX_MAX_SIZE, kf_->data.vXapost.rows) );
 			}
 			retVal |= KF_BiermanObservationalUpdate(&(kf_->data.vXapost), &(kf_->data.mUPapost), &(kf_->data.mDPapost),
-													tmp, kf_->cfg.mtx.mR.data[m][m], &(kf_->cfg.mtx.mH), m);
+													dy, kf_->cfg.mtx.mR.data[m][m], &(kf_->cfg.mtx.mH), m);
 		}
 	}
 }
@@ -332,7 +333,7 @@ void KF_Main(void)
 			KF_Correct(&KF_pTbl->aKfs[i]);
 			if( TRUE == KF_pTbl->aKfs[i].cfg.bModCntrFlag )
 			{
-				KF_UpdateModuloCounter( &(KF_pTbl->aKfs[i]) );
+				KF_UpdateModuloCounter( &(KF_pTbl->aKfs[i].data) );
 			}
 		}
 	}
@@ -351,8 +352,15 @@ StdRtn_t KF_Read_i16EstdVal(int16_t *pVal_, const uint8_t idx_)
 		retVal = ERR_PARAM_VALUE;
 		if(idx_ < KF_pTbl->numKfs )
 		{
-			*pVal_ = (int16_t)((KF_pTbl->aKfs[idx_].data.vXapost.data[1][0])>>16);
 			retVal = ERR_OK;
+			if(TRUE == KF_pTbl->aKfs[idx_].cfg.bModCntrFlag)
+			{
+				*pVal_ = KF_pTbl->aKfs[idx_].data.aModCntr[1]*KF_DFLT_MAX_MOD_VAL + (KF_pTbl->aKfs[idx_].data.vXapost.data[1][0]>>16);
+			}
+			else
+			{
+				*pVal_ = (int16_t)((KF_pTbl->aKfs[idx_].data.vXapost.data[1][0])>>16);
+			}
 		}
 	}
 	return retVal;
