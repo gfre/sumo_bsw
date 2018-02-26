@@ -34,7 +34,7 @@ static StdRtn_t KF_Predict_x(KF_Itm_t *kf_);
 static StdRtn_t KF_Predict_P(KF_Itm_t *kf_);
 static StdRtn_t KF_Correct(KF_Itm_t *kf_);
 static StdRtn_t KF_ThorntonTemporalUpdate(MTX_t *mUPapri_, MTX_t *mDPapri_, const MTX_t *Phi_, const MTX_t *mUPapost_, const MTX_t *mDPapost_, MTX_t *mGUQ_, const MTX_t *mDQ_);
-static StdRtn_t KF_BiermanObservationalUpdate(MTX_t *vXapost_, MTX_t *mUPapost_, MTX_t *mDPapost_, int32_t ym_, int32_t rmm_, const MTX_t *mH_, uint8_t m_);
+static StdRtn_t KF_BiermanObservationalUpdate(MTX_t *vXapost_, MTX_t *mUPapost_, MTX_t *mDPapost_, int32_t dym_, int32_t rmm_, const MTX_t *mH_, uint8_t m_);
 
 
 
@@ -43,21 +43,77 @@ static KF_ItmTbl_t *KF_pTbl  = NULL;
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
+/* same as fa16_dot but without overflow detection */
+int64_t KF_Dot(const fix16_t *a, uint_fast8_t a_stride,
+                 const fix16_t *b, uint_fast8_t b_stride,
+                 uint_fast8_t n)
+{
+    int64_t sum = 0;
+
+    while (n--)
+    {
+        if (*a != 0 && *b != 0)
+        {
+            sum += (int64_t)(*a) * (*b);
+        }
+
+        // Go to next item
+        a += a_stride;
+        b += b_stride;
+    }
+    if (sum < 0)
+    {
+        #ifndef FIXMATH_NO_ROUNDING
+        // This adjustment is required in order to round -1/2 correctly
+        sum--;
+        #endif
+    }
+    sum = (sum >> 16);
+    #ifndef FIXMATH_NO_ROUNDING
+    sum += (sum & 0x8000) >> 15;
+    #endif
+    return sum;
+}
+
 static void KF_Reset(KF_Itm_t *kf_)
 {
 	uint8_t i = 0u;
 	int32_t tmp = 0;
-	if( (NULL != kf_) && (NULL != kf_->cfg.aMeasValFct))
+	if(NULL != kf_)
 	{
-		MTX_FillDiagonal( &kf_->data.mDPapost, fix16_one );
-		MTX_FillDiagonal( &kf_->data.mUPapost, fix16_one );
-		kf_->data.nMdCntr = 0;
-		for(i = 0u; i < kf_->cfg.mtx.mH.rows; i++)
+		MTX_FillDiagonal( &(kf_->data.mDPapost), fix16_one );
+		MTX_FillDiagonal( &(kf_->data.mUPapost), fix16_from_int(KF_DFLT_ALPHA) );
+		MTX_Fill( &(kf_->data.vXapost), 0 );
+		if( TRUE == kf_->cfg.bModCntrFlag )
 		{
-			kf_->cfg.aMeasValFct[i](&tmp);
-			kf_->data.vXapost.data[i][0] = fix16_from_int(tmp);
+			kf_->data.aModCntr[0] = 0;
 		}
 	}
+}
+
+static StdRtn_t KF_UpdateModuloCounter(KF_Itm_t *kf_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	uint8_t i = 0u;
+
+	if(NULL != kf_)
+	{
+		retVal = ERR_OK;
+		for(i = 0u; i < kf_->data.vXapost.rows; i++)
+		{
+			if( KF_DFLT_MAX_MOD_VAL > kf_->data.vXapost.data[i][0] )
+			{
+				kf_->data.vXapost.data[i][0] %= KF_DFLT_MAX_MOD_VAL;
+				kf_->data.aModCntr[i]++;
+			}
+			else if( KF_DFLT_MAX_MOD_VAL < kf_->data.vXapost.data[i][0] )
+			{
+				kf_->data.vXapost.data[i][0] %= KF_DFLT_MAX_MOD_VAL;
+				kf_->data.aModCntr[i]--;
+			}
+		}
+	}
+	return retVal;
 }
 
 static StdRtn_t KF_Predict_x(KF_Itm_t *kf_)
@@ -99,7 +155,8 @@ static StdRtn_t KF_Correct(KF_Itm_t *kf_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	uint8_t m = 0u;
-	int32_t ym;
+	int32_t tmp = 0;
+	int64_t ymHat = 0;
 	if( (NULL != kf_) && (NULL != kf_->cfg.aMeasValFct) )
 	{
 		retVal             = ERR_OK;
@@ -108,10 +165,19 @@ static StdRtn_t KF_Correct(KF_Itm_t *kf_)
 		kf_->data.mDPapost = kf_->data.mDPapri;
 		for(m = 0; m < kf_->cfg.mtx.mH.rows; m++)
 		{
-			kf_->cfg.aMeasValFct[m](&ym);
-			ym      = fix16_from_int(ym);
+			kf_->cfg.aMeasValFct[m](&tmp);
+			if(TRUE == kf_->cfg.bModCntrFlag)
+			{
+				ymHat  = KF_Dot( &(kf_->cfg.mtx.mH.data[m][0]), 1, &(kf_->data.vXapost.data[0][0]), FIXMATRIX_MAX_SIZE, kf_->data.vXapost.rows);
+				ymHat += (int64_t)( KF_Dot(&(kf_->cfg.mtx.mH.data[m][0]), 1, kf_->data.aModCntr, 1, kf_->data.vXapost.rows) * (KF_DFLT_MAX_MOD_VAL<<16) );
+				tmp = (int32_t)( (((int64_t)tmp)<<16) - ymHat );
+			}
+			else
+			{
+				tmp = fix16_sub(tmp, fa16_dot( &(kf_->cfg.mtx.mH.data[m][0]), 1, &(kf_->data.vXapost.data[0][0]), FIXMATRIX_MAX_SIZE, kf_->data.vXapost.rows) );
+			}
 			retVal |= KF_BiermanObservationalUpdate(&(kf_->data.vXapost), &(kf_->data.mUPapost), &(kf_->data.mDPapost),
-													ym, kf_->cfg.mtx.mR.data[m][m], &(kf_->cfg.mtx.mH), m);
+													tmp, kf_->cfg.mtx.mR.data[m][m], &(kf_->cfg.mtx.mH), m);
 		}
 	}
 }
@@ -170,24 +236,23 @@ static StdRtn_t KF_ThorntonTemporalUpdate(MTX_t *mUPapri_, MTX_t *mDPapri_, cons
 }
 
 /* TODO overflow handling, reduce number of temp variables with and-logic */
-static StdRtn_t KF_BiermanObservationalUpdate(MTX_t *vXapost_, MTX_t *mUPapost_, MTX_t *mDPapost_, int32_t ym_, int32_t rmm_, const MTX_t *mH_, uint8_t m_)
+static StdRtn_t KF_BiermanObservationalUpdate(MTX_t *vXapost_, MTX_t *mUPapost_, MTX_t *mDPapost_, int32_t dym_, int32_t rmm_, const MTX_t *mH_, uint8_t m_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	uint8_t i = 0u, j = 0u;
-	int32_t dz = 0, alpha = 0, beta = 0, gamma = 0, gammaOld = 0, tmp = 0;
+	int32_t alpha = 0, beta = 0, gamma = 0, gammaOld = 0, tmp = 0;
 	bool overFlowFlag = FALSE;
 	int32_t a[vXapost_->rows], b[vXapost_->rows];
 
 	if( (NULL != vXapost_) && (NULL != mUPapost_) && (NULL != mDPapost_) )
 	{
 		retVal = ERR_OK;
-		/* a = U'cj', b = Da can be in this loop because D is a diagonal matrix */
+		/* a = U'h_m', b = Da can be in this loop because D is a diagonal matrix */
 		for(i = 0u; i < mUPapost_->rows; i++)
 		{
 			a[i] = fa16_dot(&(mUPapost_->data[0][i]), FIXMATRIX_MAX_SIZE, &(mH_->data[m_][0]), 1, mUPapost_->rows);
 			b[i] = fix16_mul(mDPapost_->data[i][i], a[i]);
 		}
-		dz = fix16_sub(ym_, fa16_dot( &(mH_->data[m_][0]), 1, &(vXapost_->data[0][0]), FIXMATRIX_MAX_SIZE, vXapost_->rows) );
 		alpha = rmm_;
 		gamma = alpha;
 		for(j = 0u; j < vXapost_->rows; j++)
@@ -210,9 +275,9 @@ static StdRtn_t KF_BiermanObservationalUpdate(MTX_t *vXapost_, MTX_t *mUPapost_,
 		}
 		for(i = 0; i < vXapost_->rows; i++)
 		{
-			if ( (fix16_abs(dz) >= fix16_one) || (fix16_abs(b[i]) >= fix16_one) )
+			if ( (fix16_abs(dym_) >= fix16_one) || (fix16_abs(b[i]) >= fix16_one) )
 			{
-				tmp = fix16_mul(dz, b[i]);
+				tmp = fix16_mul(dym_, b[i]);
 				if(fix16_overflow == tmp)
 				{
 					overFlowFlag = TRUE;
@@ -222,16 +287,16 @@ static StdRtn_t KF_BiermanObservationalUpdate(MTX_t *vXapost_, MTX_t *mUPapost_,
 					tmp = fix16_div(tmp, gamma);
 				}
 			}
-			if( (fix16_abs(dz) > fix16_abs(b[i])) && (TRUE == overFlowFlag) )
+			if( (fix16_abs(dym_) > fix16_abs(b[i])) && (TRUE == overFlowFlag) )
 			{
-				tmp = fix16_div(dz, gamma);
+				tmp = fix16_div(dym_, gamma);
 				tmp = fix16_mul(tmp, b[i]);
 				overFlowFlag = FALSE;
 			}
 			if(TRUE == overFlowFlag)
 			{
 				tmp = fix16_div(b[i], gamma);
-				tmp = fix16_mul(tmp, dz);
+				tmp = fix16_mul(tmp, dym_);
 				overFlowFlag = FALSE;
 			}
 			vXapost_->data[i][0] = fix16_add(vXapost_->data[i][0], tmp);
@@ -265,6 +330,10 @@ void KF_Main(void)
 			KF_Predict_x(&KF_pTbl->aKfs[i]);
 			KF_Predict_P(&KF_pTbl->aKfs[i]);
 			KF_Correct(&KF_pTbl->aKfs[i]);
+			if( TRUE == KF_pTbl->aKfs[i].cfg.bModCntrFlag )
+			{
+				KF_UpdateModuloCounter( &(KF_pTbl->aKfs[i]) );
+			}
 		}
 	}
 }

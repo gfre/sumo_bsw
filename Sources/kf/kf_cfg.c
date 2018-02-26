@@ -74,10 +74,7 @@
 #define KF_TACHO_MSRMNTS_RI (2u)
 #define KF_TACHO_INPTS_RI (0u)
 
-/**
- * Defines the default maximum modulo value for measured values
- */
-#define KF_DFLT_MAX_MOD_VAL (2000000000u)
+
 
 
 /**
@@ -131,7 +128,7 @@ static KF_Itm_t KF_Items[] =
 	/* mDPapri */	{KF_TACHO_SYS_LE, KF_TACHO_SYS_LE, 0, {0u}},
 	/* mUPapost */	{KF_TACHO_SYS_LE, KF_TACHO_SYS_LE, 0, {0u}},
 	/* mDPapost */	{KF_TACHO_SYS_LE, KF_TACHO_SYS_LE, 0, {0u}},
-	/* nMdCntr */	0
+	/* nMdCntr */	{0}
 				}
 			},
 /*======================== tacho right =========================*/
@@ -158,7 +155,7 @@ static KF_Itm_t KF_Items[] =
 	/* mDPapri */	{KF_TACHO_SYS_RI, KF_TACHO_SYS_RI, 0, {0u}},
 	/* mUPapost */	{KF_TACHO_SYS_RI, KF_TACHO_SYS_RI, 0, {0u}},
 	/* mDPapost */	{KF_TACHO_SYS_RI, KF_TACHO_SYS_RI, 0, {0u}},
-	/* nMdCntr */	0
+	/* nMdCntr */	{0u}
 				}
 			},
 };
