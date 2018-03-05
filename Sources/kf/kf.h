@@ -24,6 +24,10 @@
 #define EXTERNAL_ extern
 #endif
 
+/**
+ * @addtogroup kf
+ * @{
+ */
 /*======================================= >> #DEFINES << =========================================*/
 /**
  * String identification of the SWC @ref kf
@@ -76,6 +80,9 @@ EXTERNAL_ void KF_Main(void);
 EXTERNAL_ void KF_Deinit(void);
 
 
+/**
+ * @}
+ */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif

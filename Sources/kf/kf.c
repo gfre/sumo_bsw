@@ -1,9 +1,11 @@
-/*************************************************************************************************
+/***********************************************************************************************//**
  * @file		kf.c
- * @ingroup		kf Kalman FIlter
- * @brief 		This Module implements a Kalman Filter.
+ * @ingroup		kf Kalman filter
+ * @brief 		This Module implements a Kalman filter.
  *
- *
+ * This module implements the core algorithms to implement the Thornton temporal and Bierman
+ * observational update. In addition, a modulo counter is implemented, if the current Kalman
+ * filter needs it.
  *
  * @author  G. Freudenthaler, gfre@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @author 	S. Helling, stu112498@tf.uni-kiel.de,  Chair of Automatic Control, University Kiel
@@ -14,7 +16,10 @@
  ***************************************************************************************************/
 
 #define MASTER_KF_C_
-
+/**
+ * @addtogroup kf
+ * @{
+ */
 /*======================================= >> #INCLUDES << ========================================*/
 #include "kf.h"
 #include "kf_cfg.h"
@@ -370,7 +375,9 @@ StdRtn_t KF_Read_i16EstdVal(int16_t *pVal_, const uint8_t idx_)
 	return retVal;
 }
 
-
+/**
+ * @}
+ */
 #ifdef MASTER_KF_C_
 #undef MASTER_KF_C_
 #endif /* !MASTER_KF_C_ */
