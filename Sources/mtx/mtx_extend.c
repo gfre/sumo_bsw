@@ -1,12 +1,16 @@
 /***********************************************************************************************//**
  * @file		mtx_extend.c
- * @ingroup		<group label>
- * @brief 		<This is b_ brief description.>
+ * @ingroup		mtx
+ * @brief 		This module implements extensions to the libfixmatrix library
  *
- * <This is a detailed description.>
+ *	This module implements QL-decomposition and UD-Decomposition aswell as a function that can
+ *	append a matrix to another. QL-decomposition is similar to QR-decomposition with the diff-
+ *	erence, that it returns a unit lower triangular matrix L and a orthonogonal not-normalized
+ *	base vector matrix Q. UD-decomposition produces a a unit upper triangular matrix U and a
+ *	diagonal matrix D for a symmetric, quadratic matrix P such that P=UDU'.
  *
- * @author 	S. Helling, Simon Helling@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
- * @date 	05.02.2018
+ * @author 	S. Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	05.03.2018
  *
  * @copyright @<LGPL2_1>
  *
@@ -62,7 +66,7 @@ static void MTX_SubtractProjection(fix16_t *v, const fix16_t *u, fix16_t dot, in
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-void MTX_AppendMatrix(mf16 *dest_, const mf16 *a_, const mf16 *b_, const uint8_t posRow_, const uint8_t posColumn_)
+void MTX_AppendMatrix(MTX_t *dest_, const MTX_t *a_, const MTX_t *b_, const uint8_t posRow_, const uint8_t posColumn_)
 {
 	int row, column;
 
