@@ -46,7 +46,7 @@
 /**
  * @brief Driver initialization.
  */
-void DRV_Init(void);
+void DRV_Init(const void *pvPar_);
 
 /**
  * @brief Driver de-initialization.

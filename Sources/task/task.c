@@ -29,6 +29,7 @@
 #include "drv.h"
 #include "rnet.h"
 #include "appl.h"
+#include "refl.h"
 
 
 
@@ -142,9 +143,9 @@ void TASK_PerdTaskFct(void * pvParameters_)
 	{
 		for(i = 0u; i < pvPar->numSwc; i++)
 		{
-			if(NULL != pvPar->swcCfg[i].initFct)
+			if( NULL != pvPar->swcCfg[i].initFct )
 			{
-				pvPar->swcCfg[i].initFct();
+				pvPar->swcCfg[i].initFct((const void *)&pvPar->taskPeriod);
 			}
 		}
 	}
@@ -184,9 +185,9 @@ void TASK_NonPerdTaskFct(void *pvParameters_)
 	{
 		for(i = 0u; i < pvPar->numSwc; i++)
 		{
-			if(NULL != pvPar->swcCfg[i].initFct)
+			if( NULL != pvPar->swcCfg[i].initFct )
 			{
-				pvPar->swcCfg[i].initFct();
+				pvPar->swcCfg[i].initFct((const void *)&pvPar->taskDelay);
 			}
 		}
 	}
@@ -210,23 +211,6 @@ void TASK_NonPerdTaskFct(void *pvParameters_)
 	}
 }
 
-StdRtn_t TASK_Read_TaskCfgTbl(TASK_Cfg_t *tbl_)
-{
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if( NULL != tbl_)
-	{
-		if( NULL != taskCfg)
-		{
-			*tbl_ = *taskCfg;
-			retVal = ERR_OK;
-		}
-		else
-		{
-			retVal = ERR_PARAM_DATA;
-		}
-	}
-	return retVal;
-}
 
 StdRtn_t TASK_Read_ApplTaskHdl(TASK_Hdl_t *hdl_)
 {

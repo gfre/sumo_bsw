@@ -8,3 +8,8 @@ ProjectInfo.xml
 core
 *.g_c*
 *.g_x*
+*.project
+*.cproject
+.project
+.cproject
+sumo_bsw JLink Debug.launch

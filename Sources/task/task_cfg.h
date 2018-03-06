@@ -56,6 +56,12 @@
  */
 #define DRV_TASK_STRING   ("DRIVE")
 
+/**
+ * String identification of the task  @a REFL
+ */
+#define REFL_TASK_STRING   ("REFL")
+
+
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
@@ -66,8 +72,9 @@ typedef void (TASK_MainFct_t)(void);
 
 /**
  * @brief Data type definition of an initialisation function of a basic software component
+ * @param
  */
-typedef void (TASK_InitFct_t)(void);
+typedef void (TASK_InitFct_t)(const void *);
 
 /**
  * @typedef TASK_SwcCfg_t
@@ -112,6 +119,56 @@ typedef struct TASK_NonPerdTaskFctPar_s
 	const TASK_SwcCfg_t *swcCfg;	/**< reference to the (configuration)[@ref TASK_SwcCfg_t]  of the SWCs  */
 	const uint8 numSwc;				/**< count of software components */
 }TASK_NonPerdTaskFctPar_t;
+
+/**
+ * @brief Data type (re-)definition of a task function handle inherited from TaskFunction_t defined
+ * in projdefs.h by FreeRTOS.
+ */
+typedef TaskFunction_t TASK_FctHdl_t;
+
+/**
+ * @typedef TASK_SuspType_t
+ * @brief Data type definition of the enumeration TASK_SuspType_e
+ *
+ * @enum TASK_SuspType_e
+ * @brief This enumeration defines the possibility of suspension of a task
+ */
+typedef enum TASK_SuspType_e
+{
+	 TASK_SUSP_NEVER = 0x00		  	/**< task will be never suspended */
+	,TASK_SUSP_DEFAULT				/**< task is suspended at default */
+}TASK_SuspType_t;
+
+/**
+ * @typedef TASK_CfgItm_t
+ * @brief Data type definition of the structure TASK_CfgItm_s
+ *
+ * @struct TASK_CfgItm_s
+ * @brief This structure defines the properties of a task
+ */
+typedef struct TASK_CfgItm_s
+{
+	const TASK_FctHdl_t taskFctHdl;		/**< function handle of the task function */
+	const char_t * const taskName;		/**< reference to the string representing the task name */
+	const uint16 stackDepth;			/**< stack depth for stack memory allocation */
+	void * const pvParameters;			/**< reference to the parameters passed into the task */
+	uint32 taskPriority;				/**< task priority */
+	TASK_Hdl_t taskHdl;					/**< handle to the task object */
+	const TASK_SuspType_t suspTask;		/**< see @ref TASK_SuspType_e */
+}TASK_CfgItm_t;
+
+/**
+ * @typedef TASK_Cfg_t
+ * @brief Data type definition of the structure TASK_Cfg_s
+ *
+ * @struct TASK_Cfg_s
+ * @brief This structure defines a configuration table which holds all task configuration items
+ */
+typedef struct TASK_Cfg_s
+{
+	TASK_CfgItm_t *tasks;		/**< reference to the task configuration table */
+	uint8_t numTasks;			/**< count of task configuration items */
+}TASK_Cfg_t;
 
 
 

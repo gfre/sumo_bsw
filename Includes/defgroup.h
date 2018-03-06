@@ -161,7 +161,9 @@
  * This software component provides an implementation to store and retrieve data and parameter
  * values from the on-chip memory of the micro-controller MK22FX512VLK12. The MCU provides 128KB
  * FlexNVM which is entirely used as non-volatile Data Flash Memory in this project. No EEPROM is
- * emulated in this project.
+ * emulated in this project. The components stores default values of all  parameters in a (pseudo)
+ * ROM as well. The ROM is emulated in the RAM, i.e., the memory is statically allocated with
+ * *const* qualifier in programm flash and initialised with the default parameter values.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	26.04.2017
@@ -184,6 +186,21 @@
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	27.04.2017
+ *
+ * @copyright	@LGPL2_1
+ */
+
+/**
+ * @defgroup	refl Reflectance
+ * @brief		Reflectance Sensor Array Software Component
+ *
+ * This software component provides access to the reflectance sensor array.
+ * It can be used to drive the robot on a black line. More description to come...
+ *
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	S. Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	01.06.2017
  *
  * @copyright	@LGPL2_1
  */
@@ -288,6 +305,111 @@
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	11.05.2017
+ *
+ * @copyright	@LGPL2_1
+ */
+
+
+
+/**
+ * @defgroup	tl Tracking loop filter
+ * @brief		Tracking loop filter
+ *
+ * This component implements an estimation algorithm for two states X1 and X2. For this it must be
+ * assumed that X1 is measured and the two states are modelled by a simple integrator according to
+ * d/dt (X1) = X2. Moreover, the algorithm implements a PI controller which drives the error between
+ * the measured value X1_meas and its estimation X1_est to zero. Therefore X1_est is considered as
+ * the output of the plant and X1_meas as the reference signal. The PI controller calculates a control
+ * value which represents an estimation of for X2.
+ *
+ *   X1_meas					   X2_est				  X1_est
+ * ----->(+)---->[PI-Controller]----------->[Integrator]----------
+ * 		  ^(-)												     '
+ * 	      '			  										     '
+ *		  '------------------------------------------------------'
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	05.10.2017
+ *
+ * @copyright	@LGPL2_1
+ */
+
+/**
+ * @defgroup	mtx Matrix operations
+ * @brief		Matrix operations
+ *
+ *	This module implements basic matrix operations such as multiplication, addition, etc.
+ *	and also more advanced operations such as matrix inversion, QR-decomposition, UD-de-
+ *	composition, etc.
+ *	To achieve this, it makes use of the liffixmatrix library.
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	S. Helling,       stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	05.03.2018
+ *
+ * @copyright	@LGPL2_1
+ */
+
+/**
+ * @defgroup	kf Kalman filter
+ * @brief		Kalman filter
+ *
+ * A Kalman filter algorithm is used that calculates the optimal state estimate x_hat(k+1|k) for
+ * the timestep 'k+1' given 'k' previous values for an n-dimensional system of the form:
+ *
+ * x(k+1|k) = Phi*x(k|k-1) + Gamma*u(k) + w(k) ,<br>
+ * y(k)		= H*x(k|k-1) + v(k) .
+ *
+ * The optimal state estimate x_hat(k+1|k) is then calculated according to the following
+ * predictor-corrector algorithm, where x_apri denotes the a priori state estimate prior
+ * to taking measurements into account, and x_apost denotes the state estimate after taking
+ * measurements into account. x_apost(-) is the a posteriori estimate from the previous step,
+ * x_apost(+) is the a posteriori estimate from the current step. Same goes for the error
+ * covariance matrix P.
+ *
+ * Predictor<br>
+ * x_apri = Phi*x_apost(-)  + Gamma*u(k) ,<br>
+ * P_apri = Phi*P_apost(-)*Phi' + G*Q*G' ,<br>
+ *
+ * Corrector<br>
+ * K(k)       = P_apri*H' * (H*P_apri*H' + R)^{-1} ,<br>
+ * x_apost(+) = x_apri + K(k)*( y(k) - H*x_apri ) ,<br>
+ * P_apost(+) = (E - K(k)*H) * P_apri.
+ *
+ * Initial states are set to zero and P0 = alpha*E, with alpha>>1 (see kf_cfg.h).
+ *
+ * Dimensions<br>
+ *  x     n-by-1 state vector,<br>
+ *  Phi   n-by-n system/state transition matrix,<br>
+ *  P(k)  n-by-n error covariance matrix,<br>
+ *  u(k)  l-by-1 input vector to the system system,<br>
+ *  Gamma n-by-l input matrix (l being the number of inputs),<br>
+ *  y(k)  m-by-1 measurement vector (m being the number of measured states),<br>
+ *  H     m-by-n measurement matrix,<br>
+ *  w(k)  n-by-1 disturbance vector to the system (normally distributed with zero mean
+ *  			 and standard deviation 'sigma_w'),<br>
+ *  G     n-by-n coupling matrix for process noise,<br>
+ *  Q     n-by-n diagonal process noise covariance matrix containing the variances
+ *  			 'sigma_w^2' of the process disturbances for each state,<br>
+ *  v(k)  m-by-1 measurement noise vector (normally distributed with zero mean and
+ *  			 standard deviation 'sigma_v',<br>
+ *  R     m-by-m diagonal measurement noise matrix containing the variances 'sigma_v^2'
+ *  			  of the measurement disturbances for each state,<br>
+ *  K(k)  n-by-m Kalman gain matrix,<br>
+ *  E     n-by-n identity matrix.
+ *
+ * These steps rely heavily on UD-factorization of the error covariance matrix which
+ * ensures numerical stability. U is a unit upper diagonal matrix and D a diagonal matrix
+ * such that P = UDU'. The prediction for the error covariance matrix P_apri is calculated
+ * according to C. Thornton, calculating UD-factors of P_apost(-) by modified, weighted
+ * Gram-Schmidt orthogonalization. The correction for the error covariance matrix P_apost(+)
+ * is calculated according to G. Bierman, calculating UD-factors of P_apri. For further
+ * details see "Kalman Filtering Theory and Practice Using MATLAB" by M.S. Grewal and
+ * A.P. Andrews.
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de,      Chair of Automatic Control, University Kiel
+ * @author 	S. Helling,       stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	05.03.2018
  *
  * @copyright	@LGPL2_1
  */

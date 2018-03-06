@@ -20,7 +20,7 @@
 #define TACHO_H_
 
 /*======================================= >> #INCLUDES << ========================================*/
-
+#include "Platform.h"
 
 
 #ifdef MASTER_tacho_C_
@@ -37,7 +37,7 @@
 /**
  * String identification of the SWC @ref tacho
  */
-#define TACHO_SWC_STRING ("Tacho")
+#define TACHO_SWC_STRING ("tacho")
 
 
 
@@ -46,11 +46,6 @@
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
-/**
- * @brief Calculates the speed based on the position information from the encoder.
- */
-void TACHO_CalcSpeed(void);
-
 /**
  * @brief Sampling routine to calculate speed, must be called periodically with a fixed frequency.
  */
@@ -64,8 +59,12 @@ void TACHO_Deinit(void);
 /**
  * @brief Initialization of the module
  */
-void TACHO_Init(void);
+void TACHO_Init(const void *pvPar_);
 
+/**
+ *
+ */
+void TACHO_Main(void);
 
 
 /**

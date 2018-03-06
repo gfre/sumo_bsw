@@ -21,6 +21,7 @@
 /*======================================= >> #INCLUDES << ========================================*/
 #include "ACon_Types.h"
 #include "Platform.h"
+#include "nvm_api.h"
 
 #ifdef MASTER_pid_C_
 #define EXTERNAL_
@@ -33,87 +34,76 @@
  * @{
  */
 /*======================================= >> #DEFINES << =========================================*/
+/**
+ * String identification of the SWC @ref pid
+ */
+#define PID_SWC_STRING ("PID controller")
 
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 /**
- * @typedef PID_Config_t
- * @brief Data type definition of the structure PID_Config_s
  *
- * @struct PID_Config_s
- * @brief This structure defines the parameters of a [PID controller](@ref pid) and its current data.
  */
-typedef struct PID_Config_s {
-  int32_t pFactor100;
-  int32_t iFactor100;
-  int32_t dFactor100;
-  int32_t iAntiWindup;
-  uint8_t maxSpeedPercent;			/**< max speed if 100% on the line, 0xffff would be full speed */
-  int32_t lastError;
-  int32_t integral;
-} PID_Config_t;
-	
+typedef struct PID_Gain_s
+{
+	uint16_t kP_scld;
+	uint16_t kI_scld;
+	uint16_t kD_scld;
+	uint16_t nScale; // TODO change to uint8_t
+	uint32_t intSatVal;
+}PID_Gain_t;
 
+/**
+ *
+ */
+typedef enum PID_Sat_e
+{
+	 PID_NEG_SAT = -1
+	,PID_NO_SAT = 0
+	,PID_POS_SAT = 1
+}PID_Sat_t;
+
+/**
+ *
+ */
+typedef struct PID_Data_s
+{
+	PID_Sat_t sat;
+	int32_t	intVal;
+	int32_t	prevErr;
+}PID_Data_t;
 
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 /**
- * @brief Performs PID on a line
- * @param currLinePos Current line position
- * @param setLinePos Desired line position
- * @param currLineWidth Indication of line width (in 1000er units for a line)
- * @param forward If we are moving forward or backward
+ *
+ * @param gain_
+ * @param setVal_
+ * @param actVal_
+ * @param rtData_
+ * @param ctrlVal_
+ * @return
  */
-EXTERNAL_ void PID_Line(uint16_t currLinePos, uint16_t setLinePos, uint16_t currLineWidth, bool forward);
+EXTERNAL_ StdRtn_t PID(int32_t setVal_, int32_t actVal_, uint8_t idx_, int32_t* ctrlVal_);
 
 /**
- * @brief Performs PID closed loop calculation for the speed
- * @param currSpeed Current speed of motor
- * @param setSpeed desired speed of motor
- * @param isLeft TRUE if is for the left motor, otherwise for the right motor
+ *
+ * @param setVal_
+ * @param actVal_
+ * @param gain_
+ * @param data_
+ * @param ctrlVal_
+ * @return
  */
-EXTERNAL_ void PID_Speed(int32_t currSpeed, int32_t setSpeed, bool isLeft);
+EXTERNAL_ StdRtn_t PIDext(int32_t setVal_, int32_t actVal_, const PID_Gain_t *gain_, PID_Data_t *data_, int32_t* ctrlVal_);
 
 /**
- * @brief Performs PID closed loop calculation for the line position
- * @param currPos Current position of wheel
- * @param setPos Desired wheel position
- * @param isLeft TRUE if is for the left wheel, otherwise for the right wheel
+ *
+ * @param idx_
+ * @return
  */
-EXTERNAL_ void PID_Pos(int32_t currPos, int32_t setPos, bool isLeft);
-
-/**
- * @brief Driver initialization
- */
-EXTERNAL_ void PID_Start(void);
-
-/**
- * @brief Function returns PID parameter configuration for position control on the left hand side
- * @return PID parameter configuration
- */
-EXTERNAL_ PID_Config_t *PID_Get_PosLeCfg(void);
-
-/**
- * @brief Function returns PID parameter configuration for position control on the right hand side
- * @return PID parameter configuration
- */
-EXTERNAL_ PID_Config_t *PID_Get_PosRiCfg(void);
-
-/**
- * @brief Function returns PID parameter configuration for speed control on the left hand side
- * @return PID parameter configuration
- */
-EXTERNAL_ PID_Config_t *PID_Get_SpdLeCfg(void);
-
-/**
- * @brief Function returns PID parameter configuration for speed control on the right hand side
- * @return PID parameter configuration
- */
-EXTERNAL_ PID_Config_t *PID_Get_SpdRiCfg(void);
-
-
-
+EXTERNAL_ StdRtn_t PID_Reset(uint8_t idx_);
 /**
  * @}
  */

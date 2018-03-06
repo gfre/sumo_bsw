@@ -50,7 +50,7 @@ void PID_Init(void);
 /**
  * @brief Driver de-initialization
  */
-void PID_Deinit(void);
+void PID_DeInit(void);
 
 
 

@@ -51,7 +51,7 @@
  * @param io I/O stream to be used for input/output
  * @return Error code, ERR_OK if everything was fine
  */
-uint8_t TACHO_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_StdIOType *io);
+uint8_t TACHO_ParseCommand(const unsigned char *cmd_, bool *handled_, const CLS1_StdIOType *io_);
 
 
 

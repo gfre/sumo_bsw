@@ -54,7 +54,7 @@ EXTERNAL_ void RNET_Deinit(void);
 /**
  * @brief Driver initialization
  */
-EXTERNAL_ void RNET_Init(void);
+EXTERNAL_ void RNET_Init(const void *pvPar_);
 
 /**
  * @brief Driver main function

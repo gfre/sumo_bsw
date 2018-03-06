@@ -335,39 +335,16 @@ StdRtn_t RTE_Play_BuzBeep(uint16 freqHz_, uint16 durMs_)
 /**
  * Interface implementation for the speedometer
  */
-#define LEFT   (TRUE)
-#define RIGHT  (FALSE)
-
-StdRtn_t RTE_Read_SpdoVelLe(uint16 *vel_)
+StdRtn_t RTE_Read_SpdoVelLe(int16_t *vel_)
 {
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if(NULL != vel_)
-	{
-		*vel_ = TACHO_GetSpeed(LEFT);
-		retVal = ERR_OK;
-	}
-	return retVal;
+	return TACHO_Read_SpdLe(vel_);
 }
 
 
-StdRtn_t RTE_Read_SpdoVelRi(uint16 *vel_)
+StdRtn_t RTE_Read_SpdoVelRi(int16_t *vel_)
 {
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
-	if(NULL != vel_)
-	{
-		*vel_ = TACHO_GetSpeed(RIGHT);
-		retVal = ERR_OK;
-	}
-	return retVal;
+	return TACHO_Read_SpdRi(vel_);
 }
-
-#ifdef LEFT
-#undef LEFT
-#endif
-
-#ifdef RIGHT
-#undef RIGHT
-#endif
 
 /*================================================================================================*/
 
@@ -375,9 +352,9 @@ StdRtn_t RTE_Read_SpdoVelRi(uint16 *vel_)
 /**
  * Interface implementation for the drive component
  */
-StdRtn_t RTE_Write_DrvVel(int32 velLe_, int32 velRi_)
+StdRtn_t RTE_Write_DrvVel(int16_t velLe_, int16_t velRi_)
 {
-	return (StdRtn_t)DRV_SetSpeed(velLe_, velRi_);
+	return (StdRtn_t)DRV_SetSpeed((int32_t)velLe_, (int32_t)velRi_);
 }
 
 StdRtn_t RTE_Write_DrvPos(int32 posLe_, int32 posRi_)

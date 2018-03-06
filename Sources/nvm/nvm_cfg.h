@@ -113,9 +113,21 @@ EXTERNAL_ const NVM_Addr_t Get_PidSpdRiCfgStrtAddr(void);
 
 /**
  * @brief This function returns the byte count of NVM data for PID controller configuration
- * @return data flash address
+ * @return byte count
  */
 EXTERNAL_ const uint8_t Get_PidCfgByteCnt(void);
+
+/**
+ * @brief This function returns the NVM start address of the calibration data
+ * for the reflectance sensors.
+ * @return data flash address
+ */
+EXTERNAL_ const NVM_Addr_t Get_ReflCalibDataStrtAddr(void);
+/**
+ * @brief This function returns the byte count of calibration data of the reflectance sensors
+ * @return byte count
+ */
+EXTERNAL_ const uint8_t Get_ReflCalibDataByteCnt(void);
 
 
 

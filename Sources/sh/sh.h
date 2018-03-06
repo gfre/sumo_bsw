@@ -47,7 +47,7 @@
 /**
  * @brief Shell initialization
  */
-EXTERNAL_ void SH_Init(void);
+EXTERNAL_ void SH_Init(const void *pvPar_);
 
 /**
  * @brief Shell main function
@@ -55,7 +55,7 @@ EXTERNAL_ void SH_Init(void);
 EXTERNAL_ void SH_MainFct(void);
 
 /**
- * @brief Serial driver de-initialization
+ * @brief Sehll de-initialization
  */
 EXTERNAL_ void SH_Deinit(void);
 

@@ -16,11 +16,11 @@
  *
  ***************************************************************************************************/
 
-
 #define MASTER_pid_C_
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "pid.h"
+#include "pid_cfg.h"
 #include "pid_api.h"
 #include "mot_api.h"
 #include "nvm_api.h"
@@ -30,248 +30,171 @@
 /*======================================= >> #DEFINES << =========================================*/
 #define PID_DEBUG 0 /* careful: this will slow down the PID loop frequency! */
 
-
-
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 
 
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
-static int32_t PID(int32_t currVal, int32_t setVal, PID_Config_t *config);
-static void PID_PosCfg(int32_t currPos, int32_t setPos, bool isLeft, PID_Config_t *config);
-static void PID_SpeedCfg(int32_t currSpeed, int32_t setSpeed, bool isLeft, PID_Config_t *config);
 
 
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
-static PID_Config_t posLeftConfig = {0u};
-static PID_Config_t posRightConfig = {0u};
-static PID_Config_t speedLeftConfig = {0u};
-static PID_Config_t speedRightConfig = {0u};
+static PID_ItmTbl_t *pPidTbl = NULL;
 
 
 
 /*============================== >> LOKAL FUNCTION DEFINITIONS << ================================*/
-static int32_t PID(int32_t currVal, int32_t setVal, PID_Config_t *config) {
-	int32_t error;
-	int32_t pid;
-
-	/* perform PID closed control loop calculation */
-	error = setVal-currVal; /* calculate error */
-	pid = (error*config->pFactor100)/100; /* P part */
-	config->integral += error; /* integrate error */
-	if (config->integral>config->iAntiWindup) {
-		config->integral = config->iAntiWindup;
-	} else if (config->integral<-config->iAntiWindup) {
-		config->integral = -config->iAntiWindup;
-	}
-#if 1 /* see http://brettbeauregard.com/blog/2011/04/improving-the-beginner%E2%80%99s-pid-reset-windup/ */
-	{
-		int32_t max;
-
-		max = 0xffff; /* max value of PWM */
-		if (config->integral > max) {
-			config->integral = max;
-		} else if (config->integral < -max) {
-			config->integral = -max;
-		}
-	}
-#endif
-	pid += (config->integral*config->iFactor100)/100; /* add I part */
-	pid += ((error-config->lastError)*config->dFactor100)/100; /* add D part */
-	config->lastError = error; /* remember for next iteration of D part */
-	return pid;
-}
-
-
-
-
-static void PID_PosCfg(int32_t currPos, int32_t setPos, bool isLeft, PID_Config_t *config) {
-	int32_t speed;
-	MOT_Direction_t direction = MOT_DIR_FORWARD;
-	MOT_MotorDevice_t *motHandle;
-
-	int error;
-
-	error = setPos-currPos;
-	if (error>-10 && error<10) { /* avoid jitter around zero */
-		setPos = currPos;
-	}
-	speed = PID(currPos, setPos, config);
-	/* transform into motor speed */
-	speed *= 1000; /* scale PID, otherwise we need high PID constants */
-	if (speed>=0) {
-		direction = MOT_DIR_FORWARD;
-	} else { /* negative, make it positive */
-		speed = -speed; /* make positive */
-		direction = MOT_DIR_BACKWARD;
-	}
-	/* speed is now always positive, make sure it is within 16bit PWM boundary */
-	if (speed>0xFFFF) {
-		speed = 0xFFFF;
-	}
-	/* limit speed to maximum value */
-	speed = (speed*config->maxSpeedPercent)/100;
-	/* send new speed values to motor */
-	if (isLeft) {
-		motHandle = MOT_GetMotorHandle(MOT_MOTOR_LEFT);
-	} else {
-		motHandle = MOT_GetMotorHandle(MOT_MOTOR_RIGHT);
-	}
-	MOT_SetVal(motHandle, 0xFFFF-speed); /* PWM is low active */
-	MOT_SetDirection(motHandle, direction);
-	MOT_UpdatePercent(motHandle, direction);
-}
-
-
-static void PID_SpeedCfg(int32_t currSpeed, int32_t setSpeed, bool isLeft, PID_Config_t *config) {
-	int32_t speed;
-	MOT_Direction_t direction = MOT_DIR_FORWARD;
-	MOT_MotorDevice_t *motHandle;
-
-	if (setSpeed==0) {
-		speed = 0;
-	} else {
-		speed = PID(currSpeed, setSpeed, config);
-	}
-	if (speed>=0) {
-		direction = MOT_DIR_FORWARD;
-	} else { /* negative, make it positive */
-		speed = -speed; /* make positive */
-		direction = MOT_DIR_BACKWARD;
-	}
-	/* speed shall be positive here, make sure it is within 16bit PWM boundary */
-	if (speed>0xFFFF) {
-		speed = 0xFFFF;
-	}
-	/* send new speed values to motor */
-	if (isLeft) {
-		motHandle = MOT_GetMotorHandle(MOT_MOTOR_LEFT);
-	} else {
-		motHandle = MOT_GetMotorHandle(MOT_MOTOR_RIGHT);
-	}
-	MOT_SetVal(motHandle, 0xFFFF-speed); /* PWM is low active */
-	MOT_SetDirection(motHandle, direction);
-	MOT_UpdatePercent(motHandle, direction);
-}
 
 
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
-void PID_Pos(int32_t currPos, int32_t setPos, bool isLeft) {
-	if (isLeft) {
-		PID_PosCfg(currPos, setPos, isLeft, &posLeftConfig);
-	} else {
-		PID_PosCfg(currPos, setPos, isLeft, &posRightConfig);
+StdRtn_t PIDext(int32_t setVal_, int32_t actVal_, const PID_Gain_t *gain_, PID_Data_t *data_, int32_t* ctrlVal_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	int32_t err = 0, pTerm = 0, dTerm = 0, u = 0;
+
+	if( ( NULL != ctrlVal_ ) && ( NULL != data_) )
+	{
+		retVal = ERR_OK;
+
+		/* Calculate current error value */
+		err = setVal_ - actVal_;
+
+		/* Integration part and anti windup part */
+
+/*	if this is in code, then Tracking loop behaves awkward!
+ * if ( (err > -10) && (err < 10) )
+ *		{
+ *			err = 0;
+ *		}
+ */
+
+		if( ( (data_->sat <= PID_NEG_SAT)  && (err < 0) ) || ( (data_->sat >= PID_POS_SAT) && (err > 0) ) )
+		{
+			/* don't allow integrating in direction of saturation -> do nothing */
+		}
+		else //allow integrating in opposite direction to saturation
+		{
+			data_->intVal += ( ( ((int32_t)gain_->kI_scld)*err ) / ( (int32_t)gain_->nScale ) );
+		}
+
+		if( data_->intVal <= -((int32_t)gain_->intSatVal))
+		{
+			data_->intVal = -((int32_t)gain_->intSatVal);
+			data_->sat  = PID_NEG_SAT;
+		}
+		else if(data_->intVal >= ((int32_t)gain_->intSatVal) )
+		{
+			data_->intVal = ((int32_t)gain_->intSatVal);
+			data_->sat  = PID_POS_SAT;
+		}
+		else
+		{
+			data_->sat = PID_NO_SAT;
+		}
+
+		/* Proportional part */
+		pTerm = ( ((int32_t)gain_->kP_scld)*err ) / ( (int32_t)gain_->nScale );
+
+		if( pTerm < -((int32_t)gain_->intSatVal) )
+		{
+			pTerm = -((int32_t)gain_->intSatVal);
+		}
+		else if( pTerm > (int32_t)(gain_->intSatVal) )
+		{
+			pTerm =  (int32_t)gain_->intSatVal;
+		}
+
+		/* Derivative part */
+		dTerm = ( (err - data_->prevErr) * (int32_t)gain_->kD_scld ) / ( (int32_t)gain_->nScale );
+		data_->prevErr = err;
+
+
+		/* Calculate and bound output */
+		u = pTerm + dTerm + data_->intVal;
+		if(u < -((int32_t)gain_->intSatVal))     u = -((int32_t)gain_->intSatVal);
+		else if(u > ((int32_t)gain_->intSatVal)) u =  ((int32_t)gain_->intSatVal);
+
+		*ctrlVal_ = u;
+	}
+	return retVal;
+}
+
+StdRtn_t PID(int32_t setVal_, int32_t actVal_, uint8_t idx_, int32_t* ctrlVal_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+
+	if( ( NULL != ctrlVal_ ) && ( NULL != pPidTbl ) && ( NULL != pPidTbl->aPids )  )
+	{
+		retVal = ERR_PARAM_INDEX;
+
+		if(idx_ < pPidTbl->numPids)
+		{
+			retVal = PIDext(setVal_, actVal_, &pPidTbl->aPids[idx_].cfg.gain, &pPidTbl->aPids[idx_].data, ctrlVal_);
+		}
+	}
+	return retVal;
+}
+
+StdRtn_t PID_Reset(uint8_t idx_)
+{
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+
+	if( ( NULL != pPidTbl ) && ( NULL != pPidTbl->aPids )  )
+	{
+		retVal = ERR_PARAM_INDEX;
+
+		if(idx_ < pPidTbl->numPids)
+		{
+			pPidTbl->aPids[idx_].data.intVal = 0;
+			pPidTbl->aPids[idx_].data.prevErr = 0;
+			pPidTbl->aPids[idx_].data.sat = PID_NO_SAT;
+		}
 	}
 }
-
-
-
-void PID_Speed(int32_t currSpeed, int32_t setSpeed, bool isLeft) {
-	if (isLeft) {
-		PID_SpeedCfg(currSpeed, setSpeed, isLeft, &speedLeftConfig);
-	} else {
-		PID_SpeedCfg(currSpeed, setSpeed, isLeft, &speedRightConfig);
-	}
-}
-
-
-
-void PID_Start(void)
-{
-	posLeftConfig.lastError = 0;
-	posLeftConfig.integral = 0;
-	posRightConfig.lastError = 0;
-	posRightConfig.integral = 0;
-	speedLeftConfig.lastError = 0;
-	speedLeftConfig.integral = 0;
-	speedRightConfig.lastError = 0;
-	speedRightConfig.integral = 0;
-}
-
-void PID_Deinit(void)
-{
-	/* nothing to do */
-}
-
-
 
 void PID_Init(void)
 {
-	NVM_PidCfg_t pidCfg = {0u};
-	if ( ERR_OK == NVM_Read_PIDPosCfg(&pidCfg) )
-	{
-		posLeftConfig.pFactor100 = (int32_t)pidCfg.pGain100;
-		posLeftConfig.iFactor100 = (int32_t)pidCfg.iGain100;
-		posLeftConfig.dFactor100 = (int32_t)pidCfg.dGain100;
-		posLeftConfig.iAntiWindup = (int32_t)pidCfg.iAntiWindup;
-		posLeftConfig.maxSpeedPercent = (int32_t)pidCfg.maxSpdPerc;
-	}
-	else if(ERR_OK == NVM_Read_Dflt_PIDPosCfg(&pidCfg))
-	{
-		posLeftConfig.pFactor100 = (int32_t)pidCfg.pGain100;
-		posLeftConfig.iFactor100 = (int32_t)pidCfg.iGain100;
-		posLeftConfig.dFactor100 = (int32_t)pidCfg.dGain100;
-		posLeftConfig.iAntiWindup = (int32_t)pidCfg.iAntiWindup;
-		posLeftConfig.maxSpeedPercent = (int32_t)pidCfg.maxSpdPerc;
-		NVM_Save_PIDPosCfg(&pidCfg);
-	}
-	else
-	{
-		/* error handling */
-	}
-	posLeftConfig.lastError = 0;
-	posLeftConfig.integral = 0;
+	uint8_t i = 0u;
+	NVM_PidCfg_t nvmPid = {0};
+	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 
+	pPidTbl = Get_pPidItmTbl();
 
-	posRightConfig.pFactor100 = posLeftConfig.pFactor100;
-	posRightConfig.iFactor100 = posLeftConfig.iFactor100;
-	posRightConfig.dFactor100 = posLeftConfig.dFactor100;
-	posRightConfig.iAntiWindup = posLeftConfig.iAntiWindup;
-	posRightConfig.maxSpeedPercent = posLeftConfig.maxSpeedPercent;
-	posRightConfig.lastError = posLeftConfig.lastError;
-	posRightConfig.integral = posLeftConfig.integral;
-
-
-	if ( ERR_OK == NVM_Read_PIDSpdLeCfg(&pidCfg) )
+	if( NULL != pPidTbl )
 	{
-		speedLeftConfig.pFactor100 = (int32_t)pidCfg.pGain100;
-		speedLeftConfig.iFactor100 = (int32_t)pidCfg.iGain100;
-		speedLeftConfig.dFactor100 = (int32_t)pidCfg.dGain100;
-		speedLeftConfig.iAntiWindup = (int32_t)pidCfg.iAntiWindup;
-		speedLeftConfig.maxSpeedPercent = (int32_t)pidCfg.maxSpdPerc;
-	}
-	else if(ERR_OK == NVM_Read_Dflt_PIDSpdLeCfg(&pidCfg))
-	{
-		speedLeftConfig.pFactor100 = (int32_t)pidCfg.pGain100;
-		speedLeftConfig.iFactor100 = (int32_t)pidCfg.iGain100;
-		speedLeftConfig.dFactor100 = (int32_t)pidCfg.dGain100;
-		speedLeftConfig.iAntiWindup = (int32_t)pidCfg.iAntiWindup;
-		speedLeftConfig.maxSpeedPercent = (int32_t)pidCfg.maxSpdPerc;
-		NVM_Save_PIDSpdLeCfg(&pidCfg);
-	}
-	else
-	{
-		/* error handling */
-	}
-
-	if ( ERR_OK == NVM_Read_PIDSpdRiCfg(&pidCfg) )
-	{
-		speedRightConfig.pFactor100 = (int32_t)pidCfg.pGain100;
-		speedRightConfig.iFactor100 = (int32_t)pidCfg.iGain100;
-		speedRightConfig.dFactor100 = (int32_t)pidCfg.dGain100;
-		speedRightConfig.iAntiWindup = (int32_t)pidCfg.iAntiWindup;
-		speedRightConfig.maxSpeedPercent = (int32_t)pidCfg.maxSpdPerc;
-	}
-	else if(ERR_OK == NVM_Read_Dflt_PIDSpdRiCfg(&pidCfg))
-	{
-		speedRightConfig.pFactor100 = (int32_t)pidCfg.pGain100;
-		speedRightConfig.iFactor100 = (int32_t)pidCfg.iGain100;
-		speedRightConfig.dFactor100 = (int32_t)pidCfg.dGain100;
-		speedRightConfig.iAntiWindup = (int32_t)pidCfg.iAntiWindup;
-		speedRightConfig.maxSpeedPercent = (int32_t)pidCfg.maxSpdPerc;
-		NVM_Save_PIDSpdRiCfg(&pidCfg);
+		for(i = 0u; i < pPidTbl->numPids; i++)
+		{
+			if(NULL != &pPidTbl->aPids[i])
+			{
+				if(NULL != pPidTbl->aPids[i].cfg.nvm.readFct)
+				{
+					retVal = ERR_VALUE;
+					retVal = pPidTbl->aPids[i].cfg.nvm.readFct(&nvmPid);
+					pPidTbl->aPids[i].cfg.gain.kP_scld = nvmPid.KP_scld;
+					pPidTbl->aPids[i].cfg.gain.kI_scld = nvmPid.KI_scld;
+					pPidTbl->aPids[i].cfg.gain.kD_scld = nvmPid.KD_scld;
+					pPidTbl->aPids[i].cfg.gain.nScale  = nvmPid.Scale;
+					pPidTbl->aPids[i].cfg.gain.intSatVal  = nvmPid.SaturationVal;
+				}
+				if ( (NULL != pPidTbl->aPids[i].cfg.nvm.readDfltFct) && (ERR_OK != retVal) )
+				{
+					retVal = pPidTbl->aPids[i].cfg.nvm.readFct(&nvmPid);
+					pPidTbl->aPids[i].cfg.gain.kP_scld = nvmPid.KP_scld;
+					pPidTbl->aPids[i].cfg.gain.kI_scld = nvmPid.KI_scld;
+					pPidTbl->aPids[i].cfg.gain.kD_scld = nvmPid.KD_scld;
+					pPidTbl->aPids[i].cfg.gain.nScale  = nvmPid.Scale;
+					pPidTbl->aPids[i].cfg.gain.intSatVal  = nvmPid.SaturationVal;
+				}
+				else
+				{
+					/* take initialized values from pid_cfg.c */
+				}
+				pPidTbl->aPids[i].data.sat = PID_NO_SAT;
+				pPidTbl->aPids[i].data.intVal  = 0;
+				pPidTbl->aPids[i].data.prevErr = 0;
+			}
+		}
 	}
 	else
 	{
@@ -279,13 +202,10 @@ void PID_Init(void)
 	}
 }
 
-
-PID_Config_t *PID_Get_PosLeCfg(void) { return &posLeftConfig; }
-PID_Config_t *PID_Get_PosRiCfg(void) { return &posRightConfig; }
-PID_Config_t *PID_Get_SpdLeCfg(void) { return &speedLeftConfig; }
-PID_Config_t *PID_Get_SpdRiCfg(void) { return &speedRightConfig; }
-
-
+void PID_DeInit(void)
+{
+	pPidTbl = NULL;
+}
 
 #ifdef MASTER_pid_C_
 #undef MASTER_pid_C_
