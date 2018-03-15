@@ -1,5 +1,6 @@
-/Docs/html/
-/Docs/latex/
+/docs/html/
+/docs/readTheDocs/_build
+/docs/latex/
 /Debug/
 /Generated_Code/
 /Documentation/
