@@ -93,6 +93,7 @@ html_theme = 'default'
 # so a file named "default.css" will overwrite the builtin "default.css".
 #html_static_path = ['_static']
 html_static_path = []
+
 html_extra_path = ['../doxygen/html']
 
 # Custom sidebar templates, must be a dictionary that maps document names
@@ -137,7 +138,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'ACONSumoBSW.tex', 'ACON Sumo BSW Documentation',
-     [author], 'manual'),
+     author, 'manual'),
 ]
 
 
