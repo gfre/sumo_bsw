@@ -15,7 +15,13 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
+import subprocess, os
 
+read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
+
+if read_the_docs_build:
+
+   subprocess.call('cd .. ; doxygen sumo_bsw.doxyfile', shell=True)
 
 # -- Project information -----------------------------------------------------
 
@@ -87,6 +93,7 @@ html_theme = 'default'
 # so a file named "default.css" will overwrite the builtin "default.css".
 #html_static_path = ['_static']
 html_static_path = []
+html_extra_path = ['../html']
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -151,6 +158,8 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'ACONSumoBSW', 'ACON Sumo BSW Documentation',
-     author, 'ACONSumoBSW', 'One line description of project.',
+     [author], 'ACONSumoBSW', 'One line description of project.',
      'Miscellaneous'),
 ]
+
+
