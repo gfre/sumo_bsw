@@ -1,0 +1,6 @@
+[submodule "Includes/libs/fixmath"]
+	path = Includes/libs/fixmath
+	url = https://github.com/PetteriAimonen/libfixmath.git
+[submodule "Includes/libs/fixmatrix"]
+	path = Includes/libs/fixmatrix
+	url = ../../PetteriAimonen/libfixmatrix.git
