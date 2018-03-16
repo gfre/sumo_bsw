@@ -1,6 +1,6 @@
-/docs/html/
-/docs/readTheDocs/_build
-/docs/latex/
+/Docs/doxygen/html/
+/Docs/readTheDocs/_build
+/Docs/doxygen/latex/
 /Debug/
 /Generated_Code/
 /Documentation/

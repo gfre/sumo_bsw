@@ -21,7 +21,7 @@ read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
 
 if read_the_docs_build:
 
-   subprocess.call('cd .. ; doxygen sumo_bsw.doxyfile', shell=True)
+   subprocess.call('cd ../doxygen/ ; doxygen sumo_bsw.doxyfile', shell=True)
 
 # -- Project information -----------------------------------------------------
 
@@ -93,7 +93,7 @@ html_theme = 'default'
 # so a file named "default.css" will overwrite the builtin "default.css".
 #html_static_path = ['_static']
 html_static_path = []
-html_extra_path = ['../html']
+html_extra_path = ['../doxygen/html']
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
