@@ -11,8 +11,8 @@ up and running with developing new basis software (BSW) for the ACON Sumo robot.
 				2. `Installing Processor Expert <https://mcuoneclipse.com/2017/04/09/mcuxpresso-ide-installing-processor-expert-into-eclipse-neon/>`_
 				3. `MCUXpresso IDE 10.1 <https://mcuoneclipse.com/2017/11/25/eclipse-mcuxpresso-ide-10-1-with-integrated-mcuxpresso-configuration-tools/>`_
 				
-			Also, take a look at the `GNU ARM/MCU Eclipse documentation <https://gnu-mcu-eclipse.github.io/>`_
-			
+			Also, take a look at the `GNU ARM/MCU Eclipse documentation <https://gnu-mcu-eclipse.github.io/>`_	
+	
 -----------------
 Required accounts
 -----------------

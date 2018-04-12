@@ -13,7 +13,7 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 # import os
-# import sys
+import sys
 # sys.path.insert(0, os.path.abspath('.'))
 import subprocess, os
 
@@ -41,11 +41,18 @@ release = '1.0'
 #
 # needs_sphinx = '1.0'
 
+# Add breathe to path
+sys.path.append( "C:\Python36\Lib\site-packages\breathe" )
+
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [
-]
+extensions = ['sphinx.ext.imgmath', 'sphinx.ext.todo', 'breathe']
+
+breathe_projects = {"ACONSumoBSW": "xml"
+} #note: backslashes in path produce error!
+
+breathe_default_project = "ACONSumoBSW"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = []
@@ -93,8 +100,6 @@ html_theme = 'default'
 # so a file named "default.css" will overwrite the builtin "default.css".
 #html_static_path = ['_static']
 html_static_path = []
-
-html_extra_path = ['../doxygen/html']
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.

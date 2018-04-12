@@ -11,7 +11,8 @@ Welcome to ACON Sumo BSW's documentation!
    :caption: Contents
 	
 		Installation guide <installationguide/installationguide.rst>
-		Usage guide <usageguide/usageguide.rst>
+		User guide <userguide/userguide.rst>
+		API-Documentation <apidoc/api.rst>
 
 
 Indices and tables
