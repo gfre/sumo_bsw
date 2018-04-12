@@ -1,5 +1,5 @@
 ===========
-Usage guide
+User guide
 ===========
 
 If you connect the Sumo robot with the *J-Link Edu Debug Probe*,
