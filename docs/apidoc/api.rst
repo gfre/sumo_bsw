@@ -200,4 +200,4 @@ Functions
 BSW
 ------------------
 This section leads you to the entire API documentation, describing every function and component of the Sumo basic software 
-in detail. For this, follow `this link <sumo-bsw.readthedocs.io/en/develop/_static/index.html>`_ to the index page.
+in detail. For this, follow `this link <../_static/index.html>`_ to the index page.
