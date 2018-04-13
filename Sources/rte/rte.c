@@ -323,8 +323,7 @@ StdRtn_t RTE_Write_BuzPlayTune(BUZ_Tunes_t tune_)
 	return retVal;
 }
 
-
-StdRtn_t RTE_Play_BuzBeep(uint16 freqHz_, uint16 durMs_)
+StdRtn_t RTE_Write_BuzBeep(uint16_t freqHz_, uint16_t durMs_)
 {
 	return (StdRtn_t)BUZ_Beep(freqHz_, durMs_);
 }
@@ -357,7 +356,7 @@ StdRtn_t RTE_Write_DrvVel(int16_t velLe_, int16_t velRi_)
 	return (StdRtn_t)DRV_SetSpeed((int32_t)velLe_, (int32_t)velRi_);
 }
 
-StdRtn_t RTE_Write_DrvPos(int32 posLe_, int32 posRi_)
+StdRtn_t RTE_Write_DrvPos(int32_t posLe_, int32_t posRi_)
 {
 	return (StdRtn_t)DRV_SetSpeed(posLe_, posRi_);
 }
