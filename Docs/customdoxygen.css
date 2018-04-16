@@ -1323,14 +1323,14 @@ tr.heading h2 {
 
 .tabs, .tabs2, .tabs3 {
 	background-image: none;
-	background-color: #2f3a48;
+	background-color: #2980B9;
 	color: white;
 
 }
 
 
 .tabs2 {
-	background-color: #51637b;
+	background-color: #343131
 }
 
 
@@ -1364,11 +1364,12 @@ tr.heading h2 {
 
 
 .tabs li.current {
-	background-color: #51637b;
+	background-color: #343131
 }
 
 .tabs2 li.current {
-	background-color: #888;
+	background-color: #4E4A4A;
+	
 }
 
 
