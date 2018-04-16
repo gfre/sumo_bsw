@@ -30,9 +30,9 @@ copyright = '2018, Gerhard Freudenthaler, Simon Helling'
 author = 'Gerhard Freudenthaler, Simon Helling'
 
 # The short X.Y version
-version = '1.5'
+version = '1.0'
 # The full version, including alpha/beta/rc tags
-release = '1.5.2-2018'
+release = '1.0-2018'
 
 
 # -- General configuration ---------------------------------------------------
@@ -48,11 +48,6 @@ release = '1.5.2-2018'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.imgmath', 'sphinx.ext.todo']
-
-breathe_projects = {"ACONSumoBSW": "xml"
-} #note: backslashes in path produce error!
-
-breathe_default_project = "ACONSumoBSW"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = []
@@ -120,7 +115,7 @@ html_static_path = ['apidoc\html']
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'ACONSumoBSWdoc'
+htmlhelp_basename = 'sumoBswDocs'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -147,7 +142,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'ACONSumoBSW.tex', 'ACON Sumo BSW Documentation',
+    (master_doc, 'sumoBswDocs.tex', 'ACON Sumo BSW Docs',
      author, 'manual'),
 ]
 
@@ -157,7 +152,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'aconsumobsw', 'ACON Sumo BSW Documentation',
+    (master_doc, 'sumoBswDocs', 'ACON Sumo BSW Docs',
      [author], 1)
 ]
 
@@ -168,8 +163,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'ACONSumoBSW', 'ACON Sumo BSW Documentation',
-     [author], 'ACONSumoBSW', 'One line description of project.',
+    (master_doc, 'sumoBswDocs', 'ACON Sumo BSW Docs',
+     [author], 'sumoBswDocs', 'One line description of project.',
      'Miscellaneous'),
 ]
 
