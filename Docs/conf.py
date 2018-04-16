@@ -21,7 +21,7 @@ read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
 
 if read_the_docs_build:
 
-   subprocess.call('cd ../doxygen/ ; doxygen sumo_bsw.doxyfile', shell=True)
+   subprocess.call('doxygen sumo_bsw.doxyfile', shell=True)
 
 # -- Project information -----------------------------------------------------
 
