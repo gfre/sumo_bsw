@@ -1,3 +1,3 @@
-# sumo_bsw
+# Sumo Basic Software
 
-For the installation, user, and API reference guide visit [the ReadTheDocs page](http://sumo-bsw.readthedocs.io)
+For the installation and user guide as well as the Basic Software API reference visit the [Docu page](http://sumo-bsw.readthedocs.io)
