@@ -1,19 +1,15 @@
-=============
-API Reference
-=============
-This chapter guides you through code documentation of the application layer and the rest of the
-code of the Sumo platform. Since the application layer is deemed to be of most importance to the user,
-it is explained here, whereas for the documentation of the rest of the code you will be redirected to 
-the doxygen-generated html file that describes each function, variable, etc. in further detail.
+=========================
+References and API Manual
+=========================
+This chapter guides you through C-code documentation of the Basic Software of the Sumo platform and especially the real-time environment (RTE) layer.
+The RTE is the only interface required for application software programming. The following provides links to the documentation which describes the RTE and all software components of the BSW in detail.
 
----
-RTE
----
-This section provides `a link <../_static/group__rte.html>`_ to the RTE documentation that was generated
-using doxygen. 
+-------------------
+Sumo Basic Software
+-------------------
+Follow the link to the `BSW Software documentation <../_static/index.html>`_. It describes each component of the Sumo BSW in detail.
 
----
-BSW
----
-This section leads you to the start of the API documentation, describing every function and component of the Sumo basic software 
-in detail. For this, follow `this link <../_static/index.html>`_ to the index page.
+---------------------------
+Real time environment (RTE)
+---------------------------
+This section provides `a direct link <../_static/group__rte.html>`_ to the RTE API manual. 

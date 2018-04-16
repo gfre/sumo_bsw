@@ -12,7 +12,7 @@ Doc pages of the ACON Sumo Robot
 	
 		Installation guide <installationguide/installationguide.rst>
 		User guide <userguide/userguide.rst>
-		API-Reference <apidoc/api.rst>
+		References and API Manual <apidoc/api.rst>
 
 
 Indices and tables
