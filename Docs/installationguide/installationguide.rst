@@ -27,7 +27,7 @@ Toolchain and Software
 :ref:`install MCUXPresso`
 	This is the eclipse-based integrated development environment (IDE) in which you write your code,
 	flash the Sumo, debug, etc...
-:ref:`installSmartGit` (not mandatory but recommended)
+:ref:`installSmartGit` (optional but recommended)
 	This client will help you to manage your file history in the process of making new software components. 
 	Skip this if you already use some sort of client for git or you prefer command-line tools.
 :ref:`install FreeMaster`
@@ -53,10 +53,10 @@ and download the newest version available. Be aware that these steps require an 
 		  installation failed for some reason, you can download the package 
 		  `here <https://www.segger.com/downloads/jlink/#J-LinkSoftwareAndDocumentationPack>`_ .
 
-The next step is needed because the Sumo uses Processor Expert (PE), a software tool to generate (low-level)
-code on the fly. This is generically not supported by the new IDE *MCUXpresso* from NXP as PE originates from the Kinetis 
+The next step is needed because the Sumo uses Processor Expert (PEx), a software tool to generate (low-level)
+code on the fly. This is generically not supported by the new IDE *MCUXpresso* from NXP as PEx originates from the Kinetis 
 Design Studio IDE. It is still possible to import projects that use this feature. However, one cannot (yet) configure/produce new
-files with Processor Expert in MCUXpresso. PE, in turn, is based on *GNU tools* for compilation and building.
+files with Processor Expert in MCUXpresso. PEx, in turn, is based on *GNU tools* for compilation and building.
 
 (i). GNU ARM Toolchain
 **********************
@@ -101,14 +101,12 @@ to the path *~/Appdata/Roaming/GNU MCU Eclipse*.
 				
 (iii). GNU MCU Eclipse plugin
 *****************************
-To have Eclipse working with these tools, you need to install GNU MCU Eclipse plugin in the MCUXpresso IDE. 
-On the `GitHub Wiki <https://gnu-mcu-eclipse.github.io/plugins/install/>`_ of the GNU MCU Eclipse tools it says that \"*Starting with v4.x, 
-the oldest Eclipse supported by the plug-ins is Eclipse 4.6 with C Developing Tools (CDT) 9.2*\". I am installing with MCUXpresso 10.1.1 Build 606 2018-01-02,
-Eclipse	4.6.3v20170301-0400 (Neon)	with CDT 9.1.0.201609121658. The newest GNU MCU Eclipse version would therefore not install correctly. Erich Styger
-recommends installing the `GNU ARM/MCU Eclipse plug-ins version 3.4.1  <https://github.com/gnu-mcu-eclipse/eclipse-plugins/releases/tag/v3.4.1-201704251808>`_ , which 
-worked for me. If you have a different MCUXpresso version, you should check compatibility on the GitHub Wiki.
+The Eclipse environment requires the installation of the GNU MCU Eclipse plugin within the MCUXpresso IDE. According to the `GitHub Wiki <https://gnu-mcu-eclipse.github.io/plugins/install/>`_ of the GNU MCU Eclipse tools 
+the versions *4.x* are only supported back to *Eclipse 4.6 with C Developing Tools (CDT) 9.2*. For the time being the latest version of MCUXpresso is 10.1.1 Build 606 2018-01-02, Eclipse 4.6.3v20170301-0400 (Neon) with CDT 9.1.0.201609121658. 
+Consequently the latest GNU MCU Eclipse version would not install correctly. Prof. Erich Styger recommends in his blogs to instal the `GNU ARM/MCU Eclipse plug-ins version 3.4.1  <https://github.com/gnu-mcu-eclipse/eclipse-plugins/releases/tag/v3.4.1-201704251808>`_ , which 
+worked for the time being. Please check the current MCUXpresso version/Built available and the compatibility at the GNU MCU Eclipse tools GitHub Wiki.
 
-If you downloaded the *.zip*-file, open *MCUXpresso->Help->Install New software*, and put the file into the upcoming window via *drag\&drop*. It should 
+If the *.zip*-file, open *MCUXpresso->Help->Install New software* was downloaded, put the file into the upcoming window via *drag\&drop*. It should 
 now show up as shown in the picture. Mark the box and finish the installation.
 
 .. figure:: images/installnewsoftware.PNG
@@ -121,10 +119,10 @@ now show up as shown in the picture. Mark the box and finish the installation.
 	*Drag \& drop* the *.zip*-file to the window, check the box and finish the installation.
 				
 				
-(iv). Setting up MCUXpresso to use the ARM toolchain
-****************************************************
-In this step, we need to make sure, that MCUXpresso *knows* where to look for the *ARM Toolchain* and the *Windows Build Tools* (if you use Windows). This can
-be done in the Preferences. Go to *Window->Preferences*, expand *C/C++*, expand *Build* and go to *Workspace Tools Paths*. As shown in the picture, the Toolchain should be
+(iv). Configuration of the MCUXpresso IDE for the ARM toolchain
+***************************************************************
+In this step it is ensured that MCUXpresso *knows* where to search for the *ARM Toolchain* and the *Windows Build Tools* (if you use Windows). This can
+be accomplisehd by configuring the Preferences of the IDE. Go to *Window->Preferences*, expand *C/C++*, expand *Build* and go to *Workspace Tools Paths*. As shown in the picture, the Toolchain should be
 set to the *GNU Tools for ARM Embedded Processors*. You may need to copy the path to the *Windows Build Tools* and the *GNU ARM Toolchain* manually. Click *Apply* and *OK*.
 
 .. figure:: images/checktools.PNG
@@ -136,24 +134,23 @@ set to the *GNU Tools for ARM Embedded Processors*. You may need to copy the pat
 			project settings.
 				
 	
-(v). Setting up MCUXpresso to use Processor Expert
-**************************************************
-If you installed MCUXpresso v10.1 or newer, you need to first deinstall the *MCUCpresso IDE Configuration Tools*. These are the first step to replace 
-PE, but you can still use it separately. In order to do so and to avoid conflicts between the *Configuration Tools* and PE, you need to deinstall them.
-Go to *Help->Installation Details* and search for *MCUXpresso IDE Configuration Tools Integration*, select it, and click *Uninstall*.
+(v). Configuration of the MCUXpresso IDE for Processor Expert (PEx) integration
+*******************************************************************************
+If MCUXpresso v10.1 or newer is used, it is required to remove the *MCUCpresso IDE Configuration Tools* in order to avoid conflicts between the *Configuration Tools* and PEx. 
+Therefore go to *Help->Installation Details* and search for *MCUXpresso IDE Configuration Tools Integration*, select it, and click *Uninstall*.
 
 .. figure:: images/uninstallconfigurationtools.PNG
 	
-	Uninstall the *Configuration Tools* to avoid conflicts with PE.
+	Uninstall the *Configuration Tools* to avoid conflicts with PEx.
 	
 Now, go to the `Processor Expert Download Page <https://www.nxp.com/pages/processor-expert-software-microcontroller-driver-suite:PE_DRIVER_SUITE?&&tab=Design_Tools_Tab>`_ 
 and download the *Processor Expert for Kinetis v3.0 Eclipse plugin* 
 
 .. figure:: images/processorexpertplugin.PNG
 
-	Download the PE plugin *.zip*-file.
+	Download the PEx plugin *.zip*-file.
 	
-After unzipping this file, install the *freescale_updater.zip*-file via *Help->Install New Software* as described above.
+After unzipping this file, install the *freescale_updater.zip*-file insided the MCUExpresso IDE. Got to *Help->Install New Software* as described above, e.g. for the installation of the GNU MCU Eclipse plugin.
 
 .. attention:: You must install the *freescale updater*-file first! 
 
@@ -161,48 +158,47 @@ After unzipping this file, install the *freescale_updater.zip*-file via *Help->I
 
 	Install the marked file from the *Processor Expert for Kinetis v3.0 Eclipse plugin*-file first. Then install *PEx for Kinetis v3.0.0*.
 
-Afterwards, install *PEx for Kinetis 3.0.0* in the same way. Then, download, unzip, and install the file *Processor Expert for Kinetis v3.0.2 update*
-in the same way.
+Afterwards, install *PEx for Kinetis 3.0.0* in the same way. Repeat this steps for the patch *Processor Expert for Kinetis v3.0.2 update*.
 
 .. figure:: images/processorexpertupdate.PNG
 	
 	Install the update *PEx for Kinetis 3.0.2*
 	
-In the final step you need to download the PE components from `Erich Stygers Sourceforge repo <https://sourceforge.net/projects/mcuoneclipse/files/PEx%20Components/>`_ 
-You should check with which version the Sumo robot is currently working, download the fitting release (currently *Components 2017-12-26.zip* (14.03.2018)). Unzip
-the file, go to *Processor Expert->Import Components* search and select the *.PEupd*-files and click *import*.
+In the final step download the PEx components from Prof. Stygers 'Sourceforge repo <https://sourceforge.net/projects/mcuoneclipse/files/PEx%20Components/>`_ 
+Check the current version of Sumo Robot Project and download the fitting release (currently *Components 2017-12-26.zip* (14.03.2018)). Unzip
+the file, in MCUExpresso go to *Processor Expert->Import Components* search and select the *.PEupd*-files and click *import*.
 
 .. figure:: images/processorexpertimportcomponents.PNG
 	
-	Install the PE components from Erich Stygers Sourceforge repo.
+	Install the PEx components from Prof. Styger's repo at Sourceforge.
 
 .. _importsumoproject:
 
-(vi). Import the Sumo source code and verify settings
-*****************************************************
-To verify that everything is set up correctly, import the Sumo project source code. If you installed SmartGit and did the steps according to :ref:`installSmartGit` ,
-you can open the project in MCUXPresso by selecting *File->Open Projects from File System* as seen in the figure below
+(vi). Import the Sumo BSW sources
+*********************************
+In order to verify everything is set up correctly import the Sumo project source code. If the SmartGit client is installed and the steps according to :ref:`installSmartGit` were performed correctly,
+it is possible to open the project inside MCUXPresso by selecting *File->Open Projects from File System* as illustrated in the figure below
 
 .. figure:: images/openproject.PNG
 	
-	How to open the project in MCUXpresso.
+	Import the project in the MCUXpresso IDE.
 
-If you dont see a *Generated Code* folder in the project, go to *Processor Expert->Show Views* and click *Generate Processor Expert Code* as shown below.
+If there is no *Generated Code* folder in the project, go to *Processor Expert->Show Views* and click *Generate Processor Expert Code* as shown below.
 
 .. figure:: images/generatecode.PNG
 
-	If you **DON'T** see the *Generated Code* folder, hit *Generate Processor Expert Code*.
+	If **NO** *Generated Code* folder exists, hit *Generate Processor Expert Code*.
 
-This process may take a while and generates all the low-level code for the required components of the Sumo project. When finished click *Edit \'sumo_bsw project settings\'*
-(you need to have the project selected to do this) and expand *C/C++ build*. The settings of *Settings, Tool Chain Editor,* and *Tool Paths* should show as in the pictures below
+This process may take a while and generates all the low-level code for the required components of the Sumo BSW Project. When finished click *Edit \'sumo_bsw project settings\'*
+(you need to have the project selected to do this) and expand *C/C++ build*. The configuration of *Settings, Tool Chain Editor,* and *Tool Paths* should look like as in the pictures below
 	
 .. figure:: images/projectsettings1.PNG
 
-	The target processor should be *cortex-m4*. If it isn't go to the *MCU settings* and select *Generic-M4*.
+	The target processor should be *cortex-m4*. If it does not exist go to the *MCU settings* and select *Generic-M4*.
 	
 .. figure:: images/projectsettings2.PNG
 
-	Because we use the ARM toolchain, *Cross ARM GCC* should be selected.
+	Since the ARM toolchain is used *Cross ARM GCC* should be selected.
 	
 .. figure:: images/projectsettings3.PNG
 	
@@ -211,16 +207,16 @@ This process may take a while and generates all the low-level code for the requi
 	
 .. _includedoxygen:
 
-(vii). Include doxygen tools to MCUXpresso
-******************************************
-Doxygen is used to write code documentation for the project. To integrate it to MCUXpresso, go to the *Eclipse Marketplace* and search and install
-*Eclox*. 
+(vii). Integration of the eclox plugin for documentation
+********************************************************
+Doxygen is used to write code documentation for the project. For the  integration to MCUXpresso go to the *Eclipse Marketplace* and search and install
+*Eclox*.
 
 .. figure:: images/eclox.PNG
 
 	Eclox integrates doxygen support to the MCUXPresso IDE.
 	
-Since doxygen uses the *dot* language and *GraphViz*, you also need to `download Graphviz <https://graphviz.gitlab.io/_pages/Download/Download_windows.html>`_
+Since doxygen uses the *dot* language and *GraphViz*, respectively, one needs to `download Graphviz <https://graphviz.gitlab.io/_pages/Download/Download_windows.html>`_
 ,e.g., *graphviz-2.38.zip*. Unpack the content of the *release*-folder to \"*~/Program Files(x86)/Graphviz2.38*\". Now make sure that the *sumo_bsw.doxyfile*, which is
 located in the folder *Docs* in the *sumo_bsw project*, is set up correctly by double-clicking it. 
 
@@ -245,11 +241,11 @@ you see something like in the picture below, everything works fine (given you do
 
 .. figure:: images/documentationexample.PNG
 
-	When Eclox works, you should see that there is a graph showing dependencies of any arbitrary file.
+	The Eclox plugin including the *dot tool* works fine, if there are graphs showing dependencies for any arbitrary c- or h-file.
 	
 .. hint:: If Eclox/doxygen still generates an error like \"*error: problems running dot exit code=-1*\" then try to set the PATH variable, so Eclox can
-			find the *dot.exe* there. You can do that by *right-clicking the Windows symbol->System->System info->Advanced System Settings->Environment Variables->PATH*
-			and adding the path to the *bin*-folder. Also, restart MCUXpresso.
+			find the *dot.exe*. This can be achieved by *right-clicking the Windows symbol->System->System info->Advanced System Settings->Environment Variables->PATH*
+			and adding the path to the *bin*-folder of the dot tool. Then restart MCUXpresso.
 				
 				.. image:: images/pathvariable.PNG
 

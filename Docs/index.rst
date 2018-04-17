@@ -15,9 +15,3 @@ Doc pages of the ACON Sumo Robot
 		References and API Manual <apidoc/api.rst>
 
 
-Indices and tables
-------------------
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

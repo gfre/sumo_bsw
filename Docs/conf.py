@@ -12,10 +12,10 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
+import os
 import sys
 # sys.path.insert(0, os.path.abspath('.'))
-import subprocess, os
+import subprocess
 
 read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
 
@@ -36,7 +36,6 @@ release = '1.0-2018'
 
 
 # -- General configuration ---------------------------------------------------
-
 # If your documentation needs a minimal Sphinx version, state it here.
 #
 # needs_sphinx = '1.0'
@@ -75,6 +74,12 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
+
+# Flag to enable or disable numbered captions
+numfig = True
+
+# Set image format of formulas
+imgmath_image_format = 'svg'
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -167,5 +172,3 @@ texinfo_documents = [
      [author], 'sumoBswDocs', 'One line description of project.',
      'Miscellaneous'),
 ]
-
-
