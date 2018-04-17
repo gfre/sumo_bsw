@@ -296,16 +296,6 @@ API token on it. Copy this token in the Token field and go on. SmartGit will the
 and enter the `URL to the Sumo BSW`_ . You may have to enter your GitHub password for this.
 Finally, select the location on your disk where the Repo will be cloned into.
 I recommend to clone it to *~/Documents/MCUXpressoIDE_xx.x.x_xxx/workspace/sumo_bsw*.
-You should now have all the source files in that directory.
+Now you should now have all the source files in that directory.
 
-In order to document the code using doxygen (see :ref:`includedoxygen`), we use the *gh-pages* branch from the Sumo repo to update the doxygen files.
-Therefore we define a new, local repo *html* that we place inside the *Sumo BSW repo*\'s *Doc*-folder. To achieve this, check out to the 
-master or development branch of the Sumo repo in SmartGit. Then, create a new folder in the *sumo_bsw/Docs/*-directory. In SmartGit, select
-*Repository->Clone* and similar to above, select the GitHub Website for the sumo_bsw repo. But now, select the *gh-pages*-branch as shown below.
-
-.. figure:: images/smartgit_githubpages.PNG
-
-	Check out to the *gh-pages*-branch when creating the new *html*-repo.
-	
-Now select the *html*-folder that you just created and you are done!
 
