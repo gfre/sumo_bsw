@@ -3,20 +3,15 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to ACON Sumo BSW's documentation!
-=========================================
+Doc pages of the ACON Sumo Robot
+--------------------------------
 
 .. toctree::
    :maxdepth: 3
-   :caption: Contents
+   :caption: Content
 	
 		Installation guide <installationguide/installationguide.rst>
-		Usage guide <usageguide/usageguide.rst>
+		User guide <userguide/userguide.rst>
+		References and API Manual <apidoc/api.rst>
 
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
