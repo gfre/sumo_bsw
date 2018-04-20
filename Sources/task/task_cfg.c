@@ -24,7 +24,7 @@
 #include "rnet.h"
 #include "drv.h"
 #include "refl.h"
-#include "kf.h"
+
 
 /*======================================= >> #DEFINES << =========================================*/
 #define NUM_OF_TASKS        (sizeof(taskCfgItems)/sizeof(taskCfgItems[0]))
