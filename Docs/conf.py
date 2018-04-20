@@ -13,15 +13,21 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
-import sys
+# import sys
 # sys.path.insert(0, os.path.abspath('.'))
 import subprocess
 
 read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
 
-if read_the_docs_build:
-   subprocess.call('doxygen sumo_bsw.doxyfile', shell=False)
-   subprocess.call('apidoc/latex/make', shell=True)
+if True:
+# This subprocess will run doxygen and create a html and a latex directory in the folder apidoc 
+# (settings in sumo_bsw.doxyfile)
+   subprocess.call('doxygen sumo_bsw.doxyfile', shell=True)
+# This will run pdflatex
+   subprocess.call('cd apidoc', shell=True)
+   subprocess.call('ls', shell=True)
+
+
 
 # -- Project information -----------------------------------------------------
 
