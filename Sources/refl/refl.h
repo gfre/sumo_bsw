@@ -5,7 +5,7 @@
  *
  * <This is a detailed description.>
  *
- * @author 	Simon Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	08.06.2017
  *
  * @copyright @<LGPL2_1>
@@ -23,10 +23,6 @@
 #define EXTERNAL_ extern
 #endif
 
-/**
- * @addtogroup refl
- * @{
- */
 /*======================================= >> #DEFINES << =========================================*/
 /**
  * String identification of the SWC @ref refl
@@ -52,9 +48,6 @@ EXTERNAL_ void REFL_MainFct(void);
 
 
 
-/**
- * @}
- */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
