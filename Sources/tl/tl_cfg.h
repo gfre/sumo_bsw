@@ -7,7 +7,8 @@
  * for the configuration of tracking loop filters, which implements an estimation algorithm
  * for dynamical system with two states.
  *
- * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de,      Chair of Automatic Control, University Kiel
+ * @author  S. Helling,       stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	13.06.2017
  *
  * @copyright @LGPL2_1
@@ -27,10 +28,6 @@
 #define EXTERNAL_ extern
 #endif
 
-/**
- * @addtogroup tl
- * @{
- */
 /*======================================= >> #DEFINES << =========================================*/
 #define TL_USES_NVM (FALSE)
 
@@ -38,8 +35,6 @@
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 /**
  *
- * @param
- * @return
  */
 typedef StdRtn_t TL_readFct_t(int32_t*);
 
