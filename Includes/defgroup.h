@@ -267,11 +267,13 @@
  *
  * This module implements a tachometer component which calculates the speed based on quadrature
  * counters for up to two speed sources. The sign of the calculated speed signal indicates the
- * direction of movement. Furthermore, it provides a moving average filter to smoothing the speed
- * signal using a ring buffer for data collection. The module uses the firmware components
+ * direction of movement. It calculates the speed using one of several filter structures @ref maf,
+ * @ref kf, and @ref tl, respectively. By default, a Kalman filter is used.
+ * The module uses the firmware components
  * @a Q4CLeft and @a Q4CRight for the corresponding speed signals.
  *
- * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de,      Chair of Automatic Control, University Kiel
+ * @author  S. Helling,       stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	04.05.2017
  *
  * @copyright	@LGPL2_1
@@ -315,20 +317,18 @@
  * @defgroup	tl Tracking loop filter
  * @brief		Tracking loop filter
  *
- * This component implements an estimation algorithm for two states X1 and X2. For this it must be
- * assumed that X1 is measured and the two states are modelled by a simple integrator according to
- * d/dt (X1) = X2. Moreover, the algorithm implements a PI controller which drives the error between
- * the measured value X1_meas and its estimation X1_est to zero. Therefore X1_est is considered as
- * the output of the plant and X1_meas as the reference signal. The PI controller calculates a control
- * value which represents an estimation of for X2.
+ * This component implements an estimation algorithm for two states \f$ x_1 \f$ and \f$ x_2 \f$ .
+ * For this, it must be  assumed that \f$ x_1 \f$ is measured and the two states are modelled
+ * by a simple integrator according to \f$ \frac{d}{dt}x_1 = x_2 \f$ . Moreover, the algorithm
+ * implements a PI controller which drives the error \f$ e = (x_{1,meas}-\hat{x}_1)\f$ between
+ * the measured value \f$ x_{1,meas} \f$ and its estimation \f$ \hat{x}_1 \f$ to zero.
+ * Therefore, \f$ \hat{x}_1\f$ is considered as the output of the plant and \f$ x_{1,meas}\f$
+ * as the reference signal. The PI controller calculates a control value which represents
+ * an estimation \f$ \hat{x}_2\f$ of the (not measured) state \f$ x_2\f$ .
  *
- *   X1_meas					   X2_est				  X1_est
- * ----->(+)---->[PI-Controller]----------->[Integrator]----------
- * 		  ^(-)												     '
- * 	      '			  										     '
- *		  '------------------------------------------------------'
  *
- * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de,      Chair of Automatic Control, University Kiel
+ * @author  S. Helling,       stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	05.10.2017
  *
  * @copyright	@LGPL2_1
@@ -341,7 +341,7 @@
  *	This module implements basic matrix operations such as multiplication, addition, etc.
  *	and also more advanced operations such as matrix inversion, QR-decomposition, UD-de-
  *	composition, etc.
- *	To achieve this, it makes use of the liffixmatrix library.
+ *	To achieve this, it makes use of the fixmatrix library.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @author 	S. Helling,       stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
@@ -353,59 +353,83 @@
 /**
  * @defgroup	kf Kalman filter
  * @brief		Kalman filter
+ * \f$\renewcommand{\vec}{\boldsymbol}\f$
+ * \f$\newcommand{\vxh}{\hat{\vec{x}}}\f$
+ * \f$\newcommand{\vx}{\vec{x}}\f$
  *
- * A Kalman filter algorithm is used that calculates the optimal state estimate x_hat(k+1|k) for
- * the timestep 'k+1' given 'k' previous values for an n-dimensional system of the form:
+ * A Kalman filter algorithm is used that calculates the optimal state estimate \f$\vxh(k+1|k)\f$ for
+ * the timestep \f$ k+1 \f$ given \f$ k\f$ previous values in fixed-point arithmetic
+ * for a \f$ n\f$-dimensional (linear) system of the form:
  *
- * x(k+1|k) = Phi*x(k|k-1) + Gamma*u(k) + w(k) ,<br>
- * y(k)		= H*x(k|k-1) + v(k) .
+ *\f{align*}{
+ * \vx(k+1|k) &= \Phi\vx(k|k-1) + \Gamma\vec{u}(k) + \vec{w}(k) \\
+ * \vec{y}(k)		&= H\vx(k|k-1) + \vec{v}(k)
+ * \f}
  *
- * The optimal state estimate x_hat(k+1|k) is then calculated according to the following
- * predictor-corrector algorithm, where x_apri denotes the a priori state estimate prior
- * to taking measurements into account, and x_apost denotes the state estimate after taking
- * measurements into account. x_apost(-) is the a posteriori estimate from the previous step,
- * x_apost(+) is the a posteriori estimate from the current step. Same goes for the error
- * covariance matrix P.
+ * The optimal state estimate \f$ \vxh(k+1|k)\f$ is then calculated according to the following
+ * predictor-corrector algorithm, where \f$ \vxh_{apri}\f$ denotes the a priori state estimate prior
+ * to taking measurements into account, and \f$ \vxh_{apost}\f$ denotes the state estimate after taking
+ * measurements into account. \f$ \vxh_{apost}(-) \f$ is the a posteriori estimate from the previous step,
+ * \f$ \vxh_{apost}(+) \f$ is the a posteriori estimate from the current step. Same goes for the error
+ * covariance matrix \f$ P = \mathbb{E}\big\{[\vx-\vxh][\vx-\vxh]'\big\}\f$.
+ * The original Kalman formulation of this algorithm can then be described as
  *
- * Predictor<br>
- * x_apri = Phi*x_apost(-)  + Gamma*u(k) ,<br>
- * P_apri = Phi*P_apost(-)*Phi' + G*Q*G' ,<br>
+ * \f$
+ *    \textbf{Predictor}
+ *      \begin{cases}
+ *        \vxh_{apri} = \Phi\vxh_{apost}(-)  + \Gamma\vec{u}(k)\\
+ *        P_{apri}    = \Phi P_{apost}(-)\Phi' + GQG'
+ *      \end{cases}
+ * \f$
  *
- * Corrector<br>
- * K(k)       = P_apri*H' * (H*P_apri*H' + R)^{-1} ,<br>
- * x_apost(+) = x_apri + K(k)*( y(k) - H*x_apri ) ,<br>
- * P_apost(+) = (E - K(k)*H) * P_apri.
+ * \f$
+ *    \textbf{Corrector}
+ *    \begin{cases}
+ *      K               = P_{apri}H' (HP_{apri}H' + R)^{-1}\\
+ *      \vxh_{apost}(+) = \vxh_{apri} + K\big( \vec{y}(k) - H\vxh_{apri} \big)\\
+ *      P_{apost}(+)    = (E - KH)P_{apri},
+ *    \end{cases}
+ * \f$
  *
- * Initial states are set to zero and P0 = alpha*E, with alpha>>1 (see kf_cfg.h).
+ * with initial values set to \f$\vxh_{apost}^0(-)=\vec{0}\f$ and \f$ P_{apost}^0(-) =
+ * \alpha E\f$, with \f$ \alpha>>1\f$ (see @ref kf_cfg.h).
  *
- * Dimensions<br>
- *  x     n-by-1 state vector,<br>
- *  Phi   n-by-n system/state transition matrix,<br>
- *  P(k)  n-by-n error covariance matrix,<br>
- *  u(k)  l-by-1 input vector to the system system,<br>
- *  Gamma n-by-l input matrix (l being the number of inputs),<br>
- *  y(k)  m-by-1 measurement vector (m being the number of measured states),<br>
- *  H     m-by-n measurement matrix,<br>
- *  w(k)  n-by-1 disturbance vector to the system (normally distributed with zero mean
- *  			 and standard deviation 'sigma_w'),<br>
- *  G     n-by-n coupling matrix for process noise,<br>
- *  Q     n-by-n diagonal process noise covariance matrix containing the variances
- *  			 'sigma_w^2' of the process disturbances for each state,<br>
- *  v(k)  m-by-1 measurement noise vector (normally distributed with zero mean and
- *  			 standard deviation 'sigma_v',<br>
- *  R     m-by-m diagonal measurement noise matrix containing the variances 'sigma_v^2'
- *  			  of the measurement disturbances for each state,<br>
- *  K(k)  n-by-m Kalman gain matrix,<br>
- *  E     n-by-n identity matrix.
+ * @b Dimensions <br>
+ *  \f$ \vx\in\mathbb{R}^{n}\f$ state vector,<br>
+ *  \f$ \Phi\in\mathbb{R}^{n\times n} \f$   system/state transition matrix,<br>
+ *  \f$ P\in\mathbb{R}^{n\times n} \f$ error covariance matrix,<br>
+ *  \f$ u(k)\in\mathbb{R}^{l} \f$ input vector to the system system,<br>
+ *  \f$ \Gamma\in\mathbb{R}^{n\times l} \f$ input matrix (\f$ l\f$ being the number of inputs),<br>
+ *  \f$ \vec{y}(k)\in\mathbb{R}^{m} \f$ measurement vector (\f$ m\f$ being the number of measured states),<br>
+ *  \f$ H\in\mathbb{R}^{m\times n}\f$  measurement matrix,<br>
+ *  \f$ \vec{w}(k)\in\mathbb{R}^n\f$ disturbance vector to the system (normally distributed with zero mean
+ *  			 and standard deviation \f$ \sigma_w\f$),<br>
+ *  \f$ G \in\mathbb{R}^{n\times n}\f$ coupling matrix for process noise,<br>
+ *  \f$ Q\in\mathbb{R}^{n\times n}\f$ diagonal process noise covariance matrix containing the variances
+ *  			 \f$ \sigma_w^2\f$ of the process disturbances for each state,<br>
+ * \f$ \vec{v}(k) \in\mathbb{R}^{m}\f$ measurement noise vector (normally distributed with zero mean and
+ *  			 standard deviation \f$\sigma_v\f$,<br>
+ *  \f$ R \in\mathbb{R}^{m\times m}\f$ diagonal measurement noise matrix containing
+ *       the variances \f$\sigma_v^2\f$ of the measurement disturbances for each state,<br>
+ *  \f$ K\in\mathbb{R}^{n\times m}\f$ Kalman gain matrix,<br>
+ *  \f$ E\in\mathbb{R}^{n\times n}\f$ identity matrix.
  *
- * These steps rely heavily on UD-factorization of the error covariance matrix which
- * ensures numerical stability. U is a unit upper diagonal matrix and D a diagonal matrix
- * such that P = UDU'. The prediction for the error covariance matrix P_apri is calculated
- * according to C. Thornton, calculating UD-factors of P_apost(-) by modified, weighted
- * Gram-Schmidt orthogonalization. The correction for the error covariance matrix P_apost(+)
- * is calculated according to G. Bierman, calculating UD-factors of P_apri. For further
- * details see "Kalman Filtering Theory and Practice Using MATLAB" by M.S. Grewal and
- * A.P. Andrews.
+ * Since the original Kalman formulation requires the inversion of a matrix it can be
+ * a heavy computational burden for a small embedded system. Additionally, the positve-
+ * definiteneness of the matrix \f$ P\f$ cannot be guaranteed for badly-imposed problems, e.g.,
+ * if the state transition matrix is ill-condiitoned. For this reason, a numerically stable
+ * so-called square-root-algorithm is implemented which does not require calculating the inverse
+ * of a matrix nor does it need to perform square root calculations (even though it belongs to the
+ * class of square-root-filters). This algorithm relies heavily on UD-factorization of
+ * the error covariance matrix \f$ P\f$, where \f$ U\f$ is a unit upper diagonal matrix
+ * and \f$ D\f$ a diagonal matrix such that \f$ P = UDU'\f$ . The prediction for the
+ * error covariance matrix \f$ P_{apri} \f$ is calculated according to C. Thornton,
+ * calculating UD-factors of \f$ P_{apost}(-)\f$ using modified weighted Gram-Schmidt
+ * orthogonalization (MWGS). The correction for the error covariance matrix
+ * \f$ P_{apost}(+)\f$ is calculated according to G. Bierman, calculating UD-factors
+ * of \f$ P_{apri}\f$ . For further details see "Kalman Filtering Theory and Practice
+ * Using MATLAB" by M.S. Grewal and A.P. Andrews, aswell as "Triangular Covariance
+ * Factorizations for Kalman Filtering" by C. Thornton.
  *
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de,      Chair of Automatic Control, University Kiel
  * @author 	S. Helling,       stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
