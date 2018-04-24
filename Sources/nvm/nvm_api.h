@@ -204,7 +204,7 @@ EXTERNAL_ StdRtn_t NVM_Read_Dflt_PIDSpdRiCfg(NVM_PidCfg_t *spdCfg_);
 
 /**
  * @brief This function saves calibration data of the reflectance sensors to the NVM
- * @param calibData_ calibration data
+ * @param pCalibData_ calibration data
  * @return Error code, ERR_OK if everything was fine,
  *                     specific ERROR CODE otherwise
  */
@@ -212,7 +212,7 @@ EXTERNAL_ StdRtn_t NVM_Save_ReflCalibData(const NVM_ReflCalibData_t *pCalibData_
 
 /**
  * @brief This function reads calibration data of the reflectance sensors from the NVM
- * @param calibData_ calibration data (call by ref)
+ * @param pCalibData_ calibration data (call by ref)
  * @return Error code, ERR_OK if everything was fine,
  *                     specific ERROR CODE otherwise
  */
@@ -220,7 +220,7 @@ EXTERNAL_ StdRtn_t NVM_Read_ReflCalibData(NVM_ReflCalibData_t *pCalibData_);
 
 /**
  * @brief This function reads default calibration data of the reflectance sensors from the ROM
- * @param calibData_ calibration data (call by ref)
+ * @param pCalibData_ calibration data (call by ref)
  * @return Error code, ERR_OK if everything was fine,
  *                     specific ERROR CODE otherwise
  */
