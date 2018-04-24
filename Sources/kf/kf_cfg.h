@@ -15,10 +15,6 @@
 #ifndef KF_CFG_H
 #define KF_CFG_H
 
-/**
- * @addtogroup kf
- * @{
- */
 /*======================================= >> #INCLUDES << ========================================*/
 #include "Platform.h"
 #include "Acon_Types.h"
@@ -125,9 +121,6 @@ EXTERNAL_ StdRtn_t KF_Read_Rawi32SpdLe(int32_t *spd_);
 EXTERNAL_ StdRtn_t KF_Read_Rawi32SpdRi(int32_t *spd_);
 
 
-/**
- * @}
- */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
