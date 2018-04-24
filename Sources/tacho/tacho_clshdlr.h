@@ -1,6 +1,6 @@
 /***********************************************************************************************//**
- * @file		rnet_clshdlr.h
- * @ingroup		rnet
+ * @file		tacho_clshdlr.h
+ * @ingroup		tacho
  * @brief		Interface for the command line shell handler of the SWC @a Tacho
  *
  * This header files provides the interface from the SWC @ref tacho to the SWC @ref sh.
@@ -31,10 +31,6 @@
 #define EXTERNAL_ extern
 #endif
 
-/**
- * @addtogroup tacho
- * @{
- */
 /*======================================= >> #DEFINES << =========================================*/
 
 
@@ -46,18 +42,15 @@
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 /*!
  * @brief Parses a command
- * @param cmd Command string to be parsed
- * @param handled Sets this variable to TRUE if command was handled
- * @param io I/O stream to be used for input/output
+ * @param cmd_ Command string to be parsed
+ * @param handled_ Sets this variable to TRUE if command was handled
+ * @param io_ I/O stream to be used for input/output
  * @return Error code, ERR_OK if everything was fine
  */
 uint8_t TACHO_ParseCommand(const unsigned char *cmd_, bool *handled_, const CLS1_StdIOType *io_);
 
 
 
-/**
- * @}
- */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif
