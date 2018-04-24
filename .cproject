@@ -83,7 +83,9 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sumo_bsw/Sources/maf}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sumo_bsw/Sources/tl}&quot;"/>
 								</option>
-								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.1036247196" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false"/>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.1036247196" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="FIXMATRIX_MAX_SIZE=2"/>
+								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.undef.1045973513" name="Undefined symbols (-U)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.undef" useByScannerDiscovery="false"/>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.1526971514" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>
 							</tool>
