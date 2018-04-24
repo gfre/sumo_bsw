@@ -3,21 +3,11 @@
  * @ingroup		tl
  * @brief 		Implementation of a tracking loop filter algorithm
  *
- * This component implements an estimation algorithm for two states X1 and X2. For this it must be
- * assumed that X1 is measured and the two states are modelled by a simple integrator according to
- * d/dt (X1) = X2. Moreover, the algorithm implements a PI controller which drives the error between
- * the measured value X1_meas and its estimation X1_est to zero. Therefore X1_est is considered as
- * the output of the plant and X1_meas as the reference signal. The PI controller calculates a control
- * value which represents an estimation of for X2.
+ * This component implements the core estimation algorithm for the Tracking Loop Filter.
+ * In order to do this, it makes use of the component @ref pid.
  *
- *   X1_meas					   X2_est				  X1_est
- * ----->(+)---->[PI-Controller]----------->[Integrator]----------
- * 		  ^(-)												     '
- * 	      '			  										     '
- *		  '------------------------------------------------------'
- *
- * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
- * @author 	S. Helling stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de,      Chair of Automatic Control, University Kiel
+ * @author 	S. Helling        stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	11.08.2017
  *
  * @copyright @LGPL2_1
@@ -172,7 +162,7 @@ void TL_Main(void)
 			{
 				pTbl->aTls[i].data.dfltrdValdt = (int16_t)dfltrdVal;
 
-				/* Euler forward integration of the filtered derivative to get the filtered signal value*/
+				/* Euler backward integration of the filtered derivative to get the filtered signal value*/
 				/* Filtered values is up-scaled due integer multiplication with sample time in MS. */
 				pTbl->aTls[i].data.fltrdVal  += dfltrdVal * (int32_t)pTbl->aTls[i].cfg.smplTimeMS;
 			}
@@ -199,7 +189,7 @@ StdRtn_t TL_Read_i32FltrdVal(int32_t* pVal_, const uint8_t idx_)
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if( ( NULL != pVal_ ) && (NULL != pTbl) && ( NULL != pTbl->aTls) )
 	{
-		retVal = ERR_PARAM_VALUE;
+		retVal = ERR_PARAM_INDEX;
 		if( idx_< pTbl->numTls )
 		{
 			*pVal_ = TL_DOWNSACLE(pTbl->aTls[idx_].data.fltrdVal);
@@ -214,7 +204,7 @@ StdRtn_t TL_Read_i16dFltrdValdt(int16_t* pVal_, const uint8_t idx_)
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
 	if( ( NULL != pVal_ ) && (NULL != pTbl) && ( NULL != pTbl->aTls) )
 	{
-		retVal = ERR_PARAM_VALUE;
+		retVal = ERR_PARAM_INDEX;
 		if( idx_< pTbl->numTls )
 		{
 			*pVal_ = pTbl->aTls[idx_].data.dfltrdValdt;
@@ -230,7 +220,7 @@ StdRtn_t TL_Read_vFltrdVal(void* pVal_)
 
 	if( ( NULL != pVal_ ) && (NULL != pTbl) && ( NULL != pTbl->aTls) )
 	{
-		retVal = ERR_PARAM_VALUE;
+		retVal = ERR_PARAM_INDEX;
 		TL_vReadVal_t *pVal = (TL_vReadVal_t *)pVal_;
 		if( pVal->idx < pTbl->numTls )
 		{
@@ -249,7 +239,7 @@ StdRtn_t TL_Read_vdFltrdValdt(void* pVal_)
 
 	if( ( NULL != pVal_ ) && (NULL != pTbl) && ( NULL != pTbl->aTls) )
 	{
-		retVal = ERR_PARAM_VALUE;
+		retVal = ERR_PARAM_INDEX;
 		TL_vReadVal_t *pVal = (TL_vReadVal_t *)pVal_;
 		if( pVal->idx < pTbl->numTls )
 		{

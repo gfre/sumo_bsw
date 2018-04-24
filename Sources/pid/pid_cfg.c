@@ -1,12 +1,12 @@
 /***********************************************************************************************//**
  * @file		pid_cfg.c
- * @ingroup		<group label>
- * @brief 		<This is a brief description.>
+ * @ingroup		pid
+ * @brief 		This file contains all PID items with individual gain information etc.
  *
- * <This is a detailed description.>
  *
- * @author 	G. Freudenthaler, Simon Helling@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
- * @author 	S. Helling, Simon Helling@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de,      Chair of Automatic Control, University Kiel
+ * @author 	S. Helling,       stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	11.08.2017
  *
  * @copyright @LGPL2_1

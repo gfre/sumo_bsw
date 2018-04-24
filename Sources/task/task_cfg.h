@@ -31,10 +31,7 @@
 #define EXTERNAL_ extern
 #endif
 
-/**
- * @addtogroup task
- * @{
- */
+
 /*======================================= >> #DEFINES << =========================================*/
 /**
  * String identification of the task  @a APPLICATION
@@ -72,7 +69,6 @@ typedef void (TASK_MainFct_t)(void);
 
 /**
  * @brief Data type definition of an initialisation function of a basic software component
- * @param
  */
 typedef void (TASK_InitFct_t)(const void *);
 
@@ -180,10 +176,6 @@ typedef struct TASK_Cfg_s
 EXTERNAL_ const TASK_Cfg_t *Get_pTaskCfgTbl(void);
 
 
-
-/**
- * @}
- */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif

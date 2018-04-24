@@ -1,11 +1,12 @@
 /***********************************************************************************************//**
- * @file		refl_api.h
+ * @file		  refl_api.h
  * @ingroup		refl
- * @brief 		<This is a brief description.>
+ * @brief 		API of the SWC @a refl
  *
- * <This is a detailed description.>
+ * This API provides a BSW-internal interface of the SWC @ref refl. It is supposed to be
+ * available to all other Basic Software Components.
  *
- * @author 	Simon Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author  G. Freudenthaler, gefr@tf.uni-kiel.de,      Chair of Automatic Control, University Kiel
  * @date 	09.06.2017
  *
  * @copyright @LGPL2_1
@@ -27,10 +28,7 @@
 #define EXTERNAL_ extern
 #endif
 
-/**
- * @addtogroup refl
- * @{
- */
+
 /*======================================= >> #DEFINES << =========================================*/
 /**
  * REF_SENSOR_TIMEOUT_US translated into timeout ticks
@@ -77,9 +75,6 @@ typedef struct REFL_Cfg_s {
  /**
   * @typedef REFL_LineKind_t
   * @brief Data type definition of the enumeration REFL_LineKind_e
-  *
-  * @enum
-  * @brief
   */
  typedef enum REFL_LineKind_e {
    REFL_LINE_STRAIGHT = 0, 	/**< forward line |, sensors see a line underneath */
@@ -199,7 +194,7 @@ EXTERNAL_ bool REFL_Get_SwcEnbldSt(void);
 
 /**
  *
- * @param flag_
+ * @param state_
  */
 EXTERNAL_ void REFL_Set_SwcEnbldSt(bool state_);
 

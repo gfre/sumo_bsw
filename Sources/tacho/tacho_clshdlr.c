@@ -1,6 +1,6 @@
 /***********************************************************************************************//**
- * @file		rnet_clshdlr.c
- * @ingroup		rnet
+ * @file		tacho_clshdlr.c
+ * @ingroup		tacho
  * @brief 		Implementation of the command line shell handler for the SWC @a Tacho
  *
  * This module implements the interface of the SWC @ref tacho which is addressed to

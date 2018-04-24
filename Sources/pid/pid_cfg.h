@@ -1,11 +1,11 @@
 /***********************************************************************************************//**
  * @file		pid_cfg.h
- * @ingroup		<group label>
- * @brief 		<This is a brief description.>
+ * @ingroup		pid
+ * @brief 		This header file contains all type definitions for PID items.
  *
- * <This is a detailed description.>
  *
- * @author 	<I>. <Surname>, Simon Helling@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author  G. Freudenthaler, gefr@tf.uni-kiel.de,      Chair of Automatic Control, University Kiel
+ * @author 	S. Helling,       stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	11.08.2017
  *
  * @copyright @<LGPLx_x>
@@ -26,10 +26,7 @@
 #define EXTERNAL_ extern
 #endif
 
-/**
- * @addtogroup pid
- * @{
- */
+
 /*======================================= >> #DEFINES << =========================================*/
 
 
@@ -37,15 +34,11 @@
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 /**
  *
- * @param
- * @return
  */
 typedef StdRtn_t PID_NVMReadFct_t(NVM_PidCfg_t*);
 
 /**
  *
- * @param
- * @return
  */
 typedef StdRtn_t PID_NVMSaveFct_t(const NVM_PidCfg_t *);
 

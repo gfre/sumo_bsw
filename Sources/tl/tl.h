@@ -26,10 +26,6 @@
 #define EXTERNAL_ extern
 #endif
 
-/**
- * @addtogroup tl
- * @{
- */
 /*======================================= >> #DEFINES << =========================================*/
 /**
  * String identification of the SWC @ref tl
@@ -69,10 +65,6 @@ EXTERNAL_ void TL_Main(void);
 EXTERNAL_ void TL_DeInit(void);
 
 
-
-/**
- * @}
- */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif

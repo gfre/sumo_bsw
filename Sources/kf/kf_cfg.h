@@ -1,10 +1,10 @@
 /***********************************************************************************************//**
- * @file		kf_cfg.h
+ * @file		  kf_cfg.h
  * @ingroup		kf Kalman Filter
  * @brief 		This header file contains the type definitions and type configurations for matrices
  * 				for the Kalman filter.
  *
- * @author 	G. Freudenthaler, geft@tf.uni-kiel.de,      Chair of Automatic Control, University Kiel
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de,      Chair of Automatic Control, University Kiel
  * @author 	S. Helling,       stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	05.03.2018
  *
@@ -15,10 +15,6 @@
 #ifndef KF_CFG_H
 #define KF_CFG_H
 
-/**
- * @addtogroup kf
- * @{
- */
 /*======================================= >> #INCLUDES << ========================================*/
 #include "Platform.h"
 #include "Acon_Types.h"
@@ -70,7 +66,7 @@ typedef struct KF_Data_s
 typedef struct KF_MtxCfg_s
 {
 	 MTX_t mPhi;		/**< state transition matrix */
-	 MTX_t mGamma;		/**< input matrix */
+	 MTX_t mGamma;	/**< input matrix */
 	 MTX_t mH;			/**< measurement matrix */
 	 MTX_t mR;			/**< measurement noise covariance matrix (must be diagonal) */
 	 MTX_t mG;			/**< process noise coupling matrix */
@@ -82,12 +78,12 @@ typedef struct KF_MtxCfg_s
  */
 typedef struct KF_Cfg_s
 {
-	const uchar_t *pItmName; 		/**< Kalman filter name */
-	const uint8_t smplTimeMS;		/**< Sample time */
-	KF_MtxCfg_t   mtx;				/**< System configuration */
+	const uchar_t *pItmName; 	  	/**< Kalman filter name */
+	const uint8_t smplTimeMS;		  /**< Sample time */
+	KF_MtxCfg_t   mtx;				    /**< System configuration */
 	KF_ReadFct_t  *aMeasValFct;		/**< array of function pointers for measurements */
 	KF_ReadFct_t  *aInptValFct;		/**< array of function pointers for inputs */
-	bool bModCntrFlag;				/**< flag to indicate usage of modulo counter for state variables */
+	bool bModCntrFlag;				    /**< flag to indicate usage of modulo counter for state variables */
 }KF_Cfg_t;
 
 /**
@@ -104,7 +100,7 @@ typedef struct KF_Itm_s
  */
 typedef struct KF_ItmTbl_s
 {
-	KF_Itm_t *aKfs;			/**< array of Kalman filter items */
+	KF_Itm_t *aKfs;			  /**< array of Kalman filter items */
 	const uint8_t numKfs;	/**< total number of Kalman filters*/
 }KF_ItmTbl_t;
 
@@ -125,9 +121,6 @@ EXTERNAL_ StdRtn_t KF_Read_Rawi32SpdLe(int32_t *spd_);
 EXTERNAL_ StdRtn_t KF_Read_Rawi32SpdRi(int32_t *spd_);
 
 
-/**
- * @}
- */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif

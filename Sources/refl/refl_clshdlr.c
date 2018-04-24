@@ -7,7 +7,7 @@
  * the SWC @ref sh. It introduces application specific commands for requests
  * of status information and calibration via command line shell (@b CLS).
  *
- * @author 	Simon Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author  G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	09.06.2017
  *
  * @copyright @<LGPL2_1>
