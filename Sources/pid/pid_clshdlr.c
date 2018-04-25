@@ -47,15 +47,11 @@
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 /**
  *
- * @param
- * @return
  */
 typedef StdRtn_t ReadPIDCfg_t(NVM_PidCfg_t *);
 
 /**
  *
- * @param
- * @return
  */
 typedef StdRtn_t SavePIDCfg_t(const NVM_PidCfg_t *);
 

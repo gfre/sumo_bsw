@@ -38,7 +38,7 @@ PROJECT_NAME = "Sumo Robot Basic Software"
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-PROJECT_NUMBER = 1.5.2-2018
+PROJECT_NUMBER = V1.5.2-2018
 
 # Using the PROJECT_BRIEF tag one can provide an optional one line description
 # for a project that appears at the top of each page and should give viewer a
@@ -780,7 +780,7 @@ WARN_LOGFILE =
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-INPUT = ../Sources ../Includes
+INPUT = ../Sources ../Includes apidoc/src 
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -873,7 +873,7 @@ EXAMPLE_RECURSIVE = NO
 # that contain images that are to be included in the documentation (see the
 # \image command).
 
-IMAGE_PATH = 
+IMAGE_PATH = .
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should
 # invoke to filter for each input file. Doxygen will invoke the filter program
@@ -1613,7 +1613,7 @@ EXTRA_SEARCH_MAPPINGS =
 # If the GENERATE_LATEX tag is set to YES, doxygen will generate LaTeX output.
 # The default value is: YES.
 
-GENERATE_LATEX = NO
+GENERATE_LATEX = YES
 
 # The LATEX_OUTPUT tag is used to specify where the LaTeX docs will be put. If a
 # relative path is entered the value of OUTPUT_DIRECTORY will be put in front of
@@ -1647,7 +1647,7 @@ MAKEINDEX_CMD_NAME = makeindex
 # The default value is: NO.
 # This tag requires that the tag GENERATE_LATEX is set to YES.
 
-COMPACT_LATEX = NO
+COMPACT_LATEX = YES
 
 # The PAPER_TYPE tag can be used to set the paper type that is used by the
 # printer.
@@ -1684,7 +1684,7 @@ EXTRA_PACKAGES =
 # to HTML_HEADER.
 # This tag requires that the tag GENERATE_LATEX is set to YES.
 
-LATEX_HEADER = 
+LATEX_HEADER = header.tex
 
 # The LATEX_FOOTER tag can be used to specify a personal LaTeX footer for the
 # generated LaTeX document. The footer should contain everything after the last
@@ -1695,7 +1695,7 @@ LATEX_HEADER =
 # Note: Only use a user-defined footer if you know what you are doing!
 # This tag requires that the tag GENERATE_LATEX is set to YES.
 
-LATEX_FOOTER = 
+LATEX_FOOTER = footer.tex
 
 # The LATEX_EXTRA_STYLESHEET tag can be used to specify additional user-defined
 # LaTeX style sheets that are included after the standard style sheets created
@@ -1706,7 +1706,7 @@ LATEX_FOOTER =
 # list).
 # This tag requires that the tag GENERATE_LATEX is set to YES.
 
-LATEX_EXTRA_STYLESHEET = 
+LATEX_EXTRA_STYLESHEET = doxygen.sty
 
 # The LATEX_EXTRA_FILES tag can be used to specify one or more extra images or
 # other source files which should be copied to the LATEX_OUTPUT output

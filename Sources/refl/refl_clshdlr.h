@@ -7,7 +7,7 @@
  * It introduces application specific commands for requests of status information
  * via command line shell (@b CLS)
  *
- * @author 	Simon Helling, stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	09.06.2017
  *
  * @copyright @<LGPL2_1>
@@ -28,10 +28,7 @@
 #define EXTERNAL_ extern
 #endif
 
-/**
- * @addtogroup refl
- * @{
- */
+
 /*======================================= >> #DEFINES << =========================================*/
 
 
@@ -43,18 +40,14 @@
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 /**
  * @brief Shell parser routine.
- * @param cmd Pointer to command line string.
- * @param handled Pointer to status if command has been handled. Set to TRUE if command was understood.
- * @param io Pointer to stdio handle
+ * @param cmd_ Pointer to command line string.
+ * @param handled_ Pointer to status if command has been handled. Set to TRUE if command was understood.
+ * @param io_ Pointer to stdio handle
  * @return Error code, ERR_OK if everything was ok.
  */
 EXTERNAL_ uint8_t REFL_ParseCommand(const unsigned char *cmd_, bool *handled_, const CLS1_StdIOType *io_);
 
 
-
-/**
- * @}
- */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif

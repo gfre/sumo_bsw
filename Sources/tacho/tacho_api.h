@@ -6,7 +6,8 @@
  * This API provides a BSW-internal interface of the SWC @ref tacho. It is supposed to be
  * available to all other Basic Software Components.
  *
- * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de,      Chair of Automatic Control, University Kiel
+ * @author  S. Helling,      stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	04.05.2017
  *
  * @note API for BSW-internal use only
@@ -29,10 +30,7 @@
 #define EXTERNAL_ extern
 #endif
 
-/**
- * @addtogroup tacho
- * @{
- */
+
 /*======================================= >> #DEFINES << =========================================*/
 #define TACHO_OBJECT_STRING( _id )		( _id == TACHO_ID_LEFT ? ("tacho left") : (_id == TACHO_ID_RIGHT ? ("tacho right") : ("") ) )
 
@@ -64,64 +62,68 @@ typedef enum TACHO_ID_e
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
  /**
- * @brief Returns the previously calculated speed of the motor.
- * @param isLeft TRUE for left speed, FALSE for right speed.
- * @return Actual speed value
+ * @brief Returns the position of the left track in [steps].
+ * @param pos_ Pointer to the position variable
+ * @return Error code,  ERR_OK if everything was fine,
+ *                      ERR_PARAM_ADDRESS otherwise
  */
 EXTERNAL_ StdRtn_t TACHO_Read_PosLe(int32_t* pos_);
 
 /**
- *
- * @param pos_
- * @return
+ * @brief Returns the position of the right track in [steps].
+ * @param pos_ Pointer to the position variable
+ * @return Error code,  ERR_OK if everything was fine,
+ *                      ERR_PARAM_ADDRESS otherwise
  */
 EXTERNAL_ StdRtn_t TACHO_Read_PosRi(int32_t* pos_);
 
 /**
- *
- * @param spd_
- * @return
+ * @brief Returns the unfiltered speed of the left track in [steps/second].
+ * @param spd_ Pointer to the speed variable
+ * @return Error code,  ERR_OK if everything was fine,
+ *                      ERR_PARAM_ADDRESS otherwise
  */
 EXTERNAL_ StdRtn_t TACHO_Read_RawSpdLe(int16_t* spd_);
 
 /**
- *
- * @param spd_
- * @return
+ * @brief Returns the unfiltered speed of the right track in [steps/second].
+ * @param spd_ Pointer to the speed variable
+ * @return Error code,  ERR_OK if everything was fine,
+ *                      ERR_PARAM_ADDRESS otherwise
  */
 EXTERNAL_ StdRtn_t TACHO_Read_RawSpdRi(int16_t* spd_);
 
 /**
- *
- * @param spd_
- * @return
+ * @brief Returns the filtered speed of the left track in [steps/second].
+ * @param spd_ Pointer to the speed variable
+ * @return Error code,  ERR_OK if everything was fine,
+ *                      ERR_PARAM_ADDRESS otherwise
  */
 EXTERNAL_ StdRtn_t TACHO_Read_SpdLe(int16_t* spd_);
 
 /**
- *
- * @param spd_
- * @return
+ * @brief Returns the filtered speed of the right track in [steps/second].
+ * @param spd_ Pointer to the speed variable
+ * @return Error code,  ERR_OK if everything was fine,
+ *                      ERR_PARAM_ADDRESS otherwise
  */
 EXTERNAL_ StdRtn_t TACHO_Read_SpdRi(int16_t* spd_);
 
 /**
- *
- * @param type_
- * @return
+ * @brief Changes the filter type
+ * @param idx_ ID that corresponds to a @ref TACHO_FltrItm_t item
+ * @return Error code,  ERR_OK if everything was fine,
+ *                      ERR_PARAM_ADDRESS otherwise
  */
 EXTERNAL_ StdRtn_t TACHO_Set_FltrReq(uint8_t idx_);
 
 /**
- *
- * @return
+ * @brief Returns the active filter ID
+ * @return ID of active filter
  */
 uint8_t TACHO_Get_ActFltrIdx(void);
 
 
-/**
- * @}
- */
 #ifdef EXTERNAL_
 #undef EXTERNAL_
 #endif

@@ -146,6 +146,7 @@ StdRtn_t PID_Reset(uint8_t idx_)
 
 		if(idx_ < pPidTbl->numPids)
 		{
+		  retVal = ERR_OK;
 			pPidTbl->aPids[idx_].data.intVal = 0;
 			pPidTbl->aPids[idx_].data.prevErr = 0;
 			pPidTbl->aPids[idx_].data.sat = PID_NO_SAT;

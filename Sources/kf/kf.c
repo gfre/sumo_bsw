@@ -368,6 +368,8 @@ StdRtn_t KF_Read_i16EstdVal(int16_t *pVal_, const uint8_t idx_)
 			}
 			else
 			{
+			    /* TODO This returns the second state hard-coded... should introduce an index variable
+			     * for corresponding state */
 				*pVal_ = (int16_t)((KF_pTbl->aKfs[idx_].data.vXapost.data[1][0])>>16);
 			}
 		}

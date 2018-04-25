@@ -7,9 +7,11 @@ The RTE is the only interface required for application software programming. The
 -------------------
 Sumo Basic Software
 -------------------
-Follow the link to the `BSW Software documentation <../_static/index.html>`_. It describes each component of the Sumo BSW in detail.
+Follow the link to the `BSW Software documentation <../_static/html/index.html>`_. It describes each component of the Sumo BSW in detail. For offline useage download the `pdf file <../_static/latex/refman.pdf>`_.
 
 ---------------------------
 Real time environment (RTE)
 ---------------------------
-This section provides `a direct link <../_static/group__rte.html>`_ to the RTE API manual. 
+This section provides `a direct link <../_static/html/group__rte.html>`_ to the RTE API manual. 
+
+

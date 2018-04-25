@@ -34,12 +34,12 @@
 
 
 /**
- *	@brief macro to initialize 2-by-2 matrices
+ *	@brief Macro to initialize 2-by-2 matrices
  */
 #define MTX_INIT_2X2(dim_, m11_, m12_, m21_, m22_) {dim_, dim_, 0, {{m11_, m12_}, {m21_, m22_}}}
 
 /**
- * @brief macro for default runtime data init
+ * @brief Macro for default runtime data init
  */
 #define KF_DFLT_DATA_INIT(n_) { \
 								/* vXapri  */	{n_, 1,  0, {0u}},\
@@ -58,12 +58,12 @@
 
 /*=================================== >> GLOBAL VARIABLES << =====================================*/
 /**
- *	function handles for left tacho measurements
+ *	Function handles for left tacho measurements
  */
 static KF_ReadFct_t KF_MeasValFctHdlsLe[KF_TACHO_MSRMNTS_LE] = {TACHO_Read_PosLe, KF_Read_Rawi32SpdLe};
 
 /**
- *  function handles for right tacho measurements
+ *  Function handles for right tacho measurements
  */
 static KF_ReadFct_t KF_MeasValFctHdlsRi[KF_TACHO_MSRMNTS_RI] = {TACHO_Read_PosRi, KF_Read_Rawi32SpdRi};
 

@@ -7,8 +7,8 @@
  * and the tacho.c file. New filter components can be added to the fltrTbl and must match the provided
  * form of a 'TACHO_Fltr_t' variable and can then be activated using the command line shell.
  *
- * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
- * @author  S. Helling,		  stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de,      Chair of Automatic Control, University Kiel
+ * @author  S. Helling,		    stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	13.06.2017
  *
  * @copyright @LGPL2_1

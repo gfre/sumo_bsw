@@ -1,11 +1,12 @@
 /***********************************************************************************************//**
  * @file		tacho_cfg.h
  * @ingroup		tacho
- * @brief 		<This is a brief description.>
+ * @brief 		This file contains all type definitions for the SWC @ref tacho
  *
- * <This is a detailed description.>
  *
- * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de,      Chair of Automatic Control, University Kiel
+ * @author  S. Helling,       stu112498@tf-uni-kiel.de, Chair of Automatic Control, University Kiel
+ *
  * @date 	13.06.2017
  *
  * @copyright @LGPL2_1
@@ -27,10 +28,6 @@
 #define EXTERNAL_ extern
 #endif
 
-/**
- * @addtogroup tacho
- * @{
- */
 /*======================================= >> #DEFINES << =========================================*/
 #define TACHO_MAX_NUM_OF_FILTERS (0xFA)
 
@@ -44,8 +41,6 @@ typedef void FltrRtFct_t(void);
 
 /**
  *
- * @param
- * @return
  */
 typedef StdRtn_t ReadFct_t(int16_t *spdd_, uint8_t idx_);
 
