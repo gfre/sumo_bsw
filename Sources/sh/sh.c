@@ -108,35 +108,39 @@ static void PrintGoodByeMsg(const CLS1_StdIOType *io_)
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 void SH_Init(const void *pvPar_)
 {
-	uint8 i = 0u;
+	uint8_t i = 0u;
 
 	CLS1_Init();
 	ioCfg     = Get_ShIOCfg();
 	ios       = ioCfg->ios;
 
-	if(( NULL != ioCfg ) && ( NULL != ios ) )
+	if( NULL == pvPar_ ) /* avoid welcome message for task init */
 	{
-		/* initialize buffers */
-		for( i = 0; i < ioCfg->ioSize; i++)
+		if( ( NULL != ioCfg ) && ( NULL != ios ) )
 		{
-			if( ( NULL != ios[i].buf ) && ( NULL != ios[i].stdio ) )
+			/* initialize buffers */
+			for( i = 0; i < ioCfg->ioSize; i++)
 			{
-				/* Eat previous lines */
-				while(TRUE == CLS1_ReadLine(ios[i].buf, ios[i].buf, ios[i].bufSize, ios[i].stdio));
-				ios[i].buf[0] = '\0';
-				PrintWelcomeMsg(ios[i].stdio);
-			}
-			else
-			{
-				/* print error msg */
-				SH_SENDERRSTR("Error 2\r\n");
+				if( ( NULL != ios[i].buf ) && ( NULL != ios[i].stdio ) )
+				{
+					/* Eat previous lines */
+					while(TRUE == CLS1_ReadLine(ios[i].buf, ios[i].buf, ios[i].bufSize, ios[i].stdio));
+					ios[i].buf[0] = '\0';
+					PrintWelcomeMsg(ios[i].stdio);
+				}
+				else
+				{
+					/* print error msg */
+					SH_SENDERRSTR("Error 2\r\n");
+				}
 			}
 		}
+		else
+		{
+			SH_SENDERRSTR("Error 1\r\n");
+		}
 	}
-	else
-	{
-		SH_SENDERRSTR("Error 1\r\n");
-	}
+
 }
 
 
