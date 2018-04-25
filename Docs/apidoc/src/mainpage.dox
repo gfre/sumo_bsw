@@ -1,0 +1,35 @@
+/**
+ * @mainpage API Reference Manual
+ *
+ * @section intro Introduction
+ * TODO
+ * @image html ./sumo.png "Sumo Robot" width=600
+ *
+ * @section architecture Software Architecture
+ * TODO
+  * @image html architecture.png "Overview of the entire software architecture."
+ *
+ * @subsection bsw Basic Software (BSW)
+ * TODO
+ *
+ * @subsection rte Real time environment (RTE)
+ * TODO
+ *
+ * @subsection asw Application software (ASW)
+ * TODO
+ *
+ * @subsection swc Software Component (SWC)
+ * TODO
+ * General structure of a @a SWC
+ * - **Configuration** of the software component.
+ * 		- @c swc_cfg.c: Implementation of the @a SWC configuration.
+ * 		- @c swc_cfg.h: Config data type definitions and interface for the reference to the @a SWC configuration (table).
+ * - **Core implementation** of the functionality.
+ * 		- @c swc.c: Actual definitions and implementation of the algorithms.
+ * 		- @c swc.h: Header file with declarations for initialisation and runtime calls.
+ * 		- @c swc_api.h: Interface of @a SWC to other @a SWCs, e.g. to the real time environment (@ref rte).
+ * - **Command line shell handler**.
+ * 		- @c swc_clshdlr.c: Implementiation *SWC*-specific debug routines.
+ * 		- @c swc_clshdlr.h: Interface to the @ref sh configuration. The @ref sh component runs the low-level component *comand line shell* (*CLS*).
+ *
+ */
