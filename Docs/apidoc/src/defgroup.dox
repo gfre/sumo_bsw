@@ -352,7 +352,7 @@
 
 /**
  * @defgroup	kf Kalman filter
- * @brief		Kalman filter
+ * @brief		Kalman filter implementation.
  * \f$\renewcommand{\vec}{\boldsymbol}\f$
  * \f$\newcommand{\vxh}{\hat{\vec{x}}}\f$
  * \f$\newcommand{\vx}{\vec{x}}\f$
@@ -362,7 +362,7 @@
  * for a \f$ n\f$-dimensional (linear) system of the form:
  *
  *\f{align*}{
- * \vx(k+1|k) &= \Phi\vx(k|k-1) + \Gamma\vec{u}(k) + \vec{w}(k) \\
+ * \vx(k+1) &= \Phi\vx(k) + \Gamma\vec{u}(k) + \vec{w}(k) \\
  * \vec{y}(k)		&= H\vx(k|k-1) + \vec{v}(k)
  * \f}
  *
@@ -371,21 +371,21 @@
  * to taking measurements into account, and \f$ \vxh_{apost}\f$ denotes the state estimate after taking
  * measurements into account. \f$ \vxh_{apost}(-) \f$ is the a posteriori estimate from the previous step,
  * \f$ \vxh_{apost}(+) \f$ is the a posteriori estimate from the current step. Same goes for the error
- * covariance matrix \f$ P = \mathbb{E}\big\{[\vx-\vxh][\vx-\vxh]'\big\}\f$.
+ * covariance matrix \f$ P = \mathbb{E}\big\{[\vx-\vxh][\vx-\vxh]^T\big\}\f$.
  * The original Kalman formulation of this algorithm can then be described as
  *
  * \f$
  *    \textbf{Predictor}
  *      \begin{cases}
  *        \vxh_{apri} = \Phi\vxh_{apost}(-)  + \Gamma\vec{u}(k)\\
- *        P_{apri}    = \Phi P_{apost}(-)\Phi' + GQG'
+ *        P_{apri}    = \Phi P_{apost}(-)\Phi^T + GQG^T
  *      \end{cases}
  * \f$
  *
  * \f$
  *    \textbf{Corrector}
  *    \begin{cases}
- *      K               = P_{apri}H' (HP_{apri}H' + R)^{-1}\\
+ *      K               = P_{apri}H^T (HP_{apri}H^T + R)^{-1}\\
  *      \vxh_{apost}(+) = \vxh_{apri} + K\big( \vec{y}(k) - H\vxh_{apri} \big)\\
  *      P_{apost}(+)    = (E - KH)P_{apri},
  *    \end{cases}
@@ -422,7 +422,7 @@
  * of a matrix nor does it need to perform square root calculations (even though it belongs to the
  * class of square-root-filters). This algorithm relies heavily on UD-factorization of
  * the error covariance matrix \f$ P\f$, where \f$ U\f$ is a unit upper diagonal matrix
- * and \f$ D\f$ a diagonal matrix such that \f$ P = UDU'\f$ . The prediction for the
+ * and \f$ D\f$ a diagonal matrix such that \f$ P = UDU^T\f$ . The prediction for the
  * error covariance matrix \f$ P_{apri} \f$ is calculated according to C. Thornton,
  * calculating UD-factors of \f$ P_{apost}(-)\f$ using modified weighted Gram-Schmidt
  * orthogonalization (MWGS). The correction for the error covariance matrix
@@ -431,6 +431,20 @@
  * Using MATLAB" by M.S. Grewal and A.P. Andrews, aswell as "Triangular Covariance
  * Factorizations for Kalman Filtering" by C. Thornton.
  *
+ * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de,      Chair of Automatic Control, University Kiel
+ * @author 	S. Helling,       stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
+ * @date 	05.03.2018
+ *
+ * @copyright	@LGPL2_1
+ */
+
+/**
+ * @defgroup	maf Moving average filter
+ * @brief		A simple moving average filter implemented as ring buffer. 
+ *
+ * It is run by the @ref tacho component and used to smoothen the calculated raw speed.
+ *
+ * @author 	(c) 2014 Erich Styger, erich.styger@hslu.ch, Hochschule Luzern
  * @author 	G. Freudenthaler, gefr@tf.uni-kiel.de,      Chair of Automatic Control, University Kiel
  * @author 	S. Helling,       stu112498@tf.uni-kiel.de, Chair of Automatic Control, University Kiel
  * @date 	05.03.2018
