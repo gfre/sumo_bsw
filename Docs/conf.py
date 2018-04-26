@@ -19,13 +19,13 @@ import subprocess
 
 read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
 
-if True:
+if read_the_docs_build:
 # This subprocess will run doxygen and create a html and a latex directory in the folder apidoc 
 # (settings in sumo_bsw.doxyfile)
    subprocess.call('doxygen sumo_bsw.doxyfile', shell=True)
 # This will run pdflatex
-   subprocess.call('cd apidoc', shell=True)
-   subprocess.call('ls', shell=True)
+   subprocess.call('cd apidoc/latex ; make', shell=True)
+ 
 
 
 
