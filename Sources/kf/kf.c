@@ -153,7 +153,7 @@ static StdRtn_t KF_Predict_P(KF_Itm_t *kf_)
 	MTX_t mG = kf_->cfg.mtx.mG; /* necessary because G is overwritten in thornton update */
 	if( NULL != kf_ )
 	{
-		retVal       = ERR_OK;
+		retVal  = ERR_OK;
 		retVal |= KF_ThorntonTemporalUpdate(&(kf_->data.mUPapri),  &(kf_->data.mDPapri),  &(kf_->cfg.mtx.mPhi),
 											&(kf_->data.mUPapost), &(kf_->data.mDPapost), &(mG), &(kf_->cfg.mtx.mQ));
 	}
@@ -192,7 +192,6 @@ static StdRtn_t KF_Correct(KF_Itm_t *kf_)
 	}
 }
 
-/* TODO overflow handling, reduce number of temp variables with and-logic */
 static StdRtn_t KF_ThorntonTemporalUpdate(MTX_t *mUPapri_, MTX_t *mDPapri_, const MTX_t *Phi_, const MTX_t *mUPapost_, const MTX_t *mDPapost_, MTX_t *mGUQ_, const MTX_t *mDQ_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
@@ -245,7 +244,6 @@ static StdRtn_t KF_ThorntonTemporalUpdate(MTX_t *mUPapri_, MTX_t *mDPapri_, cons
 	return retVal;
 }
 
-/* TODO overflow handling, reduce number of temp variables with and-logic */
 static StdRtn_t KF_BiermanObservationalUpdate(MTX_t *vXapost_, MTX_t *mUPapost_, MTX_t *mDPapost_, int32_t dym_, int32_t rmm_, const MTX_t *mH_, uint8_t m_)
 {
 	StdRtn_t retVal = ERR_PARAM_ADDRESS;
