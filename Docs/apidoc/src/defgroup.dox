@@ -353,31 +353,28 @@
 /**
  * @defgroup	kf Kalman filter
  * @brief		Kalman filter implementation.
- * \f$\renewcommand{\vec}{\boldsymbol}\f$
- * \f$\newcommand{\vxh}{\hat{\vec{x}}}\f$
- * \f$\newcommand{\vx}{\vec{x}}\f$
  *
- * A Kalman filter algorithm is used that calculates the optimal state estimate \f$\vxh(k+1|k)\f$ for
+ * A Kalman filter algorithm is used that calculates the optimal state estimate \f$\hat{\boldsymbol{x}}(k+1|k)\f$ for
  * the timestep \f$ k+1 \f$ given \f$ k\f$ previous values in fixed-point arithmetic
  * for a \f$ n\f$-dimensional (linear) system of the form:
  *
  *\f{align*}{
- * \vx(k+1) &= \Phi\vx(k) + \Gamma\vec{u}(k) + \vec{w}(k) \\
- * \vec{y}(k)		&= H\vx(k|k-1) + \vec{v}(k)
+ * \boldsymbol{x}(k+1) &= \Phi\boldsymbol{x}(k) + \Gamma\boldsymbol{u}(k) + \boldsymbol{w}(k) \\
+ * \boldsymbol{y}(k)		&= H\boldsymbol{x}(k|k-1) + \boldsymbol{v}(k)
  * \f}
  *
- * The optimal state estimate \f$ \vxh(k+1|k)\f$ is then calculated according to the following
- * predictor-corrector algorithm, where \f$ \vxh_{apri}\f$ denotes the a priori state estimate prior
- * to taking measurements into account, and \f$ \vxh_{apost}\f$ denotes the state estimate after taking
- * measurements into account. \f$ \vxh_{apost}(-) \f$ is the a posteriori estimate from the previous step,
- * \f$ \vxh_{apost}(+) \f$ is the a posteriori estimate from the current step. Same goes for the error
- * covariance matrix \f$ P = \mathbb{E}\big\{[\vx-\vxh][\vx-\vxh]^T\big\}\f$.
+ * The optimal state estimate \f$ \hat{\boldsymbol{x}}(k+1|k)\f$ is then calculated according to the following
+ * predictor-corrector algorithm, where \f$ \hat{\boldsymbol{x}}_{apri}\f$ denotes the a priori state estimate prior
+ * to taking measurements into account, and \f$ \hat{\boldsymbol{x}}_{apost}\f$ denotes the state estimate after taking
+ * measurements into account. \f$ \hat{\boldsymbol{x}}_{apost}(-) \f$ is the a posteriori estimate from the previous step,
+ * \f$ \hat{\boldsymbol{x}}_{apost}(+) \f$ is the a posteriori estimate from the current step. Same goes for the error
+ * covariance matrix \f$ P = \mathbb{E}\big\{[\boldsymbol{x}-\hat{\boldsymbol{x}}][\boldsymbol{x}-\hat{\boldsymbol{x}}]^T\big\}\f$.
  * The original Kalman formulation of this algorithm can then be described as
  *
  * \f$
  *    \textbf{Predictor}
  *      \begin{cases}
- *        \vxh_{apri} = \Phi\vxh_{apost}(-)  + \Gamma\vec{u}(k)\\
+ *        \hat{\boldsymbol{x}}_{apri} = \Phi\hat{\boldsymbol{x}}_{apost}(-)  + \Gamma\boldsymbol{u}(k)\\
  *        P_{apri}    = \Phi P_{apost}(-)\Phi^T + GQG^T
  *      \end{cases}
  * \f$
@@ -386,28 +383,28 @@
  *    \textbf{Corrector}
  *    \begin{cases}
  *      K               = P_{apri}H^T (HP_{apri}H^T + R)^{-1}\\
- *      \vxh_{apost}(+) = \vxh_{apri} + K\big( \vec{y}(k) - H\vxh_{apri} \big)\\
+ *      \hat{\boldsymbol{x}}_{apost}(+) = \hat{\boldsymbol{x}}_{apri} + K\big( \boldsymbol{y}(k) - H\hat{\boldsymbol{x}}_{apri} \big)\\
  *      P_{apost}(+)    = (E - KH)P_{apri},
  *    \end{cases}
  * \f$
  *
- * with initial values set to \f$\vxh_{apost}^0(-)=\vec{0}\f$ and \f$ P_{apost}^0(-) =
+ * with initial values set to \f$\hat{\boldsymbol{x}}_{apost}^0(-)=\boldsymbol{0}\f$ and \f$ P_{apost}^0(-) =
  * \alpha E\f$, with \f$ \alpha>>1\f$ (see @ref kf_cfg.h).
  *
  * @b Dimensions <br>
- *  \f$ \vx\in\mathbb{R}^{n}\f$ state vector,<br>
+ *  \f$ \boldsymbol{x}\in\mathbb{R}^{n}\f$ state vector,<br>
  *  \f$ \Phi\in\mathbb{R}^{n\times n} \f$   system/state transition matrix,<br>
  *  \f$ P\in\mathbb{R}^{n\times n} \f$ error covariance matrix,<br>
  *  \f$ u(k)\in\mathbb{R}^{l} \f$ input vector to the system system,<br>
  *  \f$ \Gamma\in\mathbb{R}^{n\times l} \f$ input matrix (\f$ l\f$ being the number of inputs),<br>
- *  \f$ \vec{y}(k)\in\mathbb{R}^{m} \f$ measurement vector (\f$ m\f$ being the number of measured states),<br>
+ *  \f$ \boldsymbol{y}(k)\in\mathbb{R}^{m} \f$ measurement vector (\f$ m\f$ being the number of measured states),<br>
  *  \f$ H\in\mathbb{R}^{m\times n}\f$  measurement matrix,<br>
- *  \f$ \vec{w}(k)\in\mathbb{R}^n\f$ disturbance vector to the system (normally distributed with zero mean
+ *  \f$ \boldsymbol{w}(k)\in\mathbb{R}^n\f$ disturbance vector to the system (normally distributed with zero mean
  *  			 and standard deviation \f$ \sigma_w\f$),<br>
  *  \f$ G \in\mathbb{R}^{n\times n}\f$ coupling matrix for process noise,<br>
  *  \f$ Q\in\mathbb{R}^{n\times n}\f$ diagonal process noise covariance matrix containing the variances
  *  			 \f$ \sigma_w^2\f$ of the process disturbances for each state,<br>
- * \f$ \vec{v}(k) \in\mathbb{R}^{m}\f$ measurement noise vector (normally distributed with zero mean and
+ * \f$ \boldsymbol{v}(k) \in\mathbb{R}^{m}\f$ measurement noise vector (normally distributed with zero mean and
  *  			 standard deviation \f$\sigma_v\f$,<br>
  *  \f$ R \in\mathbb{R}^{m\times m}\f$ diagonal measurement noise matrix containing
  *       the variances \f$\sigma_v^2\f$ of the measurement disturbances for each state,<br>
