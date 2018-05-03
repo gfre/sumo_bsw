@@ -38,7 +38,7 @@ PROJECT_NAME = "Sumo Robot Basic Software"
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-PROJECT_NUMBER = V1.5.2-2018
+PROJECT_NUMBER = V1.5.3-2018
 
 # Using the PROJECT_BRIEF tag one can provide an optional one line description
 # for a project that appears at the top of each page and should give viewer a
@@ -780,7 +780,7 @@ WARN_LOGFILE =
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-INPUT = ../Sources ../Includes apidoc/src 
+INPUT = ../Sources ../Includes apidoc/src
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
