@@ -12,7 +12,7 @@
  * Automatic Control (ACon), was able to install a swarm of Sumo Robots for Multi-Agent applications.
  * @anchor fig1
  * @image html ./sumo.png "Figure 1 The Sumo Robot with a K22F-120 MHz MCU, based on Arm® Cortex®-M4 Core." width=100
- * The robot is illustrated in @ref fig1 "Figure 1" and features among ohers the main following 
+ * The robot is illustrated in @ref fig1 "Figure 1" and features among others the main following 
  * properties
  *
  *  | Type          | Feature                                              |
@@ -24,8 +24,8 @@
  * 	| Motors        | \f$ 2 \f$ DC motors with \f$ 75:1 \f$ reduction gear |
  * 	| Periphery     | \f$ 6  \f$ axis IMU, \f$ 2 \f$ LEDs, Buzzer,  @n Magentic quadrature encoders @n IR line sensors, Arduino header, etc. |
  *
- * We at ACon completely took over the hardware design from Prof. Styger's desing and use most of 
- * the software designed and implementation of Prof. Styger's team in Lucerne. However we modified 
+ * We at ACon completely took over the hardware from Prof. Styger's design and use most of 
+ * the software designed and implemented by Prof. Styger's team in Lucerne. However we modified 
  * the software for our needs and requirements. In particular we adapted the software to fit into a 
  * framework which allows to quickly implement applications for the Sumo Robot. The architecture is 
  * especially designed for people who are not too much into embedded systems but are aware of the 
@@ -43,7 +43,7 @@
  * - **Basic Software** @n
  * The Basic Software (BSW) runs and treats the low-level componets such as the firmware, drivers 
  * and hardware abstractions from the MCU-OEM NXP. Moreover it implements auto-code generated 
- * software comopnents from the NXP code generator *Processor Expert* (PEx). In this context it uses
+ * software components from the NXP code generator *Processor Expert* (PEx). In this context it uses
  * both, components designed from the OEM and Prof. Styger's team. The BSW runs [FreeRTOS](http://www.freertos.org) 
  * which registers four aditional tasks (apart from the @c IDLE task) which are vividly illustrated 
  * in @ref fig2 "Figure 2". For further abstraction purposes the BSW provides the so-called real-time 
@@ -69,7 +69,7 @@
  *
  *
  * @subsection swc Software Component Design
- * Each software component is intended to be designed in a way that it fit into a general structure 
+ * Each software component is intended to be designed in a way that it fits into a general structure 
  * which consists of three main modules. They modules are described in the following breifly.
  * - **Configuration** of the software component.
  * 		- @c swc_cfg.c: Implementation of the @a SWC configuration.

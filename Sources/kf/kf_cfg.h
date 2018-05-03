@@ -57,7 +57,7 @@ typedef struct KF_Data_s
 	MTX_t  mDPapri;							/**< the a priori diagonal matrix matrix */
 	MTX_t  mUPapost;						/**< the a priori unit upper triangular matrix */
 	MTX_t  mDPapost;						/**< the a aposteriori diagonal matrix */
-	int32_t aModCntr[FIXMATRIX_MAX_SIZE];	/**< modulo counter for state variables */
+	int32_t aModCntr[FIXMATRIX_MAX_SIZE];	/**< modulo counter for state variables. Change FIXMATRIX_MAX_SIZE in compiler flags */
 }KF_Data_t;
 
 /**

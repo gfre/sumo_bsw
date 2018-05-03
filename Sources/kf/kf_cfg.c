@@ -24,13 +24,10 @@
 
 /*======================================= >> #DEFINES << =========================================*/
 /**
- *  Dimensions for Kalman filters
+ * @brief Dimension macros for Kalman filters
  */
-#define KF_TACHO_SYS_LE (2u)
-#define KF_TACHO_MSRMNTS_LE (2u)
-
-#define KF_TACHO_SYS_RI (2u)
-#define KF_TACHO_MSRMNTS_RI (2u)
+#define KF_DIM_TACHO_N (2u)
+#define KF_DIM_TACHO_M (2u)
 
 
 /**
@@ -41,15 +38,15 @@
 /**
  * @brief Macro for default runtime data init
  */
-#define KF_DFLT_DATA_INIT(n_) { \
-								/* vXapri  */	{n_, 1,  0, {0u}},\
-								/* vXapost */ 	{n_, 1,  0, {0u}},\
-								/* mUPapri */	{n_, n_, 0, {0u}},\
-								/* mDPapri */	{n_, n_, 0, {0u}},\
-								/* mUPapost */	{n_, n_, 0, {0u}},\
-								/* mDPapost */	{n_, n_, 0, {0u}},\
-								/* nMdCntr */	{0}\
-							  }
+#define KF_DFLT_DATA_INIT(n_) {\
+              /*  vXapri    */  {n_, 1,  0, {0u}},\
+              /*  vXapost   */  {n_, 1,  0, {0u}},\
+              /*  mUPapri   */  {n_, n_, 0, {0u}},\
+              /*  mDPapri   */  {n_, n_, 0, {0u}},\
+              /*  mUPapost  */  {n_, n_, 0, {0u}},\
+              /*  mDPapost  */  {n_, n_, 0, {0u}},\
+              /*  nMdCntr   */  {0}\
+                              }
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
@@ -60,12 +57,12 @@
 /**
  *	Function handles for left tacho measurements
  */
-static KF_ReadFct_t KF_MeasValFctHdlsLe[KF_TACHO_MSRMNTS_LE] = {TACHO_Read_PosLe, KF_Read_Rawi32SpdLe};
+static KF_ReadFct_t KF_MeasValFctHdlsLe[KF_DIM_TACHO_M] = {TACHO_Read_PosLe, KF_Read_Rawi32SpdLe};
 
 /**
  *  Function handles for right tacho measurements
  */
-static KF_ReadFct_t KF_MeasValFctHdlsRi[KF_TACHO_MSRMNTS_RI] = {TACHO_Read_PosRi, KF_Read_Rawi32SpdRi};
+static KF_ReadFct_t KF_MeasValFctHdlsRi[KF_DIM_TACHO_M] = {TACHO_Read_PosRi, KF_Read_Rawi32SpdRi};
 
 
 /**
@@ -76,40 +73,40 @@ static KF_Itm_t KF_Items[] =
 /*======================== tacho left =========================*/
 			{
 /* Config */	{
-	/* Name */			TACHO_OBJECT_STRING(TACHO_ID_LEFT),
+	/* Name */	      TACHO_OBJECT_STRING(TACHO_ID_LEFT),
 	/* Sample Time */	TACHO_SAMPLE_PERIOD_MS,
 	/* Matrices */	{
-		/* Phi */		MTX_INIT_2X2(KF_TACHO_SYS_LE,     1<<16, ((TACHO_SAMPLE_PERIOD_MS<<16)/1000), 0, 1<<16),
-		/* Gamma */		{0u},
-		/* H */			MTX_INIT_2X2(KF_TACHO_SYS_LE,     1<<16,  0,                                  0, 1<<16),
-		/* R */			MTX_INIT_2X2(KF_TACHO_MSRMNTS_LE, 3<<16,  0, 								  0, 20000<<16),
-		/* G */			MTX_INIT_2X2(KF_TACHO_SYS_LE,     1<<16,  0, 								  0, 1<<16),
-		/* Q */			MTX_INIT_2X2(KF_TACHO_SYS_LE,     10<<16, 0, 								  0, 2500<<16)
-					},
+		/* Phi */		    MTX_INIT_2X2(KF_DIM_TACHO_N,     1<<16, ((TACHO_SAMPLE_PERIOD_MS<<16)/1000), 0, 1<<16),
+		/* Gamma */		  {0u},
+		/* H */			    MTX_INIT_2X2(KF_DIM_TACHO_N,     1<<16,  0,                                  0, 1<<16),
+		/* R */			    MTX_INIT_2X2(KF_DIM_TACHO_M,     3<<16,  0, 								                 0, 20000<<16),
+		/* G */			    MTX_INIT_2X2(KF_DIM_TACHO_N,     1<<16,  0, 								                 0, 1<<16),
+		/* Q */			    MTX_INIT_2X2(KF_DIM_TACHO_N,     10<<16, 0, 								                 0, 2500<<16)
+					        },
 	/* MeasFcts */	KF_MeasValFctHdlsLe,
 	/* InptFcts */	NULL,
-    /*Modulo counter*/TRUE
-				},
-/* Data */		KF_DFLT_DATA_INIT(KF_TACHO_SYS_LE)
+  /* Mod cntr */  TRUE
+				      },
+/* Data */		KF_DFLT_DATA_INIT(KF_DIM_TACHO_N)
 			},
 /*======================== tacho right =========================*/
 			{
 /* Config */	{
-	/* Name */			TACHO_OBJECT_STRING(TACHO_ID_RIGHT),
+	/* Name */			  TACHO_OBJECT_STRING(TACHO_ID_RIGHT),
 	/* Sample Time */	TACHO_SAMPLE_PERIOD_MS,
-	/* Matrices */	{
-		/* Phi */		MTX_INIT_2X2(KF_TACHO_SYS_RI,     1<<16, ((TACHO_SAMPLE_PERIOD_MS<<16)/1000), 0, 1<<16),
-		/* Gamma */		{0u},
-		/* H */			MTX_INIT_2X2(KF_TACHO_SYS_RI,     1<<16,  0,                                  0, 1<<16),
-		/* R */			MTX_INIT_2X2(KF_TACHO_MSRMNTS_RI, 3<<16,  0, 								  0, 20000<<16),
-		/* G */			MTX_INIT_2X2(KF_TACHO_SYS_RI,     1<<16,  0, 								  0, 1<<16),
-		/* Q */			MTX_INIT_2X2(KF_TACHO_SYS_RI,     10<<16, 0, 								  0, 2500<<16)
-					},
-	/* MeasFcts */KF_MeasValFctHdlsRi,
-	/* InptFcts */NULL,
-	/*Modulo counter*/TRUE
-				},
-/* Data */		KF_DFLT_DATA_INIT(KF_TACHO_SYS_RI)
+	/* Matrices */	  {
+		/* Phi */		      MTX_INIT_2X2(KF_DIM_TACHO_N,     1<<16, ((TACHO_SAMPLE_PERIOD_MS<<16)/1000), 0, 1<<16),
+		/* Gamma */		    {0u},
+		/* H */			      MTX_INIT_2X2(KF_DIM_TACHO_N,     1<<16,  0,                                  0, 1<<16),
+		/* R */			      MTX_INIT_2X2(KF_DIM_TACHO_M,     3<<16,  0, 								                 0, 20000<<16),
+		/* G */			      MTX_INIT_2X2(KF_DIM_TACHO_N,     1<<16,  0, 								                 0, 1<<16),
+		/* Q */			      MTX_INIT_2X2(KF_DIM_TACHO_N,     10<<16, 0, 								                 0, 2500<<16)
+					          },
+	/* MeasFcts */    KF_MeasValFctHdlsRi,
+	/* InptFcts */    NULL,
+	/* Mod cntr */    TRUE
+				      },
+/* Data */		KF_DFLT_DATA_INIT(KF_DIM_TACHO_N)
 			},
 };
 
