@@ -3,7 +3,7 @@
  * @ingroup		rte
  * @brief 		Implementation of the RTE Application Interface
  *
- * The *Real-Time Environment* (@b RTE) is the application interface for application software development
+ * The *Runtime Environment* (@b RTE) is the application interface for application software development
  * within the ACon Sumo Robot Project. This source file implements the interface functions for the
  * development of hardware-independent application software.
  *

@@ -46,13 +46,13 @@
  * software components from the NXP code generator *Processor Expert* (PEx). In this context it uses
  * both, components designed from the OEM and Prof. Styger's team. The BSW runs [FreeRTOS](http://www.freertos.org) 
  * which registers four aditional tasks (apart from the @c IDLE task) which are vividly illustrated 
- * in @ref fig2 "Figure 2". For further abstraction purposes the BSW provides the so-called real-time 
- * environment. Each BSW component is connected to this layer. The real-time environemnt is 
+ * in @ref fig2 "Figure 2". For further abstraction purposes the BSW provides the so-called runtime 
+ * environment. Each BSW component is connected to this layer. The runtime environemnt is 
  * described separately below.
  *
  *
- * - **Real-time environment** @n
- * The real-time environment (@ref rte) is implemented as part of the BSW, but architecture point of
+ * - **Runtime environment** @n
+ * The runtime environment (@ref rte) is implemented as part of the BSW, but architecture point of
  * view it is acutally an intermediate software layer which abrstracts the entire Sumo Robot and 
  * provides an unique interface for application programming. It connects Basic Software with 
  * Application Software.  
@@ -77,7 +77,7 @@
  * - **Core implementation** of the functionality.
  * 		- @c swc.c: Actual definitions and implementation of the algorithms.
  * 		- @c swc.h: Header file with declarations for initialisation and runtime calls.
- * 		- @c swc_api.h: Interface of @a SWC to other @a SWCs, e.g. to the real time environment (@ref rte).
+ * 		- @c swc_api.h: Interface of @a SWC to other @a SWCs, e.g. to the runtime environment (@ref rte).
  * - **Command line shell handler**.
  * 		- @c swc_clshdlr.c: Implementiation *SWC*-specific debug routines.
  * 		- @c swc_clshdlr.h: Interface to the @ref sh configuration. The @ref sh component runs the low-level component *comand line shell* (*CLS*).

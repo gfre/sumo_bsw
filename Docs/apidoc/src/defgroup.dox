@@ -228,9 +228,9 @@
 
 /**
  * @defgroup	rte RTE
- * @brief		*Real-Time Environment* - Application Interface for Application Software Development.
+ * @brief		*Runtime Environment* - Application Interface for Application Software Development.
  *
- * The *Real-Time Environment* (@b RTE) is the application interface for application software
+ * The *Runtime Environment* (@b RTE) is the application interface for application software
  * development within the *ACon Sumo Robot Project*. The firmware and basic software of the Sumo
  * Robot is abstracted to the RTE layer, which allows hardware-independent development of
  * C99-compliant application software.
