@@ -444,6 +444,11 @@ EXTERNAL_ StdRtn_t RTE_putsErr(const uint8_t *msg_);
  */
 EXTERNAL_ ID_Sumo_t RTE_GetSumoID(void);
 
+/**
+ * @brief RTE interface function which resets the basic software (soft reset)
+ */
+EXTERNAL_ void RTE_Reset_BSW(void);
+
 
 
 /*================================================================================================*/

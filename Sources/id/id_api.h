@@ -20,7 +20,7 @@
 
 /*======================================= >> #INCLUDES << ========================================*/
 #include "rte_Types.h"
-
+#include "KIN1.h"
 
 #ifdef MASTER_id_C_
 #define EXTERNAL_
@@ -33,7 +33,11 @@
  * @{
  */
 /*======================================= >> #DEFINES << =========================================*/
-
+/**
+ * @brief This function performs a software reset (soft reset)
+ */
+#define ID_Reset_BSW() \
+ KIN1_SoftwareReset()
 
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/

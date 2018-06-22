@@ -592,6 +592,11 @@ ID_Sumo_t RTE_GetSumoID(void)
 	return Get_SumoID();
 }
 
+void RTE_Reset_BSW(void)
+{
+	return ID_Reset_BSW();
+}
+
 /*================================================================================================*/
 
 
