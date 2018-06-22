@@ -459,7 +459,7 @@ EXTERNAL_ void RTE_Reset_BSW(void);
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-StdRtn_t RTE_Write_HoldOnEnterNormal(const uint8_t holdOn_);
+EXTERNAL_ StdRtn_t RTE_Write_HoldOnEnterNormal(const uint8_t holdOn_);
 
 /**
  * @brief This function sets a flag which enables/disables hold on ENTER functionality for
@@ -468,21 +468,21 @@ StdRtn_t RTE_Write_HoldOnEnterNormal(const uint8_t holdOn_);
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-StdRtn_t RTE_Write_HoldOnEnterIdle(const uint8_t holdOn_);
+EXTERNAL_ StdRtn_t RTE_Write_HoldOnEnterIdle(const uint8_t holdOn_);
 
 /**
  * @brief This function allows to release hold on ENTER for NORMAL application state/mode
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-StdRtn_t RTE_Release_HoldOnEnterNormal(void);
+EXTERNAL_ StdRtn_t RTE_Release_HoldOnEnterNormal(void);
 
 /**
  * @brief This function allows to release hold on ENTER for IDLE application state/mode
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-StdRtn_t RTE_Release_HoldOnEnterIdle(void);
+EXTERNAL_ StdRtn_t RTE_Release_HoldOnEnterIdle(void);
 
 
 
@@ -496,7 +496,7 @@ StdRtn_t RTE_Release_HoldOnEnterIdle(void);
  *                     ERR_PARAM_ADDRESS if data address is invalid,
  *                     NVM specific ERROR code otherwise
  */
-StdRtn_t RTE_Read_DataUnitAddrInNVM(void *pDataAddr_, uint8_t unitNum_);
+EXTERNAL_ StdRtn_t RTE_Read_DataUnitAddrInNVM(void *pDataAddr_, uint8_t unitNum_);
 
 /**
  * @brief This function saves a completed ASW data unit into the NVM
@@ -505,7 +505,7 @@ StdRtn_t RTE_Read_DataUnitAddrInNVM(void *pDataAddr_, uint8_t unitNum_);
  * @return Error code, ERR_OK if everything was fine,
  *                     NVM specific ERROR code otherwise
  */
-StdRtn_t RTE_Save_DataUnit2NVM(const void *pData_, uint8_t unitNum_);
+EXTERNAL_ StdRtn_t RTE_Save_DataUnit2NVM(const void *pData_, uint8_t unitNum_);
 
 /**
  * @brief This function saves a number of data bytes within a certain ASW data into the NVM
@@ -516,9 +516,20 @@ StdRtn_t RTE_Save_DataUnit2NVM(const void *pData_, uint8_t unitNum_);
  * 					   ERR_PARAM_OVERFLOW if byteCnt_ exceeds ASW data unit size
  *                     NVM specific ERROR code otherwise
  */
-StdRtn_t RTE_Save_BytesOfDataUnit2NVM(const void *pData_, uint8_t unitNum_, uint16_t byteCnt_);
+EXTERNAL_ StdRtn_t RTE_Save_BytesOfDataUnit2NVM(const void *pData_, uint8_t unitNum_, uint16_t byteCnt_);
 
 
+
+/*================================================================================================*/
+/**
+ * @brief This function enters a critical section
+ */
+EXTERNAL_ uint8_t RTE_Enter_CriticalSection(void);
+
+/**
+ * @brief This function exits a critical section
+ */
+EXTERNAL_ void RTE_Exit_CriticalSection(uint8_t cpuSR);
 
 /**
  * @}

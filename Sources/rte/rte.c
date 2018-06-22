@@ -28,6 +28,7 @@
 #include "tacho_api.h"
 #include "nvm_api.h"
 #include "KEY1.h"
+#include "CS1.h"
 #include "RApp.h"
 
 
@@ -627,7 +628,18 @@ StdRtn_t RTE_Save_BytesOfDataUnit2NVM(const void *pData_, uint8_t unitNum_, uint
 
 
 /*================================================================================================*/
+uint8_t RTE_Enter_CriticalSection(void)
+{
+	CS1_CriticalVariable()
+	CS1_EnterCritical();
+	return cpuSR;
+}
 
+void RTE_Exit_CriticalSection(uint8_t cpuSR)
+{
+	CS1_ExitCritical();
+	return;
+}
 
 
 #ifdef MASTER_RTE_C_
