@@ -128,7 +128,7 @@ void TASK_PerdTaskFct(void * pvParameters_)
 {
 	uint8 i = 0u;
 	const TASK_PerdTaskFctPar_t *pvPar = NULL;
-	TickType_t LastWakeTime;
+	TickType_t LastWakeTime = 0u;
 
 	pvPar = (const TASK_PerdTaskFctPar_t *)pvParameters_;
 
