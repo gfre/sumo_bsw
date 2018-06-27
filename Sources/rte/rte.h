@@ -397,6 +397,23 @@ EXTERNAL_ StdRtn_t RTE_Read_RFDstAddr(uint8_t *addr_);
  */
 EXTERNAL_ StdRtn_t RTE_Write_RFDstAddr(const uint8_t addr_);
 
+/**
+ * @brief RTE interface to write the radio output power
+ * @param pwr_ setpoint value for radio output power
+ * @return Error code, ERR_OK if everything was fine.
+ *                     ERR_RANGE wrong rate value
+ */
+EXTERNAL_ StdRtn_t RTE_Write_RFOutpPwr(RF_OutpPwr_t pwr_);
+
+/**
+ * @brief RTE interface to write the radio air data rate
+ * @param rate_ setpoint value for air data rate
+ * @return Error code, ERR_OK if everything was fine.
+ *                     ERR_RANGE wrong rate value
+ */
+EXTERNAL_ StdRtn_t RTE_Write_RFDataRate(RF_DataRate_t rate_);
+
+
 
 /*================================================================================================*/
 EXTERNAL_ RTE_STREAM *RTE_stderr;

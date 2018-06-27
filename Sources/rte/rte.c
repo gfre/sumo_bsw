@@ -30,7 +30,7 @@
 #include "KEY1.h"
 #include "CS1.h"
 #include "RApp.h"
-
+#include "RF1.h"
 
 
 
@@ -496,6 +496,18 @@ StdRtn_t RTE_Write_RFDstAddr(uint8_t addr_)
 	RNET_SetDstAddr((RAPP_ShortAddrType)addr_);
 	return ERR_OK;
 }
+
+StdRtn_t RTE_Write_RFOutpPwr(RF_OutpPwr_t pwr_)
+{
+	return RF1_SetOutputPower((int8_t)pwr_);
+}
+
+StdRtn_t RTE_Write_RFDataRate(RF_DataRate_t rate_)
+{
+	return RF1_SetDataRate((uint16_t)rate_);
+}
+
+
 
 /*================================================================================================*/
 
