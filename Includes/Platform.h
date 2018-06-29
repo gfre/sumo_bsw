@@ -45,7 +45,7 @@
 /* ROBOT PARAMETERS */
 #define CAU_SUMO_AXIS_LENGTH		            (84)
 #define CAU_SUMO_AXIS_HALF_LENGTH               (42)
-#define CAU_SUMO_VELOCITY_MAX                   (520)
+#define CAU_SUMO_VELOCITY_MAX                   (600)
 #define CAU_SUMO_WHEEL_DIAMETER                 (39)
 #define CAU_SUMO_STEPS_PER_REV_AT_WHEEL         (900)
 
