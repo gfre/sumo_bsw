@@ -548,6 +548,20 @@ EXTERNAL_ uint8_t RTE_Enter_CriticalSection(void);
  */
 EXTERNAL_ void RTE_Exit_CriticalSection(uint8_t cpuSR);
 
+
+
+/*================================================================================================*/
+/**
+ * @brief This function reads the configured time period of the application task
+ * @param taskPer_ reference to the time period value (call by reference)
+ * @return	error code, ERR_PARAM_ADDRESS, if address of input is invalid;
+ * 						ERR_PARAM_DATA, if data of time period is invalid or does not exist;
+ * 						ERR_OK, if everything is OK
+ */
+EXTERNAL_ StdRtn_t RTE_Read_ApplTaskPeriod(uint8_t *taskPer_);
+
+
+
 /**
  * @}
  */

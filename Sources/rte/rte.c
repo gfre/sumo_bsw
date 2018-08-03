@@ -31,7 +31,7 @@
 #include "CS1.h"
 #include "RApp.h"
 #include "RF1.h"
-
+#include "task_api.h"
 
 
 
@@ -653,6 +653,12 @@ void RTE_Exit_CriticalSection(uint8_t cpuSR)
 	return;
 }
 
+
+/*================================================================================================*/
+StdRtn_t RTE_Read_ApplTaskPeriod(uint8_t *taskPer_)
+{
+	return TASK_Read_ApplTaskPeriod(taskPer_);
+}
 
 #ifdef MASTER_RTE_C_
 #undef MASTER_RTE_C_
