@@ -43,6 +43,8 @@
 
 /*============================= >> LOKAL FUNCTION DECLARATIONS << ================================*/
 static void TASK_CreateTasks(void);
+static StdRtn_t ReadTaskHdl(TASK_Hdl_t *hdl_, const char_t * pName_);
+static StdRtn_t ReadTaskPeriod(uint8_t *taskPer_, const char_t * pName_);
 
 
 
@@ -90,13 +92,13 @@ static void TASK_CreateTasks()
 	} /* NULL */
 }
 
-StdRtn_t ReadTaskHdl(TASK_Hdl_t *hdl_, const char_t * const pName_)
+StdRtn_t ReadTaskHdl(TASK_Hdl_t *hdl_, const char_t * pName_)
 {
-	StdRtn_t retVal = ERR_PARAM_ADDRESS;
+	StdRtn_t retVal = ERR_PARAM_DATA;
 	uint8_t i = 0u;
-	if( NULL != hdl_)
+	if( NULL != taskCfg )
 	{
-		if( NULL != taskCfg )
+		if( NULL != hdl_)
 		{
 			for( i = 0u; i < taskCfg->numTasks; i++)
 			{
@@ -109,12 +111,37 @@ StdRtn_t ReadTaskHdl(TASK_Hdl_t *hdl_, const char_t * const pName_)
 		}
 		else
 		{
-			retVal = ERR_PARAM_DATA;
+			retVal = ERR_PARAM_ADDRESS;
 		}
 	}
 	return retVal;
 }
 
+
+StdRtn_t ReadTaskPeriod(uint8_t *taskPer_, const char_t * pName_)
+{
+	StdRtn_t retVal = ERR_PARAM_DATA;
+	uint8_t i = 0u;
+	if( NULL != taskCfg )
+	{
+		if( NULL != taskPer_)
+		{
+			for( i = 0u; i < taskCfg->numTasks; i++)
+			{
+				if( ERR_OK == UTIL1_strcmp(pName_,	taskCfg->tasks[i].taskName) )
+				{
+					*taskPer_ = ((TASK_PerdTaskFctPar_t *)taskCfg->tasks[i].pvParameters)->taskPeriod;
+					retVal = ERR_OK;
+				}
+			}
+		}
+		else
+		{
+			retVal = ERR_PARAM_ADDRESS;
+		}
+	}
+	return retVal;
+}
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 void TASK_Init(void) {
@@ -128,7 +155,7 @@ void TASK_PerdTaskFct(void * pvParameters_)
 {
 	uint8 i = 0u;
 	const TASK_PerdTaskFctPar_t *pvPar = NULL;
-	TickType_t LastWakeTime;
+	TickType_t LastWakeTime = 0u;
 
 	pvPar = (const TASK_PerdTaskFctPar_t *)pvParameters_;
 
@@ -223,6 +250,10 @@ StdRtn_t TASK_Read_DbgTaskHdl(TASK_Hdl_t *hdl_)
 	return ReadTaskHdl(hdl_, DBG_TASK_STRING);
 }
 
+StdRtn_t TASK_Read_ApplTaskPeriod(uint8_t *taskPer_)
+{
+	return ReadTaskPeriod(taskPer_, APPL_TASK_STRING);
+}
 
 
 #ifdef MASTER_task_C_

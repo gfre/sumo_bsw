@@ -14,3 +14,4 @@ core
 .project
 .cproject
 sumo_bsw JLink Debug.launch
+/Release/

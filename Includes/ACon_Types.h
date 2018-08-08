@@ -30,6 +30,25 @@
   #define MAX(a, b)         (((a) > (b)) ? (a) : (b))
 #endif
 
+#ifndef ABS
+#define ABS(a)              (((a) > (0)) ? (a) : ((-1)*(a)))
+#endif
+
+#ifndef SIGN
+#define SIGN(a)             (((a) < (0)) ? (-1) : (1))
+#endif
+
+#define FOUR_PI             (12.56637061436)
+#define THREE_PI            ( 9.42477796077)
+#define TWO_PI              ( 6.28318530718)
+#define THREE_HALF_PI       ( 4.71238898038)
+#define PI                  ( 3.14159265359)
+#define THREE_QUARTERS_PI   ( 2.35619449019)
+#define TWO_THIRD_PI        ( 2.09439510239)
+#define ONE_HALF_PI         ( 1.57079632679)
+#define ONE_THIRD_PI        ( 1.04719755120)
+#define ONE_QUARTER_PI      ( 0.78539816340)
+
 
 /*=================================== >> TYPE DEFINITIONS << =====================================*/
 /**

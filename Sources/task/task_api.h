@@ -71,12 +71,23 @@ EXTERNAL_ StdRtn_t TASK_Read_ApplTaskHdl(TASK_Hdl_t *pHdl_);
 
 /**
  * @brief Function reads the task handle of the debug task
- * @param pHdl_ reference to the task handle
+ * @param pHdl_ reference to the task handle (call by reference)
  * @return	error code, ERR_PARAM_ADDRESS, if address of input is invalid;
  * 						ERR_PARAM_DATA, if table data is invalid;
-* 						ERR_OK, if everything is OK
+ * 						ERR_OK, if everything is OK
  */
 EXTERNAL_ StdRtn_t TASK_Read_DbgTaskHdl(TASK_Hdl_t *pHdl_);
+
+/**
+ * @brief Function reads the configured time period of the application task
+ * @param taskPer_ reference to the time period value (call by reference)
+ * @return	error code, ERR_PARAM_ADDRESS, if address of input is invalid;
+ * 						ERR_PARAM_DATA, if table data is invalid;
+ * 						ERR_OK, if everything is OK
+  */
+EXTERNAL_ StdRtn_t TASK_Read_ApplTaskPeriod(uint8_t *taskPer_);
+
+
 
 /**
  * @}

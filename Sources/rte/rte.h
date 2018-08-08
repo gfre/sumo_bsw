@@ -3,7 +3,7 @@
  * @ingroup		rte
  * @brief 		RTE Application Interface Header
  *
- * The *Real-Time Environment* (@b RTE) is the application interface for application software development
+ * The *Runtime Environment* (@b RTE) is the application interface for application software development
  * within the ACon Sumo Robot Project. This header file provides the interface functions for the
  * development of hardware-independent application software.
  *
@@ -397,6 +397,23 @@ EXTERNAL_ StdRtn_t RTE_Read_RFDstAddr(uint8_t *addr_);
  */
 EXTERNAL_ StdRtn_t RTE_Write_RFDstAddr(const uint8_t addr_);
 
+/**
+ * @brief RTE interface to write the radio output power
+ * @param pwr_ setpoint value for radio output power
+ * @return Error code, ERR_OK if everything was fine.
+ *                     ERR_RANGE wrong rate value
+ */
+EXTERNAL_ StdRtn_t RTE_Write_RFOutpPwr(RF_OutpPwr_t pwr_);
+
+/**
+ * @brief RTE interface to write the radio air data rate
+ * @param rate_ setpoint value for air data rate
+ * @return Error code, ERR_OK if everything was fine.
+ *                     ERR_RANGE wrong rate value
+ */
+EXTERNAL_ StdRtn_t RTE_Write_RFDataRate(RF_DataRate_t rate_);
+
+
 
 /*================================================================================================*/
 EXTERNAL_ RTE_STREAM *RTE_stderr;
@@ -444,6 +461,11 @@ EXTERNAL_ StdRtn_t RTE_putsErr(const uint8_t *msg_);
  */
 EXTERNAL_ ID_Sumo_t RTE_GetSumoID(void);
 
+/**
+ * @brief RTE interface function which resets the basic software (soft reset)
+ */
+EXTERNAL_ void RTE_Reset_BSW(void);
+
 
 
 /*================================================================================================*/
@@ -454,7 +476,7 @@ EXTERNAL_ ID_Sumo_t RTE_GetSumoID(void);
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-StdRtn_t RTE_Write_HoldOnEnterNormal(const uint8_t holdOn_);
+EXTERNAL_ StdRtn_t RTE_Write_HoldOnEnterNormal(const uint8_t holdOn_);
 
 /**
  * @brief This function sets a flag which enables/disables hold on ENTER functionality for
@@ -463,21 +485,21 @@ StdRtn_t RTE_Write_HoldOnEnterNormal(const uint8_t holdOn_);
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-StdRtn_t RTE_Write_HoldOnEnterIdle(const uint8_t holdOn_);
+EXTERNAL_ StdRtn_t RTE_Write_HoldOnEnterIdle(const uint8_t holdOn_);
 
 /**
  * @brief This function allows to release hold on ENTER for NORMAL application state/mode
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-StdRtn_t RTE_Release_HoldOnEnterNormal(void);
+EXTERNAL_ StdRtn_t RTE_Release_HoldOnEnterNormal(void);
 
 /**
  * @brief This function allows to release hold on ENTER for IDLE application state/mode
  * @return Error code, ERR_OK if everything was fine,
  *                     ERR_PARAM_ADDRESS otherwise
  */
-StdRtn_t RTE_Release_HoldOnEnterIdle(void);
+EXTERNAL_ StdRtn_t RTE_Release_HoldOnEnterIdle(void);
 
 
 
@@ -491,7 +513,7 @@ StdRtn_t RTE_Release_HoldOnEnterIdle(void);
  *                     ERR_PARAM_ADDRESS if data address is invalid,
  *                     NVM specific ERROR code otherwise
  */
-StdRtn_t RTE_Read_DataUnitAddrInNVM(void *pDataAddr_, uint8_t unitNum_);
+EXTERNAL_ StdRtn_t RTE_Read_DataUnitAddrInNVM(void *pDataAddr_, uint8_t unitNum_);
 
 /**
  * @brief This function saves a completed ASW data unit into the NVM
@@ -500,7 +522,7 @@ StdRtn_t RTE_Read_DataUnitAddrInNVM(void *pDataAddr_, uint8_t unitNum_);
  * @return Error code, ERR_OK if everything was fine,
  *                     NVM specific ERROR code otherwise
  */
-StdRtn_t RTE_Save_DataUnit2NVM(const void *pData_, uint8_t unitNum_);
+EXTERNAL_ StdRtn_t RTE_Save_DataUnit2NVM(const void *pData_, uint8_t unitNum_);
 
 /**
  * @brief This function saves a number of data bytes within a certain ASW data into the NVM
@@ -511,7 +533,32 @@ StdRtn_t RTE_Save_DataUnit2NVM(const void *pData_, uint8_t unitNum_);
  * 					   ERR_PARAM_OVERFLOW if byteCnt_ exceeds ASW data unit size
  *                     NVM specific ERROR code otherwise
  */
-StdRtn_t RTE_Save_BytesOfDataUnit2NVM(const void *pData_, uint8_t unitNum_, uint16_t byteCnt_);
+EXTERNAL_ StdRtn_t RTE_Save_BytesOfDataUnit2NVM(const void *pData_, uint8_t unitNum_, uint16_t byteCnt_);
+
+
+
+/*================================================================================================*/
+/**
+ * @brief This function enters a critical section
+ */
+EXTERNAL_ uint8_t RTE_Enter_CriticalSection(void);
+
+/**
+ * @brief This function exits a critical section
+ */
+EXTERNAL_ void RTE_Exit_CriticalSection(uint8_t cpuSR);
+
+
+
+/*================================================================================================*/
+/**
+ * @brief This function reads the configured time period of the application task
+ * @param taskPer_ reference to the time period value (call by reference)
+ * @return	error code, ERR_PARAM_ADDRESS, if address of input is invalid;
+ * 						ERR_PARAM_DATA, if data of time period is invalid or does not exist;
+ * 						ERR_OK, if everything is OK
+ */
+EXTERNAL_ StdRtn_t RTE_Read_ApplTaskPeriod(uint8_t *taskPer_);
 
 
 

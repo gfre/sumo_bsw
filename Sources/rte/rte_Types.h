@@ -4,7 +4,6 @@
  * @brief 		Customisable and Non-Customisable RTE - Data Types for Application Software
  * 				Development.
  *
- * The *Real-Time Environment* (@b RTE) is the application interface for application software development
  * within the ACon Sumo Robot Project. This header file provides the customisable and non-customisable RTE-
  * data types for the development of hardware-independent application software.
  *
@@ -123,7 +122,6 @@ typedef enum ID_Sumo_e { /* do *not* change order of enumeration, they are used 
 	,ID_SUMO_NONE          					/**< initialization value, used internally */
 } ID_Sumo_t;
 
-
 /**
  * @brief Non-customizeable data type for driving modes
  */
@@ -134,6 +132,27 @@ typedef enum DrvMode_e {
   DRV_MODE_POS,
   DRV_MODE_INVALID,
 } DrvMode_t;
+
+/**
+ * @brief
+ */
+typedef enum RF_OutpPwr_e {
+	 RF_PWR_0dB = 0         //!< RTE_RF_0dB
+	,RF_PWR_minus10dB = -10 //!< RTE_RF_minus10dB
+	,RF_PWR_minus12dB = -12 //!< RTE_RF_minus12dB
+	,RF_PWR_minus18dB = -18 //!< RTE_RF_minus18dB
+} RF_OutpPwr_t;
+
+/**
+ * @brief
+ */
+typedef enum RF_DataRate_e {
+	 RF_DATA_RATE_250kbps = 250//!< RF_DATA_RATE_250kbps
+	,RF_DATA_RATE_1Mbps = 1000 //!< RF_DATA_RATE_1Mbps
+	,RF_DATA_RATE_2Mbps = 2000 //!< RF_DATA_RATE_2Mbps
+} RF_DataRate_t;
+
+
 
 /*============================ >> GLOBAL FUNCTION DECLARATIONS << ================================*/
 /**

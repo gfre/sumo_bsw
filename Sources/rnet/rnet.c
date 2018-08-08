@@ -43,6 +43,7 @@ typedef enum RNET_State_s {
 static uint8_t RNET_HdlRTERxMsgCbFct(RAPP_MSG_Type type_, uint8_t size_, uint8_t *data_, RAPP_ShortAddrType srcAddr_, bool *handled_, RPHY_PacketDesc *pktDes_);
 static uint8_t RNET_HandleDataRxMessage(RAPP_MSG_Type type, uint8_t size, uint8_t *data, RAPP_ShortAddrType srcAddr, bool *handled, RPHY_PacketDesc *packet);
 static void RNET_RadioPowerUp(void);
+static void RNET_RadioSetProperties(void);
 
 
 
@@ -123,6 +124,13 @@ static void RNET_RadioPowerUp(void) {
 }
 
 
+static void RNET_RadioSetProperties(void)
+{
+	RF1_SetOutputPower(0);
+	RF1_SetDataRate(250u);
+	RF1_SetChannel(0u);
+}
+
 
 /*============================= >> GLOBAL FUNCTION DEFINITIONS << ================================*/
 void RNET_Init(const void *pvPar_) {
@@ -150,6 +158,7 @@ void RNET_MainFct(void) {
 
     case RNET_POWERUP:
       RNET_RadioPowerUp();
+      RNET_RadioSetProperties();
       rnetState = RNET_TX_RX;
       break;
 

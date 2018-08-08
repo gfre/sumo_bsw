@@ -3,7 +3,7 @@
  * @ingroup		rte
  * @brief 		Implementation of the RTE Application Interface
  *
- * The *Real-Time Environment* (@b RTE) is the application interface for application software development
+ * The *Runtime Environment* (@b RTE) is the application interface for application software development
  * within the ACon Sumo Robot Project. This source file implements the interface functions for the
  * development of hardware-independent application software.
  *
@@ -28,9 +28,10 @@
 #include "tacho_api.h"
 #include "nvm_api.h"
 #include "KEY1.h"
+#include "CS1.h"
 #include "RApp.h"
-
-
+#include "RF1.h"
+#include "task_api.h"
 
 
 
@@ -496,6 +497,18 @@ StdRtn_t RTE_Write_RFDstAddr(uint8_t addr_)
 	return ERR_OK;
 }
 
+StdRtn_t RTE_Write_RFOutpPwr(RF_OutpPwr_t pwr_)
+{
+	return RF1_SetOutputPower((int8_t)pwr_);
+}
+
+StdRtn_t RTE_Write_RFDataRate(RF_DataRate_t rate_)
+{
+	return RF1_SetDataRate((uint16_t)rate_);
+}
+
+
+
 /*================================================================================================*/
 
 
@@ -592,6 +605,11 @@ ID_Sumo_t RTE_GetSumoID(void)
 	return Get_SumoID();
 }
 
+void RTE_Reset_BSW(void)
+{
+	return ID_Reset_BSW();
+}
+
 /*================================================================================================*/
 
 
@@ -622,8 +640,25 @@ StdRtn_t RTE_Save_BytesOfDataUnit2NVM(const void *pData_, uint8_t unitNum_, uint
 
 
 /*================================================================================================*/
+uint8_t RTE_Enter_CriticalSection(void)
+{
+	CS1_CriticalVariable()
+	CS1_EnterCritical();
+	return cpuSR;
+}
+
+void RTE_Exit_CriticalSection(uint8_t cpuSR)
+{
+	CS1_ExitCritical();
+	return;
+}
 
 
+/*================================================================================================*/
+StdRtn_t RTE_Read_ApplTaskPeriod(uint8_t *taskPer_)
+{
+	return TASK_Read_ApplTaskPeriod(taskPer_);
+}
 
 #ifdef MASTER_RTE_C_
 #undef MASTER_RTE_C_

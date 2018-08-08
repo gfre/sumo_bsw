@@ -10,7 +10,7 @@ Sumo Basic Software
 Follow the link to the `BSW Software documentation <../_static/html/index.html>`_. It describes each component of the Sumo BSW in detail. For offline useage download the `pdf file <../_static/latex/refman.pdf>`_.
 
 ---------------------------
-Real time environment (RTE)
+Runtime environment (RTE)
 ---------------------------
 This section provides `a direct link <../_static/html/group__rte.html>`_ to the RTE API manual. 
 
