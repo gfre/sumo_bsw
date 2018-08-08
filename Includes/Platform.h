@@ -25,7 +25,7 @@
 /*======================================= >> #DEFINES << =========================================*/
 #define SW_API_VERSION      '1'
 #define SW_MAJOR_VERSION    '5'
-#define SW_MINOR_VERSION    '3'
+#define SW_MINOR_VERSION    '4'
 #define SW_YEAR             "2018"
 
 #define SW_VERSION_CHAR_ARRAY   SW_API_VERSION, '.', SW_MAJOR_VERSION, '.', SW_MINOR_VERSION, '-'
