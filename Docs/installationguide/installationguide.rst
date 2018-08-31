@@ -100,10 +100,9 @@ to the path *~/Appdata/Roaming/GNU MCU Eclipse*.
 				
 (iii). GNU MCU Eclipse plugin
 *****************************
-The Eclipse environment requires the installation of the GNU MCU Eclipse plugin within the MCUXpresso IDE. According to the `GitHub Wiki <https://gnu-mcu-eclipse.github.io/plugins/install/>`_ of the GNU MCU Eclipse tools 
-the versions *4.x* are only supported back to *Eclipse 4.6 with C Developing Tools (CDT) 9.2*. At the moment this guide was written, the latest version of MCUXpresso is 10.1.1 Build 606 2018-01-02, Eclipse 4.6.3v20170301-0400 (Neon) with CDT 9.1.0.201609121658. 
-Consequently, the latest GNU MCU Eclipse version would not install correctly. Prof. Erich Styger recommends in his blogs to instal the `GNU ARM/MCU Eclipse plug-ins version 3.4.1  <https://github.com/gnu-mcu-eclipse/eclipse-plugins/releases/tag/v3.4.1-201704251808>`_  which 
-worked for the time being. Please check the current MCUXpresso version/Built available and the compatibility at the GNU MCU Eclipse tools GitHub Wiki.
+The Eclipse environment requires the installation of the GNU MCU Eclipse plugin within the MCUXpresso IDE. Download the *ilg.gnueclipse.xxx.zip* file from 
+the `GNU MCU Eclipse release page  <https://github.com/gnu-mcu-eclipse/eclipse-plugins/releases>`_. Please check the current MCUXpresso version/Built 
+available and the compatibility at the GNU MCU Eclipse tools GitHub Wiki. For MCUExpresso version 10.2, the release from April, 19th was used.
 
 If the *.zip*-file was downloaded, open *MCUXpresso->Help->Install New software*, put the file into the upcoming window via *drag\&drop*. It should 
 now pop up as shown in the picture. Mark the box and finish the installation.
